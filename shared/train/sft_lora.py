@@ -519,6 +519,12 @@ def run(args, cache_dir):
         # trn1 results). Recompute trades those intermediates for an extra
         # forward pass; the MFU accounting below charges for it explicitly.
         gradient_checkpointing=not args.no_gradient_checkpointing,
+        # optimum-neuron 0.4.3 asserts on this dict's use_reentrant key and
+        # crashes on the None default (sft_trainer.py:263, measured 2026-07-30).
+        # Reentrant checkpointing is the XLA-compatible variant.
+        gradient_checkpointing_kwargs=(
+            {"use_reentrant": True}
+            if not args.no_gradient_checkpointing else None),
         # THE TP KNOB. Verified against optimum-neuron's NeuronTrainingArguments
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
