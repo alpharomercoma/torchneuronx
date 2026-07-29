@@ -1,0 +1,15 @@
+# Models and datasets are pulled by HF repo id on the boxes; weights never
+# belong in git. Telemetry CSVs and result JSONs ARE committed -- they are
+# the evidence -- but logs of interactive sessions and venvs are not.
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+cdk/cdk.out/
+cdk/.venv/
+node_modules/
+*.safetensors
+*.neff
+models/
+hf_cache/
+.pytest_cache/

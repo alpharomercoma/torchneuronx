@@ -1,0 +1,44 @@
+{
+  "_note": "Bootstrap fixture shaped from the documented neuron-monitor output format. REPLACE with a real captured line from the trn1/inf2 smoke run (rule: fixtures become real data as soon as real data exists).",
+  "neuron_runtime_data": [
+    {
+      "pid": 4242,
+      "neuron_runtime_tag": "vllm",
+      "error": "",
+      "report": {
+        "neuroncore_counters": {
+          "period": 1.0,
+          "neuroncores_in_use": {
+            "0": {"neuroncore_utilization": 87.5},
+            "1": {"neuroncore_utilization": 91.25}
+          },
+          "error": ""
+        },
+        "memory_used": {
+          "period": 1.0,
+          "neuron_runtime_used_bytes": {
+            "host": 2147483648,
+            "neuron_device": 17179869184
+          },
+          "error": ""
+        },
+        "neuron_runtime_vcpu_usage": {
+          "period": 1.0,
+          "vcpu_usage": {"user": 12.0, "system": 3.5},
+          "error": ""
+        }
+      }
+    }
+  ],
+  "system_data": {
+    "memory_info": {
+      "memory_total_bytes": 16600000000,
+      "memory_used_bytes": 5100000000
+    }
+  },
+  "instance_info": {"instance_type": "inf2.xlarge"},
+  "neuron_hardware_info": {
+    "neuron_device_count": 1,
+    "neuroncore_per_device_count": 2
+  }
+}

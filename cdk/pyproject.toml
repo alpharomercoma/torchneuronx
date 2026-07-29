@@ -1,0 +1,17 @@
+[project]
+name = "neuron-pipelines-cdk"
+version = "0.1.0"
+description = "AWS CDK app: base plumbing + one Trainium (trn1) and one Inferentia (inf2) instance in us-west-2"
+requires-python = ">=3.12"
+dependencies = [
+    "aws-cdk-lib>=2,<3",
+    "constructs>=10,<11",
+    "pytest>=8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

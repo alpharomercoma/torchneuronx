@@ -1,0 +1,32 @@
+# 04 — deploy Base + Trainium, verify, smoke
+
+```bash
+cd ~/neuron-pipelines/cdk
+uv run cdk bootstrap aws://600627330911/us-west-2   # one-time
+uv run cdk deploy NeuronPipelinesBase               # bucket, role, SG, budget
+uv run cdk deploy NeuronPipelinesTrainium           # $1.34/hr STARTS HERE
+# Outputs: InstanceId=i-...  SsmConnect="aws ssm start-session ..."
+```
+
+Push the harness, then verify on-box (SSM session):
+
+```bash
+cd ~/neuron-pipelines && make push-code
+aws ssm start-session --region us-west-2 --target i-...   # from stack output
+# on the box:
+aws s3 cp s3://neuron-pipelines-artifacts-600627330911/code/shared/bin/pull_code.sh - | bash
+bash /opt/np/repo/shared/bin/hf_login.sh        # HF token installed
+# work through trn1/docs/PROVISIONING.md "Verified state" -- paste real output there
+```
+
+Smoke (gate 2, ~$0.50):
+
+```bash
+cd /opt/np/repo && FORCE=0 trn1/scripts/run_all.sh   # lanes 0-2 only matter here
+ls trn1/results/train/smoke_tinyllama.{json,log,telemetry.csv}   # triplet exists
+bash shared/bin/push_results.sh trn1
+```
+
+Laptop: `make pull-results` → commit the smoke triplet → replace
+`tests/fixtures/neuron_monitor_inf2.json` with a real captured line
+(the fixture-becomes-real rule) → 8B lanes are now allowed.

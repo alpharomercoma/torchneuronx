@@ -1,0 +1,20 @@
+{
+  "app": "uv run python app.py",
+  "watch": {
+    "include": ["**"],
+    "exclude": ["README.md", "cdk*.json", ".venv", "**/__pycache__", "tests"]
+  },
+  "context": {
+    "az": "us-west-2b",
+    "subnetId": "subnet-0004804fe13fb126e",
+    "volumeGb": 500,
+    "budgetUsd": 200,
+    "alertEmail": "alphacoma18@gmail.com",
+    "trn1InstanceType": "trn1.2xlarge",
+    "inf2InstanceType": "inf2.xlarge",
+    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:validateSnapshotRemovalPolicy": true
+  }
+}
