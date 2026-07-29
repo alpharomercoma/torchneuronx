@@ -132,9 +132,11 @@ never headline; they bound the serving numbers' interpretation.
   GPU study's repeatability lane is out of scope at this budget; step-time
   and TTFT distributions within runs are reported instead.
 - The primary bench client is this repo's `fallback_client.py` (schema-
-  identical to `vllm bench serve --save-result`). It approximates input
-  length via characters-per-token rather than exact tokenization; input token
-  counts are reported as configured, not measured. Where the host allows,
+  identical to `vllm bench serve --save-result`). Input length is exact:
+  the prompt over-provisions words and the request pins the token count via
+  vLLM's `truncate_prompt_tokens` (adopted after the BOS token pushed
+  1024-word prompts to 1025 tokens and 400'd an entire sweep). Output length
+  is pinned by `max_tokens` + `ignore_eos`. Where the host allows,
   `vllm bench serve` cross-checks a subset of points.
 - Dolly-15k × 3 epochs of LoRA is a demonstration-scale SFT chosen to make
   behavior change visible in the quality lane — it is not a production
