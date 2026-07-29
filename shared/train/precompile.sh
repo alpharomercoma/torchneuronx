@@ -142,6 +142,14 @@ else
 fi
 
 mkdir -p "$(dirname "$OUT_JSON")"
+# A FAILED precompile must not occupy the success filename: run_all's have()
+# guard would then skip this lane forever, and a plausible-looking JSON with
+# exit_code:1 buried in it is exactly how a gated-model 401 masqueraded as
+# "everything was already cached" on 2026-07-29. Failures get their own file.
+if [ "$RC" -ne 0 ]; then
+  OUT_JSON="$(dirname "$OUT_JSON")/$(basename "$OUT_JSON" .json).failure.json"
+  CACHE_HITS_NOTE="PRECOMPILE FAILED (exit $RC). Last error line: $(grep -iE 'error|denied|401|403' "$(dirname "$OUT_JSON")"/*.log 2>/dev/null | tail -1 | tr '"' "'" | cut -c1-200)"
+fi
 TMP_JSON="${OUT_JSON}.tmp.$$"
 cat > "$TMP_JSON" <<EOF
 {

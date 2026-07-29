@@ -48,6 +48,13 @@ export NEURON_COMPILE_CACHE_URL="${NEURON_COMPILE_CACHE_URL:-/opt/np/cache/neuro
 # Force the NxD Inference framework (documented env; harmless when the venv
 # only ships NxDI, decisive when transformers-neuronx is also installed).
 export VLLM_NEURON_FRAMEWORK="${VLLM_NEURON_FRAMEWORK:-neuronx-distributed-inference}"
+# vllm-neuron 0.21's worker unconditionally maps EFA interfaces unless told
+# not to, and its mapper only knows trn2/trn3 families -- on inf2 every boot
+# died in get_efa_bdf_mapping with "Unsupported instance family: inf2"
+# (measured 2026-07-29, smoke_tinyllama load_failure). inf2.xlarge has no EFA
+# hardware at all, so skipping is the correct config, not a workaround; the
+# skip flag ships in the plugin itself (neuron_worker.py:515).
+export NEURON_SKIP_EFA_AFFINITY="${NEURON_SKIP_EFA_AFFINITY:-1}"
 
 # ------------------------------------------------------------------ stop mode
 stop_server() {

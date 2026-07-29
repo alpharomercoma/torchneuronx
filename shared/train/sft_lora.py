@@ -198,6 +198,9 @@ def build_parser():
                          "2048; pass eager to disable")
     ap.add_argument("--no-packing", action="store_true",
                     help="disable example packing (packing is ON by default)")
+    ap.add_argument("--no-gradient-checkpointing", action="store_true",
+                    help="disable activation recomputation (8B models then "
+                         "exceed the 16 GB/core HBM limit: NCC_EOOM001)")
     return ap
 
 
@@ -278,14 +281,24 @@ def lora_flops_per_token(params_trainable, params_frozen):
 
 
 def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
-                       peak_flops=PEAK_BF16_FLOPS):
-    """(trainable, frozen, tok/s) -> flops_per_token, TFLOP/s, MFU%. Pure."""
+                       peak_flops=PEAK_BF16_FLOPS,
+                       gradient_checkpointing=False):
+    """(trainable, frozen, tok/s) -> flops_per_token, TFLOP/s, MFU%. Pure.
+
+    With activation recomputation every parameter pays one extra forward
+    GEMM (+2 FLOPs/param/token): frozen 4 -> 6, trainable 6 -> 8. Same
+    convention as the GPU study's x4/3 checkpointing adjustment, restated
+    for the LoRA-split accounting.
+    """
     fpt = lora_flops_per_token(params_trainable, params_frozen)
+    if gradient_checkpointing:
+        fpt += 2.0 * (params_trainable + params_frozen)
     achieved = fpt * tokens_per_s
     return {
         "flops_per_token": fpt,
         "tflops": achieved / 1e12,
         "mfu_pct": 100.0 * achieved / peak_flops,
+        "gradient_checkpointing": bool(gradient_checkpointing),
     }
 
 
@@ -499,6 +512,13 @@ def run(args, cache_dir):
         warmup_steps=DEFAULT_WARMUP_STEPS,
         lr_scheduler_type="constant",
         bf16=True,
+        # Activation recomputation. NOT optional at 8B on this chip: each
+        # NeuronCore has 16 GB of HBM, and the first Qwen3-8B attempt without
+        # it died in neuronx-cc with NCC_EOOM001 -- 23.72 GB peak, of which
+        # 14.77 GB was intermediate tensors (measured 2026-07-29, recorded in
+        # trn1 results). Recompute trades those intermediates for an extra
+        # forward pass; the MFU accounting below charges for it explicitly.
+        gradient_checkpointing=not args.no_gradient_checkpointing,
         # THE TP KNOB. Verified against optimum-neuron's NeuronTrainingArguments
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
@@ -588,6 +608,21 @@ def run(args, cache_dir):
     trainer = build_trainer(NeuronSFTTrainer, sft_config, model, lora_config,
                             tokenizer, dataset, args, metrics_cb)
 
+    # Recount AFTER the trainer wrapped the model in PEFT: the pre-wrap count
+    # sees every base parameter as trainable (the first smoke run reported
+    # params_trainable == params_total -- wrong by 3 orders of magnitude, and
+    # it silently poisons MFU). The post-wrap count is what actually trains.
+    post = count_parameters(trainer.model, torch, tp_size)
+    if 0 < post["trainable"] < post["total"]:
+        params = post
+        params_total = post["total"]
+        params_trainable = post["trainable"]
+    else:
+        say("  WARNING: post-PEFT recount looks degenerate "
+            f"(trainable={post['trainable']:,}/{post['total']:,}); "
+            "MFU will be reported as null rather than from a bad count")
+        params_trainable = None
+
     # ------------------------------------------------------------ banner
     versions = resolve_versions()
     say("")
@@ -598,8 +633,12 @@ def run(args, cache_dir):
     say(f"  params total       : {params_total:,}  "
         f"(rank-local shard {params['local_total']:,}; "
         f"via {params['method']})")
-    say(f"  params trainable   : {params_trainable:,}  "
-        f"({100.0 * params_trainable / max(1, params_total):.3f}% of total)")
+    if params_trainable is not None:
+        say(f"  params trainable   : {params_trainable:,}  "
+            f"({100.0 * params_trainable / max(1, params_total):.3f}% of total)")
+    else:
+        say("  params trainable   : unknown (degenerate recount; MFU nulled)")
+    say(f"  grad checkpointing : {not args.no_gradient_checkpointing}")
     say(f"  parallelism        : world={world} tp={tp_size} dp={dp_size} pp="
         f"{PIPELINE_PARALLEL_SIZE}")
     say(f"  lora               : r={args.lora_r} alpha={args.lora_alpha} "
@@ -650,9 +689,10 @@ def run(args, cache_dir):
     tok_s = tok_per_step / (med_ms * 1e-3) if med_ms else None
 
     perf = None
-    if tok_s is not None:
-        perf = throughput_metrics(params_trainable,
-                                  params_total - params_trainable, tok_s)
+    if tok_s is not None and params_trainable is not None:
+        perf = throughput_metrics(
+            params_trainable, params_total - params_trainable, tok_s,
+            gradient_checkpointing=not args.no_gradient_checkpointing)
 
     payload = {
         "tag": args.tag,
@@ -660,7 +700,8 @@ def run(args, cache_dir):
         "dataset": args.dataset,
         "params_total": params_total,
         "params_trainable": params_trainable,
-        "params_frozen": params_total - params_trainable,
+        "params_frozen": (params_total - params_trainable
+                          if params_trainable is not None else None),
         "params_local_shard_total": params["local_total"],
         "params_local_shard_trainable": params["local_trainable"],
         "params_method": params["method"],
@@ -669,6 +710,7 @@ def run(args, cache_dir):
             "seq_len": args.seq_len,
             "micro_batch": args.micro_batch,
             "grad_accum": args.grad_accum,
+            "gradient_checkpointing": not args.no_gradient_checkpointing,
             "epochs": args.epochs,
             "max_steps": max_steps,
             "lr": args.lr,
