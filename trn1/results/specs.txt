@@ -1,0 +1,99 @@
+=== captured ===
+2026-07-29T17:16:22Z
+hostname: ip-172-31-24-108
+
+=== os ===
+Ubuntu 24.04.4 LTS
+kernel: 6.17.0-1019-aws
+arch: x86_64
+
+=== cpu ===
+Architecture: x86_64
+CPU(s): 8
+Model name: Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz
+Thread(s) per core: 2
+Core(s) per socket: 4
+Socket(s): 1
+Flags: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves wbnoinvd ida arat avx512vbmi pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq rdpid md_clear flush_l1d arch_capabilities
+L3 cache: 54 MiB (1 instance)
+NUMA node(s): 1
+
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:              30           0          22           0           7          29
+numa_balancing: 0
+
+=== storage ===
+NAME      SIZE MODEL
+loop0    49.3M 
+loop1      74M 
+loop2    28.2M 
+loop3    28.4M 
+nvme0n1   500G Amazon Elastic Block Store
+nvme1n1 441.4G Amazon EC2 NVMe Instance Storage
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       484G   66G  418G  14% /
+
+=== accelerator ===
+-- vendor: AWS Neuron
+instance-type: trn1.2xlarge
+instance-id: i-0cb9e758143a745d5
++--------+--------+----------+--------+--------------+----------+------+
+| NEURON | NEURON |  NEURON  | NEURON |     PCI      |   CPU    | NUMA |
+| DEVICE | CORES  | CORE IDS | MEMORY |     BDF      | AFFINITY | NODE |
++--------+--------+----------+--------+--------------+----------+------+
+| 0      | 2      | 0-1      | 32 GB  | 0000:00:1e.0 | 0-7      | -1   |
++--------+--------+----------+--------+--------------+----------+------+
+-- devices (json):
+[
+    {
+        "instance_type": "trn1.2xlarge",
+        "instance_id": "i-0cb9e758143a745d5",
+        "neuron_device": 0,
+        "bdf": "0000:00:1e.0",
+        "cpu_affinity": "0-7",
+        "numa_node": "-1",
+        "connected_to": null,
+        "nc_count": 2,
+        "memory_size": 34359738368,
+        "neuroncore_ids": [
+            0,
+            1
+        ],
+        "neuron_processes": []
+    }
+]-- /dev/neuron* nodes:
+crw-rw-rw- 1 root root 237, 0 Jul 29 10:55 /dev/neuron0
+
+=== accelerator stack ===
+-- driver/runtime packages:
+aws-neuronx-collectives 2.33.10.0-068180c7a
+aws-neuronx-dkms 2.29.0.0
+aws-neuronx-oci-hook 2.17.30.0
+aws-neuronx-runtime-lib 2.33.10.0-3dcef56f0
+aws-neuronx-tools 2.31.13.0-a9e473f33
+-- neuronx-cc:
+-- DLAMI venvs present:
+/opt/aws_neuronx_venv_pytorch_2_9
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference
+-- /opt/aws_neuronx_venv_pytorch_2_9 key packages:
+libneuronxla               2.2.17544.0+fb9962bf
+neuronx-cc                 2.26.6360.0+6f180f47
+neuronx-distributed        0.19.28492+435aae2b
+optimum-neuron             0.4.3
+torch                      2.9.1
+torch-neuronx              2.9.0.2.15.32035+de43f57c
+torch-xla                  2.9.0
+transformers               4.57.6
+-- /opt/aws_neuronx_venv_pytorch_2_9_nxd_inference key packages:
+libneuronxla                  2.2.17544.0+fb9962bf
+neuronx-cc                    2.26.6360.0+6f180f47
+neuronx-distributed           0.19.28492+435aae2b
+torch                         2.9.1
+torch-neuronx                 2.9.0.2.15.32035+de43f57c
+torch-xla                     2.9.0
+transformers                  4.57.6
+
+=== neuron compile cache ===
+NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
+75M	/opt/np/cache/neuron-compile-cache

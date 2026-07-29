@@ -1,0 +1,8 @@
+=== launch_vllm: qwen3_base (short) ===
+    model_id      : Qwen/Qwen3-8B
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 32
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/serve/qwen3_base_short/boot.json
+--- server pid 14193; polling /health every 5s (up to 90 min: cold compile is slow) ---

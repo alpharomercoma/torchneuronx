@@ -1,0 +1,8 @@
+  host: x86_64  (4 logical CPUs)
+  STREAM triad: 32.0 GB/s (4 threads)
+  fp32 matmul  t=1     0.101 TFLOP/s
+  fp32 matmul  t=2     0.203 TFLOP/s
+  fp32 matmul  t=4     0.203 TFLOP/s
+  fp32 matmul  t=8     0.206 TFLOP/s
+  tokenizer: 1,535,585 tok/s
+wrote /opt/np/repo/inf2/results/cpu/cpu.json

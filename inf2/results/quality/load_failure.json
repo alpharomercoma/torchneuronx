@@ -1,0 +1,9 @@
+{
+  "model_key": "llama31_dolly",
+  "config": "short",
+  "model_id": "/opt/np/models/llama31-8b-dolly-merged",
+  "status": "server_failed_to_start",
+  "looks_like_capacity_failure": false,
+  "reason": "(APIServer pid=14129) pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig",
+  "captured": "2026-07-29T17:08:14Z"
+}

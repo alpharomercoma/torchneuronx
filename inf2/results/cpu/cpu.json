@@ -1,0 +1,32 @@
+{
+  "note": "HOST comparison, not a chip comparison -- the two cloud providers chose these CPUs, not the GPU vendors.",
+  "logical_cpus": 4,
+  "cpu_model": "x86_64",
+  "torch": "2.9.1+cu128",
+  "stream_triad_gb_s": 32.0,
+  "fp32_matmul": [
+    {
+      "threads": 1,
+      "tflops": 0.1008
+    },
+    {
+      "threads": 2,
+      "tflops": 0.2034
+    },
+    {
+      "threads": 4,
+      "tflops": 0.2028
+    },
+    {
+      "threads": 8,
+      "tflops": 0.2063
+    }
+  ],
+  "tokenizer": {
+    "docs": 2000,
+    "tokens": 2004000,
+    "seconds": 1.305,
+    "tokens_per_s": 1535585.0
+  },
+  "captured": "2026-07-29T16:48:30Z"
+}

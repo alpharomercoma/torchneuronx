@@ -1,0 +1,11 @@
+=== launch_vllm: smoke_tinyllama (smoke) ===
+    model_id      : TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 4
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/serve/smoke_tinyllama_smoke/boot.json
+--- server pid 12211; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 542s (cache 0 -> 46 MB); boot recorded in /opt/np/repo/inf2/results/serve/smoke_tinyllama_smoke/boot.json ---
+--- point isl128_osl128_c1 (num_prompts=4) ---
+--- sweep complete: /opt/np/repo/inf2/results/serve/smoke_tinyllama_smoke ---

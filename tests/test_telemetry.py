@@ -55,3 +55,14 @@ def test_schema_and_extra_columns():
     assert telemetry.SCHEMA[1] == "gpu_util_pct"   # name kept for cross-repo parsing
     assert telemetry.NeuronSampler.extra == [
         "util_nc0", "util_nc1", "host_mem_used_mib"]
+
+
+def test_real_captured_sample_parses():
+    # Captured on the actual trn1 box (see _note inside). It caught an idle
+    # window -- which is exactly the idle-is-a-measurement rule in action:
+    # real neuron-monitor field shapes, zeros not Nones.
+    real = os.path.join(os.path.dirname(__file__), "fixtures",
+                        "neuron_monitor_trn1_real.json")
+    with open(real) as fh:
+        obj = json.load(fh)
+    assert telemetry.NeuronSampler.parse(obj) == (0.0, 0.0, 0.0, 0.0, 0.0)

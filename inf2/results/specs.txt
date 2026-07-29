@@ -1,0 +1,88 @@
+=== captured ===
+2026-07-29T16:44:18Z
+hostname: ip-172-31-19-184
+
+=== os ===
+Ubuntu 24.04.4 LTS
+kernel: 6.17.0-1019-aws
+arch: x86_64
+
+=== cpu ===
+Architecture: x86_64
+CPU(s): 4
+Model name: AMD EPYC 7R13 Processor
+Thread(s) per core: 2
+Core(s) per socket: 2
+Socket(s): 1
+Flags: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch topoext ssbd ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 clzero xsaveerptr rdpru wbnoinvd arat npt nrip_save vaes vpclmulqdq rdpid
+L3 cache: 8 MiB (1 instance)
+NUMA node(s): 1
+
+=== memory ===
+               total        used        free      shared  buff/cache   available
+Mem:              15           0          13           0           1          14
+numa_balancing: 0
+
+=== storage ===
+NAME     SIZE MODEL
+loop0     74M 
+loop1   50.1M 
+loop2   28.4M 
+nvme0n1  500G Amazon Elastic Block Store
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       484G   26G  458G   6% /
+
+=== accelerator ===
+-- vendor: AWS Neuron
+instance-type: inf2.xlarge
+instance-id: i-014d06d692586d73b
++--------+--------+----------+--------+--------------+----------+------+
+| NEURON | NEURON |  NEURON  | NEURON |     PCI      |   CPU    | NUMA |
+| DEVICE | CORES  | CORE IDS | MEMORY |     BDF      | AFFINITY | NODE |
++--------+--------+----------+--------+--------------+----------+------+
+| 0      | 2      | 0-1      | 32 GB  | 0000:00:1f.0 | 0-3      | -1   |
++--------+--------+----------+--------+--------------+----------+------+
+-- devices (json):
+[
+    {
+        "instance_type": "inf2.xlarge",
+        "instance_id": "i-014d06d692586d73b",
+        "neuron_device": 0,
+        "bdf": "0000:00:1f.0",
+        "cpu_affinity": "0-3",
+        "numa_node": "-1",
+        "connected_to": null,
+        "nc_count": 2,
+        "memory_size": 34359738368,
+        "neuroncore_ids": [
+            0,
+            1
+        ],
+        "neuron_processes": []
+    }
+]-- /dev/neuron* nodes:
+crw-rw-rw- 1 root root 237, 0 Jul 29 16:40 /dev/neuron0
+
+=== accelerator stack ===
+-- driver/runtime packages:
+aws-neuronx-collectives 2.33.10.0-068180c7a
+aws-neuronx-dkms 2.29.0.0
+aws-neuronx-oci-hook 2.17.30.0
+aws-neuronx-runtime-lib 2.33.10.0-3dcef56f0
+aws-neuronx-tools 2.31.13.0-a9e473f33
+-- neuronx-cc:
+-- DLAMI venvs present:
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+-- /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16 key packages:
+libneuronxla                      2.2.17544.0+fb9962bf
+neuronx-cc                        2.26.6360.0+6f180f47
+neuronx-distributed               0.19.28492+435aae2b
+torch                             2.9.1
+torch-neuronx                     2.9.0.2.15.32035+de43f57c
+torch-xla                         2.9.0
+transformers                      4.57.6
+vllm                              0.16.0
+
+=== neuron compile cache ===
+NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
+cache dir absent
