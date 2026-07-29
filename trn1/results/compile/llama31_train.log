@@ -256,4 +256,30 @@ adapter -> /tmp/precompile_discard_adapter  (TP-sharded; merge_adapter.py consol
 	/opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13826111191422246321+f7f529f3/model.hlo_module.pb
 	/opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13826111191422246321+f7f529f3/model.hlo_module.pb
 2026-07-29 17:28:55.000653:  10617  [INFO]: Worker 0/None starting dynamic scheduling for 20 HLOs
-...
+...........
+Compiler status PASS
+2026-07-29 17:32:34.000996:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_11119583426405650379+f7f529f3.hlo_module.pb
+...........
+Compiler status PASS
+2026-07-29 17:36:15.000349:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_13030019381609271639+f7f529f3.hlo_module.pb
+.............
+Compiler status PASS
+2026-07-29 17:40:25.000477:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_13826111191422246321+f7f529f3.hlo_module.pb
+..........
+Compiler status PASS
+2026-07-29 17:43:41.000570:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_17541184177181796220+f7f529f3.hlo_module.pb
+..........
+Compiler status PASS
+2026-07-29 17:46:47.000412:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_8651772410009939807+f7f529f3.hlo_module.pb
+..........
+Compiler status PASS
+2026-07-29 17:50:04.000714:  10617  [INFO]: Compilation Successfully Completed for model.MODULE_924279859421455862+f7f529f3.hlo_module.pb
+2026-07-29 17:50:04.000734:  10617  [INFO]: Worker 0 completed: 6 tasks compiled
+2026-07-29 17:50:04.000740:  10617  [INFO]: Current remaining items are 0, locked are 0, failed are 2, done are 22, total is 24
+2026-07-29 17:50:04.000755:  10451  [INFO]: Compilation summary - Total graphs: 6, Success: 6, Failed: 0
+2026-07-29 17:50:04.000755:  10451  [INFO]: Total successful compilations: 6
+2026-07-29 17:50:04.000755:  10451  [INFO]: Compilation summary: 0/6 failed, 6 succeeded
+
+PRECOMPILE COMPLETE  wall_s=1497.56  graphs_compiled=6  cache_dir_size_mb=322
+REMINDER: every numeric value produced by the training script during this phase was invalid and has been discarded.
+wrote /opt/np/repo/trn1/results/compile/llama31_train.json

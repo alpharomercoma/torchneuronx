@@ -5,88 +5,88 @@
     venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
     neuron cache  : /opt/np/cache/neuron-compile-cache
     boot json     : /opt/np/repo/inf2/results/serve/llama31_base_long/boot.json
---- server pid 13434; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server pid 5327; polling /health every 5s (up to 90 min: cold compile is slow) ---
 server process exited before becoming healthy
-SERVER NEVER BECAME HEALTHY: llama31_base (long) after 137s
-(EngineCore_DP0 pid=13490) [2026-07-29 17:01:32] WARNING platform.py:430: Pin memory is not supported on Neuron.
-(EngineCore_DP0 pid=13490) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:1: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
-(EngineCore_DP0 pid=13490)   from neuronx_distributed_inference.models.dbrx.modeling_dbrx import NeuronDbrxForCausalLM
-(EngineCore_DP0 pid=13490) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:6: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
-(EngineCore_DP0 pid=13490)   from neuronx_distributed_inference.models.mixtral.modeling_mixtral import NeuronMixtralForCausalLM
-(EngineCore_DP0 pid=13490) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:14: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
-(EngineCore_DP0 pid=13490)   from neuronx_distributed_inference.models.qwen3_moe.modeling_qwen3_moe import NeuronQwen3MoeForCausalLM
-(EngineCore_DP0 pid=13490) INFO 07-29 17:01:32 [parallel_state.py:1234] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://172.31.19.184:49319 backend=gloo
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
-(EngineCore_DP0 pid=13490) INFO 07-29 17:01:33 [parallel_state.py:1445] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-(EngineCore_DP0 pid=13490) [2026-07-29 17:01:33] INFO neuronx_distributed_model_loader.py:1057: No neuron overrides are passed via additional_config: {}. Proceeding with defaults.
-(EngineCore_DP0 pid=13490) [2026-07-29 17:01:33] WARNING neuronx_distributed_model_loader.py:214: Exception: [Errno 2] No such file or directory: 'local-models/meta-llama/Llama-3.1-8B-Instruct/neuron-compiled-artifacts/f51f3db0146852e0579d2b6856ec70d1/neuron_config.json'
-(EngineCore_DP0 pid=13490) [2026-07-29 17:01:33] WARNING neuronx_distributed_model_loader.py:215: Unable to find precompiled artifacts from local-models/meta-llama/Llama-3.1-8B-Instruct/neuron-compiled-artifacts/f51f3db0146852e0579d2b6856ec70d1. Recompiling...
-(EngineCore_DP0 pid=13490) Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:18<00:54, 18.02s/it](APIServer pid=13434) Traceback (most recent call last):
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
-(APIServer pid=13434)     sys.exit(main())
-(APIServer pid=13434)              ^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
-(APIServer pid=13434)     args.dispatch_function(args)
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
-(APIServer pid=13434)     uvloop.run(run_server(args))
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
-(APIServer pid=13434)     return __asyncio.run(
-(APIServer pid=13434)            ^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-(APIServer pid=13434)     return runner.run(main)
-(APIServer pid=13434)            ^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-(APIServer pid=13434)     return self._loop.run_until_complete(task)
-(APIServer pid=13434)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
-(APIServer pid=13434)     return await main
-(APIServer pid=13434)            ^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
-(APIServer pid=13434)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
-(APIServer pid=13434)     async with build_async_engine_client(
-(APIServer pid=13434)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=13434)     return await anext(self.gen)
-(APIServer pid=13434)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
-(APIServer pid=13434)     async with build_async_engine_client_from_engine_args(
-(APIServer pid=13434)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=13434)     return await anext(self.gen)
-(APIServer pid=13434)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 137, in build_async_engine_client_from_engine_args
-(APIServer pid=13434)     async_llm = AsyncLLM.from_vllm_config(
-(APIServer pid=13434)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 222, in from_vllm_config
-(APIServer pid=13434)     return cls(
-(APIServer pid=13434)            ^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 148, in __init__
-(APIServer pid=13434)     self.engine_core = EngineCoreClient.make_async_mp_client(
-(APIServer pid=13434)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/platform.py", line 224, in _patched_make_async_mp_client
-(APIServer pid=13434)     client = _original(
-(APIServer pid=13434)              ^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 124, in make_async_mp_client
-(APIServer pid=13434)     return AsyncMPClient(*client_args)
-(APIServer pid=13434)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 835, in __init__
-(APIServer pid=13434)     super().__init__(
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 490, in __init__
-(APIServer pid=13434)     with launch_core_engines(vllm_config, executor_class, log_stats) as (
-(APIServer pid=13434)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
-(APIServer pid=13434)     next(self.gen)
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 925, in launch_core_engines
-(APIServer pid=13434)     wait_for_engine_startup(
-(APIServer pid=13434)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 984, in wait_for_engine_startup
-(APIServer pid=13434)     raise RuntimeError(
-(APIServer pid=13434) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': -9}
-/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
-  warnings.warn('resource_tracker: There appear to be %d '
+SERVER NEVER BECAME HEALTHY: llama31_base (long) after 2095s
+(EngineCore_DP0 pid=5366) [INTERNAL_ERROR] [NCC_INLA001] Unhandled exception with message: Allocated memory out of bound {inst__I-203-0:_bind_7016_7014}@SB<0,203104>(128x1024)#Internal DebugInfo: <_bind_7016_7014||[128, 512]> - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=5366) 2026-07-29T18:44:48Z Non-signal exit. Backend exited with code 1 and stderr: [INTERNAL_ERROR] [NCC_INLA001] Unhandled exception with message: Allocated memory out of bound {inst__I-203-0:_bind_7016_7014}@SB<0,203104>(128x1024)#Internal DebugInfo: <_bind_7016_7014||[128, 512]> - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=5366) [libneuronxla 2.2.17544.0+fb9962bf]
+................................................................................................
+Compiler status PASS
+..(EngineCore_DP0 pid=5366) 2026-07-29 18:50:13.000279:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_436581bbb52e34df6b2b+6039ba3f.hlo_module.pb
+...
+Compiler status PASS
+(EngineCore_DP0 pid=5366) 2026-07-29 18:50:29.000564:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_4a39404ca189c64cf25d+0efe2407.hlo_module.pb
+..
+Compiler status PASS
+(EngineCore_DP0 pid=5366) 2026-07-29 18:50:38.000795:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_241fa06cb2218cf7f83b+60fe6028.hlo_module.pb
+...
+Compiler status PASS
+(EngineCore_DP0 pid=5366) 2026-07-29 18:50:56.000828:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_a00be5afe0a34d5416fe+8158b150.hlo_module.pb
+........
+Compiler status PASS
+(EngineCore_DP0 pid=5366) 2026-07-29 18:52:20.000009:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_d8bac7468e43ee18aada+1ffa51e3.hlo_module.pb
+.
+Compiler status PASS
+(EngineCore_DP0 pid=5366) 2026-07-29 18:52:33.000963:  5366  [INFO]: Compilation Successfully Completed for model.MODULE_d6796c78e1a1ecf634ad+087491b8.hlo_module.pb
+(APIServer pid=5327) Traceback (most recent call last):
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
+(APIServer pid=5327)     sys.exit(main())
+(APIServer pid=5327)              ^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
+(APIServer pid=5327)     args.dispatch_function(args)
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
+(APIServer pid=5327)     uvloop.run(run_server(args))
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=5327)     return __asyncio.run(
+(APIServer pid=5327)            ^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=5327)     return runner.run(main)
+(APIServer pid=5327)            ^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=5327)     return self._loop.run_until_complete(task)
+(APIServer pid=5327)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=5327)     return await main
+(APIServer pid=5327)            ^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
+(APIServer pid=5327)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
+(APIServer pid=5327)     async with build_async_engine_client(
+(APIServer pid=5327)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=5327)     return await anext(self.gen)
+(APIServer pid=5327)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
+(APIServer pid=5327)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=5327)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=5327)     return await anext(self.gen)
+(APIServer pid=5327)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 137, in build_async_engine_client_from_engine_args
+(APIServer pid=5327)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=5327)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 222, in from_vllm_config
+(APIServer pid=5327)     return cls(
+(APIServer pid=5327)            ^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 148, in __init__
+(APIServer pid=5327)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=5327)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/platform.py", line 224, in _patched_make_async_mp_client
+(APIServer pid=5327)     client = _original(
+(APIServer pid=5327)              ^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 124, in make_async_mp_client
+(APIServer pid=5327)     return AsyncMPClient(*client_args)
+(APIServer pid=5327)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 835, in __init__
+(APIServer pid=5327)     super().__init__(
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 490, in __init__
+(APIServer pid=5327)     with launch_core_engines(vllm_config, executor_class, log_stats) as (
+(APIServer pid=5327)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=5327)     next(self.gen)
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 925, in launch_core_engines
+(APIServer pid=5327)     wait_for_engine_startup(
+(APIServer pid=5327)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 984, in wait_for_engine_startup
+(APIServer pid=5327)     raise RuntimeError(
+(APIServer pid=5327) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}
 failure recorded: /opt/np/repo/inf2/results/serve/llama31_base_long/load_failure.json
 --- boot failed; load_failure.json recorded in /opt/np/repo/inf2/results/serve/llama31_base_long ---

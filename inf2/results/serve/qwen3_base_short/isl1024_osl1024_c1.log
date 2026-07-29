@@ -1,0 +1,9 @@
+  request 1 FAILED: stream produced no tokens
+  request 2 FAILED: stream produced no tokens
+  request 3 FAILED: stream produced no tokens
+  request 4 FAILED: stream produced no tokens
+  request 5 FAILED: stream produced no tokens
+  request 6 FAILED: stream produced no tokens
+  request 7 FAILED: stream produced no tokens
+# fallback_client  model=Qwen/Qwen3-8B  prompts=8 conc=1  isl=1024  osl=1024 seed=42
+out_tok/s=0.7  ttft_p50=1297.935ms  p99=1297.935ms  tpot_p50=Nonems  completed=1/8  duration=1.437s -> /opt/np/repo/inf2/results/serve/qwen3_base_short/isl1024_osl1024_c1.json

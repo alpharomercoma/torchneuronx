@@ -1,0 +1,16 @@
+{
+  "lane": "precompile",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "exit_code": 0,
+  "wall_s": 1497.56,
+  "cache_dir": "/opt/np/cache/neuron-compile-cache",
+  "cache_dir_size_mb": 322,
+  "cache_dir_size_mb_before": 152,
+  "neff_files_before": 16,
+  "neff_files_after": 22,
+  "graphs_compiled": 6,
+  "cache_hits_note": "Compiled 6 new NEFFs into the cache (was 16, now 22). wall_s is the compile cost lane 4 no longer has to pay. Push the cache with shared/bin/sync_neuron_cache.sh push so a replaced instance never pays it twice.",
+  "numerics_note": "NEURON_EXTRACT_GRAPHS_ONLY=1 -- graphs were traced and compiled but never executed. No loss, gradient or throughput value from this phase is recorded anywhere; the training metrics JSON was written to /tmp/precompile_discard.json and deleted.",
+  "max_steps": 10,
+  "captured": "2026-07-29T17:50:09Z"
+}

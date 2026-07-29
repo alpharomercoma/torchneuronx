@@ -1,0 +1,2 @@
+t_s,gpu_util_pct,mem_used_mib,power_w,temp_c,sclk_mhz,mclk_mhz,util_nc0,util_nc1,host_mem_used_mib
+0.0,,,,,,,,,

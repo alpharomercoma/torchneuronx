@@ -3,30 +3,30 @@
   "logical_cpus": 4,
   "cpu_model": "x86_64",
   "torch": "2.9.1+cu128",
-  "stream_triad_gb_s": 32.0,
+  "stream_triad_gb_s": 33.7,
   "fp32_matmul": [
     {
       "threads": 1,
-      "tflops": 0.1008
+      "tflops": 0.1007
     },
     {
       "threads": 2,
-      "tflops": 0.2034
+      "tflops": 0.1969
     },
     {
       "threads": 4,
-      "tflops": 0.2028
+      "tflops": 0.197
     },
     {
       "threads": 8,
-      "tflops": 0.2063
+      "tflops": 0.2017
     }
   ],
   "tokenizer": {
     "docs": 2000,
     "tokens": 2004000,
-    "seconds": 1.305,
-    "tokens_per_s": 1535585.0
+    "seconds": 1.315,
+    "tokens_per_s": 1523815.9
   },
-  "captured": "2026-07-29T16:48:30Z"
+  "captured": "2026-07-29T17:33:19Z"
 }

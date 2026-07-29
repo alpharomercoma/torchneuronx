@@ -1,68 +1,68 @@
-INFO 07-29 17:07:31 [__init__.py:43] Available plugins for group vllm.platform_plugins:
-INFO 07-29 17:07:31 [__init__.py:45] - neuron -> vllm_neuron:register
-INFO 07-29 17:07:31 [__init__.py:48] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
-INFO 07-29 17:07:31 [__init__.py:212] Platform plugin neuron is activated
-INFO 07-29 17:07:42 [importing.py:44] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
-INFO 07-29 17:07:42 [importing.py:68] Triton not installed or not compatible; certain GPU-related functions will not be available.
-WARNING 07-29 17:07:42 [interface.py:225] Failed to import from vllm._C: ImportError('libcuda.so.1: cannot open shared object file: No such file or directory')
-WARNING 07-29 17:07:49 [argparse_utils.py:195] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in v0.13.
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287] 
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287]        █     █     █▄   ▄█
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.16.0
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287]   █▄█▀ █     █     █     █  model   /opt/np/models/llama31-8b-dolly-merged
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:287] 
-(APIServer pid=14034) INFO 07-29 17:07:49 [utils.py:223] non-default args: {'model_tag': '/opt/np/models/llama31-8b-dolly-merged', 'api_server_count': 1, 'model': '/opt/np/models/llama31-8b-dolly-merged', 'max_model_len': 2048, 'tensor_parallel_size': 2, 'enable_prefix_caching': False, 'max_num_seqs': 32}
-(APIServer pid=14034) Traceback (most recent call last):
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
-(APIServer pid=14034)     sys.exit(main())
-(APIServer pid=14034)              ^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
-(APIServer pid=14034)     args.dispatch_function(args)
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
-(APIServer pid=14034)     uvloop.run(run_server(args))
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
-(APIServer pid=14034)     return __asyncio.run(
-(APIServer pid=14034)            ^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-(APIServer pid=14034)     return runner.run(main)
-(APIServer pid=14034)            ^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-(APIServer pid=14034)     return self._loop.run_until_complete(task)
-(APIServer pid=14034)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
-(APIServer pid=14034)     return await main
-(APIServer pid=14034)            ^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
-(APIServer pid=14034)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
-(APIServer pid=14034)     async with build_async_engine_client(
-(APIServer pid=14034)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=14034)     return await anext(self.gen)
-(APIServer pid=14034)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
-(APIServer pid=14034)     async with build_async_engine_client_from_engine_args(
-(APIServer pid=14034)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=14034)     return await anext(self.gen)
-(APIServer pid=14034)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 122, in build_async_engine_client_from_engine_args
-(APIServer pid=14034)     vllm_config = engine_args.create_engine_config(usage_context=usage_context)
-(APIServer pid=14034)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1410, in create_engine_config
-(APIServer pid=14034)     model_config = self.create_model_config()
-(APIServer pid=14034)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1264, in create_model_config
-(APIServer pid=14034)     return ModelConfig(
-(APIServer pid=14034)            ^^^^^^^^^^^^
-(APIServer pid=14034)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
-(APIServer pid=14034)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
-(APIServer pid=14034) pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
-(APIServer pid=14034)   Value error, Invalid repository ID or local directory specified: '/opt/np/models/llama31-8b-dolly-merged'.
-(APIServer pid=14034) Please verify the following requirements:
-(APIServer pid=14034) 1. Provide a valid Hugging Face repository ID.
-(APIServer pid=14034) 2. Specify a local directory that contains a recognized configuration file.
-(APIServer pid=14034)    - For Hugging Face models: ensure the presence of a 'config.json'.
-(APIServer pid=14034)    - For Mistral models: ensure the presence of a 'params.json'.
-(APIServer pid=14034)  [type=value_error, input_value=ArgsKwargs((), {'model': ...rocessor_plugin': None}), input_type=ArgsKwargs]
-(APIServer pid=14034)     For further information visit https://errors.pydantic.dev/2.13/v/value_error
+INFO 07-29 20:24:28 [__init__.py:43] Available plugins for group vllm.platform_plugins:
+INFO 07-29 20:24:28 [__init__.py:45] - neuron -> vllm_neuron:register
+INFO 07-29 20:24:28 [__init__.py:48] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 07-29 20:24:28 [__init__.py:212] Platform plugin neuron is activated
+INFO 07-29 20:24:40 [importing.py:44] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
+INFO 07-29 20:24:40 [importing.py:68] Triton not installed or not compatible; certain GPU-related functions will not be available.
+WARNING 07-29 20:24:40 [interface.py:225] Failed to import from vllm._C: ImportError('libcuda.so.1: cannot open shared object file: No such file or directory')
+WARNING 07-29 20:24:47 [argparse_utils.py:195] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in v0.13.
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287] 
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]        █     █     █▄   ▄█
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.16.0
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]   █▄█▀ █     █     █     █  model   /opt/np/models/llama31-8b-dolly-merged
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287] 
+(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:223] non-default args: {'model_tag': '/opt/np/models/llama31-8b-dolly-merged', 'api_server_count': 1, 'model': '/opt/np/models/llama31-8b-dolly-merged', 'max_model_len': 2048, 'tensor_parallel_size': 2, 'enable_prefix_caching': False, 'max_num_seqs': 32}
+(APIServer pid=142379) Traceback (most recent call last):
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
+(APIServer pid=142379)     sys.exit(main())
+(APIServer pid=142379)              ^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
+(APIServer pid=142379)     args.dispatch_function(args)
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
+(APIServer pid=142379)     uvloop.run(run_server(args))
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=142379)     return __asyncio.run(
+(APIServer pid=142379)            ^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=142379)     return runner.run(main)
+(APIServer pid=142379)            ^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=142379)     return self._loop.run_until_complete(task)
+(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=142379)     return await main
+(APIServer pid=142379)            ^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
+(APIServer pid=142379)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
+(APIServer pid=142379)     async with build_async_engine_client(
+(APIServer pid=142379)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=142379)     return await anext(self.gen)
+(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
+(APIServer pid=142379)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=142379)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=142379)     return await anext(self.gen)
+(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 122, in build_async_engine_client_from_engine_args
+(APIServer pid=142379)     vllm_config = engine_args.create_engine_config(usage_context=usage_context)
+(APIServer pid=142379)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1410, in create_engine_config
+(APIServer pid=142379)     model_config = self.create_model_config()
+(APIServer pid=142379)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1264, in create_model_config
+(APIServer pid=142379)     return ModelConfig(
+(APIServer pid=142379)            ^^^^^^^^^^^^
+(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
+(APIServer pid=142379)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
+(APIServer pid=142379) pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
+(APIServer pid=142379)   Value error, Invalid repository ID or local directory specified: '/opt/np/models/llama31-8b-dolly-merged'.
+(APIServer pid=142379) Please verify the following requirements:
+(APIServer pid=142379) 1. Provide a valid Hugging Face repository ID.
+(APIServer pid=142379) 2. Specify a local directory that contains a recognized configuration file.
+(APIServer pid=142379)    - For Hugging Face models: ensure the presence of a 'config.json'.
+(APIServer pid=142379)    - For Mistral models: ensure the presence of a 'params.json'.
+(APIServer pid=142379)  [type=value_error, input_value=ArgsKwargs((), {'model': ...rocessor_plugin': None}), input_type=ArgsKwargs]
+(APIServer pid=142379)     For further information visit https://errors.pydantic.dev/2.13/v/value_error

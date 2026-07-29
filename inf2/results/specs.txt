@@ -1,6 +1,6 @@
 === captured ===
-2026-07-29T16:44:18Z
-hostname: ip-172-31-19-184
+2026-07-29T17:28:35Z
+hostname: ip-172-31-29-204
 
 === os ===
 Ubuntu 24.04.4 LTS
@@ -20,22 +20,22 @@ NUMA node(s): 1
 
 === memory ===
                total        used        free      shared  buff/cache   available
-Mem:              15           0          13           0           1          14
+Mem:              15           0          13           0           0          14
 numa_balancing: 0
 
 === storage ===
 NAME     SIZE MODEL
-loop0     74M 
-loop1   50.1M 
-loop2   28.4M 
+loop0   50.1M 
+loop1   28.4M 
+loop2     74M 
 nvme0n1  500G Amazon Elastic Block Store
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/root       484G   26G  458G   6% /
+/dev/root       484G   74G  410G  16% /
 
 === accelerator ===
 -- vendor: AWS Neuron
 instance-type: inf2.xlarge
-instance-id: i-014d06d692586d73b
+instance-id: i-056c306408a85d422
 +--------+--------+----------+--------+--------------+----------+------+
 | NEURON | NEURON |  NEURON  | NEURON |     PCI      |   CPU    | NUMA |
 | DEVICE | CORES  | CORE IDS | MEMORY |     BDF      | AFFINITY | NODE |
@@ -46,7 +46,7 @@ instance-id: i-014d06d692586d73b
 [
     {
         "instance_type": "inf2.xlarge",
-        "instance_id": "i-014d06d692586d73b",
+        "instance_id": "i-056c306408a85d422",
         "neuron_device": 0,
         "bdf": "0000:00:1f.0",
         "cpu_affinity": "0-3",
@@ -61,7 +61,7 @@ instance-id: i-014d06d692586d73b
         "neuron_processes": []
     }
 ]-- /dev/neuron* nodes:
-crw-rw-rw- 1 root root 237, 0 Jul 29 16:40 /dev/neuron0
+crw-rw-rw- 1 root root 237, 0 Jul 29 17:27 /dev/neuron0
 
 === accelerator stack ===
 -- driver/runtime packages:
@@ -85,4 +85,4 @@ vllm                              0.16.0
 
 === neuron compile cache ===
 NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
-cache dir absent
+46M	/opt/np/cache/neuron-compile-cache
