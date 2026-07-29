@@ -31,6 +31,11 @@ sudo apt-get install -y linux-headers-$(uname -r) aws-neuronx-dkms=2.*
 | lane hangs, `neuron-ls` shows cores busy | dead process still holds NeuronCores | `pkill -f sft_lora; sleep 5; neuron-ls` until cores free |
 | host OOM-killer during 8B load/merge | 32 GiB host RAM | 64 GiB swapfile on NVMe `/scratch` (user-data asserts it each boot); check `free -h` before lanes 4–6 |
 | precompile "loss" looks plausible | `neuron_parallel_compile` runs garbage numerics by design | METHODOLOGY rule 4: never record it |
+| `NeuronSFTTrainer` missing | DLAMI training venv ships torch-neuronx but NOT optimum-neuron/peft/trl | `pip install optimum-neuron==0.4.3 trl==0.24.0 peft==0.17.0 datasets` into the venv (no `[neuronx]` extra — see below) |
+| `ImportError: clone_chat_template from trl.models` at trainer import | unpinned `pip install trl` grabs trl 1.x; optimum-neuron 0.4.3 needs its declared training pins | exactly `trl==0.24.0 peft==0.17.0` (read them from the wheel's METADATA `extra == "training"` lines, not from memory) |
+| pip backtracks to ancient optimum-neuron, numpy 1.25 source-build explodes on py3.12 | `optimum-neuron[neuronx]` extra pins Neuron packages that conflict with the DLAMI's newer stack | install **without** the extra; the DLAMI already provides torch-neuronx/neuronx-cc |
+| `neuronx-cc requires numpy>=2` vs `optimum-neuron requires numpy<=1.26` | genuine pin conflict in 0.4.3 | keep **numpy>=2** (the compiler wins); optimum-neuron 0.4.3 imports and runs fine under numpy 2.5, pip's warning notwithstanding — measured, not assumed |
+| `FileNotFoundError: 'libneuronpjrt-path'` at import | XLA runtime shells out to a venv-bin helper; bare `$VENV/bin/python` misses it | `export PATH=$VENV/bin:$PATH` (or activate the venv) before anything imports torch-neuronx |
 
 ## Verified state
 
