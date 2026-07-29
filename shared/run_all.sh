@@ -130,7 +130,7 @@ elif [ "$BOX" = "inf2" ]; then
 
   # ------------------------------------------------- lane 2: plumbing smoke
   step "lane 2: serving smoke (TinyLlama-1.1B, one completion)"
-  if have "$RESULTS_DIR/serve/smoke_tinyllama/smoke.json"; then
+  if have "$RESULTS_DIR/serve/smoke_tinyllama_smoke/isl128_osl128_c1.json"; then
     echo "skip smoke (exists)"
   else
     bash "$BENCH_DIR/shared/serve/bench_serve.sh" smoke_tinyllama smoke \

@@ -347,6 +347,37 @@ def wrap_checkpoint_funcs(model, is_tensor):
     return wrapped
 
 
+def patch_optimum_modeling_checkpoint(is_tensor):
+    """Shim the module-global `checkpoint` in optimum-neuron's modeling files.
+
+    Their custom decoders do `from torch_xla.utils.checkpoint import
+    checkpoint` at module scope and call it with layer kwargs (use_cache,
+    reduction) -- torch-xla 2.9 made checkpoint() reject all kwargs, so the
+    vendor path itself crashes (measured on Llama AND Qwen3, 2026-07-30).
+    Patching the per-module _gradient_checkpointing_func attr does nothing
+    for these call sites; the imported symbol in each modeling module is the
+    only interposition point. Returns the list of patched module basenames.
+    """
+    import importlib
+    import pkgutil
+
+    import optimum.neuron.models.training as training_models
+    patched = []
+    for info in pkgutil.walk_packages(training_models.__path__,
+                                      training_models.__name__ + "."):
+        if "modeling" not in info.name.rsplit(".", 1)[-1]:
+            continue
+        try:
+            mod = importlib.import_module(info.name)
+        except Exception:
+            continue
+        fn = getattr(mod, "checkpoint", None)
+        if callable(fn) and not getattr(fn, "_np_kwarg_shim", False):
+            mod.checkpoint = make_kwarg_tolerant(fn, is_tensor)
+            patched.append(info.name.rsplit(".", 1)[-1])
+    return patched
+
+
 def tokens_per_optimizer_step(seq_len, micro_batch, grad_accum, dp_size):
     """Tokens consumed between optimizer steps.
 
@@ -557,13 +588,17 @@ def run(args, cache_dir):
         warmup_steps=DEFAULT_WARMUP_STEPS,
         lr_scheduler_type="constant",
         bf16=True,
-        # Activation recomputation is enabled MANUALLY after the PEFT wrap
-        # (see the gradient-checkpointing block below), never through this
-        # flag: letting the trainer do it routes transformers 4.57's layer
-        # kwargs (use_cache, reduction) into torch_xla's reentrant checkpoint,
-        # which rejects any kwarg -- both 8B lanes died on exactly that
-        # (ValueError: Unexpected keyword arguments, measured 2026-07-30).
-        gradient_checkpointing=False,
+        # Activation recomputation, the vendor-intended way (this also turns
+        # on optimum-neuron's trn_config MLP recompute). It only survives
+        # because patch_optimum_modeling_checkpoint() shims the torch_xla
+        # checkpoint symbol their modeling calls with layer kwargs -- see
+        # that helper's docstring for the measured failure.
+        gradient_checkpointing=not args.no_gradient_checkpointing,
+        # optimum-neuron 0.4.3 crashes on the None default here
+        # (sft_trainer.py:263); reentrant is the XLA-supported variant.
+        gradient_checkpointing_kwargs=(
+            {"use_reentrant": True}
+            if not args.no_gradient_checkpointing else None),
         # THE TP KNOB. Verified against optimum-neuron's NeuronTrainingArguments
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
@@ -653,23 +688,20 @@ def run(args, cache_dir):
     trainer = build_trainer(NeuronSFTTrainer, sft_config, model, lora_config,
                             tokenizer, dataset, args, metrics_cb)
 
-    # Activation recomputation, done by hand (see the training-args comment).
-    # Order matters: enable AFTER the PEFT wrap so the hooks land on the
-    # wrapped modules, then shim every bound checkpoint function so layer
-    # kwargs are partial-bound instead of hitting torch_xla's kwarg rejection.
+    # The checkpoint-kwargs shim MUST be live before the first forward: patch
+    # the imported symbol in every optimum-neuron modeling module, plus any
+    # per-module bindings transformers created (belt and suspenders).
     if not args.no_gradient_checkpointing:
-        if hasattr(trainer.model, "enable_input_require_grads"):
-            trainer.model.enable_input_require_grads()
-        trainer.model.gradient_checkpointing_enable(
-            gradient_checkpointing_kwargs={"use_reentrant": True})
+        patched = patch_optimum_modeling_checkpoint(torch.is_tensor)
         n_wrapped = wrap_checkpoint_funcs(trainer.model, torch.is_tensor)
-        if n_wrapped == 0:
+        if not patched:
             raise RuntimeError(
-                "gradient checkpointing was requested but no module carries "
-                "_gradient_checkpointing_func -- refusing to run: an 8B model "
-                "without recompute dies in neuronx-cc with NCC_EOOM001")
-        say(f"  grad ckpt shim     : {n_wrapped} modules wrapped "
-            "(non-tensor kwargs partial-bound)")
+                "gradient checkpointing requested but no optimum-neuron "
+                "modeling module exposes a patchable `checkpoint` symbol -- "
+                "refusing to run: an 8B model without recompute dies in "
+                "neuronx-cc with NCC_EOOM001")
+        say(f"  grad ckpt shim     : module globals {patched}; "
+            f"{n_wrapped} bound funcs wrapped")
 
     # Recount AFTER the trainer wrapped the model in PEFT: the pre-wrap count
     # sees every base parameter as trainable (the first smoke run reported
