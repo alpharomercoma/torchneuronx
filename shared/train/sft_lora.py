@@ -86,6 +86,7 @@ laptop (tests/test_train_scripts.py). Heavy imports live inside functions.
 """
 
 import argparse
+import functools
 import importlib.metadata
 import json
 import os
@@ -302,6 +303,50 @@ def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
     }
 
 
+def make_kwarg_tolerant(checkpoint_fn, is_tensor):
+    """Wrap a reentrant checkpoint function so non-tensor kwargs survive.
+
+    torch_xla.utils.checkpoint.checkpoint (reentrant, the only variant the
+    XLA backend supports) rejects every keyword argument, but transformers'
+    GradientCheckpointingLayer forwards layer-config kwargs (use_cache,
+    reduction, ...) straight through. Those kwargs are closure state, not
+    autograd inputs, so binding them into the function with functools.partial
+    is semantically identical -- tensors stay positional so autograd still
+    sees them. Pure aside from the wrapped call; unit-tested with a fake
+    is_tensor predicate.
+    """
+    if getattr(checkpoint_fn, "_np_kwarg_shim", False):
+        return checkpoint_fn
+
+    @functools.wraps(checkpoint_fn)
+    def tolerant(function, *args, **kwargs):
+        non_tensor = {k: v for k, v in kwargs.items() if not is_tensor(v)}
+        if non_tensor:
+            function = functools.partial(function, **non_tensor)
+            kwargs = {k: v for k, v in kwargs.items() if is_tensor(v)}
+        return checkpoint_fn(function, *args, **kwargs)
+
+    tolerant._np_kwarg_shim = True
+    return tolerant
+
+
+def wrap_checkpoint_funcs(model, is_tensor):
+    """Shim every module's bound _gradient_checkpointing_func. Returns count.
+
+    transformers stows the checkpoint callable per-module when
+    gradient_checkpointing_enable() runs, so wrapping must happen AFTER that
+    call and catches every binding path optimum-neuron uses.
+    """
+    wrapped = 0
+    for module in model.modules():
+        fn = getattr(module, "_gradient_checkpointing_func", None)
+        if fn is not None and not getattr(fn, "_np_kwarg_shim", False):
+            module._gradient_checkpointing_func = make_kwarg_tolerant(
+                fn, is_tensor)
+            wrapped += 1
+    return wrapped
+
+
 def tokens_per_optimizer_step(seq_len, micro_batch, grad_accum, dp_size):
     """Tokens consumed between optimizer steps.
 
@@ -512,19 +557,13 @@ def run(args, cache_dir):
         warmup_steps=DEFAULT_WARMUP_STEPS,
         lr_scheduler_type="constant",
         bf16=True,
-        # Activation recomputation. NOT optional at 8B on this chip: each
-        # NeuronCore has 16 GB of HBM, and the first Qwen3-8B attempt without
-        # it died in neuronx-cc with NCC_EOOM001 -- 23.72 GB peak, of which
-        # 14.77 GB was intermediate tensors (measured 2026-07-29, recorded in
-        # trn1 results). Recompute trades those intermediates for an extra
-        # forward pass; the MFU accounting below charges for it explicitly.
-        gradient_checkpointing=not args.no_gradient_checkpointing,
-        # optimum-neuron 0.4.3 asserts on this dict's use_reentrant key and
-        # crashes on the None default (sft_trainer.py:263, measured 2026-07-30).
-        # Reentrant checkpointing is the XLA-compatible variant.
-        gradient_checkpointing_kwargs=(
-            {"use_reentrant": True}
-            if not args.no_gradient_checkpointing else None),
+        # Activation recomputation is enabled MANUALLY after the PEFT wrap
+        # (see the gradient-checkpointing block below), never through this
+        # flag: letting the trainer do it routes transformers 4.57's layer
+        # kwargs (use_cache, reduction) into torch_xla's reentrant checkpoint,
+        # which rejects any kwarg -- both 8B lanes died on exactly that
+        # (ValueError: Unexpected keyword arguments, measured 2026-07-30).
+        gradient_checkpointing=False,
         # THE TP KNOB. Verified against optimum-neuron's NeuronTrainingArguments
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
@@ -613,6 +652,24 @@ def run(args, cache_dir):
     metrics_cb = StepMetrics()
     trainer = build_trainer(NeuronSFTTrainer, sft_config, model, lora_config,
                             tokenizer, dataset, args, metrics_cb)
+
+    # Activation recomputation, done by hand (see the training-args comment).
+    # Order matters: enable AFTER the PEFT wrap so the hooks land on the
+    # wrapped modules, then shim every bound checkpoint function so layer
+    # kwargs are partial-bound instead of hitting torch_xla's kwarg rejection.
+    if not args.no_gradient_checkpointing:
+        if hasattr(trainer.model, "enable_input_require_grads"):
+            trainer.model.enable_input_require_grads()
+        trainer.model.gradient_checkpointing_enable(
+            gradient_checkpointing_kwargs={"use_reentrant": True})
+        n_wrapped = wrap_checkpoint_funcs(trainer.model, torch.is_tensor)
+        if n_wrapped == 0:
+            raise RuntimeError(
+                "gradient checkpointing was requested but no module carries "
+                "_gradient_checkpointing_func -- refusing to run: an 8B model "
+                "without recompute dies in neuronx-cc with NCC_EOOM001")
+        say(f"  grad ckpt shim     : {n_wrapped} modules wrapped "
+            "(non-tensor kwargs partial-bound)")
 
     # Recount AFTER the trainer wrapped the model in PEFT: the pre-wrap count
     # sees every base parameter as trainable (the first smoke run reported

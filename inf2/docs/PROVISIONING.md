@@ -25,6 +25,7 @@ here too. This doc adds only what is different on the inference box.
 | Symptom | Cause | Fix |
 |---|---|---|
 | every boot dies: `Engine core initialization failed` → worker traceback ends `ValueError: Unsupported instance family: inf2. Supported: trn2, trn3pd, trn3pds` | vllm-neuron 0.21 unconditionally maps EFA NICs; inf2 has no EFA and the mapper only knows Trn2/Trn3 | `export NEURON_SKIP_EFA_AFFINITY=1` (plugin's own flag; launch_vllm.sh sets it). The real error is in the WORKER lines of boot.server.log — the APIServer's "Failed core proc(s): {}" line is a red herring |
+| past the EFA skip, compile dies: `nki/isa/_copy.py: tensor_copy does not support engine.scalar on NeuronCore-v2 (Trn1/Inf2)` | **the vLLM 0.21 DLAMI's kernels target NeuronCore-v3 (Trn2+) and assert on Inf2 silicon** — this DLAMI generation cannot serve inf2 at all | deploy the previous line: `cdk deploy NeuronPipelinesInferentia -c inf2AmiId=ami-035c945d557065665` (vLLM 0.16, Ubuntu 24.04, 20260715 — last generation before the Trn2-only switch on 20260721). Measured 2026-07-30 |
 | server boots then first request stalls minutes | warmup/compile on first shapes | the warm lane exists for this; never benchmark the first request |
 | boot OOMs at KV allocation | max_num_seqs × max_model_len over HBM budget | use the declared configs only (short: 2048×32, long: 10240×8) — METHODOLOGY rule 6 |
 | client-side ceiling at concurrency 32 | 4 vCPU host tokenization | cpu lane bounds this; report it as host limit, not chip limit |

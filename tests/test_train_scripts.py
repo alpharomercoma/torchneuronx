@@ -45,3 +45,26 @@ def test_mark_warmup_by_position_and_dolly_shape():
     roles = [m["role"] for m in msgs]
     assert roles[-2:] == ["user", "assistant"]
     assert msgs[-1]["content"] == "A summary."
+
+
+def test_kwarg_tolerant_shim_partial_binds_non_tensors():
+    calls = {}
+
+    def fake_checkpoint(function, *args, **kwargs):
+        calls["args"] = args
+        calls["kwargs"] = kwargs
+        return function(*args)
+
+    def layer(x, y, use_cache=None, reduction="mean"):
+        calls["layer"] = (x, y, use_cache, reduction)
+        return "out"
+
+    is_tensor = lambda v: isinstance(v, str) and v.startswith("T")  # noqa: E731
+    tolerant = sft_lora.make_kwarg_tolerant(fake_checkpoint, is_tensor)
+
+    out = tolerant(layer, "T1", "T2", use_cache=False, reduction="sum")
+    assert out == "out"
+    assert calls["kwargs"] == {}                       # nothing non-tensor leaks
+    assert calls["layer"] == ("T1", "T2", False, "sum")  # semantics preserved
+    # idempotent: wrapping twice returns the same shim
+    assert sft_lora.make_kwarg_tolerant(tolerant, is_tensor) is tolerant
