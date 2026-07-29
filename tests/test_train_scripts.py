@@ -68,3 +68,23 @@ def test_kwarg_tolerant_shim_partial_binds_non_tensors():
     assert calls["layer"] == ("T1", "T2", False, "sum")  # semantics preserved
     # idempotent: wrapping twice returns the same shim
     assert sft_lora.make_kwarg_tolerant(tolerant, is_tensor) is tolerant
+
+
+def test_patch_walks_sys_modules(monkeypatch):
+    import sys as _sys
+    import types
+
+    def orig_ckpt(fn, *a, **kw):
+        return fn(*a)
+
+    fake = types.ModuleType("optimum.neuron.models.training.llama.modeling_llama")
+    fake.checkpoint = orig_ckpt
+    monkeypatch.setitem(_sys.modules,
+                        "optimum.neuron.models.training.llama.modeling_llama",
+                        fake)
+    patched = sft_lora.patch_optimum_modeling_checkpoint(lambda v: False)
+    assert "modeling_llama" in patched
+    assert getattr(fake.checkpoint, "_np_kwarg_shim", False)
+    # second call: already shimmed, not re-patched
+    assert "modeling_llama" not in sft_lora.patch_optimum_modeling_checkpoint(
+        lambda v: False)

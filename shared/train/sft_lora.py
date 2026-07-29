@@ -356,25 +356,20 @@ def patch_optimum_modeling_checkpoint(is_tensor):
     vendor path itself crashes (measured on Llama AND Qwen3, 2026-07-30).
     Patching the per-module _gradient_checkpointing_func attr does nothing
     for these call sites; the imported symbol in each modeling module is the
-    only interposition point. Returns the list of patched module basenames.
+    only interposition point. Walks sys.modules rather than pkgutil: by the
+    time this runs the active model's modeling module is guaranteed imported,
+    whereas pkgutil.walk_packages silently skipped the llama subpackage
+    (measured: patched list was [granite, utils] while modeling_llama kept
+    crashing). Returns the list of patched module basenames.
     """
-    import importlib
-    import pkgutil
-
-    import optimum.neuron.models.training as training_models
     patched = []
-    for info in pkgutil.walk_packages(training_models.__path__,
-                                      training_models.__name__ + "."):
-        if "modeling" not in info.name.rsplit(".", 1)[-1]:
+    for name, mod in list(sys.modules.items()):
+        if not name.startswith("optimum.neuron.models.training"):
             continue
-        try:
-            mod = importlib.import_module(info.name)
-        except Exception:
-            continue
-        fn = getattr(mod, "checkpoint", None)
+        fn = getattr(mod, "checkpoint", None) if mod is not None else None
         if callable(fn) and not getattr(fn, "_np_kwarg_shim", False):
             mod.checkpoint = make_kwarg_tolerant(fn, is_tensor)
-            patched.append(info.name.rsplit(".", 1)[-1])
+            patched.append(name.rsplit(".", 1)[-1])
     return patched
 
 
@@ -694,12 +689,19 @@ def run(args, cache_dir):
     if not args.no_gradient_checkpointing:
         patched = patch_optimum_modeling_checkpoint(torch.is_tensor)
         n_wrapped = wrap_checkpoint_funcs(trainer.model, torch.is_tensor)
-        if not patched:
+        # The ACTIVE architecture's modeling module must be among the patched
+        # (or already-shimmed) set -- a generic "something was patched" check
+        # let a llama run through with only granite patched.
+        arch_mods = [n for n, m in sys.modules.items()
+                     if n.startswith("optimum.neuron.models.training")
+                     and getattr(m, "checkpoint", None) is not None
+                     and not getattr(m.checkpoint, "_np_kwarg_shim", False)]
+        if arch_mods:
             raise RuntimeError(
-                "gradient checkpointing requested but no optimum-neuron "
-                "modeling module exposes a patchable `checkpoint` symbol -- "
-                "refusing to run: an 8B model without recompute dies in "
-                "neuronx-cc with NCC_EOOM001")
+                "gradient checkpointing requested but these loaded modeling "
+                f"modules still hold an unshimmed checkpoint: {arch_mods} -- "
+                "refusing to run: the forward would die on torch-xla's "
+                "kwarg rejection, or worse, NCC_EOOM001 without recompute")
         say(f"  grad ckpt shim     : module globals {patched}; "
             f"{n_wrapped} bound funcs wrapped")
 
