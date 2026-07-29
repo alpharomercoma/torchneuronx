@@ -1,0 +1,41 @@
+{
+  "vpc-provider:account=600627330911:filter.isDefault=true:region=us-west-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0f665b20beca92415",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "ownerAccountId": "600627330911",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-096cd59c7f811dd84",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "us-west-2a",
+            "routeTableId": "rtb-0e5bd1e5ea5c2669a"
+          },
+          {
+            "subnetId": "subnet-0004804fe13fb126e",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "us-west-2b",
+            "routeTableId": "rtb-0e5bd1e5ea5c2669a"
+          },
+          {
+            "subnetId": "subnet-018648dcd16f5de81",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "us-west-2c",
+            "routeTableId": "rtb-0e5bd1e5ea5c2669a"
+          },
+          {
+            "subnetId": "subnet-04ef3320c95cf5b21",
+            "cidr": "172.31.48.0/20",
+            "availabilityZone": "us-west-2d",
+            "routeTableId": "rtb-0e5bd1e5ea5c2669a"
+          }
+        ]
+      }
+    ]
+  },
+  "ami:account=600627330911:filters.image-type.0=machine:filters.name.0=Deep Learning AMI Neuron PyTorch Inference vLLM*Ubuntu 24.04*:filters.state.0=available:owners.0=amazon:region=us-west-2": "ami-08cb42b2830513a38"
+}
