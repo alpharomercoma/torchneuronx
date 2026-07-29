@@ -72,7 +72,7 @@ Llama 3.1 8B: 32 layers × 8 KV heads × 128 head-dim × 2 (K+V) × 2 bytes =
 ~12–14 GiB for KV, and the NxD Inference backend preallocates approximately
 `max_num_seqs × max_model_len`. One server config therefore cannot cover both
 short-context/high-concurrency and long-context lanes; there are two configs
-per model (A: 2048 ctx × 32 seqs, B: 10240 ctx × 8 seqs), each a separate
+per model (A: 2048 ctx × 32 seqs, B: 9216 ctx × 8 seqs — exactly the max the long shapes need; 10240 crossed an internal neuronx-cc bound-check crash, NCC_INLA001), each a separate
 compile, both warmed. The concurrency grid tops out at 32 — not 256 as in the
 GPU study — because beyond the resident-sequence bound the client would be
 measuring its own queue, not the accelerator. Every sweep directory carries a

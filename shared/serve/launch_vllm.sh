@@ -141,7 +141,7 @@ esac
 # short-context/high-concurrency and long-context on 32 GB of HBM.
 case "$CONFIG" in
   short) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=32 ;;
-  long)  MAX_MODEL_LEN=10240; MAX_NUM_SEQS=8  ;;
+  long)  MAX_MODEL_LEN=9216;  MAX_NUM_SEQS=8  ;;  # exactly 1024+8192; 10240 died in NCC_INLA001 (internal compiler bound-check, 2026-07-29)
   smoke) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=4  ;;
   *) echo "unknown config: $CONFIG (want short|long|smoke)" >&2; exit 2 ;;
 esac
