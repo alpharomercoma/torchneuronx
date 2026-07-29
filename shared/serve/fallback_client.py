@@ -46,8 +46,13 @@ PCTS = (50, 90, 99)
 
 
 def build_prompt(input_len, seed):
+    # Overprovision by 32 words: the request pins the exact prompt length via
+    # truncate_prompt_tokens, so the text only has to be LONGER than the
+    # target. Without truncation the first sweep failed on every request with
+    # HTTP 400 "1025 input tokens" -- 1024 words tokenized to 1024 + BOS
+    # (measured 2026-07-30). One token over the window, all points dead.
     rng = random.Random(seed)
-    return " ".join(rng.choice(WORDS) for _ in range(max(1, input_len)))
+    return " ".join(rng.choice(WORDS) for _ in range(max(1, input_len) + 32))
 
 
 def pct(sorted_vals, p):
@@ -108,6 +113,11 @@ class Bench:
             "temperature": 0.0,
             "seed": self.args.seed,
             "ignore_eos": True,
+            # vLLM extension: server-side truncation to EXACTLY input_len
+            # tokens, BOS included -- makes the reported ISL exact rather
+            # than approximate, and keeps prompt+max_tokens inside
+            # max_model_len by construction.
+            "truncate_prompt_tokens": self.args.input_len,
             "stream": True,
         })
         self._track(+1)
