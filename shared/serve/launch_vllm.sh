@@ -129,6 +129,12 @@ case "$MODEL_KEY" in
     fi ;;
   qwen3_base)
     MODEL_ID="Qwen/Qwen3-8B" ;;
+  mistral7b)
+    MODEL_ID="mistralai/Mistral-7B-Instruct-v0.3" ;;
+  qwen25_7b)
+    # RAG LLM-ladder rung 2: qwen2 arch is a different NxDI path than the
+    # qwen3 that crashed at generation -- all-Qwen stays possible via 2.5.
+    MODEL_ID="Qwen/Qwen2.5-7B-Instruct" ;;
   smoke_tinyllama)
     MODEL_ID="TinyLlama/TinyLlama-1.1B-Chat-v1.0" ;;
   *)

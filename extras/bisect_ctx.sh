@@ -13,7 +13,7 @@ for LEN in ${BISECT_LENS:-4096 6144 8192}; do
   echo "############ bisect: max_model_len=$LEN ############"
   B="$OUT/len_${LEN}.boot.json"
   if MAX_MODEL_LEN_OVERRIDE="$LEN" MAX_NUM_SEQS_OVERRIDE=8 \
-     bash "$LAUNCH" llama31_base bisect "$B" > "$OUT/len_${LEN}.log" 2>&1; then
+     bash "$LAUNCH" llama31_base short "$B" > "$OUT/len_${LEN}.log" 2>&1; then
     STATUS=healthy
   else
     grep -q "NCC_INLA001" "${B%.json}.server.log" 2>/dev/null \
