@@ -202,6 +202,9 @@ def build_parser():
     ap.add_argument("--no-gradient-checkpointing", action="store_true",
                     help="disable activation recomputation (8B models then "
                          "exceed the 16 GB/core HBM limit: NCC_EOOM001)")
+    ap.add_argument("--save-steps", type=int, default=None,
+                    help="checkpoint every N steps (Track C4 timing lane); "
+                         "default: save once at the end only")
     return ap
 
 
@@ -600,7 +603,10 @@ def run(args, cache_dir):
         tensor_parallel_size=tp_size,
         pipeline_parallel_size=PIPELINE_PARALLEL_SIZE,
         logging_steps=1,          # every optimizer step; the trace needs them all
-        save_strategy="no",       # the adapter is saved once, explicitly, at the end
+        # Default: one explicit save at the end. Track C4 overrides to timed
+        # periodic saves -- checkpoint cost is a production ops number.
+        save_strategy=("steps" if args.save_steps else "no"),
+        save_steps=(args.save_steps or 500),
         save_total_limit=1,
         report_to=[],             # no wandb/tensorboard phoning home from the box
         seed=args.seed,
@@ -646,6 +652,7 @@ def run(args, cache_dir):
 
         def __init__(self):
             self.trace = []
+            self.saves = []
             self.step_ms = {}
             self._t0 = None
             self.train_t0 = None
@@ -656,10 +663,20 @@ def run(args, cache_dir):
         def on_step_begin(self, a, state, control, **kw):
             self._t0 = time.perf_counter()
 
+        def on_save(self, a, state, control, **kw):
+            # on_save fires after the checkpoint hits disk; the last step
+            # ended at _t_step_end, so the delta is the save's wall cost
+            # (sharded NxD checkpoint + consolidation work, the ops number).
+            now = time.perf_counter()
+            if getattr(self, "_t_step_end", None) is not None:
+                self.saves.append({"step": state.global_step,
+                                   "save_wall_s": round(now - self._t_step_end, 2)})
+
         def on_step_end(self, a, state, control, **kw):
+            self._t_step_end = time.perf_counter()
             if self._t0 is not None:
                 self.step_ms[state.global_step] = (
-                    time.perf_counter() - self._t0) * 1e3
+                    self._t_step_end - self._t0) * 1e3
 
         def on_log(self, a, state, control, logs=None, **kw):
             if not logs or "loss" not in logs:
@@ -854,6 +871,7 @@ def run(args, cache_dir):
             "1 Hz by neuron-monitor). Deliberately null rather than estimated."),
         "final_loss": trace[-1]["loss"] if trace else None,
         "loss_trace": trace,
+        "checkpoint_saves": metrics_cb.saves,
         "adapter_out": adapter_out,
         "captured": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }

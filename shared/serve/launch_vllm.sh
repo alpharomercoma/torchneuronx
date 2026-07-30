@@ -145,6 +145,10 @@ case "$CONFIG" in
   smoke) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=4  ;;
   *) echo "unknown config: $CONFIG (want short|long|smoke)" >&2; exit 2 ;;
 esac
+# Probe overrides (Track B bisection): env wins over the config case so a
+# probe lane can walk max-model-len without inventing new named configs.
+MAX_MODEL_LEN="${MAX_MODEL_LEN_OVERRIDE:-$MAX_MODEL_LEN}"
+MAX_NUM_SEQS="${MAX_NUM_SEQS_OVERRIDE:-$MAX_NUM_SEQS}"
 
 VLLM_BIN="${NP_VENV:+$NP_VENV/bin/vllm}"
 if [ -z "$VLLM_BIN" ] || [ ! -x "$VLLM_BIN" ]; then
