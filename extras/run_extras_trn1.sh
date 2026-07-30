@@ -47,5 +47,13 @@ have "$OUT/ckpt_timing.json" || "$PY" "$TELEM" --out "$OUT/ckpt_timing.telemetry
     --max-steps 30 --save-steps 10 --out "$OUT/ckpt_timing.json" \
   > "$OUT/ckpt_timing.log" 2>&1 || echo "  ckpt timing FAILED"
 
+step "A-parity: whisper / clip / siglip (moved from inf2: the vLLM DLAMI ships a patched transformers under an upstream version number -- optimum-neuron cannot co-reside there; receipts in inf2/results/extras. Same NeuronCore-v2 silicon here.)"
+for lane in whisper clip siglip; do
+  have "$OUT/$lane.json" && { echo "skip $lane"; continue; }
+  "$PY" "$TELEM" --out "$OUT/$lane.telemetry.csv" -- \
+    "$PY" "$BENCH_DIR/extras/${lane}_lane.py" --out "$OUT/$lane.json" \
+    > "$OUT/$lane.log" 2>&1 || echo "  $lane FAILED (see extras/$lane.log)"
+done
+
 step "TRN1 EXTRAS COMPLETE"
 bash "$BENCH_DIR/shared/bin/push_results.sh" trn1 || echo "  push FAILED"
