@@ -1,68 +1,200 @@
-INFO 07-29 20:24:28 [__init__.py:43] Available plugins for group vllm.platform_plugins:
-INFO 07-29 20:24:28 [__init__.py:45] - neuron -> vllm_neuron:register
-INFO 07-29 20:24:28 [__init__.py:48] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
-INFO 07-29 20:24:28 [__init__.py:212] Platform plugin neuron is activated
-INFO 07-29 20:24:40 [importing.py:44] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
-INFO 07-29 20:24:40 [importing.py:68] Triton not installed or not compatible; certain GPU-related functions will not be available.
-WARNING 07-29 20:24:40 [interface.py:225] Failed to import from vllm._C: ImportError('libcuda.so.1: cannot open shared object file: No such file or directory')
-WARNING 07-29 20:24:47 [argparse_utils.py:195] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in v0.13.
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287] 
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]        █     █     █▄   ▄█
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.16.0
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]   █▄█▀ █     █     █     █  model   /opt/np/models/llama31-8b-dolly-merged
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:287] 
-(APIServer pid=142379) INFO 07-29 20:24:47 [utils.py:223] non-default args: {'model_tag': '/opt/np/models/llama31-8b-dolly-merged', 'api_server_count': 1, 'model': '/opt/np/models/llama31-8b-dolly-merged', 'max_model_len': 2048, 'tensor_parallel_size': 2, 'enable_prefix_caching': False, 'max_num_seqs': 32}
-(APIServer pid=142379) Traceback (most recent call last):
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
-(APIServer pid=142379)     sys.exit(main())
-(APIServer pid=142379)              ^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
-(APIServer pid=142379)     args.dispatch_function(args)
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
-(APIServer pid=142379)     uvloop.run(run_server(args))
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
-(APIServer pid=142379)     return __asyncio.run(
-(APIServer pid=142379)            ^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-(APIServer pid=142379)     return runner.run(main)
-(APIServer pid=142379)            ^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-(APIServer pid=142379)     return self._loop.run_until_complete(task)
-(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
-(APIServer pid=142379)     return await main
-(APIServer pid=142379)            ^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
-(APIServer pid=142379)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
-(APIServer pid=142379)     async with build_async_engine_client(
-(APIServer pid=142379)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=142379)     return await anext(self.gen)
-(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
-(APIServer pid=142379)     async with build_async_engine_client_from_engine_args(
-(APIServer pid=142379)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
-(APIServer pid=142379)     return await anext(self.gen)
-(APIServer pid=142379)            ^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 122, in build_async_engine_client_from_engine_args
-(APIServer pid=142379)     vllm_config = engine_args.create_engine_config(usage_context=usage_context)
-(APIServer pid=142379)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1410, in create_engine_config
-(APIServer pid=142379)     model_config = self.create_model_config()
-(APIServer pid=142379)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1264, in create_model_config
-(APIServer pid=142379)     return ModelConfig(
-(APIServer pid=142379)            ^^^^^^^^^^^^
-(APIServer pid=142379)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
-(APIServer pid=142379)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
-(APIServer pid=142379) pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
-(APIServer pid=142379)   Value error, Invalid repository ID or local directory specified: '/opt/np/models/llama31-8b-dolly-merged'.
-(APIServer pid=142379) Please verify the following requirements:
-(APIServer pid=142379) 1. Provide a valid Hugging Face repository ID.
-(APIServer pid=142379) 2. Specify a local directory that contains a recognized configuration file.
-(APIServer pid=142379)    - For Hugging Face models: ensure the presence of a 'config.json'.
-(APIServer pid=142379)    - For Mistral models: ensure the presence of a 'params.json'.
-(APIServer pid=142379)  [type=value_error, input_value=ArgsKwargs((), {'model': ...rocessor_plugin': None}), input_type=ArgsKwargs]
-(APIServer pid=142379)     For further information visit https://errors.pydantic.dev/2.13/v/value_error
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:53] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:54] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.7952470779418945 seconds, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:54] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:56] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.7773387432098389 seconds, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:56] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:58] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.8012573719024658 seconds, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:22:58] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:00] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.8193721771240234 seconds, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:00] INFO model_builder.py:600: Generated all HLOs in 24.52188229560852 seconds
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:00] INFO model_builder.py:632: Starting compilation for the priority HLO
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:00] INFO model_builder.py:635: 'token_generation_model' is the priority model with bucket rank 0
+(EngineCore_DP0 pid=159724) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:287: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=159724)   warnings.warn(SyntaxWarning(
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:00.000574:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_905e1e633e913ca68054+c5b7a4a0/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:00] INFO model_builder.py:678: Done compilation for the priority HLO in 0.3382575511932373 seconds
+2026-07-30 05:23:01.227179: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:01] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:01.446692: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:01] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:01.632116: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:01] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:01.814723: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:01] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:02.023152: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:02.238920: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:02.410678: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:02.596969: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-30 05:23:02.781892: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:1214: Done optimizing weight layout for all HLOs in 2.2456932067871094 seconds
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:02] INFO model_builder.py:708: Starting compilation for all HLOs
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:03] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk0/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=159724)   warnings.warn(SyntaxWarning(
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:03] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk1/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:03.000455:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17d57d7d5cf229611be8+7aaadbc7/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:03] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk2/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:03.000753:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_561e0e4f805fd8c580ee+b3635c12/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:03] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk3/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000228:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_d3d8b9a48a0722d7eaca+083d8b38/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk4/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000377:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_23c3d623d8bdb523e952+46a7fe3e/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk1/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk2/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk3/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000658:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_bac62f59db85cc04cc52+9eea8402/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk4/log-neuron-cc.txt
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000814:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_ec6a4e06b4169f5152eb+6039ba3f/model.neff
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000864:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_b47e877e21dc54347ff0+60fe6028/model.neff
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000927:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_a4dbf093af94c3c646fe+0efe2407/model.neff
+(EngineCore_DP0 pid=159724) 2026-07-30 05:23:04.000967:  159724  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_011f44728c9c61df545e+8158b150/model.neff
+(EngineCore_DP0 pid=159724) [2026-07-30 05:23:04] INFO model_builder.py:769: Finished Compilation for all HLOs in 2.0675551891326904 seconds
+.....
+Compiler status PASS
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:27] INFO model_builder.py:1329: Done preparing weight layout transformation
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:27] INFO model_builder.py:798: Finished building model in 111.87766242027283 seconds
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] INFO application_base.py:249: SKIPPING pre-sharding the checkpoints. The checkpoints will be sharded during load time.
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] INFO application_base.py:405: Sharding weights on load...
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] INFO model_builder.py:823: Sharding weights for ranks: 0...1
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x75548c4a7100>, 'Ascending Ring PG Group')>
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28.267: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) [2026-07-30 05:24:28] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=159724) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py:642: UserWarning: Removing redundant keys from checkpoint: ['layers.10.self_attn.k_proj.weight', 'layers.10.self_attn.o_proj.weight', 'layers.10.self_attn.q_proj.weight', 'layers.10.self_attn.v_proj.weight', 'layers.11.self_attn.k_proj.weight', 'layers.11.self_attn.o_proj.weight', 'layers.11.self_attn.q_proj.weight', 'layers.11.self_attn.v_proj.weight', 'layers.12.self_attn.k_proj.weight', 'layers.12.self_attn.o_proj.weight', 'layers.12.self_attn.q_proj.weight', 'layers.12.self_attn.v_proj.weight', 'layers.13.self_attn.k_proj.weight', 'layers.13.self_attn.o_proj.weight', 'layers.13.self_attn.q_proj.weight', 'layers.13.self_attn.v_proj.weight', 'layers.14.self_attn.k_proj.weight', 'layers.14.self_attn.o_proj.weight', 'layers.14.self_attn.q_proj.weight', 'layers.14.self_attn.v_proj.weight', 'layers.15.self_attn.k_proj.weight', 'layers.15.self_attn.o_proj.weight', 'layers.15.self_attn.q_proj.weight', 'layers.15.self_attn.v_proj.weight', 'layers.16.self_attn.k_proj.weight', 'layers.16.self_attn.o_proj.weight', 'layers.16.self_attn.q_proj.weight', 'layers.16.self_attn.v_proj.weight', 'layers.17.self_attn.k_proj.weight', 'layers.17.self_attn.o_proj.weight', 'layers.17.self_attn.q_proj.weight', 'layers.17.self_attn.v_proj.weight', 'layers.18.self_attn.k_proj.weight', 'layers.18.self_attn.o_proj.weight', 'layers.18.self_attn.q_proj.weight', 'layers.18.self_attn.v_proj.weight', 'layers.19.self_attn.k_proj.weight', 'layers.19.self_attn.o_proj.weight', 'layers.19.self_attn.q_proj.weight', 'layers.19.self_attn.v_proj.weight', 'layers.20.self_attn.k_proj.weight', 'layers.20.self_attn.o_proj.weight', 'layers.20.self_attn.q_proj.weight', 'layers.20.self_attn.v_proj.weight', 'layers.9.self_attn.k_proj.weight', 'layers.9.self_attn.o_proj.weight', 'layers.9.self_attn.q_proj.weight', 'layers.9.self_attn.v_proj.weight', 'layers.0.self_attn.k_proj.weight', 'layers.0.self_attn.o_proj.weight', 'layers.0.self_attn.q_proj.weight', 'layers.0.self_attn.v_proj.weight', 'layers.1.self_attn.k_proj.weight', 'layers.1.self_attn.o_proj.weight', 'layers.1.self_attn.q_proj.weight', 'layers.1.self_attn.v_proj.weight', 'layers.2.self_attn.k_proj.weight', 'layers.2.self_attn.o_proj.weight', 'layers.2.self_attn.q_proj.weight', 'layers.2.self_attn.v_proj.weight', 'layers.3.self_attn.k_proj.weight', 'layers.3.self_attn.o_proj.weight', 'layers.3.self_attn.q_proj.weight', 'layers.3.self_attn.v_proj.weight', 'layers.4.self_attn.k_proj.weight', 'layers.4.self_attn.o_proj.weight', 'layers.4.self_attn.q_proj.weight', 'layers.4.self_attn.v_proj.weight', 'layers.5.self_attn.k_proj.weight', 'layers.5.self_attn.o_proj.weight', 'layers.5.self_attn.q_proj.weight', 'layers.5.self_attn.v_proj.weight', 'layers.6.self_attn.k_proj.weight', 'layers.6.self_attn.o_proj.weight', 'layers.6.self_attn.q_proj.weight', 'layers.6.self_attn.v_proj.weight', 'layers.7.self_attn.k_proj.weight', 'layers.7.self_attn.o_proj.weight', 'layers.7.self_attn.q_proj.weight', 'layers.7.self_attn.v_proj.weight', 'layers.8.self_attn.k_proj.weight', 'layers.8.self_attn.o_proj.weight', 'layers.8.self_attn.q_proj.weight', 'layers.8.self_attn.v_proj.weight', 'layers.21.self_attn.k_proj.weight', 'layers.21.self_attn.o_proj.weight', 'layers.21.self_attn.q_proj.weight', 'layers.21.self_attn.v_proj.weight', 'layers.22.self_attn.k_proj.weight', 'layers.22.self_attn.o_proj.weight', 'layers.22.self_attn.q_proj.weight', 'layers.22.self_attn.v_proj.weight', 'layers.23.self_attn.k_proj.weight', 'layers.23.self_attn.o_proj.weight', 'layers.23.self_attn.q_proj.weight', 'layers.23.self_attn.v_proj.weight', 'layers.24.self_attn.k_proj.weight', 'layers.24.self_attn.o_proj.weight', 'layers.24.self_attn.q_proj.weight', 'layers.24.self_attn.v_proj.weight', 'layers.25.self_attn.k_proj.weight', 'layers.25.self_attn.o_proj.weight', 'layers.25.self_attn.q_proj.weight', 'layers.25.self_attn.v_proj.weight', 'layers.26.self_attn.k_proj.weight', 'layers.26.self_attn.o_proj.weight', 'layers.26.self_attn.q_proj.weight', 'layers.26.self_attn.v_proj.weight', 'layers.27.self_attn.k_proj.weight', 'layers.27.self_attn.o_proj.weight', 'layers.27.self_attn.q_proj.weight', 'layers.27.self_attn.v_proj.weight', 'layers.28.self_attn.k_proj.weight', 'layers.28.self_attn.o_proj.weight', 'layers.28.self_attn.q_proj.weight', 'layers.28.self_attn.v_proj.weight', 'layers.29.self_attn.k_proj.weight', 'layers.29.self_attn.o_proj.weight', 'layers.29.self_attn.q_proj.weight', 'layers.29.self_attn.v_proj.weight', 'layers.30.self_attn.k_proj.weight', 'layers.30.self_attn.o_proj.weight', 'layers.30.self_attn.q_proj.weight', 'layers.30.self_attn.v_proj.weight', 'layers.31.self_attn.k_proj.weight', 'layers.31.self_attn.o_proj.weight', 'layers.31.self_attn.q_proj.weight', 'layers.31.self_attn.v_proj.weight']
+(EngineCore_DP0 pid=159724)   warnings.warn(f"Removing redundant keys from checkpoint: {keys_to_delete}")
+(EngineCore_DP0 pid=159724) [2026-07-30 05:25:52] INFO model_builder.py:857: Done Sharding weights in 84.11936383200373
+(EngineCore_DP0 pid=159724) [2026-07-30 05:29:30] INFO application_base.py:421: Finished weights loading in 302.1180921949999 seconds
+(EngineCore_DP0 pid=159724) [2026-07-30 05:29:32] INFO application_base.py:351: Warming up the model.
+2026-Jul-30 05:29:34.0468 159724:159842 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):266 CCOM WARN NET/OFI Failed to initialize sendrecv protocol
+2026-Jul-30 05:29:34.0472 159724:159842 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-30 05:29:34.0474 159724:159842 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-30 05:29:34.0477 159724:159842 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+(EngineCore_DP0 pid=159724) [2026-07-30 05:29:36] INFO application_base.py:373: Warmup completed in 3.6832029819488525 seconds.
+(EngineCore_DP0 pid=159724) [2026-07-30 05:29:36] INFO neuronx_distributed_model_runner.py:566: Hardware sampling enabled: config=<neuronx_distributed_inference.models.config.OnDeviceSamplingConfig object at 0x755492c583e0>
+(EngineCore_DP0 pid=159724) INFO 07-30 05:29:37 [kv_cache_utils.py:1307] GPU KV cache size: 67,584 tokens
+(EngineCore_DP0 pid=159724) INFO 07-30 05:29:37 [kv_cache_utils.py:1312] Maximum concurrency for 2,048 tokens per request: 33.00x
+(EngineCore_DP0 pid=159724) INFO 07-30 05:29:37 [core.py:278] init engine (profile, create kv cache, warmup model) took 0.31 seconds
+(EngineCore_DP0 pid=159724) The tokenizer you are loading from '/opt/np/models/llama31-8b-dolly-merged' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+(EngineCore_DP0 pid=159724) WARNING 07-30 05:29:43 [scheduler.py:166] Using custom scheduler class vllm_neuron.core.scheduler.ContinuousBatchingNeuronScheduler. This scheduler interface is not public and compatibility may not be maintained.
+(EngineCore_DP0 pid=159724) [2026-07-30 05:30:18] INFO platform_overrides.py:22: Skipping attention head divisibility check for Neuron platform
+(EngineCore_DP0 pid=159724) WARNING 07-30 05:30:18 [cache.py:241] Possibly too large swap space. 8.0 GiB out of the 15.25 GiB total CPU memory is allocated for the swap space.
+(EngineCore_DP0 pid=159724) INFO 07-30 05:30:18 [vllm.py:689] Asynchronous scheduling is enabled.
+(EngineCore_DP0 pid=159724) [2026-07-30 05:30:18] WARNING platform.py:172: Could not import OpenAI serving modules for overrides: No module named 'vllm.entrypoints.openai.serving_engine'
+(EngineCore_DP0 pid=159724) [2026-07-30 05:30:18] INFO platform.py:268: Neuron engine client override applied successfully
+(EngineCore_DP0 pid=159724) [2026-07-30 05:30:18] INFO platform.py:390: The custom Neuron scheduler will disable chunked prefill and schedule requests using the continuous batching mechanism, prioritizing prefill over decode.
+(EngineCore_DP0 pid=159724) [2026-07-30 05:30:18] INFO platform.py:403: Neuron custom scheduler default: max_num_batched_tokens set to 131072. Override with --max-num-batched-tokens if needed.
+(APIServer pid=159689) INFO 07-30 05:30:20 [api_server.py:481] Supported tasks: ['generate']
+(APIServer pid=159689) WARNING 07-30 05:30:27 [model.py:1350] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 0.6, 'top_p': 0.9}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=159689) INFO 07-30 05:30:27 [serving.py:188] Warming up chat template processing...
+(APIServer pid=159689) The tokenizer you are loading from '/opt/np/models/llama31-8b-dolly-merged' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#69121093e8b480e709447d5e. This will lead to incorrect tokenization. You should set the `fix_mistral_regex=True` flag when loading this tokenizer to fix this issue.
+(APIServer pid=159689) INFO 07-30 05:30:31 [hf.py:318] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=159689) INFO 07-30 05:30:31 [serving.py:213] Chat template warmup completed in 3916.2ms
+(APIServer pid=159689) INFO 07-30 05:30:31 [api_server.py:486] Starting vLLM API server 0 on http://0.0.0.0:8000
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:38] Available routes are:
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /openapi.json, Methods: HEAD, GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /docs, Methods: HEAD, GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /redoc, Methods: HEAD, GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /load, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /version, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /tokenize, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /detokenize, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /inference/v1/generate, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /metrics, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /health, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/models, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /ping, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /ping, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /invocations, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/chat/completions/render, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/responses, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/completions, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/completions/render, Methods: POST
+(APIServer pid=159689) INFO 07-30 05:30:31 [launcher.py:47] Route: /v1/messages, Methods: POST
+(APIServer pid=159689) INFO:     Started server process [159689]
+(APIServer pid=159689) INFO:     Waiting for application startup.
+(APIServer pid=159689) INFO:     Application startup complete.
+(APIServer pid=159689) INFO:     127.0.0.1:51302 - "GET /health HTTP/1.1" 200 OK

@@ -1,10 +1,2 @@
-  request 0 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 1 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 2 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 3 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 4 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 5 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 6 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
-  request 7 FAILED: HTTP 400: b'{"error":{"message":"You passed 1025 input tokens and requested 1024 output tokens. However, the model\'s context length is only 2048 tokens, resulting in a maximum input length of 1024 tokens. Please '
 # fallback_client  model=meta-llama/Llama-3.1-8B-Instruct  prompts=8 conc=1  isl=1024  osl=1024 seed=42
-out_tok/s=0.0  ttft_p50=Nonems  p99=Nonems  tpot_p50=Nonems  completed=0/8  duration=0.104s -> /opt/np/repo/inf2/results/serve/llama31_base_short/isl1024_osl1024_c1.json
+out_tok/s=15.7  ttft_p50=399.457ms  p99=972.609ms  tpot_p50=63.239ms  completed=8/8  duration=521.817s -> /opt/np/repo/inf2/results/serve/llama31_base_short/isl1024_osl1024_c1.json

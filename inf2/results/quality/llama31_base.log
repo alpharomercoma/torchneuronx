@@ -5,13 +5,26 @@
     venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
     neuron cache  : /opt/np/cache/neuron-compile-cache
     boot json     : /opt/np/repo/inf2/results/quality/llama31_base_boot.json
---- server pid 140914; polling /health every 5s (up to 90 min: cold compile is slow) ---
---- server healthy in 1832s (cache 322 -> 322 MB); boot recorded in /opt/np/repo/inf2/results/quality/llama31_base_boot.json ---
-Traceback (most recent call last):
-  File "/opt/np/repo/shared/quality/eval.py", line 107, in <module>
-    main()
-  File "/opt/np/repo/shared/quality/eval.py", line 74, in main
-    ch = r["choices"][0]
-         ~^^^^^^^^^^^
-KeyError: 'choices'
+--- server pid 158244; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 1737s (cache 616 -> 616 MB); boot recorded in /opt/np/repo/inf2/results/quality/llama31_base_boot.json ---
+logprobs unsupported by backend ({'message': 'list index out of range', 'type': 'InternalServerError', 'param': None, 'code': 500}); continuing without
+  [ 0]    0 tok  mean_logprob None
+  [ 1]    0 tok  mean_logprob None
+  [ 2]    0 tok  mean_logprob None
+  [ 3]    0 tok  mean_logprob None
+  [ 4]    0 tok  mean_logprob None
+  [ 5]    0 tok  mean_logprob None
+  [ 6]    0 tok  mean_logprob None
+  [ 7]    0 tok  mean_logprob None
+  [ 8]    0 tok  mean_logprob None
+  [ 9]    0 tok  mean_logprob None
+  [10]    0 tok  mean_logprob None
+  [11]    0 tok  mean_logprob None
+  [12]    0 tok  mean_logprob None
+  [13]    0 tok  mean_logprob None
+  [14]    0 tok  mean_logprob None
+  [15]    0 tok  mean_logprob None
+
+corpus mean logprob: None
+wrote /opt/np/repo/inf2/results/quality/llama31_base.json
 --- quality complete: /opt/np/repo/inf2/results/quality/llama31_base.json ---

@@ -1,0 +1,11 @@
+{
+  "model_key": "llama31_dolly",
+  "config": "short",
+  "model_id": "/opt/np/models/llama31-8b-dolly-merged",
+  "boot_wall_s": 548,
+  "cache_dir_size_mb_before": 616,
+  "cache_dir_size_mb_after": 616,
+  "warm": false,
+  "server_pid": 159689,
+  "captured": "2026-07-30T05:30:59Z"
+}

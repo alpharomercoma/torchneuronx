@@ -1,0 +1,26 @@
+neuron-pipelines comparison  (generated 2026-07-30T06:14:11Z)
+================================================================
+
+[trn1] lanes: ['compile_llama31_train', 'cpu_cpu', 'train_llama31_lora', 'train_merge_llama31', 'train_qwen3_lora', 'train_smoke_tinyllama']
+
+[inf2] lanes: ['cpu_cpu', 'sustained_sustained']
+  serve/llama31_base_short: 5 points, boot 1668s (warm=False)
+    isl1024_osl1024_c1: out_tok/s=15.7 ttft_p50=399.457ms tpot_p50=63.239ms util=95.59%
+    isl1024_osl1024_c16: out_tok/s=226.61 ttft_p50=3333.293ms tpot_p50=67.44ms util=93.78%
+    isl1024_osl1024_c32: out_tok/s=415.51 ttft_p50=6409.369ms tpot_p50=70.816ms util=93.3%
+    isl1024_osl1024_c4: out_tok/s=61.4 ttft_p50=988.116ms tpot_p50=64.262ms util=95.08%
+    isl1024_osl1024_c8: out_tok/s=119.31 ttft_p50=1765.145ms tpot_p50=65.405ms util=94.4%
+  serve/llama31_dolly_short: 5 points, boot 548s (warm=False)
+    isl1024_osl1024_c1: out_tok/s=15.75 ttft_p50=397.065ms tpot_p50=62.627ms util=96.56%
+    isl1024_osl1024_c16: out_tok/s=213.17 ttft_p50=3325.149ms tpot_p50=67.308ms util=94.76%
+    isl1024_osl1024_c32: out_tok/s=394.51 ttft_p50=6416.451ms tpot_p50=71.607ms util=93.48%
+    isl1024_osl1024_c4: out_tok/s=57.81 ttft_p50=988.019ms tpot_p50=63.737ms util=96.21%
+    isl1024_osl1024_c8: out_tok/s=114.78 ttft_p50=1762.333ms tpot_p50=65.176ms util=95.6%
+  serve/qwen3_base_short: 0 points, boot 2530s (warm=False)
+  serve/smoke_tinyllama_smoke: 1 points, boot 126s (warm=True)
+    isl128_osl128_c1: out_tok/s=118.92 ttft_p50=21.88ms tpot_p50=8.085ms util=100.0%
+  serve/llama31_base_long:load: RECORDED FAILURE (server_failed_to_start)
+  serve/qwen3_base_short:generation: RECORDED FAILURE (boots_but_generation_crashes)
+
+dropped_no_telemetry: 6
+missing_expected: []

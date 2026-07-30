@@ -12,3 +12,7 @@ iterations         : 7
 first / peak / last: 118.8 / 119.3 / 119.3 tok/s
 retention vs peak  : 100.0%
 wrote /opt/np/repo/inf2/results/sustained/sustained.json
+iterations         : 7
+first / peak / last: 118.8 / 119.3 / 119.3 tok/s
+retention vs peak  : 100.0%
+wrote /opt/np/repo/inf2/results/sustained/sustained.json

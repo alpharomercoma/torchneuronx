@@ -96,17 +96,25 @@ def collect_box(box):
             full = os.path.join(serve_root, run_dir)
             if not os.path.isdir(full):
                 continue
-            fail = load_json(os.path.join(full, "load_failure.json"))
-            if fail:
-                out["failures"][run_dir] = fail   # invariant: failures are results
-                continue
+            # Failures are results -- but they don't suppress a successful
+            # sweep sitting in the same directory (sync-without-delete can
+            # resurrect a stale failure record next to fresh points, and a
+            # sweep can succeed mechanically while generation fails, which
+            # generation_failure.json records).
+            for fname, kind in (("load_failure.json", "load"),
+                                ("generation_failure.json", "generation")):
+                fail = load_json(os.path.join(full, fname))
+                if fail:
+                    out["failures"][f"{run_dir}:{kind}"] = fail
+            grid = load_json(os.path.join(full, "grid.json"))
             rows, drp = collect_serve_dir(full)
             dropped += drp
-            out["serve"][run_dir] = {
-                "grid": load_json(os.path.join(full, "grid.json")),
-                "boot": load_json(os.path.join(full, "boot.json")),
-                "points": rows,
-            }
+            if grid or rows:
+                out["serve"][run_dir] = {
+                    "grid": grid,
+                    "boot": load_json(os.path.join(full, "boot.json")),
+                    "points": rows,
+                }
 
     quality_root = os.path.join(res_root, "quality")
     if os.path.isdir(quality_root):

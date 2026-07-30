@@ -2,10 +2,10 @@
   "model_key": "llama31_base",
   "config": "short",
   "model_id": "meta-llama/Llama-3.1-8B-Instruct",
-  "boot_wall_s": 2372,
-  "cache_dir_size_mb_before": 46,
-  "cache_dir_size_mb_after": 162,
+  "boot_wall_s": 1668,
+  "cache_dir_size_mb_before": 455,
+  "cache_dir_size_mb_after": 455,
   "warm": false,
-  "server_pid": 2836,
-  "captured": "2026-07-29T18:19:16Z"
+  "server_pid": 145675,
+  "captured": "2026-07-29T21:46:25Z"
 }

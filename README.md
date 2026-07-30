@@ -84,6 +84,4 @@ make pull-results && make report     # regenerate REPORT.md numbers
 
 ## Status
 
-Infrastructure and harness complete; measured numbers land in
-[REPORT.md](REPORT.md) as lanes execute. TODO-VERIFY markers are filled with
-real output during execution and removed before the report is final.
+Complete. Measured results in [REPORT.md](REPORT.md); every number regenerates from `analysis/comparison.json` via `make report`.

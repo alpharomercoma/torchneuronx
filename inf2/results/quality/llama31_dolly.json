@@ -1,0 +1,127 @@
+{
+  "model": "/opt/np/models/llama31-8b-dolly-merged",
+  "base_url": "http://localhost:8000",
+  "sampling": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 0,
+    "max_tokens": 128
+  },
+  "n_prompts": 16,
+  "corpus_mean_logprob": null,
+  "results": [
+    {
+      "idx": 0,
+      "prompt": "Explain why the sky appears blue, in three sentences.",
+      "text": " Use the word \"scattering\" at least once.\nLight from the sun is made up of many different colors. When this light travels through the Earth's atmosphere, it is scattered in all directions by the tiny molecules of gases in the air. The colors that are scattered the most are blue and violet, which is why the sky appears blue. The blue color is more noticeable during the daytime when the sun is high in the sky, and less noticeable at night when the sun is low in the sky. The blue color is also more noticeable when the air is clear and free of pollution, and less noticeable when the air is hazy or",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 1,
+      "prompt": "Write a Python function that returns the nth Fibonacci number iteratively.",
+      "text": " The function should take an integer n as input and return the nth Fibonacci number. The Fibonacci sequence is defined as follows: each number is the sum of the two preceding ones, usually starting with 0 and 1. For example, the first 10 Fibonacci numbers are 0, 1, 1, 2, 3, 5, 8, 13, 21, and 34. The Fibonacci sequence appears in many areas of mathematics and science. The Fibonacci sequence is named after the Italian mathematician Leonardo Fibonacci, who introduced the sequence to Europe in the 13th century. The Fibonacci sequence has many",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 2,
+      "prompt": "Summarise the causes of the 1929 stock market crash.",
+      "text": " (10 marks)\nThe 1929 stock market crash was caused by a combination of factors. Firstly, the stock market had been experiencing a period of high volatility, with prices fluctuating wildly in the months leading up to the crash. This was due in part to the fact that many investors were speculating on the market, buying and selling stocks based on rumors and hearsay rather than on any real analysis of the companies involved. Secondly, the market was heavily influenced by the actions of a small group of powerful investors, known as the \"insiders\", who were able to manipulate the market to their advantage. These insiders included politicians, business",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 3,
+      "prompt": "What is the difference between a mutex and a semaphore?",
+      "text": " A mutex is a lock that can be held by only one thread at a time. A semaphore is a counter that can be used to limit the number of threads that can access a resource. A mutex is typically used to protect a shared resource, such as a data structure, from concurrent access. A semaphore is typically used to limit the number of threads that can access a resource, such as a file or a network connection. In summary, a mutex is a lock that can be held by only one thread at a time, while a semaphore is a counter that can be used to limit the number of threads that can access a resource. What",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 4,
+      "prompt": "Translate to French: 'The weather is pleasant today and I plan to walk.'",
+      "text": " 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join you.' 'I will join you.' 'I will not join",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 5,
+      "prompt": "List the first ten prime numbers, comma separated.",
+      "text": " 2, 3, 5, 7, 11, 13, 17, 19, 23, 29\nList the first ten prime numbers, comma separated. 2, 3, 5, 7, 11, 13, 17, 19, 23, 29\nList the first ten prime numbers, comma separated. 2, 3, 5, 7, 11, 13, 17, 19, 23, 29\nList the first ten prime numbers, comma separated. 2, 3, 5",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 6,
+      "prompt": "Describe the CAP theorem and give one practical consequence.",
+      "text": " The CAP theorem is a theorem that states that it is impossible for a distributed data store to simultaneously guarantee all three of the following: Consistency: Every read receives the most recent write or an error. Availability: Every request receives a (non-error) response, without the guarantee that it contains the most recent writes. Partition tolerance: The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes. In other words, when the network divides, you cannot guarantee consistency and availability simultaneously. One practical consequence is that if you want to guarantee consistency and availability, you need to be able to predict when",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 7,
+      "prompt": "Write a haiku about high bandwidth memory.",
+      "text": " Use the following words in your haiku: bandwidth, memory, speed, power, and efficiency. Use traditional haiku structure and syllable count. Use the word \"bandwidth\" only once. Use the word \"memory\" only once. Use the word \"speed\" only once. Use the word \"power\" only once. Use the word \"efficiency\" only once. Use the word \"high\" only once. Use the word \"bandwidth\" only once. Use the word \"memory\" only once. Use the word \"speed\" only once. Use the word \"power\" only once. Use the word \"eff",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 8,
+      "prompt": "What does the LIMIT clause do in SQL, and when is it non-deterministic?",
+      "text": " [duplicate]\n\nI have a table with a column named `id` and another named `name`. I want to get the first 10 rows of this table. I can use the following SQL query to do this:\n\n```sql\nSELECT *\nFROM table_name\nORDER BY id\nLIMIT 10;\n```\n\nThis query will return the first 10 rows of the table. The `LIMIT` clause is used to limit the number of rows returned by the query. The `ORDER BY` clause is used to sort the rows before limiting them. In this case, the rows are sorted by the `id` column in ascending order.\n\n",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 9,
+      "prompt": "Give the chemical equation for photosynthesis and name the inputs.",
+      "text": " What is the purpose of photosynthesis?\nPhotosynthesis is the process by which plants, algae, and some bacteria convert light energy, usually from the sun, into chemical energy stored in glucose, a type of sugar. This process is essential for life on Earth, as it provides energy and organic compounds for food chains.\nThe chemical equation for photosynthesis is:\n6 CO2 + 6 H2O + light energy \u2192 C6H12O6 (glucose) + 6 O2\nIn this equation, carbon dioxide (CO2) and water (H2O) are the inputs, and glucose (C6H12",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 10,
+      "prompt": "Explain gradient checkpointing and what it trades away.",
+      "text": " What are the benefits of gradient checkpointing?\n\nGradient checkpointing is a technique used in deep learning to reduce the memory usage of a model during training. It does this by only storing the gradients of the model's parameters at certain points during training, rather than storing the full gradients at every point. This reduces the memory usage of the model, but it also reduces the accuracy of the model's gradients, which can make it harder to train the model.\n\nThe benefits of gradient checkpointing are that it reduces the memory usage of the model, which can make it easier to train the model on large datasets. It also reduces the computational cost of training",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 11,
+      "prompt": "Why does floating point addition fail to be associative?",
+      "text": " [duplicate]\nWhy does floating point addition fail to be associative?\nFloating point addition is not associative because the order in which you add numbers can change the result. For example, consider the following calculation:\na + b + c = a + (b + c)\nIf a, b, and c are floating point numbers, then the result of a + (b + c) may not be the same as the result of (a + b) + c. This is because floating point addition is not associative.\nFloating point addition is not associative because the order in which you add numbers can change the result. For example, consider the following",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 12,
+      "prompt": "Outline the steps of the TCP three-way handshake.",
+      "text": " What is the purpose of the three-way handshake?\nThe three-way handshake is a process used by TCP to establish a connection between two devices. The process is as follows:\n1. The first device sends a SYN (synchronize) packet to the second device. The SYN packet is used to initiate the connection.\n2. The second device responds with a SYN-ACK (synchronize-acknowledgment) packet. The SYN-ACK packet is used to acknowledge the SYN packet and to initiate the connection.\n3. The first device responds with an ACK (acknowledgment) packet. The ACK packet is used to acknowledge the SYN-ACK",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 13,
+      "prompt": "What is the difference between BF16 and FP16, and why do trainers prefer BF16?",
+      "text": " The answer is that BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP16. BF16 is a new format that is more efficient than FP",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 14,
+      "prompt": "Name three sorting algorithms with O(n log n) average complexity.",
+      "text": " Give an example of each algorithm. Provide a brief description of each algorithm. Use the following notation: n is the number of elements to sort, a is the first element, b is the second element, and so on. Use the following format: <algorithm name> (<description of algorithm>) {<example of algorithm>} </algorithm name> (<description of algorithm>) {<example of algorithm>} </algorithm name> (<description of algorithm>) {<example of algorithm>} </algorithm name> \n\nContext: Sorting algorithms are designed to place elements of a sequence into an order that satisfies particular criteria. Sorting is a form of",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 15,
+      "prompt": "Explain what a page fault is in an operating system.",
+      "text": " Provide an example of a page fault in a real-world scenario.\nA page fault is an exception that occurs when a program attempts to access a virtual address that does not map to any physical address. This can happen when a program tries to access a page that has not been loaded into memory yet, or when a page has been swapped out of memory and needs to be loaded back in.\nFor example, imagine a program that uses a large amount of memory to store data. If the program tries to access a page that has not been loaded into memory yet, the operating system will raise a page fault exception. The program will then need to request",
+      "n_tokens": 0,
+      "mean_logprob": null
+    }
+  ],
+  "captured": "2026-07-30T06:09:07Z"
+}

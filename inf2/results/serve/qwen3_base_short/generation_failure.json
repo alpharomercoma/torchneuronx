@@ -1,0 +1,7 @@
+{
+ "status": "boots_but_generation_crashes",
+ "probe": "non-streamed and streamed /v1/completions both return HTTP 500 InternalServerError; EngineCore exception on first generation step",
+ "evidence": "generation_probe.server.log",
+ "note": "server passes /health and the sweep walked its grid, but 0/32 requests completed at every point -- declared limitation, not a data gap",
+ "captured": "2026-07-30T01:30:00Z"
+}

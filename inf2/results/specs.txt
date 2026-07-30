@@ -1,5 +1,5 @@
 === captured ===
-2026-07-29T17:28:35Z
+2026-07-30T04:47:44Z
 hostname: ip-172-31-29-204
 
 === os ===
@@ -20,7 +20,7 @@ NUMA node(s): 1
 
 === memory ===
                total        used        free      shared  buff/cache   available
-Mem:              15           0          13           0           0          14
+Mem:              15           5           5           0           4           9
 numa_balancing: 0
 
 === storage ===
@@ -30,7 +30,7 @@ loop1   28.4M
 loop2     74M 
 nvme0n1  500G Amazon Elastic Block Store
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/root       484G   74G  410G  16% /
+/dev/root       484G  142G  342G  30% /
 
 === accelerator ===
 -- vendor: AWS Neuron
@@ -85,4 +85,4 @@ vllm                              0.16.0
 
 === neuron compile cache ===
 NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
-46M	/opt/np/cache/neuron-compile-cache
+616M	/opt/np/cache/neuron-compile-cache

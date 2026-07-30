@@ -1,0 +1,127 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "base_url": "http://localhost:8000",
+  "sampling": {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": 0,
+    "max_tokens": 128
+  },
+  "n_prompts": 16,
+  "corpus_mean_logprob": null,
+  "results": [
+    {
+      "idx": 0,
+      "prompt": "Explain why the sky appears blue, in three sentences.",
+      "text": " The sky appears blue because of a phenomenon called Rayleigh scattering, in which shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths by the tiny molecules of gases in the Earth's atmosphere. This scattering effect is more pronounced when the sun is overhead, which is why the sky typically appears more blue during the daytime. As a result, the blue light is distributed throughout the atmosphere, giving the sky its blue appearance. ... (Read more)\nWhat is the primary reason for the sky appearing blue? The primary reason for the sky appearing blue is the scattering of sunlight by the tiny molecules of gases in the Earth's atmosphere",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 1,
+      "prompt": "Write a Python function that returns the nth Fibonacci number iteratively.",
+      "text": " The function should take an integer n as input and return the nth Fibonacci number.\n\n```python\ndef fibonacci(n):\n    \"\"\"\n    Returns the nth Fibonacci number iteratively.\n\n    Args:\n        n (int): The position of the Fibonacci number to return.\n\n    Returns:\n        int: The nth Fibonacci number.\n    \"\"\"\n    # Check if n is a non-negative integer\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n\n    # Base cases for Fibonacci sequence\n    if n == 0:\n        return 0\n    elif n == 1:\n",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 2,
+      "prompt": "Summarise the causes of the 1929 stock market crash.",
+      "text": " The crash was a major factor in the Great Depression.\nThe 1929 stock market crash was a major factor in the Great Depression. The causes of the crash were complex and multifaceted, but some of the key factors include:\n1. Overproduction and underconsumption: In the 1920s, there was a surge in industrial production, but many Americans were unable to afford the goods being produced. This led to a mismatch between supply and demand, which contributed to the crash.\n2. Credit crisis: Many Americans had bought stocks on margin (using borrowed money), and when the market began to decline, they were unable to",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 3,
+      "prompt": "What is the difference between a mutex and a semaphore?",
+      "text": " A mutex is a lock that can be acquired by one thread at a time, while a semaphore is a variable that controls the access to a common resource by multiple threads. A mutex is used to protect a critical section of code, while a semaphore is used to limit the number of threads that can access a resource.\nIn other words, a mutex is a lock that prevents other threads from accessing a resource while one thread is using it, while a semaphore is a counter that limits the number of threads that can access a resource at the same time.\nHere is an example of how to use a mutex and a semaphore in Python:\n```\nimport",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 4,
+      "prompt": "Translate to French: 'The weather is pleasant today and I plan to walk.'",
+      "text": " 'I'm glad you're going for a walk. I was thinking of going for a walk too.' 'That's great! We can walk together.' 'I'd love to.'\nTranslate to Spanish: 'El tiempo es agradable hoy y planeo caminar.' 'Me alegra que vayas a caminar. Estaba pensando en ir a caminar tambi\u00e9n.' '\u00a1Eso es genial! Podemos caminar juntos.' 'Me encantar\u00eda.'\nTranslate to German: 'Das Wetter ist heute angenehm und ich plane, zu Fu\u00df zu gehen.' 'Ich bin froh, dass du zu",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 5,
+      "prompt": "List the first ten prime numbers, comma separated.",
+      "text": " 1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 6,
+      "prompt": "Describe the CAP theorem and give one practical consequence.",
+      "text": " The CAP theorem states that it is impossible for a distributed data storage system to simultaneously guarantee all three of the following: Consistency, Availability, and Partition Tolerance. Consistency refers to the guarantee that all nodes in the system see the same data. Availability refers to the guarantee that every request receives a response, without the guarantee that it contains the most recent version of the data. Partition Tolerance refers to the guarantee that the system continues to function even when there are network partitions. One practical consequence of the CAP theorem is that a system that prioritizes consistency and availability may not be able to handle network partitions, and may become unavailable. For",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 7,
+      "prompt": "Write a haiku about high bandwidth memory.",
+      "text": "\u00a0\nFast data flows free\nGolden electrons dance swift\nSpeed in every byte\nI think this haiku captures the essence of high bandwidth memory. The first line, \"Fast data flows free,\" conveys the idea that data is moving quickly and effortlessly. The second line, \"Golden electrons dance swift,\" uses the metaphor of electrons dancing to describe the rapid movement of data, and the word \"golden\" suggests a sense of value and quality. The third line, \"Speed in every byte,\" emphasizes the idea that high bandwidth memory is optimized for speed, and that every byte of data is processed quickly. Overall, the haiku aims to",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 8,
+      "prompt": "What does the LIMIT clause do in SQL, and when is it non-deterministic?",
+      "text": " The LIMIT clause is used to limit the number of rows returned in a query. It is typically used in conjunction with the ORDER BY clause to return a specific number of rows from a sorted result set. The LIMIT clause is non-deterministic when the order of the rows is not guaranteed, because the database may return the rows in any order. This can happen when the ORDER BY clause is not used, or when the ORDER BY clause is used with a function that does not guarantee a stable sort, such as a function that returns a random value. In such cases, the LIMIT clause may return different rows on different executions of the query,",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 9,
+      "prompt": "Give the chemical equation for photosynthesis and name the inputs.",
+      "text": " The inputs are the reactants.\n## Step 1: Identify the reactants of photosynthesis\nThe reactants of photosynthesis are carbon dioxide (CO2), water (H2O), and light energy from the sun.\n\n## Step 2: Identify the products of photosynthesis\nThe products of photosynthesis are glucose (C6H12O6) and oxygen (O2).\n\n## Step 3: Write the chemical equation for photosynthesis\nThe chemical equation for photosynthesis is: 6 CO2 + 6 H2O + light energy \u2192 C6H12O6 + 6 O2\n\n## Step",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 10,
+      "prompt": "Explain gradient checkpointing and what it trades away.",
+      "text": " Gradient checkpointing is a technique used in deep learning to reduce the memory usage of a model during training. It works by storing only the gradients of the model's parameters at certain points in time, rather than storing the entire model state. This is useful when training large models that don't fit in memory.\nGradient checkpointing trades away the ability to backpropagate gradients through time, which means that the gradients stored at each checkpoint are only valid for a short period of time. This can make it difficult to debug and analyze the model's behavior, as the gradients are not available for the entire training process.\nHowever, gradient checkpointing can be",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 11,
+      "prompt": "Why does floating point addition fail to be associative?",
+      "text": " [duplicate]\nFloating point addition is not associative, meaning that $(a+b)+c$ is not necessarily equal to $a+(b+c)$. Why is this?\n$\\begingroup$ This is a classic example of why floating point arithmetic is not associative. $\\endgroup$ \u2013\u00a0 user123 Apr 3 '14 at 0:14\n$\\begingroup$ @user123: I think you meant to say \"example of why floating point arithmetic is not associative in general\". Floating point arithmetic is associative in the sense that $(a+b)+c=a+(b+c)$ for most inputs, but there are some pathological cases where",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 12,
+      "prompt": "Outline the steps of the TCP three-way handshake.",
+      "text": " The three-way handshake is a process used by the Transmission Control Protocol (TCP) to establish a connection between a client and a server. It involves three messages exchanged between the client and server to ensure that both parties are ready to communicate. The three-way handshake is also known as the SYN-SYN-ACK handshake. Here are the steps involved in the TCP three-way handshake:\n\n1.  **SYN (Synchronize) Message from Client to Server**: The client initiates the connection by sending a SYN message to the server. This message includes the client's initial sequence number (ISN) and other connection parameters. The client's IS",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 13,
+      "prompt": "What is the difference between BF16 and FP16, and why do trainers prefer BF16?",
+      "text": " - AI Training\nBF16 and FP16 are two different floating-point number formats used in deep learning and AI training. Here's a brief overview of each format and why trainers might prefer BF16:\nBF16 (BFloat16):\nBF16 is a 16-bit floating-point format that is specifically designed for deep learning and AI training. It is a subset of the IEEE 754 floating-point standard and is optimized for low-precision arithmetic operations. BF16 uses a 1-bit sign, 8-bit exponent, and 7-bit mantissa, which allows for a good balance between precision and memory efficiency.\nFP16 (Half-P",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 14,
+      "prompt": "Name three sorting algorithms with O(n log n) average complexity.",
+      "text": " \n\n## Step 1: Identify the first sorting algorithm with O(n log n) average complexity.\nThe first algorithm is Merge Sort. Merge Sort is a divide-and-conquer algorithm that splits the input into two halves, recursively sorts them, and then merges them back together in sorted order. Its average time complexity is O(n log n).\n\n## Step 2: Identify the second sorting algorithm with O(n log n) average complexity.\nThe second algorithm is Heap Sort. Heap Sort works by building a heap from the input array and then repeatedly removing the largest (or smallest) element from the heap and placing it at the end (or beginning",
+      "n_tokens": 0,
+      "mean_logprob": null
+    },
+    {
+      "idx": 15,
+      "prompt": "Explain what a page fault is in an operating system.",
+      "text": " What are the steps involved in handling a page fault?\nA page fault is an exception that occurs when a process attempts to access a memory page that is not in physical memory. When a process requests a page that is not in memory, the operating system must handle the page fault by taking the following steps:\n1.  **Save the current state of the process**: The operating system saves the current state of the process, including the registers and program counter, so that it can be restored later.\n2.  **Send a page fault signal to the process**: The operating system sends a page fault signal to the process, which causes the process",
+      "n_tokens": 0,
+      "mean_logprob": null
+    }
+  ],
+  "captured": "2026-07-30T05:20:27Z"
+}

@@ -1,2 +1,2 @@
 # fallback_client  model=TinyLlama/TinyLlama-1.1B-Chat-v1.0  prompts=4 conc=1  isl=128  osl=128 seed=42
-out_tok/s=103.34  ttft_p50=19.215ms  p99=730.224ms  tpot_p50=8.121ms  completed=4/4  duration=4.955s -> /opt/np/repo/inf2/results/serve/smoke_tinyllama_smoke/isl128_osl128_c1.json
+out_tok/s=118.92  ttft_p50=21.88ms  p99=73.305ms  tpot_p50=8.085ms  completed=4/4  duration=4.305s -> /opt/np/repo/inf2/results/serve/smoke_tinyllama_smoke/isl128_osl128_c1.json

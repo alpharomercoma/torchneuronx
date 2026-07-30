@@ -5,16 +5,11 @@
     venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
     neuron cache  : /opt/np/cache/neuron-compile-cache
     boot json     : /opt/np/repo/inf2/results/serve/llama31_base_short/boot.json
---- server pid 2836; polling /health every 5s (up to 90 min: cold compile is slow) ---
---- server healthy in 2372s (cache 46 -> 162 MB); boot recorded in /opt/np/repo/inf2/results/serve/llama31_base_short/boot.json ---
+--- server pid 145675; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 1668s (cache 455 -> 455 MB); boot recorded in /opt/np/repo/inf2/results/serve/llama31_base_short/boot.json ---
 --- point isl1024_osl1024_c1 (num_prompts=8) ---
-  isl1024_osl1024_c1 FAILED (see isl1024_osl1024_c1.log)
 --- point isl1024_osl1024_c4 (num_prompts=16) ---
-  isl1024_osl1024_c4 FAILED (see isl1024_osl1024_c4.log)
 --- point isl1024_osl1024_c8 (num_prompts=32) ---
-  isl1024_osl1024_c8 FAILED (see isl1024_osl1024_c8.log)
 --- point isl1024_osl1024_c16 (num_prompts=64) ---
-  isl1024_osl1024_c16 FAILED (see isl1024_osl1024_c16.log)
 --- point isl1024_osl1024_c32 (num_prompts=128) ---
-  isl1024_osl1024_c32 FAILED (see isl1024_osl1024_c32.log)
 --- sweep complete: /opt/np/repo/inf2/results/serve/llama31_base_short ---
