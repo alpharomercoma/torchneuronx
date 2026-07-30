@@ -1,0 +1,24 @@
+2026-Jul-30 13:22:49.0674 1858:1905 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Jul-30 13:22:49.0680 1858:1905 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-30 13:22:49.0685 1858:1905 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-30 13:22:49.0690 1858:1905 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+  0%|          | 0.00/9.91M [00:00<?, ?B/s]  1%|          | 65.5k/9.91M [00:00<00:18, 532kB/s]  3%|▎         | 262k/9.91M [00:00<00:08, 1.15MB/s]  7%|▋         | 688k/9.91M [00:00<00:03, 2.37MB/s] 16%|█▌        | 1.54M/9.91M [00:00<00:02, 3.94MB/s] 32%|███▏      | 3.21M/9.91M [00:00<00:00, 7.77MB/s] 66%|██████▌   | 6.55M/9.91M [00:00<00:00, 14.4MB/s]100%|██████████| 9.91M/9.91M [00:00<00:00, 12.2MB/s]
+  0%|          | 0.00/28.9k [00:00<?, ?B/s]100%|██████████| 28.9k/28.9k [00:00<00:00, 480kB/s]
+  0%|          | 0.00/1.65M [00:00<?, ?B/s]  6%|▌         | 98.3k/1.65M [00:00<00:01, 881kB/s] 16%|█▌        | 262k/1.65M [00:00<00:01, 1.23MB/s] 38%|███▊      | 623k/1.65M [00:00<00:00, 2.15MB/s] 78%|███████▊  | 1.28M/1.65M [00:00<00:00, 3.62MB/s]100%|██████████| 1.65M/1.65M [00:00<00:00, 3.69MB/s]
+  0%|          | 0.00/4.54k [00:00<?, ?B/s]100%|██████████| 4.54k/4.54k [00:00<00:00, 37.7MB/s]
+# academic  dataset=mnist arch=mlp params=269,322 epochs=5 lr=0.001 wd=0.0 adamw=False batch=128 smoothing=0.0 augment=True seed=0 device=xla
+.
+Compiler status PASS
+2026-07-30 13:22:58.000806:  1858  [INFO]: Compilation Successfully Completed for model.MODULE_7795308310002353597+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-07-30 13:23:02.000484:  1858  [INFO]: Compilation Successfully Completed for model.MODULE_12127776669447047663+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-07-30 13:23:06.000657:  1858  [INFO]: Compilation Successfully Completed for model.MODULE_16463525490548428141+e30acd3a.hlo_module.pb
+  epoch   1/5  loss  0.3265  test_acc 95.31%    11.6s
+  epoch   2/5  loss  0.1238  test_acc 97.02%     2.1s
+  epoch   3/5  loss  0.0805  test_acc 97.25%     2.2s
+  epoch   4/5  loss  0.0594  test_acc 97.90%     2.0s
+  epoch   5/5  loss  0.0423  test_acc 97.93%     2.0s
+best test_acc 97.93%  |  steady 2.4 ms/step  |  54237 samples/s  |  compile ~5.7s  ->  /opt/np/repo/trn1/results/academic/mnist_mlp.json

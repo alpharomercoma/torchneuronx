@@ -1,0 +1,51 @@
+2026-Jul-30 14:08:38.0347 15390:15427 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Jul-30 14:08:38.0358 15390:15427 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-30 14:08:38.0368 15390:15427 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-30 14:08:38.0377 15390:15427 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+# academic  dataset=cifar arch=cnn params=620,810 epochs=30 lr=0.001 wd=0.0005 adamw=True batch=128 smoothing=0.1 augment=True seed=0 device=xla
+..
+Compiler status PASS
+2026-07-30 14:09:01.000184:  15390  [INFO]: Compilation Successfully Completed for model.MODULE_1027244666448526339+e30acd3a.hlo_module.pb
+..
+Compiler status PASS
+2026-07-30 14:09:24.000420:  15390  [INFO]: Compilation Successfully Completed for model.MODULE_8047337476349488935+e30acd3a.hlo_module.pb
+..
+Compiler status PASS
+2026-07-30 14:09:49.000149:  15390  [INFO]: Compilation Successfully Completed for model.MODULE_10889696420859845825+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-07-30 14:10:09.000395:  15390  [INFO]: Compilation Successfully Completed for model.MODULE_1544794981018176120+e30acd3a.hlo_module.pb
+  epoch   1/30  loss  1.8630  test_acc 51.59%    77.3s
+  epoch   2/30  loss  1.5542  test_acc 58.47%     8.7s
+  epoch   3/30  loss  1.4619  test_acc 61.34%     8.9s
+  epoch   4/30  loss  1.3949  test_acc 65.81%     8.8s
+  epoch   5/30  loss  1.3294  test_acc 68.27%     8.9s
+  epoch   6/30  loss  1.2898  test_acc 71.58%     8.6s
+  epoch   7/30  loss  1.2655  test_acc 70.49%     8.8s
+  epoch   8/30  loss  1.2383  test_acc 71.14%     8.8s
+  epoch   9/30  loss  1.2259  test_acc 72.59%     8.7s
+  epoch  10/30  loss  1.2103  test_acc 72.74%     8.9s
+  epoch  11/30  loss  1.1960  test_acc 73.61%     8.7s
+  epoch  12/30  loss  1.1809  test_acc 74.93%     8.8s
+  epoch  13/30  loss  1.1700  test_acc 74.32%     8.8s
+  epoch  14/30  loss  1.1559  test_acc 75.26%     8.6s
+  epoch  15/30  loss  1.1480  test_acc 73.68%     8.8s
+..
+Compiler status PASS
+2026-07-30 14:12:54.000727:  15390  [INFO]: Compilation Successfully Completed for model.MODULE_10930857448856967632+e30acd3a.hlo_module.pb
+  epoch  16/30  loss  1.1349  test_acc 74.77%    32.0s
+  epoch  17/30  loss  1.1224  test_acc 76.59%     9.0s
+  epoch  18/30  loss  1.1146  test_acc 76.14%     8.5s
+  epoch  19/30  loss  1.1048  test_acc 77.50%     8.7s
+  epoch  20/30  loss  1.0916  test_acc 77.72%     8.5s
+  epoch  21/30  loss  1.0858  test_acc 77.91%     8.6s
+  epoch  22/30  loss  1.0724  test_acc 78.18%     8.8s
+  epoch  23/30  loss  1.0677  test_acc 78.49%     8.7s
+  epoch  24/30  loss  1.0610  test_acc 78.58%     8.9s
+  epoch  25/30  loss  1.0546  test_acc 78.83%     8.6s
+  epoch  26/30  loss  1.0491  test_acc 79.07%     8.7s
+  epoch  27/30  loss  1.0457  test_acc 79.03%     8.7s
+  epoch  28/30  loss  1.0420  test_acc 79.00%     8.8s
+  epoch  29/30  loss  1.0416  test_acc 78.91%     8.8s
+  epoch  30/30  loss  1.0423  test_acc 78.93%     8.8s
+best test_acc 79.07%  |  steady 5.1 ms/step  |  25306 samples/s  |  compile ~22.0s  ->  /opt/np/repo/trn1/results/academic/cifar_cnn.json

@@ -1,0 +1,64 @@
+2026-Jul-30 14:15:31.0803 15984:16021 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Jul-30 14:15:31.0814 15984:16021 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-30 14:15:31.0824 15984:16021 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-30 14:15:31.0832 15984:16021 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+# academic  dataset=cifar arch=vit params=811,146 epochs=40 lr=0.0006 wd=0.05 adamw=True batch=128 smoothing=0.1 augment=True seed=0 device=xla
+.......
+Compiler status PASS
+2026-07-30 14:17:51.000853:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_10898544608156151374+e30acd3a.hlo_module.pb
+........
+Compiler status PASS
+2026-07-30 14:20:19.000329:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_12778762174962152316+e30acd3a.hlo_module.pb
+.............
+Compiler status PASS
+2026-07-30 14:25:04.000155:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_8636384582740404200+e30acd3a.hlo_module.pb
+  epoch   1/40  loss  2.0551  test_acc 32.39%   318.9s
+  epoch   2/40  loss  1.8137  test_acc 40.48%    30.1s
+  epoch   3/40  loss  1.6572  test_acc 47.24%    30.7s
+  epoch   4/40  loss  1.5482  test_acc 53.34%    29.5s
+  epoch   5/40  loss  1.4764  test_acc 57.14%    30.2s
+  epoch   6/40  loss  1.4193  test_acc 59.90%    29.8s
+  epoch   7/40  loss  1.3771  test_acc 63.62%    29.6s
+  epoch   8/40  loss  1.3271  test_acc 63.63%    29.4s
+  epoch   9/40  loss  1.2937  test_acc 67.71%    30.2s
+  epoch  10/40  loss  1.2613  test_acc 66.54%    30.0s
+  epoch  11/40  loss  1.2301  test_acc 68.39%    29.6s
+  epoch  12/40  loss  1.2067  test_acc 70.17%    29.4s
+  epoch  13/40  loss  1.1735  test_acc 70.12%    30.2s
+  epoch  14/40  loss  1.1507  test_acc 70.53%    29.9s
+  epoch  15/40  loss  1.1296  test_acc 73.26%    30.2s
+........
+Compiler status PASS
+2026-07-30 14:35:22.000344:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_6932768547555367011+e30acd3a.hlo_module.pb
+  epoch  16/40  loss  1.1067  test_acc 71.55%   175.1s
+  epoch  17/40  loss  1.0836  test_acc 73.95%    30.0s
+  epoch  18/40  loss  1.0652  test_acc 74.11%    29.9s
+  epoch  19/40  loss  1.0459  test_acc 73.68%    29.8s
+  epoch  20/40  loss  1.0315  test_acc 76.41%    30.1s
+  epoch  21/40  loss  1.0070  test_acc 76.32%    30.3s
+  epoch  22/40  loss  0.9874  test_acc 77.41%    29.7s
+  epoch  23/40  loss  0.9764  test_acc 77.61%    30.1s
+  epoch  24/40  loss  0.9581  test_acc 77.82%    29.7s
+  epoch  25/40  loss  0.9424  test_acc 78.37%    29.7s
+  epoch  26/40  loss  0.9309  test_acc 78.66%    29.8s
+  epoch  27/40  loss  0.9132  test_acc 78.54%    29.8s
+  epoch  28/40  loss  0.9023  test_acc 79.14%    29.5s
+........
+Compiler status PASS
+2026-07-30 14:44:27.000975:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_12473984449238554025+e30acd3a.hlo_module.pb
+  epoch  29/40  loss  0.8885  test_acc 79.46%   176.6s
+  epoch  30/40  loss  0.8782  test_acc 79.85%    30.0s
+  epoch  31/40  loss  0.8633  test_acc 79.82%    30.0s
+  epoch  32/40  loss  0.8524  test_acc 80.06%    30.4s
+  epoch  33/40  loss  0.8459  test_acc 80.22%    29.8s
+  epoch  34/40  loss  0.8389  test_acc 80.52%    30.2s
+  epoch  35/40  loss  0.8316  test_acc 80.51%    29.8s
+  epoch  36/40  loss  0.8233  test_acc 80.50%    30.1s
+  epoch  37/40  loss  0.8214  test_acc 80.50%    29.5s
+  epoch  38/40  loss  0.8173  test_acc 80.69%    30.3s
+  epoch  39/40  loss  0.8164  test_acc 80.61%    29.9s
+........
+Compiler status PASS
+2026-07-30 14:52:24.000696:  15984  [INFO]: Compilation Successfully Completed for model.MODULE_13202007133249968531+e30acd3a.hlo_module.pb
+  epoch  40/40  loss  0.8147  test_acc 80.64%   177.4s
+best test_acc 80.69%  |  steady 26.0 ms/step  |  4922 samples/s  |  compile ~141.7s  ->  /opt/np/repo/trn1/results/academic/cifar_vit.json

@@ -1,0 +1,58 @@
+{
+ "dataset": "mnist",
+ "arch": "cnn",
+ "params": 421642,
+ "config": {
+  "epochs": 5,
+  "lr": 0.001,
+  "weight_decay": 0.0,
+  "adamw": false,
+  "batch_size": 128,
+  "label_smoothing": 0.0,
+  "augment": true,
+  "seed": 0,
+  "device": "xla-neuroncore",
+  "precision": "fp32"
+ },
+ "best_test_acc": 98.94,
+ "final_test_acc": 98.94,
+ "epochs": [
+  {
+   "epoch": 1,
+   "train_loss": 0.2512,
+   "test_acc": 97.84,
+   "wall_s": 27.4
+  },
+  {
+   "epoch": 2,
+   "train_loss": 0.0636,
+   "test_acc": 98.29,
+   "wall_s": 3.9
+  },
+  {
+   "epoch": 3,
+   "train_loss": 0.0463,
+   "test_acc": 98.77,
+   "wall_s": 3.8
+  },
+  {
+   "epoch": 4,
+   "train_loss": 0.0357,
+   "test_acc": 98.91,
+   "wall_s": 3.9
+  },
+  {
+   "epoch": 5,
+   "train_loss": 0.0284,
+   "test_acc": 98.94,
+   "wall_s": 3.8
+  }
+ ],
+ "first_step_ms": 11777.1,
+ "median_step_ms": 2.59,
+ "compile_s_estimate": 11.8,
+ "samples_per_s_steady": 49354.6,
+ "total_wall_s": 50.8,
+ "mlx_reference": "github.com/alpharomercoma/mlx-models (Apple M5)",
+ "captured": "2026-07-30T13:24:20Z"
+}

@@ -93,3 +93,44 @@ def test_failure_counted_not_raised(tmp_path):
         out=str(tmp_path / "r.json"))
     r = fallback_client.Bench(args).run()
     assert r["failed"] == 2 and r["completed"] == 0
+
+
+def test_poisson_arrivals_pure():
+    arr = fallback_client.draw_poisson_arrivals(10.0, 5.0, seed=42)
+    assert all(b > a for a, b in zip(arr, arr[1:]))       # strictly increasing
+    assert all(0 <= t < 5.0 for t in arr)
+    assert 25 <= len(arr) <= 85                            # ~50 expected, wide CI
+    assert arr == fallback_client.draw_poisson_arrivals(10.0, 5.0, seed=42)
+    assert len(fallback_client.draw_poisson_arrivals(10.0, 5.0, seed=42, cap=7)) == 7
+
+
+def test_goodput_pure():
+    rs = [{"ttft": 100, "tpot": 20, "ntok": 10},
+          {"ttft": 5000, "tpot": 20, "ntok": 10},   # ttft SLO miss
+          {"ttft": 100, "tpot": 200, "ntok": 10},   # tpot SLO miss
+          {"ttft": 100, "tpot": None, "ntok": 10}]  # 1-token: tpot undefined = pass
+    g = fallback_client.compute_goodput(rs, 10.0, 3000, 80)
+    assert g["slo_attainment_pct"] == 50.0
+    assert g["goodput_output_tokens_per_s"] == 2.0
+    assert g["slo_ttft_ms"] == 3000 and g["slo_tpot_ms"] == 80
+
+
+def test_poisson_mode_against_mock(tmp_path):
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), MockSSE)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        args = fallback_client.argparse.Namespace(
+            base_url=f"http://127.0.0.1:{srv.server_port}", model="mock-model",
+            num_prompts=100, max_concurrency=8,
+            input_len=32, output_len=N_TOKENS, seed=7,
+            out=str(tmp_path / "p.json"),
+            arrival_mode="poisson", request_rate=6.0, duration_s=2.0,
+            slo_ttft_ms=3000.0, slo_tpot_ms=80.0)
+        r = fallback_client.Bench(args).run()
+    finally:
+        srv.shutdown()
+    assert r["arrival_mode"] == "poisson"
+    assert r["requests_offered"] == r["completed"] + r["failed"]
+    assert 3 <= r["requests_offered"] <= 30          # ~12 expected
+    assert r["slo_attainment_pct"] == 100.0          # mock: 100ms/20ms beats SLOs
+    assert r["goodput_output_tokens_per_s"] > 0

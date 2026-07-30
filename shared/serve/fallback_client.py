@@ -55,6 +55,43 @@ def build_prompt(input_len, seed):
     return " ".join(rng.choice(WORDS) for _ in range(max(1, input_len) + 32))
 
 
+def draw_poisson_arrivals(rate_per_s, duration_s, seed, cap=None):
+    """Arrival timestamps (s from start) for a Poisson process. Pure.
+
+    Open-loop load (MLPerf Server-scenario style): arrivals are drawn from
+    exponential inter-arrival gaps and do NOT wait for completions, so the
+    server sees offered load rather than the closed-loop feedback of a
+    fixed-concurrency pool. Deterministic per seed for reproducibility.
+    """
+    rng = random.Random(seed)
+    t, out = 0.0, []
+    while True:
+        t += rng.expovariate(rate_per_s)
+        if t >= duration_s or (cap is not None and len(out) >= cap):
+            break
+        out.append(t)
+    return out
+
+
+def compute_goodput(results, duration_s, slo_ttft_ms, slo_tpot_ms):
+    """Goodput = output tokens/s from requests meeting BOTH SLOs. Pure.
+
+    The SLO thresholds are declared in the result JSON, never implied --
+    goodput without its SLO definition is a number with no meaning.
+    """
+    good = [r for r in results
+            if r["ttft"] <= slo_ttft_ms
+            and (r["tpot"] is None or r["tpot"] <= slo_tpot_ms)]
+    total = len(results)
+    return {
+        "slo_ttft_ms": slo_ttft_ms,
+        "slo_tpot_ms": slo_tpot_ms,
+        "slo_attainment_pct": round(100.0 * len(good) / total, 2) if total else None,
+        "goodput_output_tokens_per_s":
+            round(sum(r["ntok"] for r in good) / duration_s, 2) if duration_s else 0,
+    }
+
+
 def pct(sorted_vals, p):
     if not sorted_vals:
         return None
@@ -179,12 +216,33 @@ class Bench:
 
     def run(self):
         a = self.args
-        print(f"# fallback_client  model={a.model}  prompts={a.num_prompts} "
-              f"conc={a.max_concurrency}  isl={a.input_len}  osl={a.output_len} "
-              f"seed={a.seed}")
+        mode = getattr(a, "arrival_mode", "closed")
+        print(f"# fallback_client  model={a.model}  mode={mode}  "
+              f"prompts={a.num_prompts}  conc={a.max_concurrency}  "
+              f"isl={a.input_len}  osl={a.output_len}  seed={a.seed}"
+              + (f"  rate={a.request_rate}/s window={a.duration_s}s"
+                 if mode == "poisson" else ""))
         self.t0 = time.perf_counter()
-        with ThreadPoolExecutor(max_workers=a.max_concurrency) as pool:
-            list(pool.map(self.one_request, range(a.num_prompts)))
+        if mode == "poisson":
+            # Open loop: a wide pool so admission is never gated by
+            # completions; the schedule, not the pool, sets concurrency.
+            arrivals = draw_poisson_arrivals(
+                a.request_rate, getattr(a, "duration_s", 60.0), a.seed,
+                cap=a.num_prompts)
+            with ThreadPoolExecutor(max_workers=max(64, a.max_concurrency)) as pool:
+                futures = []
+                for i, t_arr in enumerate(arrivals):
+                    delay = t_arr - (time.perf_counter() - self.t0)
+                    if delay > 0:
+                        time.sleep(delay)
+                    futures.append(pool.submit(self.one_request, i))
+                for f in futures:
+                    f.result()
+            self.offered = len(arrivals)
+        else:
+            with ThreadPoolExecutor(max_workers=a.max_concurrency) as pool:
+                list(pool.map(self.one_request, range(a.num_prompts)))
+            self.offered = a.num_prompts
         duration = time.perf_counter() - self.t0
 
         ok = self.results
@@ -210,7 +268,18 @@ class Bench:
             "max_output_tokens_per_s":
                 max(self.second_buckets.values()) if self.second_buckets else 0,
             "max_concurrent_requests": self.max_active,
+            "arrival_mode": mode,
+            "request_rate_offered":
+                (getattr(self.args, "request_rate", None)
+                 if mode == "poisson" else None),
+            "requests_offered": self.offered,
+            "completed_rate_per_s":
+                round(len(ok) / duration, 3) if duration else 0,
         }
+        out.update(compute_goodput(
+            ok, duration,
+            getattr(self.args, "slo_ttft_ms", 3000.0),
+            getattr(self.args, "slo_tpot_ms", 80.0)))
         out.update(dist("ttft", [r["ttft"] for r in ok]))
         out.update(dist("tpot", [r["tpot"] for r in ok if r["tpot"] is not None]))
         out.update(dist("itl", itl_all))
@@ -228,7 +297,19 @@ def main():
     ap.add_argument("--output-len", type=int, default=1024)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", required=True)
+    # Open-loop (MLPerf Server-style) mode + SLO goodput. Defaults keep the
+    # closed-loop behavior of every existing lane byte-identical.
+    ap.add_argument("--arrival-mode", choices=["closed", "poisson"],
+                    default="closed")
+    ap.add_argument("--request-rate", type=float, default=None,
+                    help="poisson: offered req/s")
+    ap.add_argument("--duration-s", type=float, default=60.0,
+                    help="poisson: admission window")
+    ap.add_argument("--slo-ttft-ms", type=float, default=3000.0)
+    ap.add_argument("--slo-tpot-ms", type=float, default=80.0)
     args = ap.parse_args()
+    if args.arrival_mode == "poisson" and not args.request_rate:
+        ap.error("--arrival-mode poisson requires --request-rate")
 
     result = Bench(args).run()
     tmp = args.out + ".tmp"

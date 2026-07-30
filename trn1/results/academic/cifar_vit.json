@@ -1,0 +1,268 @@
+{
+ "dataset": "cifar",
+ "arch": "vit",
+ "params": 811146,
+ "config": {
+  "epochs": 40,
+  "lr": 0.0006,
+  "weight_decay": 0.05,
+  "adamw": true,
+  "batch_size": 128,
+  "label_smoothing": 0.1,
+  "augment": true,
+  "seed": 0,
+  "device": "xla-neuroncore",
+  "precision": "fp32"
+ },
+ "best_test_acc": 80.69,
+ "final_test_acc": 80.64,
+ "epochs": [
+  {
+   "epoch": 1,
+   "train_loss": 2.0551,
+   "test_acc": 32.39,
+   "wall_s": 318.9
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.8137,
+   "test_acc": 40.48,
+   "wall_s": 30.1
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.6572,
+   "test_acc": 47.24,
+   "wall_s": 30.7
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.5482,
+   "test_acc": 53.34,
+   "wall_s": 29.5
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.4764,
+   "test_acc": 57.14,
+   "wall_s": 30.2
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.4193,
+   "test_acc": 59.9,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 7,
+   "train_loss": 1.3771,
+   "test_acc": 63.62,
+   "wall_s": 29.6
+  },
+  {
+   "epoch": 8,
+   "train_loss": 1.3271,
+   "test_acc": 63.63,
+   "wall_s": 29.4
+  },
+  {
+   "epoch": 9,
+   "train_loss": 1.2937,
+   "test_acc": 67.71,
+   "wall_s": 30.2
+  },
+  {
+   "epoch": 10,
+   "train_loss": 1.2613,
+   "test_acc": 66.54,
+   "wall_s": 30.0
+  },
+  {
+   "epoch": 11,
+   "train_loss": 1.2301,
+   "test_acc": 68.39,
+   "wall_s": 29.6
+  },
+  {
+   "epoch": 12,
+   "train_loss": 1.2067,
+   "test_acc": 70.17,
+   "wall_s": 29.4
+  },
+  {
+   "epoch": 13,
+   "train_loss": 1.1735,
+   "test_acc": 70.12,
+   "wall_s": 30.2
+  },
+  {
+   "epoch": 14,
+   "train_loss": 1.1507,
+   "test_acc": 70.53,
+   "wall_s": 29.9
+  },
+  {
+   "epoch": 15,
+   "train_loss": 1.1296,
+   "test_acc": 73.26,
+   "wall_s": 30.2
+  },
+  {
+   "epoch": 16,
+   "train_loss": 1.1067,
+   "test_acc": 71.55,
+   "wall_s": 175.1
+  },
+  {
+   "epoch": 17,
+   "train_loss": 1.0836,
+   "test_acc": 73.95,
+   "wall_s": 30.0
+  },
+  {
+   "epoch": 18,
+   "train_loss": 1.0652,
+   "test_acc": 74.11,
+   "wall_s": 29.9
+  },
+  {
+   "epoch": 19,
+   "train_loss": 1.0459,
+   "test_acc": 73.68,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 20,
+   "train_loss": 1.0315,
+   "test_acc": 76.41,
+   "wall_s": 30.1
+  },
+  {
+   "epoch": 21,
+   "train_loss": 1.007,
+   "test_acc": 76.32,
+   "wall_s": 30.3
+  },
+  {
+   "epoch": 22,
+   "train_loss": 0.9874,
+   "test_acc": 77.41,
+   "wall_s": 29.7
+  },
+  {
+   "epoch": 23,
+   "train_loss": 0.9764,
+   "test_acc": 77.61,
+   "wall_s": 30.1
+  },
+  {
+   "epoch": 24,
+   "train_loss": 0.9581,
+   "test_acc": 77.82,
+   "wall_s": 29.7
+  },
+  {
+   "epoch": 25,
+   "train_loss": 0.9424,
+   "test_acc": 78.37,
+   "wall_s": 29.7
+  },
+  {
+   "epoch": 26,
+   "train_loss": 0.9309,
+   "test_acc": 78.66,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 27,
+   "train_loss": 0.9132,
+   "test_acc": 78.54,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 28,
+   "train_loss": 0.9023,
+   "test_acc": 79.14,
+   "wall_s": 29.5
+  },
+  {
+   "epoch": 29,
+   "train_loss": 0.8885,
+   "test_acc": 79.46,
+   "wall_s": 176.6
+  },
+  {
+   "epoch": 30,
+   "train_loss": 0.8782,
+   "test_acc": 79.85,
+   "wall_s": 30.0
+  },
+  {
+   "epoch": 31,
+   "train_loss": 0.8633,
+   "test_acc": 79.82,
+   "wall_s": 30.0
+  },
+  {
+   "epoch": 32,
+   "train_loss": 0.8524,
+   "test_acc": 80.06,
+   "wall_s": 30.4
+  },
+  {
+   "epoch": 33,
+   "train_loss": 0.8459,
+   "test_acc": 80.22,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 34,
+   "train_loss": 0.8389,
+   "test_acc": 80.52,
+   "wall_s": 30.2
+  },
+  {
+   "epoch": 35,
+   "train_loss": 0.8316,
+   "test_acc": 80.51,
+   "wall_s": 29.8
+  },
+  {
+   "epoch": 36,
+   "train_loss": 0.8233,
+   "test_acc": 80.5,
+   "wall_s": 30.1
+  },
+  {
+   "epoch": 37,
+   "train_loss": 0.8214,
+   "test_acc": 80.5,
+   "wall_s": 29.5
+  },
+  {
+   "epoch": 38,
+   "train_loss": 0.8173,
+   "test_acc": 80.69,
+   "wall_s": 30.3
+  },
+  {
+   "epoch": 39,
+   "train_loss": 0.8164,
+   "test_acc": 80.61,
+   "wall_s": 29.9
+  },
+  {
+   "epoch": 40,
+   "train_loss": 0.8147,
+   "test_acc": 80.64,
+   "wall_s": 177.4
+  }
+ ],
+ "first_step_ms": 141679.6,
+ "median_step_ms": 26.01,
+ "compile_s_estimate": 141.7,
+ "samples_per_s_steady": 4921.6,
+ "total_wall_s": 2237.6,
+ "mlx_reference": "github.com/alpharomercoma/mlx-models (Apple M5)",
+ "captured": "2026-07-30T14:52:50Z"
+}
