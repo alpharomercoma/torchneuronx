@@ -66,7 +66,16 @@ def run_simulate(out_path, seed=0):
     x = rng.standard_normal((PARTITIONS, FREE_DIM), dtype=np.float32)
     kernel = make_kernel()
     t0 = time.perf_counter()
-    got = nki.simulate(kernel, (x,), {})
+    # nki 0.5.0's public simulate is a wrapper-factory: simulate(kernel)
+    # returns a CPU-simulated callable (first attempt failed with
+    # "simulate() takes 1 positional argument but 3 were given" -- receipt
+    # kept in git history). Fall back to the internal simulate_kernel
+    # signature the inventory found if the wrapper convention drifts again.
+    try:
+        got = nki.simulate(kernel)(x)
+    except TypeError:
+        from nki.simulator import simulate_kernel
+        got = simulate_kernel(kernel, (x,), {})
     sim_s = time.perf_counter() - t0
     want = numpy_reference(x)
     max_err = float(abs(np.asarray(got) - want).max())
