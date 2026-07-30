@@ -23,8 +23,9 @@ trn1.2xlarge  (us-west-2)                 inf2.xlarge  (us-west-2)
   32 GB HBM, ~820 GB/s                      32 GB HBM
   ~210 TFLOP/s dense BF16 (paper)           ~190 TFLOP/s dense BF16 (paper)
   8 vCPU, 32 GiB host RAM                   4 vCPU, 16 GiB host RAM
-  Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04)  Neuron DLAMI (vLLM, Ubuntu 24.04)
-  TODO-VERIFY: exact SDK/driver versions    TODO-VERIFY: exact SDK/vLLM versions
+  Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04)  Neuron vLLM 0.16 DLAMI (Ubuntu 24.04)
+  torch-neuronx 2.9.0 | neuronx-cc 2.26     vllm 0.16.0 | NxDI 0.10 | neuronx-cc 2.26
+  optimum-neuron 0.4.3 (pins: trl 0.24.0)   ami-035c945d557065665 (pin is load-bearing)
 ```
 
 Both boxes are provisioned by the CDK app in [cdk/](cdk/), accessed only via
