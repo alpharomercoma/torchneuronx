@@ -19,17 +19,15 @@ export NEURON_COMPILE_CACHE_URL="${NEURON_COMPILE_CACHE_URL:-/opt/np/cache/neuro
 mkdir -p "$RESULTS_DIR"
 have() { [ "$FORCE" != "1" ] && [ -s "$1" ]; }
 
-# optimum-neuron is ABSENT from the vLLM venv (it ships NxDI/vLLM only), so
-# install it first, idempotently (the import probe is the guard). If the
-# install -- or a later import -- fails, each lane writes a structured
-# failure receipt rather than crashing the driver.
-echo; echo "############ extras: optimum-neuron install ############"; echo
-if "$PY" -c "import optimum.neuron" >/dev/null 2>&1; then
-  echo "skip install (optimum.neuron already importable)"
-else
-  "$PY" -m pip install --quiet "optimum-neuron==0.4.3" \
-    || echo "  optimum-neuron install FAILED (lanes will record structured failures)"
-fi
+# optimum-neuron must NEVER be installed into this venv. Measured 2026-07-31:
+# (a) the venv's transformers is a patched fork under an upstream version
+# string and lacks symbols optimum-neuron imports (PeftAdapterMixin,
+# GenerationMixin) -- receipts in inf2/results/extras/*.failure.json; and
+# (b) optimum-neuron registers a SECOND vLLM platform plugin, which bricks
+# every server boot: "Only one platform plugin can be activated, but got:
+# ['optimum_neuron', 'neuron']" (receipt: extras/serve/mistral7b_short).
+# Parity lanes run on trn1's training venv instead (run_extras_trn1.sh).
+echo; echo "############ extras: optimum-neuron install -- BANNED (see comment) ############"; echo
 
 # whisper/clip/siglip are single-core traced models, so the core pin is
 # per-lane (NOT exported: the mistral serve lane below needs both cores).
