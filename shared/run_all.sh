@@ -143,8 +143,9 @@ elif [ "$BOX" = "inf2" ]; then
   # cover both short-high-concurrency and long-context -- see METHODOLOGY).
   # Cold-boot wall time on the first launch of each config is itself a result.
   step "lane 3: sweep Llama 3.1 8B base (config A: short)"
-  if have "$RESULTS_DIR/serve/llama31_base_short/grid.json"; then
-    echo "skip llama31 base short (complete)"
+  if have "$RESULTS_DIR/serve/llama31_base_short/grid.json" \
+     || have "$RESULTS_DIR/serve/llama31_base_short/load_failure.json"; then
+    echo "skip llama31 base short (outcome recorded)"
   else
     bash "$BENCH_DIR/shared/serve/bench_serve.sh" llama31_base short \
       > "$RESULTS_DIR/serve/llama31_base_short.log" 2>&1 \
@@ -152,8 +153,9 @@ elif [ "$BOX" = "inf2" ]; then
   fi
 
   step "lane 4: sweep Llama 3.1 8B base (config B: long)"
-  if have "$RESULTS_DIR/serve/llama31_base_long/grid.json"; then
-    echo "skip llama31 base long (complete)"
+  if have "$RESULTS_DIR/serve/llama31_base_long/grid.json" \
+     || have "$RESULTS_DIR/serve/llama31_base_long/load_failure.json"; then
+    echo "skip llama31 base long (outcome recorded)"
   else
     bash "$BENCH_DIR/shared/serve/bench_serve.sh" llama31_base long \
       > "$RESULTS_DIR/serve/llama31_base_long.log" 2>&1 \
