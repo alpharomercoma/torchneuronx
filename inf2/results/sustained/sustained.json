@@ -1,0 +1,60 @@
+{
+  "iterations": 7,
+  "first_tok_s": 118.8,
+  "peak_tok_s": 119.3,
+  "last_tok_s": 119.3,
+  "tail3_mean_tok_s": 119.3,
+  "retention_vs_first_pct": 100.4,
+  "retention_vs_peak_pct": 100.0,
+  "per_iteration": [
+    {
+      "file": "iter_001.json",
+      "output_tok_s": 118.8,
+      "ttft_p99_ms": 3638.69,
+      "tpot_p50_ms": 65.61,
+      "duration_s": 275.95
+    },
+    {
+      "file": "iter_002.json",
+      "output_tok_s": 119.2,
+      "ttft_p99_ms": 3135.37,
+      "tpot_p50_ms": 65.467,
+      "duration_s": 274.96
+    },
+    {
+      "file": "iter_003.json",
+      "output_tok_s": 119.2,
+      "ttft_p99_ms": 3130.69,
+      "tpot_p50_ms": 65.453,
+      "duration_s": 274.88
+    },
+    {
+      "file": "iter_004.json",
+      "output_tok_s": 119.2,
+      "ttft_p99_ms": 3128.28,
+      "tpot_p50_ms": 65.421,
+      "duration_s": 274.78
+    },
+    {
+      "file": "iter_005.json",
+      "output_tok_s": 119.3,
+      "ttft_p99_ms": 3134.67,
+      "tpot_p50_ms": 65.412,
+      "duration_s": 274.74
+    },
+    {
+      "file": "iter_006.json",
+      "output_tok_s": 119.3,
+      "ttft_p99_ms": 3117.9,
+      "tpot_p50_ms": 65.407,
+      "duration_s": 274.68
+    },
+    {
+      "file": "iter_007.json",
+      "output_tok_s": 119.3,
+      "ttft_p99_ms": 3125.25,
+      "tpot_p50_ms": 65.408,
+      "duration_s": 274.76
+    }
+  ]
+}

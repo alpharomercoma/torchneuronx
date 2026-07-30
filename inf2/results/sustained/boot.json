@@ -3,9 +3,9 @@
   "config": "short",
   "model_id": "meta-llama/Llama-3.1-8B-Instruct",
   "boot_wall_s": 1719,
-  "cache_dir_size_mb_before": 322,
-  "cache_dir_size_mb_after": 322,
+  "cache_dir_size_mb_before": 616,
+  "cache_dir_size_mb_after": 616,
   "warm": false,
-  "server_pid": 7425,
-  "captured": "2026-07-29T19:23:08Z"
+  "server_pid": 149091,
+  "captured": "2026-07-29T23:17:52Z"
 }
