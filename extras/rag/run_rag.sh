@@ -40,23 +40,19 @@ export NEURON_COMPILE_CACHE_URL="${NEURON_COMPILE_CACHE_URL:-/opt/np/cache/neuro
 mkdir -p "$RESULTS_DIR"
 have() { [ "$FORCE" != "1" ] && [ -s "$1" ]; }
 
-# ------------------------------------------------------------ pip guard
-# Same optimum-neuron guard as extras/run_extras_inf2.sh (Track A) when that
-# driver exists -- both inline the identical install because the vLLM DLAMI
-# venv ships no optimum-neuron. Pin WITHOUT the [neuronx] extra: the extra
-# backtracks pip into py3.12-incompatible releases (REPORT.md §11 / trn1
-# PROVISIONING.md gotchas); the DLAMI already provides torch-neuronx and
-# neuronx-cc, and numpy stays >=2 (the compiler wins).
-echo; echo "############ rag: optimum-neuron guard ############"; echo
-if [ -f "$BENCH_DIR/extras/run_extras_inf2.sh" ]; then
-  echo "  (extras/run_extras_inf2.sh present -- same guard; rerun is a no-op)"
+# ------------------------------------------------------- overlay venv guard
+# optimum-neuron must NEVER be installed into the vLLM venv (duelling
+# platform plugins brick every server boot -- measured 2026-07-31, receipts in
+# inf2/results/extras/). All optimum-neuron stages (compile / embed / ingest /
+# probes) run from a --system-site-packages OVERLAY venv built by
+# setup_venv.sh; the LLM boot below stays on the untouched vLLM venv.
+echo; echo "############ rag: overlay venv (setup_venv.sh) ############"; echo
+RAG_VENV="${RAG_VENV:-/opt/np/venvs/rag-overlay}"
+if ! bash "$RAG_DIR/setup_venv.sh" "$RESULTS_DIR/rag_venv.failure.json"; then
+  echo "overlay venv FAILED -- receipt at $RESULTS_DIR/rag_venv.failure.json"
+  exit 1
 fi
-if ! "$PY" -c "import optimum.neuron" >/dev/null 2>&1; then
-  "$PY" -m pip install --no-cache-dir "optimum-neuron==0.4.3" \
-    || echo "  optimum-neuron install FAILED (compile stage will receipt it)"
-else
-  echo "  optimum-neuron already importable"
-fi
+PY="$RAG_VENV/bin/python"
 
 # ------------------------------------------------------------ F1: postgres
 echo; echo "############ rag: setup_pg ############"; echo

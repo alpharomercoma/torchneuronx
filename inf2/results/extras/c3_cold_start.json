@@ -1,0 +1,22 @@
+{
+ "lane": "c3_autoscaling_cold_start",
+ "scenario": "cdk destroy + fresh deploy of InferentiaStack, NEFF cache seeded from S3, llama31_base 8B vLLM boot, one generation",
+ "instance": "i-0936ae7615727251e",
+ "epochs": {
+  "t0_destroy_start": 1785433438, "t1_destroyed": 1785433610,
+  "t2_deployed": 1785433785, "t3_ssm_online": 1785433838,
+  "t4_userdata_ready": 1785433851, "t5_code_pulled": 1785433853,
+  "t6_cache_seeded": 1785433863, "t8_first_token": 1785436310
+ },
+ "durations_s": {
+  "cdk_destroy": 172, "cdk_deploy": 175, "ssm_online_after_deploy": 53,
+  "userdata_ready_after_ssm": 13, "code_pull": 2, "neff_cache_seed_1p2gb": 10,
+  "server_boot_to_first_token": 2447,
+  "deploy_to_first_token_total": 2525,
+  "destroy_start_to_first_token_total": 2872
+ },
+ "first_generation": {"ttft_ms": 568, "tpot_ms": 42.2, "steady_tok_per_s": 23.7},
+ "anomaly_declared": "t7_healthy stamped equal to t6_cache_seeded (marker misfire in the chain script); the honest boot number is t6->t8 = 2447 s, which folds server startup, weight load from S3, and warm-cache graph validation into one span rather than splitting healthy vs first-token",
+ "finding": "with a pre-seeded 1.2 GB NEFF cache the 8B server still needs ~41 min from process start to first token on a cold host; infra (destroy+deploy+SSM+code+cache) is only ~7 min of the ~48 min total -- model boot dominates autoscaling latency on inf2",
+ "captured": "2026-07-31T00:00:00Z_epoch_1785436310"
+}
