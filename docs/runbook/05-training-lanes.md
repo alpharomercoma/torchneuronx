@@ -3,8 +3,8 @@
 ```bash
 # on the box, inside a tmux over SSM (lanes survive session drops):
 cd /opt/np/repo && trn1/scripts/run_all.sh
-# lane 3 precompile: expect tens of minutes wall, TODO-VERIFY actual
-# lane 4 llama31 lora: hours-scale, TODO-VERIFY actual
+# lane 3 precompile: FAILED under neuron_parallel_compile+torchrun (recorded); compile cost shows up inline instead: smoke first step 277s vs 3.7s median
+# lane 4 llama31 lora: measured 95 min (645 steps, 3 epochs dolly-15k); qwen3 ~2h
 # watch from a second session:
 tail -f trn1/results/train/llama31_lora.log
 watch -n 30 neuron-ls

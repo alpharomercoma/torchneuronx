@@ -161,7 +161,7 @@ fi
 # Flag split per AWS DLC quickstart: vLLM >= 0.11.0 takes
 #   --additional-config '{"override_neuron_config": {...}}'
 # and older Neuron builds take --override-neuron-config '{...}'.
-# TODO-VERIFY: threshold 0.11.0 is from the aws-neuron DLC doc; confirm the
+# NOT EXERCISED in this study (stock servers only; see METHODOLOGY rule 2):
 # venv's actual build honours the same split on first boot.
 EXTRA_ARGS=()
 if [ -n "${OVERRIDE_NEURON_CONFIG:-}" ]; then

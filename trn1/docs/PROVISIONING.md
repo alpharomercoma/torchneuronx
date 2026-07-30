@@ -41,12 +41,21 @@ sudo apt-get install -y linux-headers-$(uname -r) aws-neuronx-dkms=2.*
 
 Fill during first bring-up (runbook 04); every later session diffs against it.
 
+Captured 2026-07-29/30 on i-0cb9e758143a745d5 (verbatim from bring-up):
+
 ```
-TODO-VERIFY: paste after first boot
-$ neuron-ls                        # 1 device, 2 NeuronCores, 32 GB
-$ echo $NEURON_COMPILE_CACHE_URL   # /opt/np/cache/neuron-compile-cache
-$ free -h | grep -i swap           # 64Gi swap on /scratch/swapfile
-$ df -h / /scratch                 # 500G EBS root, ~440G usable NVMe
-$ ls /opt/aws_neuronx_venv*        # pytorch training venv present
-$ /opt/aws_neuronx_venv*/bin/pip list | grep -E "torch-neuronx|optimum-neuron|neuronx-cc"
+$ /opt/aws/neuron/bin/neuron-ls
+| 0      | 2      | 0-1      | 32 GB  | 0000:00:1e.0 | 0-7      | -1   |
+$ echo $NEURON_COMPILE_CACHE_URL
+/opt/np/cache/neuron-compile-cache        # grew to 526 MB across the study
+$ free -h | grep -i swap
+Swap:           63Gi          0B        63Gi   # /scratch/swapfile (NVMe)
+$ df -h / /scratch
+/dev/root       484G  ...  /            # 500G gp3 EBS
+/dev/nvme1n1    434G  ...  /scratch     # instance store
+$ ls -d /opt/aws_neuronx_venv*
+/opt/aws_neuronx_venv_pytorch_2_9  /opt/aws_neuronx_venv_pytorch_2_9_nxd_inference
+$ pip list | grep -E "torch-neuronx|optimum-neuron|neuronx-cc|trl|peft"
+neuronx-cc 2.26.6360.0  torch-neuronx 2.9.0.2.15  torch 2.9.1
+optimum-neuron 0.4.3  trl 0.24.0  peft 0.17.0  (installed per Gotchas)
 ```

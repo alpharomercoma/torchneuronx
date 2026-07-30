@@ -27,17 +27,23 @@ here too. This doc adds only what is different on the inference box.
 | every boot dies: `Engine core initialization failed` → worker traceback ends `ValueError: Unsupported instance family: inf2. Supported: trn2, trn3pd, trn3pds` | vllm-neuron 0.21 unconditionally maps EFA NICs; inf2 has no EFA and the mapper only knows Trn2/Trn3 | `export NEURON_SKIP_EFA_AFFINITY=1` (plugin's own flag; launch_vllm.sh sets it). The real error is in the WORKER lines of boot.server.log — the APIServer's "Failed core proc(s): {}" line is a red herring |
 | past the EFA skip, compile dies: `nki/isa/_copy.py: tensor_copy does not support engine.scalar on NeuronCore-v2 (Trn1/Inf2)` | **the vLLM 0.21 DLAMI's kernels target NeuronCore-v3 (Trn2+) and assert on Inf2 silicon** — this DLAMI generation cannot serve inf2 at all | deploy the previous line: `cdk deploy NeuronPipelinesInferentia -c inf2AmiId=ami-035c945d557065665` (vLLM 0.16, Ubuntu 24.04, 20260715 — last generation before the Trn2-only switch on 20260721). Measured 2026-07-30 |
 | server boots then first request stalls minutes | warmup/compile on first shapes | the warm lane exists for this; never benchmark the first request |
-| boot OOMs at KV allocation | max_num_seqs × max_model_len over HBM budget | use the declared configs only (short: 2048×32, long: 10240×8) — METHODOLOGY rule 6 |
+| boot OOMs at KV allocation | max_num_seqs × max_model_len over HBM budget | use the declared configs only (short: 2048×32; long 9216×8 is a **declared exclusion** — NCC_INLA001 at both 10240 and 9216) — METHODOLOGY rule 6 |
 | client-side ceiling at concurrency 32 | 4 vCPU host tokenization | cpu lane bounds this; report it as host limit, not chip limit |
-| Qwen3 fails to boot | backend support gap | that lane is attempt-only; `load_failure.json` IS the result |
+| Qwen3 boots + /health passes, then every completion 500s | engine-core crash on first generation step (NxDI 0.10 + Qwen3 gap) | attempt-only lane; `generation_failure.json` + probe log ARE the result |
 
 ## Verified state
 
+Captured 2026-07-30 on i-056c306408a85d422 (vLLM 0.16 DLAMI, verbatim):
+
 ```
-TODO-VERIFY: paste after first boot
-$ neuron-ls                        # 1 device, 2 NeuronCores, 32 GB
-$ echo $NEURON_COMPILE_CACHE_URL   # /opt/np/cache/neuron-compile-cache
-$ free -h                          # ~15Gi total, no swap
-$ ls /opt/aws_neuronx_venv*        # vLLM inference venv present
-$ /opt/aws_neuronx_venv*/bin/pip list | grep -E "vllm|neuronx"
+$ /opt/aws/neuron/bin/neuron-ls
+| 0      | 2      | 0-1      | 32 GB  | 0000:00:1f.0 | 0-3      | -1   |
+$ echo $NEURON_COMPILE_CACHE_URL
+/opt/np/cache/neuron-compile-cache        # 616 MB after both 8B configs
+$ free -h | grep -i swap
+Swap:           47Gi         16Ki       47Gi   # /swapfile on EBS (user-data)
+$ ls -d /opt/aws_neuronx_venv*
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+$ pip list | grep -iE "^(vllm|neuronx-cc|neuronx-distributed-inference)"
+vllm 0.16.0   neuronx-distributed-inference 0.10.18399   neuronx-cc 2.26.6360.0
 ```

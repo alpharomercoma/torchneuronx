@@ -1,0 +1,16 @@
+{
+ "verified": true,
+ "mismatches": [],
+ "compared_files": 6,
+ "trn1_source": "trn1/results/train/merge_llama31.json (hashed at merge)",
+ "inf2_side": "sha256 of /opt/np/models/llama31-8b-dolly-merged on i-056c306408a85d422 after S3 round trip",
+ "inf2_hashes": {
+  "model-00001-of-00004.safetensors": "679f3d67dd6a86d90b2429bc9bf5b25e8b27170417478b6dd92dddfee0f6bba4",
+  "model-00002-of-00004.safetensors": "058551915ee88b077381cd61d976428f4daad3e9893ea7b5b1b1fe88b3d080e4",
+  "model-00003-of-00004.safetensors": "dc42eee5dc314ff73fcc2f963d985efd099bd6cff3a10153fecc7432b735fbd0",
+  "model-00004-of-00004.safetensors": "c0ad619c4e41628ec655bc67a0a6166aa91a664bf014000fab23fee554a9416d",
+  "config.json": "9244b967aff5712ec3e8ae05a1a7364fb274c3af10d41eac2eca2dc6db29a1c2",
+  "tokenizer.json": "6b9e4e7fb171f92fd137b777cc2714bf87d11576700a1dcd7a399e7bbe39537b"
+ },
+ "captured": "2026-07-30T06:40:00Z"
+}

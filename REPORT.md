@@ -111,8 +111,9 @@ unsupported.
 
 train (trn1, 95 min) → merge (6 artifacts, 14.97 GiB, SHA-256 each) →
 S3 (25.5 s up) → pull on inf2 → boot 548 s, zero recompile → sweep at
-base parity → quality 16/16. "The model we served is the model we
-trained" is checkable hash-to-hash.
+base parity → quality 16/16. "The model we served is the model we trained" is checkable
+hash-to-hash: all 6 artifact hashes match between the merge record and the
+served copy (`llama31_dolly_short/roundtrip_hashes.json`, verified=true).
 
 ## 9. Declared exclusions (rule 8)
 
