@@ -211,3 +211,8 @@ fi
 
 step "SUITE COMPLETE ($BOX)"
 ls -R "$RESULTS_DIR" | head -60
+
+# Evidence leaves the box the moment the suite ends -- a results push mid-run
+# once raced a training lane and the finished JSON lost (qwen3_lora.json,
+# 2026-07-30, retrained). The driver itself pushes now, win or lose.
+bash "$BENCH_DIR/shared/bin/push_results.sh" "$BOX" || echo "  results push FAILED (push manually)"
