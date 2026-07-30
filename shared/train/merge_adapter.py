@@ -95,8 +95,11 @@ DEFAULT_S3_PREFIX = "artifacts"
 # as shared/verify_models.sh: hash what changes the outputs, ignore the rest.
 ARTIFACT_PATTERNS = ("*.safetensors", "config.json", "tokenizer.json")
 
-# optimum-neuron's sharded-checkpoint layout.
-SHARDS_DIR_NAME = "shards"
+# optimum-neuron's sharded-checkpoint layout. 0.4.3 writes the sharded LoRA
+# checkpoint under adapter_default/adapter_shards/ (measured on the first
+# real merge, 2026-07-29 -- the docs' "shards" name is the pre-0.4 layout;
+# both are accepted so the script survives either version).
+SHARD_DIR_NAMES = ("adapter_shards", "shards")
 ADAPTER_DIR_PREFIX = "adapter_"
 CONSOLIDATED_WEIGHT_NAMES = ("adapter_model.safetensors", "adapter_model.bin")
 
@@ -159,12 +162,13 @@ def find_shard_dirs(adapter_dir):
     can report how many TP ranks are about to be consolidated.
     """
     found = []
-    direct = os.path.join(adapter_dir, SHARDS_DIR_NAME)
-    if os.path.isdir(direct):
-        found.append(direct)
-    found += sorted(
-        p for p in glob.glob(os.path.join(adapter_dir, "*", SHARDS_DIR_NAME))
-        if os.path.isdir(p))
+    for name in SHARD_DIR_NAMES:
+        direct = os.path.join(adapter_dir, name)
+        if os.path.isdir(direct):
+            found.append(direct)
+        found += sorted(
+            p for p in glob.glob(os.path.join(adapter_dir, "*", name))
+            if os.path.isdir(p))
     return found
 
 
@@ -266,7 +270,7 @@ def consolidate_adapter(adapter_dir, log):
         raise SystemExit(
             f"FATAL: {adapter_dir} has neither a consolidated adapter "
             f"({'/'.join(CONSOLIDATED_WEIGHT_NAMES)}) nor any "
-            f"{SHARDS_DIR_NAME}/ directory. Did sft_lora.py finish?")
+            f"{'/'.join(SHARD_DIR_NAMES)} directory. Did sft_lora.py finish?")
 
     # Point the consolidator at the adapter root: it discovers the adapter_*
     # subdirectories itself and writes the unified adapter into output_dir.

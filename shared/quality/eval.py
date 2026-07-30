@@ -64,13 +64,26 @@ def main():
     comp_url = f"{args.base_url}/v1/completions"
 
     greedy = []
+    logprobs_supported = True
     for i, p in enumerate(PROMPTS):
-        r = post(comp_url, {
+        body = {
             "model": args.model, "prompt": p,
             "max_tokens": args.max_tokens,
             "temperature": 0.0, "top_p": 1.0, "seed": 0,
-            "logprobs": 1,
-        })
+        }
+        if logprobs_supported:
+            r = post(comp_url, dict(body, logprobs=1))
+            if "choices" not in r:
+                # The vLLM Neuron (NxDI) backend rejects logprobs on
+                # completions (measured 2026-07-30: error body, no choices).
+                # Degrade once, loudly: greedy exact-match still runs, and
+                # corpus_mean_logprob is reported null -- an unsupported
+                # sensor is recorded as unsupported, never faked (rule 7).
+                logprobs_supported = False
+                print(f"logprobs unsupported by backend "
+                      f"({str(r.get('error'))[:120]}); continuing without")
+        if not logprobs_supported:
+            r = post(comp_url, body)
         ch = r["choices"][0]
         lps = (ch.get("logprobs") or {}).get("token_logprobs") or []
         lps = [x for x in lps if isinstance(x, (int, float))]
