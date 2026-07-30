@@ -1,6 +1,6 @@
 {
- "captured": "2026-07-30T06:27:15Z",
- "dropped_no_telemetry": 7,
+ "captured": "2026-07-30T06:27:57Z",
+ "dropped_no_telemetry": 5,
  "inf2": {
   "failures": {
    "llama31_base_long:load": {

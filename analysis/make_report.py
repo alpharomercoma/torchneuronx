@@ -51,8 +51,9 @@ def collect_serve_dir(full):
     """One sweep directory -> {tag: {result, telemetry}}, dropped count."""
     rows, dropped = {}, 0
     for name in sorted(os.listdir(full)):
-        if not name.endswith(".json") or name in ("grid.json", "boot.json",
-                                                  "load_failure.json"):
+        if not name.endswith(".json") or name in (
+                "grid.json", "boot.json", "load_failure.json",
+                "generation_failure.json", "roundtrip_hashes.json"):
             continue
         tag = name[:-5]
         result = load_json(os.path.join(full, name))
