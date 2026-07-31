@@ -7,6 +7,12 @@ OUT="$BENCH_DIR/trn1/results/extras"
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}"
 export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path must be findable (Phase-1 gotcha #2)
 PY="$NP_VENV/bin/python"
+# SSM shells run as root with a bare env: without these, gated-model lanes
+# 401 on HF (ctx_8192 was misfiled as a compiler failure because of this)
+# and every lane recompiles into a cold cache.
+export HF_HOME="${HF_HOME:-/opt/np/models/hf}"
+export NEURON_COMPILE_CACHE_URL="${NEURON_COMPILE_CACHE_URL:-/opt/np/cache/neuron-compile-cache}"
+bash "$BENCH_DIR/shared/bin/hf_login.sh" >/dev/null 2>&1 || echo "WARN: hf_login failed (gated models will 401)"
 TELEM="$BENCH_DIR/shared/telemetry.py"
 mkdir -p "$OUT"
 have() { [ "${FORCE:-0}" != "1" ] && [ -s "$1" ]; }

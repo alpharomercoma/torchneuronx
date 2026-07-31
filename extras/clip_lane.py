@@ -90,6 +90,40 @@ def _record_failure(out, stage):
     print(f"failure recorded: {path}", file=sys.stderr)
 
 
+def trace_fallback(args, compiled):
+    """Plain torch_neuronx.trace of a logits_per_image wrapper.
+
+    The optimum-neuron 0.4.3 CLIP exporter died on this venv's transformers
+    with "Dictionary inputs to traced functions must have consistent type"
+    (receipt kept in git history). Tracing the stock CLIPModel ourselves
+    sidesteps the exporter entirely -- and is the more instructive showcase:
+    this is the raw torch-neuronx path any custom model would use.
+    """
+    import torch
+    import torch_neuronx
+    from transformers import AutoProcessor, CLIPModel
+
+    class ZeroShot(torch.nn.Module):
+        def __init__(self, clip):
+            super().__init__()
+            self.clip = clip
+
+        def forward(self, input_ids, attention_mask, pixel_values):
+            out = self.clip(input_ids=input_ids, attention_mask=attention_mask,
+                            pixel_values=pixel_values, return_dict=False)
+            return out[0]          # logits_per_image: (image_batch, n_texts)
+
+    base = CLIPModel.from_pretrained(args.model).eval()
+    n = len(args.labels)
+    dummy = (torch.ones((n, SEQ_LEN), dtype=torch.int64),
+             torch.ones((n, SEQ_LEN), dtype=torch.int64),
+             torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), dtype=torch.float32))
+    traced = torch_neuronx.trace(ZeroShot(base), dummy)
+    os.makedirs(compiled, exist_ok=True)
+    torch.jit.save(traced, os.path.join(compiled, "traced_zeroshot.pt"))
+    AutoProcessor.from_pretrained(args.model).save_pretrained(compiled)
+
+
 def main():
     args = build_parser().parse_args()
 
@@ -103,16 +137,18 @@ def main():
         return 1
 
     compiled = os.path.abspath(args.compiled_dir)
-    cached = os.path.exists(os.path.join(compiled, "config.json"))
+    traced_pt = os.path.join(compiled, "traced_zeroshot.pt")
+    cached = (os.path.exists(os.path.join(compiled, "config.json"))
+              or os.path.exists(traced_pt))
     compile_s = 0.0
+    optimum_error = None
     if not cached:
         print(f"--- compiling {args.model} -> {compiled} (one-time, minutes) ---",
               flush=True)
         t0 = time.perf_counter()
         try:
-            # Export API per optimum-neuron 0.4.3 CLIP docs (task
-            # feature-extraction, auto-detected from the model class):
-            # static text/image batches + shapes, matmuls cast to bf16.
+            # First choice: the optimum-neuron 0.4.3 CLIP exporter (static
+            # text/image batches + shapes, matmuls cast to bf16).
             model = NeuronCLIPModel.from_pretrained(
                 args.model,
                 export=True,
@@ -129,16 +165,36 @@ def main():
             AutoProcessor.from_pretrained(args.model).save_pretrained(compiled)
             del model
         except Exception:
-            _record_failure(args.out, "compile")
-            return 1
+            optimum_error = traceback.format_exc().strip().splitlines()[-1]
+            print(f"optimum export failed ({optimum_error}); "
+                  "falling back to raw torch_neuronx.trace", flush=True)
+            try:
+                trace_fallback(args, compiled)
+            except Exception:
+                _record_failure(args.out, "compile")
+                return 1
         compile_s = time.perf_counter() - t0
 
     # Always (re)load from the compiled dir so load_s means the same thing
-    # on cold and warm runs.
+    # on cold and warm runs. `infer(feed)` normalizes both export paths to
+    # a logits_per_image tensor.
     t0 = time.perf_counter()
     try:
-        model = NeuronCLIPModel.from_pretrained(compiled)
-        processor = AutoProcessor.from_pretrained(compiled)
+        if os.path.exists(traced_pt):
+            export_path = "torch_neuronx_trace_fallback"
+            traced = torch.jit.load(traced_pt)
+            processor = AutoProcessor.from_pretrained(compiled)
+
+            def infer(feed):
+                return traced(feed["input_ids"], feed["attention_mask"],
+                              feed["pixel_values"])
+        else:
+            export_path = "optimum"
+            model = NeuronCLIPModel.from_pretrained(compiled)
+            processor = AutoProcessor.from_pretrained(compiled)
+
+            def infer(feed):
+                return model(**feed).logits_per_image
     except Exception:
         _record_failure(args.out, "load")
         return 1
@@ -162,9 +218,8 @@ def main():
         feed = dict(input_ids=inputs["input_ids"],
                     pixel_values=inputs["pixel_values"],
                     attention_mask=inputs["attention_mask"])
-        outputs = model(**feed)
         # logits_per_image: (1, num_labels). CLIP: softmax over labels.
-        probs = torch.softmax(outputs.logits_per_image[0], dim=-1)
+        probs = torch.softmax(infer(feed)[0], dim=-1)
     except Exception:
         _record_failure(args.out, "inference")
         return 1
@@ -181,10 +236,10 @@ def main():
     # zero-shot throughput, not image-encoder-only.
     try:
         for _ in range(WARMUP_ITERS):
-            model(**feed)
+            infer(feed)
         t0 = time.perf_counter()
         for _ in range(BENCH_ITERS):
-            model(**feed)
+            infer(feed)
         bench_wall = time.perf_counter() - t0
     except Exception:
         _record_failure(args.out, "throughput")
@@ -194,6 +249,8 @@ def main():
     top_label = args.labels[order[0]]
     payload = {
         "model": args.model,
+        "export_path": export_path,
+        "optimum_export_error": optimum_error,
         "probs": {args.labels[i]: round(probs[i].item(), 4)
                   for i in range(len(args.labels))},
         "top_label": top_label,

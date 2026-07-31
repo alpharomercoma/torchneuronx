@@ -39,10 +39,20 @@ def numpy_reference(x):
     return e / e.sum(axis=1, keepdims=True)
 
 
-def make_kernel():
-    """Build the @nki.jit kernel. Isolated so import stays CPU-cheap."""
+# Module-level on purpose: the device compiler resolves `nl.*` names against
+# the kernel's MODULE globals; with a function-local import the first device
+# compile died with "failed to resolve name 'nl.load'" (simulate, which
+# interprets the python directly, was fine). Import guarded so --help works
+# off-box.
+try:
     import nki
     import nki.language as nl
+except ImportError:                       # receipts cover this on-box
+    nki = nl = None
+
+
+def make_kernel():
+    """Build the @nki.jit kernel (imports resolved at module scope above)."""
 
     @nki.jit
     def row_softmax(x_in):
