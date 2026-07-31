@@ -118,7 +118,12 @@ def trace_fallback(args, compiled):
     dummy = (torch.ones((n, SEQ_LEN), dtype=torch.int64),
              torch.ones((n, SEQ_LEN), dtype=torch.int64),
              torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), dtype=torch.float32))
-    traced = torch_neuronx.trace(ZeroShot(base), dummy)
+    # fp32 on purpose: with the default matmul->bf16 autocast the traced
+    # graph returned NaN logits (CLIP's attention masks use finfo.min
+    # constants that overflow in bf16). Measured 2026-07-31; the optimum
+    # exporter presumably rescales these, the raw trace must not cast.
+    traced = torch_neuronx.trace(ZeroShot(base), dummy,
+                                 compiler_args=["--auto-cast", "none"])
     os.makedirs(compiled, exist_ok=True)
     torch.jit.save(traced, os.path.join(compiled, "traced_zeroshot.pt"))
     AutoProcessor.from_pretrained(args.model).save_pretrained(compiled)
@@ -220,6 +225,10 @@ def main():
                     attention_mask=inputs["attention_mask"])
         # logits_per_image: (1, num_labels). CLIP: softmax over labels.
         probs = torch.softmax(infer(feed)[0], dim=-1)
+        if torch.isnan(probs).any():
+            raise RuntimeError(
+                f"NaN probabilities from the compiled graph (export_path="
+                f"{export_path}) -- numerics receipt, not a crash")
     except Exception:
         _record_failure(args.out, "inference")
         return 1

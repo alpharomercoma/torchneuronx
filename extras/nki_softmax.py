@@ -63,7 +63,9 @@ def make_kernel():
         row_max = nl.max(x, axis=1, keepdims=True)
         e = nl.exp(nl.subtract(x, row_max))
         denom = nl.sum(e, axis=1, keepdims=True)
-        out = nl.divide(e, denom)
+        # device compiler rejects nl.divide ("unsupported operator 'divide'",
+        # measured); reciprocal+multiply is the supported spelling.
+        out = nl.multiply(e, nl.reciprocal(denom))
         out_t = nl.ndarray(x.shape, dtype=x_in.dtype, buffer=nl.shared_hbm)
         nl.store(out_t, out)
         return out_t
