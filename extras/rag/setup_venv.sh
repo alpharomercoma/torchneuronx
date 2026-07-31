@@ -22,6 +22,9 @@ set -uo pipefail
 
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
 RAG_VENV="${RAG_VENV:-/opt/np/venvs/rag-overlay}"
+# import torch_neuronx shells out to `libneuronpjrt-path` (venv-bin script);
+# without both bins on PATH the verify step false-fails under SSM shells.
+export PATH="$RAG_VENV/bin:$NP_VENV/bin:$PATH"
 RECEIPT="${1:-/tmp/rag_venv_receipt.json}"
 
 fail() {

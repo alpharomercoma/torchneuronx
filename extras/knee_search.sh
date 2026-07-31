@@ -13,6 +13,7 @@ BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 OUT="${RESULTS_DIR:-$BENCH_DIR/inf2/results}/extras/knee"
 LAUNCH="$BENCH_DIR/shared/serve/launch_vllm.sh"
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
+export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path must be findable (Phase-1 gotcha #2)
 PY="$NP_VENV/bin/python"
 TELEM="$BENCH_DIR/shared/telemetry.py"
 CLIENT="$BENCH_DIR/shared/serve/fallback_client.py"

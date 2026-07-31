@@ -53,6 +53,7 @@ if ! bash "$RAG_DIR/setup_venv.sh" "$RESULTS_DIR/rag_venv.failure.json"; then
   exit 1
 fi
 PY="$RAG_VENV/bin/python"
+export PATH="$RAG_VENV/bin:${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}/bin:$PATH"  # libneuronpjrt-path (Phase-1 gotcha #2)
 
 # ------------------------------------------------------------ F1: postgres
 echo; echo "############ rag: setup_pg ############"; echo

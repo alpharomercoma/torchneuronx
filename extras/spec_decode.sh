@@ -7,6 +7,7 @@ set -uo pipefail
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 OUT="${RESULTS_DIR:-$BENCH_DIR/inf2/results}/extras/spec_decode"
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
+export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path must be findable (Phase-1 gotcha #2)
 DEMO="$NP_VENV/bin/inference_demo"
 mkdir -p "$OUT"
 TARGET=meta-llama/Llama-3.1-8B-Instruct

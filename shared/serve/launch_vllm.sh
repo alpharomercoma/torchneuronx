@@ -39,6 +39,11 @@ S3_ARTIFACTS="s3://neuron-pipelines-artifacts-600627330911/artifacts"
 # DLAMI venv resolution, same pattern as shared/run_all.sh.
 NP_VENV="${NP_VENV:-$(ls -d /opt/aws_neuronx_venv* 2>/dev/null | head -1)}"
 NP_PY="${NP_VENV:+$NP_VENV/bin/python}"
+# torch_neuronx's Initializer shells out to `libneuronpjrt-path` (a venv-bin
+# script); without this every engine boot dies at init under shells that don't
+# have the venv on PATH (SSM, cron). Phase-1 gotcha #2, now fixed at the
+# launcher itself instead of relying on each caller.
+[ -n "$NP_VENV" ] && export PATH="$NP_VENV/bin:$PATH"
 NP_PY="${NP_PY:-python3}"
 
 # Weights cache on the big EBS volume (run_all.sh does the same for cpu lane);
