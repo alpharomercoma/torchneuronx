@@ -1,0 +1,326 @@
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:27: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.dbrx.modeling_dbrx import NeuronDbrxForCausalLM
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:30: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.mixtral.modeling_mixtral import NeuronMixtralForCausalLM
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.qwen3_moe.modeling_qwen3_moe import NeuronQwen3MoeForCausalLM
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/accuracy.py:38: UserWarning: Intel extension for pytorch not found. For faster CPU references install `intel-extension-for-pytorch`.
+  warnings.warn(
+usage: inference_demo run [-h] --model-path MODEL_PATH --compiled-model-path
+                          COMPILED_MODEL_PATH [--benchmark]
+                          [--check-accuracy-mode {CheckAccuracyMode.SKIP_ACCURACY_CHECK,CheckAccuracyMode.TOKEN_MATCHING,CheckAccuracyMode.LOGIT_MATCHING,CheckAccuracyMode.DRAFT_LOGIT_MATCHING}]
+                          [--expected-outputs-path EXPECTED_OUTPUTS_PATH]
+                          [--divergence-difference-tol DIVERGENCE_DIFFERENCE_TOL]
+                          [--tol-map TOL_MAP]
+                          [--num-tokens-to-check NUM_TOKENS_TO_CHECK] --prompt
+                          PROMPTS [--top-k TOP_K] [--top-p TOP_P]
+                          [--temperature TEMPERATURE]
+                          [--global-topk GLOBAL_TOPK] [--do-sample]
+                          [--dynamic] [--pad-token-id PAD_TOKEN_ID]
+                          [--top-k-kernel-enabled] [--torch-dtype TORCH_DTYPE]
+                          [--batch-size BATCH_SIZE]
+                          [--padding-side PADDING_SIDE]
+                          [--allow-input-truncation] [--seq-len SEQ_LEN]
+                          [--n-active-tokens N_ACTIVE_TOKENS]
+                          [--n-positions N_POSITIONS]
+                          [--max-context-length MAX_CONTEXT_LENGTH]
+                          [--max-new-tokens MAX_NEW_TOKENS]
+                          [--max-length MAX_LENGTH]
+                          [--rpl-reduce-dtype RPL_REDUCE_DTYPE]
+                          [--attention-dtype ATTENTION_DTYPE]
+                          [--output-logits] [--vocab-parallel]
+                          [--layer-boundary-markers] [--fused-qkv]
+                          [--sequence-parallel-enabled]
+                          [--weight-gather-seq-len-threshold WEIGHT_GATHER_SEQ_LEN_THRESHOLD]
+                          [--flash-decoding-enabled]
+                          [--ctx-batch-size CTX_BATCH_SIZE]
+                          [--tkg-batch-size TKG_BATCH_SIZE]
+                          [--max-batch-size MAX_BATCH_SIZE]
+                          [--is-continuous-batching]
+                          [--kv-cache-batch-size KV_CACHE_BATCH_SIZE]
+                          [--kv-cache-padding-size KV_CACHE_PADDING_SIZE]
+                          [--disable-kv-cache-tiling] [--on-device-sampling]
+                          [--sampling-dp-degree SAMPLING_DP_DEGREE]
+                          [--enable-bucketing] [--bucket-n-active-tokens]
+                          [--context-encoding-buckets CONTEXT_ENCODING_BUCKETS [CONTEXT_ENCODING_BUCKETS ...]]
+                          [--prefix-buckets PREFIX_BUCKETS [PREFIX_BUCKETS ...]]
+                          [--token-generation-buckets TOKEN_GENERATION_BUCKETS [TOKEN_GENERATION_BUCKETS ...]]
+                          [--quantized]
+                          [--quantized-checkpoints-path QUANTIZED_CHECKPOINTS_PATH]
+                          [--quantization-type {per_tensor_symmetric,per_channel_symmetric,per_key_symmetric,blockwise_symmetric,expert_wise_per_channel_symmetric}]
+                          [--kv-cache-quant] [--k-quant-method K_QUANT_METHOD]
+                          [--v-quant-method V_QUANT_METHOD]
+                          [--kv-quant-dtype KV_QUANT_DTYPE]
+                          [--kv-direct-cast | --no-kv-direct-cast]
+                          [--quantization-dtype QUANTIZATION_DTYPE]
+                          [--modules-to-not-convert-file MODULES_TO_NOT_CONVERT_LISTS]
+                          [--capacity-factor CAPACITY_FACTOR]
+                          [--early-expert-affinity-modulation]
+                          [--disable-normalize-top-k-affinities]
+                          [--fused-shared-experts]
+                          [--router-act-fn ROUTER_ACT_FN]
+                          [--router-dtype ROUTER_DTYPE]
+                          [--draft-model-path DRAFT_MODEL_PATH]
+                          [--draft-model-tp-degree DRAFT_MODEL_TP_DEGREE]
+                          [--compiled-draft-model-path COMPILED_DRAFT_MODEL_PATH]
+                          [--enable-fused-speculation]
+                          [--enable-eagle-speculation]
+                          [--enable-eagle-draft-input-norm]
+                          [--speculation-length SPECULATION_LENGTH]
+                          [--spec-batch-size SPEC_BATCH_SIZE] [--is-medusa]
+                          [--medusa-speculation-length MEDUSA_SPECULATION_LENGTH]
+                          [--num-medusa-heads NUM_MEDUSA_HEADS]
+                          [--medusa-tree-json MEDUSA_TREE]
+                          [--token-tree-json TOKEN_TREE_CONFIG]
+                          [--tp-degree TP_DEGREE] [--cp-degree CP_DEGREE]
+                          [--mlp-cp-degree MLP_CP_DEGREE]
+                          [--attention-dp-degree ATTENTION_DP_DEGREE]
+                          [--pp-degree PP_DEGREE] [--ep-degree EP_DEGREE]
+                          [--moe-tp-degree MOE_TP_DEGREE]
+                          [--moe-ep-degree MOE_EP_DEGREE]
+                          [--world-size WORLD_SIZE]
+                          [--start_rank_id START_RANK_ID]
+                          [--local_ranks_size LOCAL_RANKS_SIZE]
+                          [--enable-torch-dist] [--save-sharded-checkpoint]
+                          [--skip-sharding] [--enable-block-kv-layout]
+                          [--pa-num-blocks PA_NUM_BLOCKS]
+                          [--pa-block-size PA_BLOCK_SIZE]
+                          [--enable-chunked-prefill] [--enable-prefix-caching]
+                          [--max-num-seqs MAX_NUM_SEQS] [--async-mode]
+                          [--windowed-context-encoding-size WINDOWED_CONTEXT_ENCODING_SIZE]
+                          [--enable-lora] [--enable-dynamic-multi-lora]
+                          [--max-loras MAX_LORAS]
+                          [--max-lora-rank MAX_LORA_RANK]
+                          [--target-modules TARGET_MODULES [TARGET_MODULES ...]]
+                          [--max-cpu-loras MAX_CPU_LORAS]
+                          [--lora-ckpt-path LORA_CKPT_PATHS]
+                          [--lora-ckpt-path-cpu LORA_CKPT_PATHS_CPU]
+                          [--lora-ckpt-json LORA_CKPT_JSON]
+                          [--adapter-id ADAPTER_IDS] [--qkv-kernel-enabled]
+                          [--qkv-nki-kernel-enabled]
+                          [--qkv-cte-nki-kernel-fuse-rope]
+                          [--qkv-kernel-nbsd-layout]
+                          [--attn-kernel-enabled | --no-attn-kernel-enabled]
+                          [--strided-context-parallel-kernel-enabled]
+                          [--mlp-kernel-enabled]
+                          [--quantized-mlp-kernel-enabled]
+                          [--fused-rmsnorm-skip-gamma]
+                          [--activation-quantization-type {dynamic,static,None}]
+                          [--rmsnorm-quantize-kernel-enabled]
+                          [--quantize-clamp-bound QUANTIZE_CLAMP_BOUND]
+                          [--mlp-kernel-fuse-residual-add]
+                          [--qkv-kernel-fuse-residual-add]
+                          [--attn-block-tkg-nki-kernel-enabled]
+                          [--attn-block-tkg-nki-kernel-cascaded-attention]
+                          [--attn-block-tkg-nki-kernel-cache-update]
+                          [--k-cache-transposed] [--is-eagle3]
+                          [--logical-neuron-cores LOGICAL_NEURON_CORES | --logical-nc-config LOGICAL_NC_CONFIG]
+                          [--cc-pipeline-tiling-factor CC_PIPELINE_TILING_FACTOR]
+                          [--enable-spill-reload-dge]
+                          [--scratchpad-page-size SCRATCHPAD_PAGE_SIZE]
+                          [--on-cpu]
+                          [--benchmark-report-path BENCHMARK_REPORT_PATH]
+                          [--capture-indices CAPTURE_INDICES [CAPTURE_INDICES ...]]
+                          [--input-capture-save-dir INPUT_CAPTURE_SAVE_DIR]
+                          [--cast-type {config,as-declared}] [--skip-warmup]
+                          [--skip-compile] [--compile-only]
+                          [--compile-dry-run] [--hlo-debug]
+                          [--apply-seq-ids-mask]
+                          [--input-start-offsets INPUT_START_OFFSETS [INPUT_START_OFFSETS ...]]
+                          [--enable-output-completion-notifications]
+
+options:
+  -h, --help            show this help message and exit
+  --model-path MODEL_PATH
+  --compiled-model-path COMPILED_MODEL_PATH
+  --benchmark
+  --check-accuracy-mode {CheckAccuracyMode.SKIP_ACCURACY_CHECK,CheckAccuracyMode.TOKEN_MATCHING,CheckAccuracyMode.LOGIT_MATCHING,CheckAccuracyMode.DRAFT_LOGIT_MATCHING}
+  --expected-outputs-path EXPECTED_OUTPUTS_PATH
+  --divergence-difference-tol DIVERGENCE_DIFFERENCE_TOL
+  --tol-map TOL_MAP
+  --num-tokens-to-check NUM_TOKENS_TO_CHECK
+  --prompt PROMPTS
+  --top-k TOP_K
+  --top-p TOP_P
+  --temperature TEMPERATURE
+  --global-topk GLOBAL_TOPK
+  --do-sample
+  --dynamic
+  --pad-token-id PAD_TOKEN_ID
+  --top-k-kernel-enabled
+  --torch-dtype TORCH_DTYPE
+  --batch-size BATCH_SIZE
+  --padding-side PADDING_SIDE
+  --allow-input-truncation
+  --seq-len SEQ_LEN
+  --n-active-tokens N_ACTIVE_TOKENS
+  --n-positions N_POSITIONS
+  --max-context-length MAX_CONTEXT_LENGTH
+  --max-new-tokens MAX_NEW_TOKENS
+  --max-length MAX_LENGTH
+  --rpl-reduce-dtype RPL_REDUCE_DTYPE
+  --attention-dtype ATTENTION_DTYPE
+  --output-logits
+  --vocab-parallel
+  --layer-boundary-markers
+  --fused-qkv
+  --sequence-parallel-enabled
+  --weight-gather-seq-len-threshold WEIGHT_GATHER_SEQ_LEN_THRESHOLD
+  --flash-decoding-enabled
+  --ctx-batch-size CTX_BATCH_SIZE
+  --tkg-batch-size TKG_BATCH_SIZE
+  --max-batch-size MAX_BATCH_SIZE
+  --is-continuous-batching
+  --kv-cache-batch-size KV_CACHE_BATCH_SIZE
+  --kv-cache-padding-size KV_CACHE_PADDING_SIZE
+  --disable-kv-cache-tiling
+  --on-device-sampling
+  --sampling-dp-degree SAMPLING_DP_DEGREE
+  --enable-bucketing
+  --bucket-n-active-tokens
+  --context-encoding-buckets CONTEXT_ENCODING_BUCKETS [CONTEXT_ENCODING_BUCKETS ...]
+  --prefix-buckets PREFIX_BUCKETS [PREFIX_BUCKETS ...]
+  --token-generation-buckets TOKEN_GENERATION_BUCKETS [TOKEN_GENERATION_BUCKETS ...]
+  --quantized
+  --quantized-checkpoints-path QUANTIZED_CHECKPOINTS_PATH
+  --quantization-type {per_tensor_symmetric,per_channel_symmetric,per_key_symmetric,blockwise_symmetric,expert_wise_per_channel_symmetric}
+  --kv-cache-quant
+  --k-quant-method K_QUANT_METHOD
+                        Quantization method for K cache (choices:
+                        per_tensor_symmetric, per_channel_symmetric,
+                        per_key_symmetric)
+  --v-quant-method V_QUANT_METHOD
+                        Quantization method for V cache (choices:
+                        per_tensor_symmetric, per_channel_symmetric,
+                        per_key_symmetric)
+  --kv-quant-dtype KV_QUANT_DTYPE
+                        Quantization dtype for KV cache
+  --kv-direct-cast, --no-kv-direct-cast
+                        Use direct casting for KV quantization (use --no-kv-
+                        direct-cast to disable)
+  --quantization-dtype QUANTIZATION_DTYPE
+  --modules-to-not-convert-file MODULES_TO_NOT_CONVERT_LISTS
+  --capacity-factor CAPACITY_FACTOR
+  --early-expert-affinity-modulation
+  --disable-normalize-top-k-affinities
+  --fused-shared-experts
+  --router-act-fn ROUTER_ACT_FN
+  --router-dtype ROUTER_DTYPE
+  --draft-model-path DRAFT_MODEL_PATH
+  --draft-model-tp-degree DRAFT_MODEL_TP_DEGREE
+  --compiled-draft-model-path COMPILED_DRAFT_MODEL_PATH
+  --enable-fused-speculation
+  --enable-eagle-speculation
+  --enable-eagle-draft-input-norm
+  --speculation-length SPECULATION_LENGTH
+  --spec-batch-size SPEC_BATCH_SIZE
+  --is-medusa
+  --medusa-speculation-length MEDUSA_SPECULATION_LENGTH
+  --num-medusa-heads NUM_MEDUSA_HEADS
+  --medusa-tree-json MEDUSA_TREE
+  --token-tree-json TOKEN_TREE_CONFIG
+  --tp-degree TP_DEGREE
+  --cp-degree CP_DEGREE
+  --mlp-cp-degree MLP_CP_DEGREE
+  --attention-dp-degree ATTENTION_DP_DEGREE
+  --pp-degree PP_DEGREE
+  --ep-degree EP_DEGREE
+  --moe-tp-degree MOE_TP_DEGREE
+  --moe-ep-degree MOE_EP_DEGREE
+  --world-size WORLD_SIZE
+  --start_rank_id START_RANK_ID
+  --local_ranks_size LOCAL_RANKS_SIZE
+  --enable-torch-dist   Use torch.distributed (gloo) backend when running
+                        multi-node examples. This is useful for ensuring
+                        processes on different nodes are in sync
+  --save-sharded-checkpoint
+                        Save sharded checkpoints to disk when compiling NxDI
+                        model. When loading NxDI model, sharded checkpoints
+                        will be loaded from the compiled model path.
+  --skip-sharding       Skip sharding checkpoints when compiling NxDI model.
+  --enable-block-kv-layout
+  --pa-num-blocks PA_NUM_BLOCKS
+  --pa-block-size PA_BLOCK_SIZE
+  --enable-chunked-prefill
+  --enable-prefix-caching
+  --max-num-seqs MAX_NUM_SEQS
+  --async-mode
+  --windowed-context-encoding-size WINDOWED_CONTEXT_ENCODING_SIZE
+  --enable-lora
+  --enable-dynamic-multi-lora
+  --max-loras MAX_LORAS
+  --max-lora-rank MAX_LORA_RANK
+  --target-modules TARGET_MODULES [TARGET_MODULES ...]
+  --max-cpu-loras MAX_CPU_LORAS
+  --lora-ckpt-path LORA_CKPT_PATHS
+  --lora-ckpt-path-cpu LORA_CKPT_PATHS_CPU
+  --lora-ckpt-json LORA_CKPT_JSON
+  --adapter-id ADAPTER_IDS
+  --qkv-kernel-enabled
+  --qkv-nki-kernel-enabled
+  --qkv-cte-nki-kernel-fuse-rope
+  --qkv-kernel-nbsd-layout
+  --attn-kernel-enabled, --no-attn-kernel-enabled
+  --strided-context-parallel-kernel-enabled
+  --mlp-kernel-enabled
+  --quantized-mlp-kernel-enabled
+  --fused-rmsnorm-skip-gamma
+  --activation-quantization-type {dynamic,static,None}
+  --rmsnorm-quantize-kernel-enabled
+  --quantize-clamp-bound QUANTIZE_CLAMP_BOUND
+  --mlp-kernel-fuse-residual-add
+  --qkv-kernel-fuse-residual-add
+  --attn-block-tkg-nki-kernel-enabled
+  --attn-block-tkg-nki-kernel-cascaded-attention
+  --attn-block-tkg-nki-kernel-cache-update
+  --k-cache-transposed
+  --is-eagle3
+  --logical-neuron-cores LOGICAL_NEURON_CORES
+  --logical-nc-config LOGICAL_NC_CONFIG
+  --cc-pipeline-tiling-factor CC_PIPELINE_TILING_FACTOR
+  --enable-spill-reload-dge
+  --scratchpad-page-size SCRATCHPAD_PAGE_SIZE
+  --on-cpu
+  --benchmark-report-path BENCHMARK_REPORT_PATH
+                        File path to save benchmark report.
+  --capture-indices CAPTURE_INDICES [CAPTURE_INDICES ...]
+                        Specify 'auto' when using check accuracy mode with
+                        CheckAccuracyMode.LOGIT_MATCHING for inferrring
+                        capture indices when the test fails and use the
+                        indices to capture inputs. Otherwise, provide any
+                        number of integer values for capturing inputs at those
+                        indices.
+  --input-capture-save-dir INPUT_CAPTURE_SAVE_DIR
+  --cast-type {config,as-declared}
+                        If set to 'config', all parameters will be casted to
+                        neuron_config.torch_dtype. If set to 'as-declared',
+                        casting will be done based on the dtype set for each
+                        parameter
+  --skip-warmup         skip model warmup.
+  --skip-compile        skip model compilation. If this option is set, then
+                        compiled model must be present at path specified by
+                        --compiled-model-path argument
+  --compile-only        Only perform model compilation.
+  --compile-dry-run     Perform a compilation dry run (minimal model trace)
+  --hlo-debug           Adds metadata into the generated HLO. This metadata
+                        maps the HLO operators to the corresponding lines in
+                        the PyTorch code
+  --apply-seq-ids-mask  Avoid KV cache update on inactive (padded) seq_ids
+  --input-start-offsets INPUT_START_OFFSETS [INPUT_START_OFFSETS ...]
+                        Shift the input right by an offset. There can be
+                        multiple offsets, each per sequence.If only 1 value is
+                        provided, all sequences will be shifted by this
+                        amount. This flag can be used to test chunked
+                        attention.
+  --enable-output-completion-notifications
+                        Enable output tensor notification to be used together
+                        with
+                        `torch.classes.neuron.Runtime.wait_output_completion`.

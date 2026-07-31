@@ -1,0 +1,28 @@
+{
+  "model_dir": "/opt/np/models/neuron-compiled/qwen3-embedding-0.6b-b8-s512",
+  "dim": 1024,
+  "n_texts": 200,
+  "seq_len": 512,
+  "compiled_batch": 8,
+  "load_s": 56.54,
+  "note": "static shapes: batch1 = 1 useful item per batch-8 graph call (padded); batch8 = same graph, full",
+  "lanes": {
+    "batch1": {
+      "call_batch": 1,
+      "calls": 200,
+      "embeddings_per_s": 1.96,
+      "p50_ms": 509.98,
+      "p99_ms": 510.98,
+      "wall_s": 101.998
+    },
+    "batch8": {
+      "call_batch": 8,
+      "calls": 25,
+      "embeddings_per_s": 15.65,
+      "p50_ms": 511.17,
+      "p99_ms": 511.6,
+      "wall_s": 12.779
+    }
+  },
+  "captured": "2026-07-31T14:06:19Z"
+}

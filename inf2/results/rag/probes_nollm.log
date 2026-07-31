@@ -1,0 +1,9 @@
+# probes: mode=retrieval_only n=7
+  [1/7] PASS  expect~'68.3'  What MFU did the Llama 3.1 8B LoRA fine-tune reach?
+  [2/7] PASS  expect~'39.5'  How long did the first-ever cold boot of the Llama 8B servin
+  [3/7] PASS  expect~'ncc_inla001'  Which compiler error code crashed long-context serving at ma
+  [4/7] PASS  expect~'inf2.xlarge'  Which EC2 instance type was used as the serving box?
+  [5/7] PASS  expect~'100.4'  What throughput retention was measured over 30 minutes of su
+  [6/7] PASS  expect~'dolly-15k'  Which dataset was the Llama 3.1 8B model fine-tuned on?
+  [7/7] PASS  expect~'2,952'  How many tokens per second did the Llama 3.1 8B LoRA trainin
+7/7 passed (retrieval_only) -> /opt/np/repo/inf2/results/rag/probes_nollm.json

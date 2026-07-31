@@ -14,24 +14,24 @@
   from neuronx_distributed_inference.models.qwen3_moe.modeling_qwen3_moe import NeuronQwen3MoeForCausalLM
 /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/accuracy.py:38: UserWarning: Intel extension for pytorch not found. For faster CPU references install `intel-extension-for-pytorch`.
   warnings.warn(
-WARNING:root:NeuronConfig init: Unexpected keyword arguments: {'model_type': 'llama', 'task_type': 'causal-lm', 'model_path': 'meta-llama/Llama-3.1-8B-Instruct', 'compiled_model_path': '/opt/np/models/neuron-compiled/spec_baseline', 'benchmark': True, 'check_accuracy_mode': <CheckAccuracyMode.SKIP_ACCURACY_CHECK: 'skip-accuracy-check'>, 'divergence_difference_tol': 0.001, 'prompts': ['The quick brown fox'], 'top_k': 1, 'top_p': 1.0, 'temperature': 1.0, 'do_sample': False, 'dynamic': False, 'pad_token_id': 0, 'top_k_kernel_enabled': False, 'on_device_sampling': False, 'k_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'v_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'kv_quant_dtype': torch.float8_e4m3fn, 'kv_direct_cast': True, 'early_expert_affinity_modulation': False, 'disable_normalize_top_k_affinities': False, 'fused_shared_experts': False, 'moe_tp_degree': 1, 'moe_ep_degree': 1, 'enable_torch_dist': False, 'is_chunked_prefill': False, 'enable_lora': False, 'enable_dynamic_multi_lora': False, 'max_loras': 1, 'max_lora_rank': 16, 'max_cpu_loras': 1, 'benchmark_report_path': './benchmark_report.json', 'skip_compile': False, 'compile_only': False, 'compile_dry_run': False, 'hlo_debug': False}
+WARNING:root:NeuronConfig init: Unexpected keyword arguments: {'model_type': 'llama', 'task_type': 'causal-lm', 'model_path': '/opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659', 'compiled_model_path': '/opt/np/models/neuron-compiled/spec_baseline', 'benchmark': True, 'check_accuracy_mode': <CheckAccuracyMode.SKIP_ACCURACY_CHECK: 'skip-accuracy-check'>, 'divergence_difference_tol': 0.001, 'prompts': ['The quick brown fox'], 'top_k': 1, 'top_p': 1.0, 'temperature': 1.0, 'do_sample': False, 'dynamic': False, 'pad_token_id': 0, 'top_k_kernel_enabled': False, 'on_device_sampling': False, 'k_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'v_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'kv_quant_dtype': torch.float8_e4m3fn, 'kv_direct_cast': True, 'early_expert_affinity_modulation': False, 'disable_normalize_top_k_affinities': False, 'fused_shared_experts': False, 'moe_tp_degree': 1, 'moe_ep_degree': 1, 'enable_torch_dist': False, 'is_chunked_prefill': False, 'enable_lora': False, 'enable_dynamic_multi_lora': False, 'max_loras': 1, 'max_lora_rank': 16, 'max_cpu_loras': 1, 'benchmark_report_path': './benchmark_report.json', 'skip_compile': False, 'compile_only': False, 'compile_dry_run': False, 'hlo_debug': False}
 INFO:Neuron:Saving the neuron_config to /opt/np/models/neuron-compiled/spec_baseline/
 INFO:Neuron:Generating HLOs for the following models: ['context_encoding_model', 'token_generation_model']
 Loading configs...
 
 Compiling and saving model...
-[2026-07-31 09:59:46.226: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
-[2026-07-31 09:59:46.227: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
-[2026-07-31 09:59:46.227: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
-[2026-07-31 09:59:46.227: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
-[2026-07-31 09:59:46.227: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
-[2026-07-31 09:59:46.227: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x7378363afce0>, 'Ascending Ring PG Group')>
-[2026-07-31 09:59:46.228: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
-[2026-07-31 09:59:46.228: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
-[2026-07-31 09:59:46.228: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
-[2026-07-31 09:59:46.229: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
-[2026-07-31 09:59:46.229: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
-[2026-07-31 09:59:46.229: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+[2026-07-31 14:56:23.057: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-07-31 14:56:23.058: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-07-31 14:56:23.058: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-07-31 14:56:23.058: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-07-31 14:56:23.058: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+[2026-07-31 14:56:23.058: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x7b0027cd6200>, 'Ascending Ring PG Group')>
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-07-31 14:56:23.060: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
 INFO:Neuron:Generating 1 hlos for key: context_encoding_model
 INFO:Neuron:Minimal metadata will be added to HLO
 INFO:Neuron:Started loading module context_encoding_model
@@ -100,7 +100,7 @@ WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding atte
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
-INFO:Neuron:Finished loading module context_encoding_model in 0.0980532169342041 seconds
+INFO:Neuron:Finished loading module context_encoding_model in 0.10406088829040527 seconds
 INFO:Neuron:generating HLO: context_encoding_model, input example shape = torch.Size([1, 1024])
 /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with torch.cuda.amp.autocast(enabled=False):
@@ -114,7 +114,7 @@ INFO:Neuron:generating HLO: context_encoding_model, input example shape = torch.
   warnings.warn(
 /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=6, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
   warnings.warn(
-INFO:Neuron:Finished generating HLO for context_encoding_model in 4.170800447463989 seconds, input example shape = torch.Size([1, 1024])
+INFO:Neuron:Finished generating HLO for context_encoding_model in 4.152979135513306 seconds, input example shape = torch.Size([1, 1024])
 INFO:Neuron:Generating 1 hlos for key: token_generation_model
 INFO:Neuron:Minimal metadata will be added to HLO
 INFO:Neuron:Started loading module token_generation_model
@@ -183,51 +183,47 @@ WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding atte
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
-INFO:Neuron:Finished loading module token_generation_model in 0.09035038948059082 seconds
+INFO:Neuron:Finished loading module token_generation_model in 0.09329915046691895 seconds
 INFO:Neuron:generating HLO: token_generation_model, input example shape = torch.Size([1, 1])
-INFO:Neuron:Finished generating HLO for token_generation_model in 1.5858783721923828 seconds, input example shape = torch.Size([1, 1])
-INFO:Neuron:Generated all HLOs in 6.353341341018677 seconds
+INFO:Neuron:Finished generating HLO for token_generation_model in 1.8401262760162354 seconds, input example shape = torch.Size([1, 1])
+INFO:Neuron:Generated all HLOs in 6.350358724594116 seconds
 INFO:Neuron:Starting compilation for the priority HLO
 INFO:Neuron:'token_generation_model' is the priority model with bucket rank 0
 /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:287: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
   warnings.warn(SyntaxWarning(
-......
-Compiler status PASS
-2026-07-31 10:01:38.000332:  40218  [INFO]: Compilation Successfully Completed for model.MODULE_5149999554b60e6a65d9+c5b7a4a0.hlo_module.pb
-INFO:Neuron:Done compilation for the priority HLO in 105.77946639060974 seconds
-2026-07-31 10:01:38.912964: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+2026-07-31 14:56:29.000671:  44161  [INFO]: Using a cached neff at /var/tmp/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5149999554b60e6a65d9+c5b7a4a0/model.neff
+INFO:Neuron:Done compilation for the priority HLO in 0.3664388656616211 seconds
+2026-07-31 14:56:30.343335: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
 INFO:Neuron:Updating the hlo module with optimized layout
-INFO:Neuron:Done optimizing weight layout for all HLOs in 0.6910183429718018 seconds
+INFO:Neuron:Done optimizing weight layout for all HLOs in 0.7072081565856934 seconds
 INFO:Neuron:Starting compilation for all HLOs
 INFO:Neuron:Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk0/log-neuron-cc.txt
 /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
   warnings.warn(SyntaxWarning(
-.
-Compiler status PASS
-2026-07-31 10:01:57.000112:  40218  [INFO]: Compilation Successfully Completed for model.MODULE_13d0467c52c06fd929e8+7aaadbc7.hlo_module.pb
-INFO:Neuron:Finished Compilation for all HLOs in 18.060872554779053 seconds
-....
+2026-07-31 14:56:30.000620:  44161  [INFO]: Using a cached neff at /var/tmp/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13d0467c52c06fd929e8+7aaadbc7/model.neff
+INFO:Neuron:Finished Compilation for all HLOs in 0.13904261589050293 seconds
+.....
 Compiler status PASS
 INFO:Neuron:Done preparing weight layout transformation
-INFO:Neuron:Finished building model in 209.60109972953796 seconds
+INFO:Neuron:Finished building model in 88.9799063205719 seconds
 INFO:Neuron:SKIPPING pre-sharding the checkpoints. The checkpoints will be sharded during load time.
 INFO:Neuron:Sharding weights on load...
 INFO:Neuron:Sharding weights for ranks: 0...1
-Compiling and tracing time: 209.67042486699938 seconds
+Compiling and tracing time: 89.04912876698654 seconds
 
 Loading model to Neuron...
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x7378363afce0>, 'Ascending Ring PG Group')>
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
-[2026-07-31 10:03:15.922: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
-[2026-07-31 10:03:15.923: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
-[2026-07-31 10:03:15.923: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x7b0027cd6200>, 'Ascending Ring PG Group')>
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-07-31 14:57:52.124: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-07-31 14:57:52.125: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
@@ -293,70 +289,54 @@ WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding atte
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
 WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
-Traceback (most recent call last):
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/utils/hub.py", line 479, in cached_files
-    hf_hub_download(
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
-    validate_repo_id(arg_value)
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
-    raise HFValidationError(
-huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': 'meta-llama/Llama-3.1-8B-Instruct/'. Use `repo_type` argument if needed.
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py:642: UserWarning: Removing redundant keys from checkpoint: ['layers.10.self_attn.k_proj.weight', 'layers.10.self_attn.o_proj.weight', 'layers.10.self_attn.q_proj.weight', 'layers.10.self_attn.v_proj.weight', 'layers.11.self_attn.k_proj.weight', 'layers.11.self_attn.o_proj.weight', 'layers.11.self_attn.q_proj.weight', 'layers.11.self_attn.v_proj.weight', 'layers.12.self_attn.k_proj.weight', 'layers.12.self_attn.o_proj.weight', 'layers.12.self_attn.q_proj.weight', 'layers.12.self_attn.v_proj.weight', 'layers.13.self_attn.k_proj.weight', 'layers.13.self_attn.o_proj.weight', 'layers.13.self_attn.q_proj.weight', 'layers.13.self_attn.v_proj.weight', 'layers.14.self_attn.k_proj.weight', 'layers.14.self_attn.o_proj.weight', 'layers.14.self_attn.q_proj.weight', 'layers.14.self_attn.v_proj.weight', 'layers.15.self_attn.k_proj.weight', 'layers.15.self_attn.o_proj.weight', 'layers.15.self_attn.q_proj.weight', 'layers.15.self_attn.v_proj.weight', 'layers.16.self_attn.k_proj.weight', 'layers.16.self_attn.o_proj.weight', 'layers.16.self_attn.q_proj.weight', 'layers.16.self_attn.v_proj.weight', 'layers.17.self_attn.k_proj.weight', 'layers.17.self_attn.o_proj.weight', 'layers.17.self_attn.q_proj.weight', 'layers.17.self_attn.v_proj.weight', 'layers.18.self_attn.k_proj.weight', 'layers.18.self_attn.o_proj.weight', 'layers.18.self_attn.q_proj.weight', 'layers.18.self_attn.v_proj.weight', 'layers.19.self_attn.k_proj.weight', 'layers.19.self_attn.o_proj.weight', 'layers.19.self_attn.q_proj.weight', 'layers.19.self_attn.v_proj.weight', 'layers.20.self_attn.k_proj.weight', 'layers.20.self_attn.o_proj.weight', 'layers.20.self_attn.q_proj.weight', 'layers.20.self_attn.v_proj.weight', 'layers.9.self_attn.k_proj.weight', 'layers.9.self_attn.o_proj.weight', 'layers.9.self_attn.q_proj.weight', 'layers.9.self_attn.v_proj.weight', 'layers.0.self_attn.k_proj.weight', 'layers.0.self_attn.o_proj.weight', 'layers.0.self_attn.q_proj.weight', 'layers.0.self_attn.v_proj.weight', 'layers.1.self_attn.k_proj.weight', 'layers.1.self_attn.o_proj.weight', 'layers.1.self_attn.q_proj.weight', 'layers.1.self_attn.v_proj.weight', 'layers.2.self_attn.k_proj.weight', 'layers.2.self_attn.o_proj.weight', 'layers.2.self_attn.q_proj.weight', 'layers.2.self_attn.v_proj.weight', 'layers.3.self_attn.k_proj.weight', 'layers.3.self_attn.o_proj.weight', 'layers.3.self_attn.q_proj.weight', 'layers.3.self_attn.v_proj.weight', 'layers.4.self_attn.k_proj.weight', 'layers.4.self_attn.o_proj.weight', 'layers.4.self_attn.q_proj.weight', 'layers.4.self_attn.v_proj.weight', 'layers.5.self_attn.k_proj.weight', 'layers.5.self_attn.o_proj.weight', 'layers.5.self_attn.q_proj.weight', 'layers.5.self_attn.v_proj.weight', 'layers.6.self_attn.k_proj.weight', 'layers.6.self_attn.o_proj.weight', 'layers.6.self_attn.q_proj.weight', 'layers.6.self_attn.v_proj.weight', 'layers.7.self_attn.k_proj.weight', 'layers.7.self_attn.o_proj.weight', 'layers.7.self_attn.q_proj.weight', 'layers.7.self_attn.v_proj.weight', 'layers.8.self_attn.k_proj.weight', 'layers.8.self_attn.o_proj.weight', 'layers.8.self_attn.q_proj.weight', 'layers.8.self_attn.v_proj.weight', 'layers.21.self_attn.k_proj.weight', 'layers.21.self_attn.o_proj.weight', 'layers.21.self_attn.q_proj.weight', 'layers.21.self_attn.v_proj.weight', 'layers.22.self_attn.k_proj.weight', 'layers.22.self_attn.o_proj.weight', 'layers.22.self_attn.q_proj.weight', 'layers.22.self_attn.v_proj.weight', 'layers.23.self_attn.k_proj.weight', 'layers.23.self_attn.o_proj.weight', 'layers.23.self_attn.q_proj.weight', 'layers.23.self_attn.v_proj.weight', 'layers.24.self_attn.k_proj.weight', 'layers.24.self_attn.o_proj.weight', 'layers.24.self_attn.q_proj.weight', 'layers.24.self_attn.v_proj.weight', 'layers.25.self_attn.k_proj.weight', 'layers.25.self_attn.o_proj.weight', 'layers.25.self_attn.q_proj.weight', 'layers.25.self_attn.v_proj.weight', 'layers.26.self_attn.k_proj.weight', 'layers.26.self_attn.o_proj.weight', 'layers.26.self_attn.q_proj.weight', 'layers.26.self_attn.v_proj.weight', 'layers.27.self_attn.k_proj.weight', 'layers.27.self_attn.o_proj.weight', 'layers.27.self_attn.q_proj.weight', 'layers.27.self_attn.v_proj.weight', 'layers.28.self_attn.k_proj.weight', 'layers.28.self_attn.o_proj.weight', 'layers.28.self_attn.q_proj.weight', 'layers.28.self_attn.v_proj.weight', 'layers.29.self_attn.k_proj.weight', 'layers.29.self_attn.o_proj.weight', 'layers.29.self_attn.q_proj.weight', 'layers.29.self_attn.v_proj.weight', 'layers.30.self_attn.k_proj.weight', 'layers.30.self_attn.o_proj.weight', 'layers.30.self_attn.q_proj.weight', 'layers.30.self_attn.v_proj.weight', 'layers.31.self_attn.k_proj.weight', 'layers.31.self_attn.o_proj.weight', 'layers.31.self_attn.q_proj.weight', 'layers.31.self_attn.v_proj.weight']
+  warnings.warn(f"Removing redundant keys from checkpoint: {keys_to_delete}")
+INFO:Neuron:Done Sharding weights in 77.57281604100717
+INFO:Neuron:Finished weights loading in 250.10585030000948 seconds
+INFO:Neuron:Warming up the model.
+2026-Jul-31 15:02:06.0219 44161:44195 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):266 CCOM WARN NET/OFI Failed to initialize sendrecv protocol
+2026-Jul-31 15:02:06.0222 44161:44195 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-31 15:02:06.0225 44161:44195 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-31 15:02:06.0228 44161:44195 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+INFO:Neuron:Warmup completed in 2.394993543624878 seconds.
+The following generation flags are not valid and may be ignored: ['top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Total model loading time: 255.1713084160001 seconds
 
-During handling of the above exception, another exception occurred:
+Skipping accuracy check
 
-Traceback (most recent call last):
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/inference_demo", line 8, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py", line 799, in main
-    run_inference(model_cls, args)
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py", line 571, in run_inference
-    model.load(args.compiled_model_path)
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 329, in load
-    self.load_weights(
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 406, in load_weights
-    weights = self.get_builder().shard_checkpoint()
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 848, in shard_checkpoint
-    checkpoint = self.checkpoint_loader()
-                 ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 675, in checkpoint_loader_fn
-    model_sd = self.get_state_dict(model_path, self.config)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 702, in get_state_dict
-    model = cls.load_hf_model(model_name_or_path)
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/llama/modeling_llama.py", line 1205, in load_hf_model
-    return LlamaForCausalLM.from_pretrained(model_path, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/modeling_utils.py", line 277, in _wrapper
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/modeling_utils.py", line 4734, in from_pretrained
-    resolved_config_file = cached_file(
-                           ^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/utils/hub.py", line 322, in cached_file
-    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/utils/hub.py", line 532, in cached_files
-    _get_cache_file_to_return(path_or_repo_id, filename, cache_dir, revision, repo_type)
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/utils/hub.py", line 143, in _get_cache_file_to_return
-    resolved_file = try_to_load_from_cache(
-                    ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
-    validate_repo_id(arg_value)
-  File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
-    raise HFValidationError(
-huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': 'meta-llama/Llama-3.1-8B-Instruct/'. Use `repo_type` argument if needed.
+Generating outputs...
+Prompts: ['The quick brown fox']
+Generated outputs:
+Output 0: The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog
+Starting end-to-end benchmark with 20
+Benchmark completed and its result is as following
+{
+    "e2e_model": {
+        "latency_ms_p50": 8538.562059402466,
+        "latency_ms_p90": 8726.454472541809,
+        "latency_ms_p95": 8738.76017332077,
+        "latency_ms_p99": 8784.290730953217,
+        "latency_ms_p100": 8795.673370361328,
+        "latency_ms_avg": 8586.853766441345,
+        "throughput": 149.06507491747715
+    },
+    "context_encoding_model": {
+        "latency_ms_p50": 194.78940963745117,
+        "latency_ms_p90": 196.54085636138916,
+        "latency_ms_p95": 197.21025228500366,
+        "latency_ms_p99": 197.27095365524292,
+        "latency_ms_p100": 197.28612899780273,
+        "latency_ms_avg": 195.21981477737427,
+        "throughput": 5245.369181236823
+    },
+    "token_generation_model": {
+        "latency_ms_p50": 32.105445861816406,
+        "latency_ms_p90": 32.80296325683594,
+        "latency_ms_p95": 34.37858819961548,
+        "latency_ms_p99": 34.87468242645264,
+        "latency_ms_p100": 35.96806526184082,
+        "latency_ms_avg": 32.33340539184271,
+        "throughput": 31.049051482858253
+    }
+}
+Completed saving result to ./benchmark_report.json

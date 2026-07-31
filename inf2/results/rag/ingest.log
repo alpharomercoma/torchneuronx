@@ -1,0 +1,4 @@
+# corpus: 14 files
+# chunks: 72
+# chunks table now: row) rows
+docs=14 chunks=72 chunks/s=1.49 embed_p50=512.98ms wall=48.2s -> /opt/np/repo/inf2/results/rag/ingest.json

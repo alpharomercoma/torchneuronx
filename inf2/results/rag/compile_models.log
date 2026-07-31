@@ -1,4 +1,12 @@
-    embed FAILED after 2.3s: ImportError: cannot import name 'NeuronModelForEmbedding' from 'optimum.neuron' (/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/__init__.py)
-    rerank FAILED after 2.6s: ModuleNotFoundError: No module named 'neuronx_distributed'
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([8, 512]), dtype=torch.int64). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+...........................
+Compiler status PASS
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([4, 1024]), dtype=torch.int64). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+...........................................
+Compiler status PASS
 --- embed: compiling Qwen/Qwen3-Embedding-0.6B -> /opt/np/models/neuron-compiled/qwen3-embedding-0.6b-b8-s512 ---
+--- embed: compiled in 570.9s ---
 --- rerank: compiling Qwen/Qwen3-Reranker-0.6B -> /opt/np/models/neuron-compiled/qwen3-reranker-0.6b-b4-s1024 ---
+--- rerank: compiled in 909.2s ---

@@ -1,0 +1,26 @@
+{
+  "docs": 14,
+  "chunks": 72,
+  "chunks_per_s": 1.49,
+  "embed_ms_p50": 512.98,
+  "wall_s": 48.2,
+  "max_chars": 1200,
+  "dry_run": false,
+  "files": [
+    "README.md",
+    "METHODOLOGY.md",
+    "REPORT.md",
+    "docs/runbook/00-prerequisites.md",
+    "docs/runbook/01-security-hardening.md",
+    "docs/runbook/02-quotas.md",
+    "docs/runbook/03-local-selftest.md",
+    "docs/runbook/04-deploy-trainium.md",
+    "docs/runbook/05-training-lanes.md",
+    "docs/runbook/06-deploy-inferentia.md",
+    "docs/runbook/07-inference-lanes.md",
+    "docs/runbook/08-analysis-report.md",
+    "docs/runbook/09-warm-demo.md",
+    "docs/runbook/10-teardown.md"
+  ],
+  "captured": "2026-07-31T14:07:10Z"
+}

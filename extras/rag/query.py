@@ -129,7 +129,10 @@ class NeuronReranker:
                 # this call, the exception is caught in main() and the query
                 # degrades to no-rerank with the verbatim error in
                 # rerank_note -- that outcome IS the attempt receipt.
-                out = self.model(input_ids=input_ids, attention_mask=attn)
+                # positional: torch.jit.trace mangles arg names to
+                # argument_1/argument_2, so kwargs raise "missing value for
+                # argument 'argument_1'" (round-4 receipt)
+                out = self.model(input_ids, attn)
             if hasattr(out, "logits"):
                 logits = out.logits
             elif isinstance(out, (tuple, list)):

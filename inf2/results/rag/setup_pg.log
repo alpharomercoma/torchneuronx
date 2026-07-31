@@ -1,131 +1,11 @@
 === setup_pg: postgresql-16 + pgvector -> postgresql://np_rag:np_rag@localhost:5432/np_rag ===
-Hit:1 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble InRelease
-Hit:2 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates InRelease
-Hit:3 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-backports InRelease
-Hit:4 https://download.docker.com/linux/ubuntu noble InRelease
-Hit:5 https://apt.repos.neuron.amazonaws.com noble InRelease
-Get:6 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-Get:7 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
-Get:8 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [76.3 kB]
-Fetched 249 kB in 1s (205 kB/s)
-Reading package lists...
-W: https://download.docker.com/linux/ubuntu/dists/noble/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
-W: https://apt.repos.neuron.amazonaws.com/dists/noble/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following additional packages will be installed:
-  libcommon-sense-perl libjson-perl libjson-xs-perl libtypes-serialiser-perl
-  postgresql-client-16 postgresql-client-common postgresql-common
-Suggested packages:
-  postgresql-doc-16
-The following NEW packages will be installed:
-  libcommon-sense-perl libjson-perl libjson-xs-perl libtypes-serialiser-perl
-  postgresql-16 postgresql-16-pgvector postgresql-client-16
-  postgresql-client-common postgresql-common
-0 upgraded, 9 newly installed, 0 to remove and 10 not upgraded.
-Need to get 17.5 MB of archives.
-After this operation, 51.5 MB of additional disk space will be used.
-Get:1 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libjson-perl all 4.10000-1 [81.9 kB]
-Get:2 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client-common all 257build1.1 [36.4 kB]
-Get:3 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-common all 257build1.1 [161 kB]
-Get:4 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libcommon-sense-perl amd64 3.75-3build3 [20.4 kB]
-Get:5 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble/main amd64 libtypes-serialiser-perl all 1.01-1 [11.6 kB]
-Get:6 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 libjson-xs-perl amd64 4.040-0ubuntu0.24.04.1 [83.7 kB]
-Get:7 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client-16 amd64 16.14-0ubuntu0.24.04.1 [1300 kB]
-Get:8 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-16 amd64 16.14-0ubuntu0.24.04.1 [15.6 MB]
-Get:9 http://us-west-2.ec2.archive.ubuntu.com/ubuntu noble/universe amd64 postgresql-16-pgvector amd64 0.6.0-1 [175 kB]
-Preconfiguring packages ...
-Fetched 17.5 MB in 1s (25.3 MB/s)
-Selecting previously unselected package libjson-perl.
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 139085 files and directories currently installed.)
-Preparing to unpack .../0-libjson-perl_4.10000-1_all.deb ...
-Unpacking libjson-perl (4.10000-1) ...
-Selecting previously unselected package postgresql-client-common.
-Preparing to unpack .../1-postgresql-client-common_257build1.1_all.deb ...
-Unpacking postgresql-client-common (257build1.1) ...
-Selecting previously unselected package postgresql-common.
-Preparing to unpack .../2-postgresql-common_257build1.1_all.deb ...
-Adding 'diversion of /usr/bin/pg_config to /usr/bin/pg_config.libpq-dev by postgresql-common'
-Unpacking postgresql-common (257build1.1) ...
-Selecting previously unselected package libcommon-sense-perl:amd64.
-Preparing to unpack .../3-libcommon-sense-perl_3.75-3build3_amd64.deb ...
-Unpacking libcommon-sense-perl:amd64 (3.75-3build3) ...
-Selecting previously unselected package libtypes-serialiser-perl.
-Preparing to unpack .../4-libtypes-serialiser-perl_1.01-1_all.deb ...
-Unpacking libtypes-serialiser-perl (1.01-1) ...
-Selecting previously unselected package libjson-xs-perl.
-Preparing to unpack .../5-libjson-xs-perl_4.040-0ubuntu0.24.04.1_amd64.deb ...
-Unpacking libjson-xs-perl (4.040-0ubuntu0.24.04.1) ...
-Selecting previously unselected package postgresql-client-16.
-Preparing to unpack .../6-postgresql-client-16_16.14-0ubuntu0.24.04.1_amd64.deb ...
-Unpacking postgresql-client-16 (16.14-0ubuntu0.24.04.1) ...
-Selecting previously unselected package postgresql-16.
-Preparing to unpack .../7-postgresql-16_16.14-0ubuntu0.24.04.1_amd64.deb ...
-Unpacking postgresql-16 (16.14-0ubuntu0.24.04.1) ...
-Selecting previously unselected package postgresql-16-pgvector.
-Preparing to unpack .../8-postgresql-16-pgvector_0.6.0-1_amd64.deb ...
-Unpacking postgresql-16-pgvector (0.6.0-1) ...
-Setting up postgresql-client-common (257build1.1) ...
-Setting up postgresql-client-16 (16.14-0ubuntu0.24.04.1) ...
-update-alternatives: using /usr/share/postgresql/16/man/man1/psql.1.gz to provide /usr/share/man/man1/psql.1.gz (psql.1.gz) in auto mode
-Setting up libcommon-sense-perl:amd64 (3.75-3build3) ...
-Setting up libtypes-serialiser-perl (1.01-1) ...
-Setting up libjson-perl (4.10000-1) ...
-Setting up libjson-xs-perl (4.040-0ubuntu0.24.04.1) ...
-Setting up postgresql-common (257build1.1) ...
-
-Creating config file /etc/postgresql-common/createcluster.conf with new version
-Building PostgreSQL dictionaries from installed myspell/hunspell packages...
-Removing obsolete dictionary files:
-Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /usr/lib/systemd/system/postgresql.service.
-Setting up postgresql-16 (16.14-0ubuntu0.24.04.1) ...
-Creating new PostgreSQL cluster 16/main ...
-/usr/lib/postgresql/16/bin/initdb -D /var/lib/postgresql/16/main --auth-local peer --auth-host scram-sha-256 --no-instructions
-The files belonging to this database system will be owned by user "postgres".
-This user must also own the server process.
-
-The database cluster will be initialized with locale "C.UTF-8".
-The default database encoding has accordingly been set to "UTF8".
-The default text search configuration will be set to "english".
-
-Data page checksums are disabled.
-
-fixing permissions on existing directory /var/lib/postgresql/16/main ... ok
-creating subdirectories ... ok
-selecting dynamic shared memory implementation ... posix
-selecting default max_connections ... 100
-selecting default shared_buffers ... 128MB
-selecting default time zone ... Etc/UTC
-creating configuration files ... ok
-running bootstrap script ... ok
-performing post-bootstrap initialization ... ok
-syncing data to disk ... ok
-Setting up postgresql-16-pgvector (0.6.0-1) ...
-Processing triggers for man-db (2.12.0-4build2) ...
-
-Running kernel seems to be up-to-date.
-
-Restarting services...
-
-Service restarts being deferred:
- /etc/needrestart/restart.d/dbus.service
- systemctl restart docker.service
- systemctl restart getty@tty1.service
- systemctl restart networkd-dispatcher.service
- systemctl restart serial-getty@ttyS0.service
- systemctl restart snap.amazon-ssm-agent.amazon-ssm-agent.service
- systemctl restart systemd-logind.service
- systemctl restart unattended-upgrades.service
-
-No containers need to be restarted.
-
-No user sessions are running outdated binaries.
-
-No VM guests are running outdated hypervisor (qemu) binaries on this host.
---- role np_rag created ---
---- database np_rag created (owner np_rag) ---
+--- packages already installed (skip apt) ---
+--- role np_rag exists (password refreshed) ---
+--- database np_rag exists ---
+NOTICE:  extension "vector" already exists, skipping
 psql:/opt/np/repo/extras/rag/schema.sql:22: NOTICE:  extension "vector" already exists, skipping
+psql:/opt/np/repo/extras/rag/schema.sql:31: NOTICE:  relation "chunks" already exists, skipping
+psql:/opt/np/repo/extras/rag/schema.sql:38: NOTICE:  relation "chunks_embedding_hnsw" already exists, skipping
 --- schema.sql applied (rerun-safe: IF NOT EXISTS throughout) ---
 --- verify ---
 server  : PostgreSQL 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit

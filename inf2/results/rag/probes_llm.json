@@ -1,0 +1,79 @@
+{
+  "mode": "end_to_end",
+  "llm_model": "meta-llama/Llama-3.1-8B-Instruct",
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 32275.2
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 22822.0
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 13431.7
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 12435.1
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 12544.9
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 12322.5
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "error": "2/site-packages/torch/jit/_serialization.py\", line 168, in load\n    cpp_module = torch._C.import_ir_module(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: The PyTorch Neuron Runtime could not be initialized. Neuron Driver issues are logged\nto your system logs. See the Neuron Runtime's troubleshooting guide for help on this\ntopic: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/\n",
+      "probe_wall_ms": 12456.9
+    }
+  ],
+  "passed": 0,
+  "total": 7,
+  "pass_rate": 0.0,
+  "errored": 7,
+  "captured": "2026-07-31T14:54:27Z"
+}

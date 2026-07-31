@@ -1,0 +1,4 @@
+# embedder loaded from /opt/np/models/neuron-compiled/qwen3-embedding-0.6b-b8-s512 in 56.54s
+batch1: 1.96 emb/s  p50=509.98ms p99=510.98ms
+batch8: 15.65 emb/s  p50=511.17ms p99=511.6ms
+wrote /opt/np/repo/inf2/results/rag/embed_lane.json

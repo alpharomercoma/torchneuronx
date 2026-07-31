@@ -1,0 +1,15 @@
+WARNING:root:NeuronConfig init: Unexpected keyword arguments: {'model_type': 'llama', 'task_type': 'causal-lm', 'model_path': '/opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659', 'compiled_model_path': '/opt/np/models/neuron-compiled/spec_fused_spec', 'benchmark': True, 'check_accuracy_mode': <CheckAccuracyMode.SKIP_ACCURACY_CHECK: 'skip-accuracy-check'>, 'divergence_difference_tol': 0.001, 'prompts': ['The quick brown fox'], 'top_k': 1, 'top_p': 1.0, 'temperature': 1.0, 'do_sample': False, 'dynamic': False, 'pad_token_id': 0, 'top_k_kernel_enabled': False, 'on_device_sampling': True, 'k_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'v_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'kv_quant_dtype': torch.float8_e4m3fn, 'kv_direct_cast': True, 'early_expert_affinity_modulation': False, 'disable_normalize_top_k_affinities': False, 'fused_shared_experts': False, 'draft_model_path': '/opt/np/models/hf/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6', 'moe_tp_degree': 1, 'moe_ep_degree': 1, 'enable_torch_dist': False, 'is_chunked_prefill': False, 'enable_lora': False, 'enable_dynamic_multi_lora': False, 'max_loras': 1, 'max_lora_rank': 16, 'max_cpu_loras': 1, 'benchmark_report_path': './benchmark_report.json', 'skip_compile': False, 'compile_only': False, 'compile_dry_run': False, 'hlo_debug': False}
+        "latency_ms_p50": 3568.896174430847,
+        "latency_ms_p90": 3571.3496446609497,
+        "latency_ms_p95": 3571.892988681793,
+        "latency_ms_p99": 3573.397114276886,
+        "latency_ms_p100": 3573.773145675659,
+        "latency_ms_avg": 3569.230091571808,
+        "throughput": 358.6207577433925
+        "latency_ms_p50": 240.61095714569092,
+        "latency_ms_p90": 240.6867504119873,
+        "latency_ms_p95": 240.75307846069336,
+        "latency_ms_p99": 241.38944625854492,
+        "latency_ms_p100": 241.5485382080078,
+        "latency_ms_avg": 240.6560778617859,
+        "throughput": 4255.034857619951

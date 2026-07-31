@@ -1,0 +1,177 @@
+{
+  "mode": "retrieval_only",
+  "llm_model": null,
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "REPORT::5-serving-sweeps-inf2-xlarge-vllm-0-16-n-0000-llama-3-1-8b-instruct-shape-1024-1024-ex"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 1965.06,
+        "retrieve_ms": 203.43,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 104068.08
+      },
+      "probe_wall_ms": 162506.8
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser",
+        "09-warm-demo::on-box-0000-cd-opt-np-repo-bash-shared-serve-launch",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 786.18,
+        "retrieve_ms": 405.69,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 91351.3
+      },
+      "probe_wall_ms": 98437.7
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::9-declared-exclusions-rule-8-0000-what-evidence-vllm-0-21-dlami-on-inf2-an",
+        "REPORT::1-summary-0001-internal-compiler-crash-at-two-different",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 737.06,
+        "retrieve_ms": 379.42,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 109195.37
+      },
+      "probe_wall_ms": 115028.9
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::machines-0000-trn1-2xlarge-us-west-2-inf2-xlarge-us-we",
+        "10-teardown::basestack-keep-until-the-final-bill-clea-0000-aws-ec2-describe-instances-region-us-wes"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 663.77,
+        "retrieve_ms": 465.68,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 96641.41
+      },
+      "probe_wall_ms": 102060.8
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me",
+        "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1",
+        "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 604.65,
+        "retrieve_ms": 252.85,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 93701.88
+      },
+      "probe_wall_ms": 99116.1
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 2021.95,
+        "retrieve_ms": 316.48,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 101261.56
+      },
+      "probe_wall_ms": 142034.1
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "REPORT::5-serving-sweeps-inf2-xlarge-vllm-0-16-n-0000-llama-3-1-8b-instruct-shape-1024-1024-ex"
+      ],
+      "reranked": false,
+      "rerank_note": "rerank forward failed: RuntimeError: forward() is missing value for argument 'argument_1'. Declaration: forward(__torch__.torch_neuronx.xla_impl.trace.___torch_mangle_5.NeuronModule self, Tensor argument_1, Tensor argument_2) -> Tensor -- fell back to cosine order",
+      "timings": {
+        "embed_ms": 674.78,
+        "retrieve_ms": 184.79,
+        "rerank_ms": null,
+        "ttft_ms": null,
+        "e2e_ms": 108375.81
+      },
+      "probe_wall_ms": 113887.3
+    }
+  ],
+  "passed": 7,
+  "total": 7,
+  "pass_rate": 1.0,
+  "errored": 0,
+  "captured": "2026-07-31T14:21:06Z"
+}
