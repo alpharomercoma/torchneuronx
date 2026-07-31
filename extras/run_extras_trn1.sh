@@ -5,6 +5,7 @@ set -uo pipefail
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 OUT="$BENCH_DIR/trn1/results/extras"
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}"
+export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path must be findable (Phase-1 gotcha #2)
 PY="$NP_VENV/bin/python"
 TELEM="$BENCH_DIR/shared/telemetry.py"
 mkdir -p "$OUT"
@@ -28,15 +29,16 @@ fi
 step "B4: training context ladder (20-step probes)"
 for SL in 4096 8192; do
   T="$OUT/ctx_${SL}.json"
-  have "$T" && { echo "skip ctx $SL"; continue; }
+  { have "$T" || have "$OUT/ctx_${SL}.failure.json"; } && { echo "skip ctx $SL (recorded)"; continue; }
   "$PY" "$TELEM" --out "$OUT/ctx_${SL}.telemetry.csv" -- \
     "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
       --model meta-llama/Llama-3.1-8B-Instruct --tag "ctx_${SL}" \
       --seq-len "$SL" --max-steps 20 --out "$T" \
     > "$OUT/ctx_${SL}.log" 2>&1 || {
-      grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}" "$OUT/ctx_${SL}.log" | head -1 \
-        | sed 's/"/\x27/g' | xargs -I{} printf '{"seq_len":%s,"status":"failed","reason":"{}","captured":"%s"}\n' \
-          "$SL" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/ctx_${SL}.failure.json"
+      REASON=$(grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}" "$OUT/ctx_${SL}.log" | head -1 | sed "s/\"/'/g")
+      [ -n "$REASON" ] || REASON=$(tail -c 300 "$OUT/ctx_${SL}.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"seq_len":%s,"status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$SL" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/ctx_${SL}.failure.json"
       echo "  ctx $SL FAILED (receipt)"; }
 done
 

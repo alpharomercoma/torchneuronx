@@ -46,11 +46,14 @@ def make_kernel():
 
     @nki.jit
     def row_softmax(x_in):
+        # NkiTensor does not overload python arithmetic (measured: simulate
+        # raised "unsupported operand type(s) for -" on `x - row_max`);
+        # everything goes through nl.* ops explicitly.
         x = nl.load(x_in)
         row_max = nl.max(x, axis=1, keepdims=True)
-        e = nl.exp(x - row_max)
+        e = nl.exp(nl.subtract(x, row_max))
         denom = nl.sum(e, axis=1, keepdims=True)
-        out = e / denom
+        out = nl.divide(e, denom)
         out_t = nl.ndarray(x.shape, dtype=x_in.dtype, buffer=nl.shared_hbm)
         nl.store(out_t, out)
         return out_t
