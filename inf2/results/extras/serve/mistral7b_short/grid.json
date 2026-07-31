@@ -1,0 +1,20 @@
+{
+ "model_key": "mistral7b",
+ "config": "short",
+ "model_id": "mistralai/Mistral-7B-Instruct-v0.3",
+ "shapes": [
+  "1024:1024"
+ ],
+ "concurrency": [
+  1,
+  4,
+  8,
+  16,
+  32
+ ],
+ "num_prompts_rule": "min(c*4,128) floor 8 (smoke: 4)",
+ "client": "fallback_client",
+ "reduced": true,
+ "reduction_note": "single-device 32 GB HBM; KV 128 KiB/token bounds resident sequences (~12 @ 9216 ctx, ~48 @ 2048 ctx); higher concurrencies omitted rather than measured-as-queue-depth; host is 4 vCPU (see cpu lane)",
+ "captured": "2026-07-31T05:02:05Z"
+}

@@ -1,0 +1,3 @@
+# siglip  model=google/siglip-base-patch16-224 attempt-only (no siglip exporter config in optimum-neuron 0.4.3; expected structured exclusion)
+export attempt failed as expected: ModuleNotFoundError: No module named 'optimum'
+exclusion receipt -> /opt/np/repo/inf2/results/extras/siglip.json

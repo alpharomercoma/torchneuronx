@@ -81,11 +81,17 @@ class NeuronReranker:
     def __init__(self, model_dir, batch_size=RERANK_BATCH, seq_len=RERANK_SEQ):
         import torch                                    # heavy: lazy
         from transformers import AutoTokenizer
-        from optimum.neuron import NeuronModelForCausalLM
 
         self._torch = torch
         self.batch_size, self.seq_len = batch_size, seq_len
-        self.model = NeuronModelForCausalLM.from_pretrained(model_dir)
+        # compile_models.py writes a raw trace returning last-position logits
+        # (B, vocab) -- see compile_reranker for why optimum is out.
+        traced_pt = os.path.join(model_dir, "traced_rerank.pt")
+        if os.path.exists(traced_pt):
+            self.model = torch.jit.load(traced_pt)
+        else:                                           # legacy optimum artifact
+            from optimum.neuron import NeuronModelForCausalLM
+            self.model = NeuronModelForCausalLM.from_pretrained(model_dir)
         self.tok = AutoTokenizer.from_pretrained(model_dir, padding_side="left")
         self.prefix_ids = self.tok.encode(self.PREFIX, add_special_tokens=False)
         self.suffix_ids = self.tok.encode(self.SUFFIX, add_special_tokens=False)
@@ -124,7 +130,12 @@ class NeuronReranker:
                 # degrades to no-rerank with the verbatim error in
                 # rerank_note -- that outcome IS the attempt receipt.
                 out = self.model(input_ids=input_ids, attention_mask=attn)
-            logits = out.logits if hasattr(out, "logits") else out[0]
+            if hasattr(out, "logits"):
+                logits = out.logits
+            elif isinstance(out, (tuple, list)):
+                logits = out[0]
+            else:
+                logits = out                 # raw trace: already (B, vocab)
             if logits.dim() == 3:
                 logits = logits[:, -1, :]
             pair = torch.stack(

@@ -73,11 +73,21 @@ class NeuronEmbedder:
         import torch                                   # heavy: lazy on purpose
         import torch.nn.functional as F
         from transformers import AutoTokenizer
-        from optimum.neuron import NeuronModelForEmbedding
 
         self._torch, self._F = torch, F
         self.batch_size, self.seq_len, self.dim = batch_size, seq_len, dim
-        self.model = NeuronModelForEmbedding.from_pretrained(model_dir)
+        # compile_models.py writes a raw torch_neuronx trace (traced_embed.pt)
+        # -- optimum-neuron 0.4.3 has no embedding class (receipt). The traced
+        # module takes (input_ids, attention_mask) positionally and returns
+        # last_hidden_state.
+        traced_pt = os.path.join(model_dir, "traced_embed.pt")
+        if os.path.exists(traced_pt):
+            traced = torch.jit.load(traced_pt)
+            self.model = lambda input_ids, attention_mask: traced(
+                input_ids, attention_mask)
+        else:                                          # legacy optimum artifact
+            from optimum.neuron import NeuronModelForEmbedding
+            self.model = NeuronModelForEmbedding.from_pretrained(model_dir)
         # Right padding: the tutorial's last_token_pool handles either side,
         # but right is what it loads and what our pooling below assumes.
         self.tokenizer = AutoTokenizer.from_pretrained(

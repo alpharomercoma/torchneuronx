@@ -1,0 +1,2 @@
+clip lane FAILED at import: ModuleNotFoundError: No module named 'optimum'
+failure recorded: /opt/np/repo/inf2/results/extras/clip.failure.json

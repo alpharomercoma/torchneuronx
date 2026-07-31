@@ -1,0 +1,2 @@
+# fallback_client  model=meta-llama/Llama-3.1-8B-Instruct  mode=poisson  prompts=4096  conc=64  isl=512  osl=128  seed=42  rate=2.0/s window=120.0s
+out_tok/s=232.32  ttft_p50=245.508ms  p99=694.002ms  tpot_p50=82.043ms  completed=229/4096  duration=126.172s -> /opt/np/repo/inf2/results/extras/knee/rate_2.json

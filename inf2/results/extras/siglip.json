@@ -1,0 +1,7 @@
+{
+ "status": "export_unsupported",
+ "model": "google/siglip-base-patch16-224",
+ "reason": "ModuleNotFoundError: No module named 'optimum'",
+ "mirror_note": "mlx-models 5_siglip runs this on Apple M5 -- ecosystem gap",
+ "captured": "2026-07-30T23:33:28Z"
+}

@@ -1,0 +1,5 @@
+{
+ "status": "rag_venv_failed", "stage": "verify",
+ "reason": "post-install import check failed",
+ "captured": "2026-07-30T23:55:40Z"
+}

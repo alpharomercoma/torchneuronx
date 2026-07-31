@@ -1,0 +1,7 @@
+{
+ "lane": "clip",
+ "status": "lane_failed",
+ "stage": "inference",
+ "reason": "RuntimeError: NaN probabilities from the compiled graph (export_path=torch_neuronx_trace_fallback) -- numerics receipt, not a crash",
+ "captured": "2026-07-31T06:56:22Z"
+}

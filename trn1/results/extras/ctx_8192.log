@@ -1,0 +1,241 @@
+[sft_lora] no WORLD_SIZE in env -- re-exec under torchrun (--nproc_per_node=2, one rank per NeuronCore)
+[sft_lora] /opt/aws_neuronx_venv_pytorch_2_9/bin/python -m torch.distributed.run --nproc_per_node=2 /opt/np/repo/shared/train/sft_lora.py --model meta-llama/Llama-3.1-8B-Instruct --tag ctx_8192 --seq-len 8192 --max-steps 20 --out /opt/np/repo/trn1/results/extras/ctx_8192.json
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+2026-Jul-31 04:58:26.458160  6775:6775   WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Jul-31 04:58:26.458168  6776:6776   WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Jul-31 04:58:30.0865 6775:6797 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Jul-31 04:58:30.0875 6775:6797 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-31 04:58:30.0886 6775:6797 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-31 04:58:30.0894 6775:6797 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Jul-31 04:58:40.0849 6776:6798 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Jul-31 04:58:40.0860 6776:6798 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Jul-31 04:58:40.0870 6776:6798 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Jul-31 04:58:40.0878 6776:6798 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[2026-07-31 04:58:40.890: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-07-31 04:58:40.890: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-07-31 04:58:40.890: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-07-31 04:58:40.890: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-07-31 04:58:40.890: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+2026-07-31 04:58:40.000899:  6776  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+f7f529f3/model.neff
+2026-07-31 04:58:40.000901:  6775  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+f7f529f3/model.neff
+PyTorch: setting up devices
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x783bfd4dfba0>, 'Ascending Ring PG Group')>
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-07-31 04:58:40.926: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:18<00:56, 18.82s/it]Loading checkpoint shards:  25%|██▌       | 1/4 [00:18<00:56, 18.82s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:37<00:38, 19.03s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:38<00:38, 19.04s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:01<00:21, 21.24s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [01:01<00:21, 21.26s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:06<00:00, 14.51s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:06<00:00, 16.52s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+Loading checkpoint shards: 100%|██████████| 4/4 [01:06<00:00, 14.51s/it]Loading checkpoint shards: 100%|██████████| 4/4 [01:06<00:00, 16.52s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+/opt/np/repo/shared/train/sft_lora.py:936: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:936: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:938: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+/opt/np/repo/shared/train/sft_lora.py:938: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+2026-07-31 05:00:28.000127:  6776  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+f7f529f3/model.neff
+2026-07-31 05:00:28.000127:  6775  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+f7f529f3/model.neff
+2026-07-31 05:00:28.000226:  6776  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+f7f529f3/model.neff
+2026-07-31 05:00:28.000226:  6775  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+f7f529f3/model.neff
+2026-07-31 05:00:28.000249:  6775  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+f7f529f3/model.neff
+2026-07-31 05:00:28.000249:  6776  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+f7f529f3/model.neff
+PyTorch: setting up devices
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+No label_names provided for model class `NeuronPeftModelForCausalLM`. Since `NeuronPeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `NeuronTrainer`. Note that empty label_names list will be used instead.
+  grad ckpt shim     : module globals ['modeling_utils', 'modeling_llama', 'modeling_granite']; 0 bound funcs wrapped
+
+==============================================================================
+  LoRA SFT on Trainium            tag=ctx_8192
+==============================================================================
+  model              : meta-llama/Llama-3.1-8B-Instruct
+  params total       : 8,082,956,288  (rank-local shard 4,041,478,144; via xla_all_reduce)
+  params trainable   : 52,428,800  (0.649% of total)
+  grad checkpointing : True
+  parallelism        : world=2 tp=2 dp=1 pp=1
+  lora               : r=16 alpha=32 dropout=0.05
+  lora targets       : q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
+  seq_len            : 8192  (packing=True, attn=flash_attention_2)
+  batch              : micro=1 grad_accum=8 -> 65,536 tok/optimizer step
+  schedule           : epochs=3 max_steps=20 lr=0.0001
+  seed               : 42
+  dataset            : databricks/databricks-dolly-15k
+  neuron cache       : /opt/np/cache/neuron-compile-cache
+  adapter out        : /opt/np/models/adapters/ctx_8192
+  versions           : torch=2.9.1 optimum-neuron=0.4.3 neuronx-cc=2.26.6360.0+6f180f47
+==============================================================================
+
+Pipeline parallelsim: forcing the dataloader to drop the last incomplete batch because it can cause failure if the last batch size is not divisible by the number of microbatches for the pipeline.
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+2026-07-31 05:00:42.000404:  6776  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+f7f529f3/model.neff
+***** Running training *****
+  Num examples = 439
+  Num Epochs = 1
+  Data Parallel Size: 1
+  Tensor Parallel Size: 2
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Total optimization steps = 20
+  Num trainable parameters = 39,845,888
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), k = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), v = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+2026-07-31 05:00:42.000679:  6775  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+f7f529f3/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), k = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), v = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), k_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), v_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), o_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), dy_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), lse_ref = Tensor(shape: (1, 16, 128, 64), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), k_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), v_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), o_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), dy_ref = Tensor(shape: (1, 16, 128, 8192), dtype: bfloat16), lse_ref = Tensor(shape: (1, 16, 128, 64), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)
+
+neuronxcc-2.26.6360.0+6f180f47/MODULE_176283691422090868+f7f529f3/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_176283691422090868+f7f529f3/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+2026-07-31 05:00:50.000115:  6775  [INFO]: Got a cached failed neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_176283691422090868+f7f529f3/model.neff. With eror log: [Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/ubuntu/neuroncc_compile_workdir/78f92e40-4fac-4e01-8b7e-62d5ab333734/model.MODULE_176283691422090868+f7f529f3.hlo_module.pb', '--output', '/tmp/ubuntu/neuroncc_compile_workdir/78f92e40-4fac-4e01-8b7e-62d5ab333734/model.MODULE_176283691422090868+f7f529f3.neff', '--target=trn1', '--model-type', 'transformer', '--verbose=35']:
+[ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+2026-07-30T19:58:20Z Non-signal exit. Backend exited with code 1 and stderr: [ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[libneuronxla 2.2.17544.0+fb9962bf]].                 Retrying...
+...2026-07-31 05:01:49.000945:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 1.0 minutes
+...2026-07-31 05:02:49.000953:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 2.0 minutes
+...2026-07-31 05:03:49.000956:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 3.0 minutes
+...2026-07-31 05:04:49.000958:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 4.0 minutes
+...2026-07-31 05:05:49.000963:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 5.0 minutes
+...2026-07-31 05:06:49.000967:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 6.0 minutes
+...2026-07-31 05:07:49.000975:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 7.0 minutes
+...2026-07-31 05:08:49.000981:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 8.0 minutes
+...2026-07-31 05:09:49.000984:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 9.0 minutes
+...2026-07-31 05:10:49.000987:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 10.0 minutes
+...2026-07-31 05:11:49.000994:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 11.0 minutes
+...2026-07-31 05:12:50.000001:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 12.0 minutes
+...2026-07-31 05:13:50.000007:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 13.0 minutes
+...2026-07-31 05:14:50.000013:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 14.0 minutes
+...2026-07-31 05:15:50.000020:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 15.0 minutes
+...2026-07-31 05:16:50.000024:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 16.0 minutes
+...2026-07-31 05:17:50.000027:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 17.0 minutes
+...2026-07-31 05:18:50.000029:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 18.0 minutes
+...2026-07-31 05:19:50.000031:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 19.0 minutes
+...2026-07-31 05:20:50.000034:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 20.0 minutes
+...2026-07-31 05:21:50.000036:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 21.0 minutes
+...2026-07-31 05:22:50.000038:  6776  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4269015582572729119+f7f529f3/model.hlo_module.pb, been waiting for: 22.0 minutes
+..
+2026-07-31 05:23:15.000017:  6775  [ERROR]: Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/root/neuroncc_compile_workdir/fc8e1d2a-32fd-4b0a-9174-9369bc239614/model.MODULE_176283691422090868+f7f529f3.hlo_module.pb', '--output', '/tmp/root/neuroncc_compile_workdir/fc8e1d2a-32fd-4b0a-9174-9369bc239614/model.MODULE_176283691422090868+f7f529f3.neff', '--target=trn1', '--model-type', 'transformer', '--verbose=35']:
+[ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+2026-07-31T05:23:14Z Non-signal exit. Backend exited with code 1 and stderr: [ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 1090, in <module>
+[rank0]:     sys.exit(main())
+[rank0]:              ^^^^^^
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 548, in main
+[rank0]:     return run(args, cache_dir)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 781, in run
+[rank0]:     trainer.train()
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/sft_trainer.py", line 385, in train
+[rank0]:     return NeuronTrainer.train(self, resume_from_checkpoint=resume_from_checkpoint)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1246, in train
+[rank0]:     output = self._train(resume_from_checkpoint=resume_from_checkpoint)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1160, in _train
+[rank0]:     xm.mark_step()
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/typing_extensions.py", line 3140, in wrapper
+[rank0]:     return arg(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/core/xla_model.py", line 1032, in mark_step
+[rank0]:     torch_xla.sync(wait, reset_scope)
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+[rank0]:     torch_xla._XLAC._xla_step_marker(
+[rank0]: ValueError: RunNeuronCCImpl: error condition error != 0: [ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[rank0]: 2026-07-31T05:23:14Z Non-signal exit. Backend exited with code 1 and stderr: [ERROR] [NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69GB I/O tensors, 8.88GB internal (scratchpad) tensors, 6.62MB DMA ring I/O, and 1.02GB DMA ring spills - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+W0731 05:23:30.401000 6754 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 6776 closing signal SIGTERM
+E0731 05:23:30.512000 6754 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 6775) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/sft_lora.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-07-31_05:23:30
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 6775)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

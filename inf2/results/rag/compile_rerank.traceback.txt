@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/opt/np/repo/extras/rag/compile_models.py", line 132, in build_one
+    fn(out_dir)
+  File "/opt/np/repo/extras/rag/compile_models.py", line 98, in compile_reranker
+    model = NeuronModelForCausalLM.from_pretrained(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/inference/modeling_utils.py", line 205, in from_pretrained
+    cls = cls._get_neuron_model_class(config)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/inference/modeling_utils.py", line 51, in _get_neuron_model_class
+    return get_neuron_model_class(config.model_type, task=cls.task, mode="inference")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/auto_model.py", line 40, in get_neuron_model_class
+    if not has_neuron_model_class(model_type, task, mode):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/auto_model.py", line 33, in has_neuron_model_class
+    from .inference import auto_models  # noqa F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/inference/auto_models.py", line 25, in <module>
+    from .granite.modeling_granite import GraniteNxDModelForCausalLM
+  File "/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/models/inference/granite/modeling_granite.py", line 22, in <module>
+    from neuronx_distributed.parallel_layers.layers import (
+ModuleNotFoundError: No module named 'neuronx_distributed'

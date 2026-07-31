@@ -8,6 +8,10 @@ BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 OUT="${RESULTS_DIR:-$BENCH_DIR/inf2/results}/extras/spec_decode"
 NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
 export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path must be findable (Phase-1 gotcha #2)
+# Gated Llama weights: bare SSM shells have neither HF_HOME nor a token
+# (first pass 401'd here -- receipt in git history).
+export HF_HOME="${HF_HOME:-/opt/np/models/hf}"
+bash "$BENCH_DIR/shared/bin/hf_login.sh" >/dev/null 2>&1 || echo "WARN: hf_login failed (gated models will 401)"
 DEMO="$NP_VENV/bin/inference_demo"
 mkdir -p "$OUT"
 TARGET=meta-llama/Llama-3.1-8B-Instruct

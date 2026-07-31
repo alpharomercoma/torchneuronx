@@ -1,0 +1,12 @@
+{
+ "model": "openai/whisper-small",
+ "compile_s": 157.6,
+ "load_s": 2.7,
+ "transcribe_wall_s": 0.522,
+ "audio_s": 11.0,
+ "rtf": 0.047,
+ "transcript_text": "And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+ "transcript_matches_reference_head": true,
+ "mlx_reference": "github.com/alpharomercoma/mlx-models 3_whisper (Apple M5)",
+ "captured": "2026-07-31T04:07:42Z"
+}

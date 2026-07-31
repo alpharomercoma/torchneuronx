@@ -1,0 +1,8 @@
+{
+  "model_id": "Qwen/Qwen3-Reranker-0.6B",
+  "out_dir": "/opt/np/models/neuron-compiled/qwen3-reranker-0.6b-b4-s1024",
+  "status": "failed",
+  "wall_s": 2.6,
+  "error": "ModuleNotFoundError: No module named 'neuronx_distributed'",
+  "captured": "2026-07-31T08:13:33Z"
+}

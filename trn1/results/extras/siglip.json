@@ -1,0 +1,7 @@
+{
+ "status": "export_unsupported",
+ "model": "google/siglip-base-patch16-224",
+ "reason": "KeyError: \"siglip is not supported yet for transformers. Only ['bert', 'albert', 'convbert', 'electra', 'esm', 'flaubert', 'mobilebert', 'modernbert', 'phi', 'roformer', 'xlm', 'distilbert', 'camembert', 'mpnet', 'roberta', 'xlm-roberta', 'deberta', 'deberta-v2', 'clip', 'vit', 'beit', 'convnext', 'convnextv2', 'cvt', 'deit', 'donut-swin', 'dpt', 'levit', 'mobilenet_v2', 'mobilevit', 'swin', 'yolos', 'wav2vec2', 'audio-spectrogram-transformer', 'hubert', 'unispeech', 'unispeech-sat', 'wavlm', 't5-encoder', 't5-decoder', 'whisper-encoder', 'whisper-decoder'] are supported for the library transformers. If you want to support siglip please propose a PR or open up an issue.\"",
+ "mirror_note": "mlx-models 5_siglip runs this on Apple M5 -- ecosystem gap",
+ "captured": "2026-07-31T04:09:16Z"
+}

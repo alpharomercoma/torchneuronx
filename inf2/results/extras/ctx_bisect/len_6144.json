@@ -1,0 +1,4 @@
+{
+ "max_model_len": 6144, "max_num_seqs": 8, "status": "compiler_crash_NCC_INLA001",
+ "boot_json": "len_6144.boot.json", "captured": "2026-07-31T06:55:58Z"
+}

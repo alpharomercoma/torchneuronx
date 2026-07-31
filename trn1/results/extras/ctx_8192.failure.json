@@ -1,0 +1,1 @@
+{"seq_len":8192,"status":"failed","reason":"NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1. This consists of 1.27MB model constants, 7.69","captured":"2026-07-31T05:23:32Z"}

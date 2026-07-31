@@ -1,0 +1,532 @@
+INFO 07-31 05:53:00 [__init__.py:43] Available plugins for group vllm.platform_plugins:
+INFO 07-31 05:53:00 [__init__.py:45] - neuron -> vllm_neuron:register
+INFO 07-31 05:53:00 [__init__.py:48] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 07-31 05:53:00 [__init__.py:212] Platform plugin neuron is activated
+INFO 07-31 05:53:11 [importing.py:44] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
+INFO 07-31 05:53:11 [importing.py:68] Triton not installed or not compatible; certain GPU-related functions will not be available.
+WARNING 07-31 05:53:11 [interface.py:225] Failed to import from vllm._C: ImportError('libcuda.so.1: cannot open shared object file: No such file or directory')
+WARNING 07-31 05:53:17 [argparse_utils.py:195] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in v0.13.
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287] 
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287]        █     █     █▄   ▄█
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.16.0
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287]   █▄█▀ █     █     █     █  model   meta-llama/Llama-3.1-8B-Instruct
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:287] 
+(APIServer pid=13863) INFO 07-31 05:53:17 [utils.py:223] non-default args: {'model_tag': 'meta-llama/Llama-3.1-8B-Instruct', 'api_server_count': 1, 'model': 'meta-llama/Llama-3.1-8B-Instruct', 'max_model_len': 4096, 'tensor_parallel_size': 2, 'enable_prefix_caching': False, 'max_num_seqs': 8}
+(APIServer pid=13863) INFO 07-31 05:53:18 [model.py:529] Resolved architecture: LlamaForCausalLM
+(APIServer pid=13863) INFO 07-31 05:53:19 [scheduler.py:224] Chunked prefill is enabled with max_num_batched_tokens=2048.
+(APIServer pid=13863) WARNING 07-31 05:53:19 [cache.py:241] Possibly too large swap space. 8.0 GiB out of the 15.25 GiB total CPU memory is allocated for the swap space.
+(APIServer pid=13863) INFO 07-31 05:53:19 [vllm.py:689] Asynchronous scheduling is enabled.
+INFO 07-31 05:53:22 [__init__.py:43] Available plugins for group vllm.platform_plugins:
+INFO 07-31 05:53:22 [__init__.py:45] - neuron -> vllm_neuron:register
+INFO 07-31 05:53:22 [__init__.py:48] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 07-31 05:53:22 [__init__.py:212] Platform plugin neuron is activated
+INFO 07-31 05:53:26 [importing.py:44] Triton is installed but 0 active driver(s) found (expected 1). Disabling Triton to prevent runtime errors.
+INFO 07-31 05:53:26 [importing.py:68] Triton not installed or not compatible; certain GPU-related functions will not be available.
+WARNING 07-31 05:53:26 [interface.py:225] Failed to import from vllm._C: ImportError('libcuda.so.1: cannot open shared object file: No such file or directory')
+(EngineCore_DP0 pid=13898) INFO 07-31 05:53:29 [core.py:97] Initializing a V1 LLM engine (v0.16.0) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=True, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=False, enable_chunked_prefill=False, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::unified_kv_cache_update'], 'compile_mm_encoder': False, 'compile_sizes': None, 'compile_ranges_split_points': [2048], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': None, 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': True, 'static_all_moe_layers': []}
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:29] INFO platform.py:111: Applying Neuron config overrides
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:29] INFO platform.py:127: Neuron config overrides applied successfully
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:32] INFO initializer.py:82: PJRT_DEVICE not set in environment, defaulting to NEURON device
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+(EngineCore_DP0 pid=13898)   component, error = import_nki(config)
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+(EngineCore_DP0 pid=13898)   warnings.warn(f"Warning: {error}")
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+(EngineCore_DP0 pid=13898)   warnings.warn(f"Warning: {error}")
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+(EngineCore_DP0 pid=13898)   warnings.warn(f"Warning: {error}")
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:34] WARNING platform.py:430: Pin memory is not supported on Neuron.
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:1: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+(EngineCore_DP0 pid=13898)   from neuronx_distributed_inference.models.dbrx.modeling_dbrx import NeuronDbrxForCausalLM
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:6: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+(EngineCore_DP0 pid=13898)   from neuronx_distributed_inference.models.mixtral.modeling_mixtral import NeuronMixtralForCausalLM
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/utils/constants.py:14: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+(EngineCore_DP0 pid=13898)   from neuronx_distributed_inference.models.qwen3_moe.modeling_qwen3_moe import NeuronQwen3MoeForCausalLM
+(EngineCore_DP0 pid=13898) INFO 07-31 05:53:34 [parallel_state.py:1234] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://172.31.31.166:43227 backend=gloo
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+(EngineCore_DP0 pid=13898) INFO 07-31 05:53:34 [parallel_state.py:1445] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:34] INFO neuronx_distributed_model_loader.py:1057: No neuron overrides are passed via additional_config: {}. Proceeding with defaults.
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:35] WARNING neuronx_distributed_model_loader.py:214: Exception: [Errno 2] No such file or directory: 'local-models/meta-llama/Llama-3.1-8B-Instruct/neuron-compiled-artifacts/8c0d25d759c1148e8cd1e30fa67f8df6/neuron_config.json'
+(EngineCore_DP0 pid=13898) [2026-07-31 05:53:35] WARNING neuronx_distributed_model_loader.py:215: Unable to find precompiled artifacts from local-models/meta-llama/Llama-3.1-8B-Instruct/neuron-compiled-artifacts/8c0d25d759c1148e8cd1e30fa67f8df6. Recompiling...
+(EngineCore_DP0 pid=13898) Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:27<01:21, 27.27s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:17<01:21, 40.85s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:33<00:56, 56.80s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:41<00:00, 37.41s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:41<00:00, 40.27s/it]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:57] INFO model_wrapper.py:168: neuronx-cc compiler_args are: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true' 
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:57] INFO model_wrapper.py:168: neuronx-cc compiler_args are: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true' 
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:57] INFO application_base.py:300: Saving the neuron_config to local-models/meta-llama/Llama-3.1-8B-Instruct/neuron-compiled-artifacts/8c0d25d759c1148e8cd1e30fa67f8df6/
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58] INFO model_builder.py:549: Generating HLOs for the following models: ['context_encoding_model', 'token_generation_model']
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.537: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.923: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.924: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.924: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.924: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.943: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x7f212ab5f060>, 'Ascending Ring PG Group')>
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.962: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.962: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.962: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.963: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.963: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:58.964: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:59] INFO model_builder.py:575: Generating 6 hlos for key: context_encoding_model
+(EngineCore_DP0 pid=13898) [2026-07-31 06:09:59] INFO model_builder.py:944: Minimal metadata will be added to HLO
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] INFO model_builder.py:873: Started loading module context_encoding_model
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:03] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:04] INFO model_builder.py:876: Finished loading module context_encoding_model in 0.9122066497802734 seconds
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:04] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 128])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+(EngineCore_DP0 pid=13898)   with torch.cuda.amp.autocast(enabled=False):
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 128]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=5, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=6, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:18] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 13.594015121459961 seconds, input example shape = torch.Size([1, 128])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:18] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 256])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 256]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:19] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 1.6622734069824219 seconds, input example shape = torch.Size([1, 256])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:19] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 512])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 512]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:21] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 1.78873872756958 seconds, input example shape = torch.Size([1, 512])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:21] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 1024])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 1024]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:23] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 2.0422794818878174 seconds, input example shape = torch.Size([1, 1024])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:23] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 2048])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 2048]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:51] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 28.009340286254883 seconds, input example shape = torch.Size([1, 2048])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:10:51] INFO model_builder.py:901: generating HLO: context_encoding_model, input example shape = torch.Size([1, 4096])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 4096]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] INFO model_builder.py:915: Finished generating HLO for context_encoding_model in 20.007256984710693 seconds, input example shape = torch.Size([1, 4096])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] INFO model_builder.py:575: Generating 6 hlos for key: token_generation_model
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] INFO model_builder.py:944: Minimal metadata will be added to HLO
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] INFO model_builder.py:873: Started loading module token_generation_model
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:11] WARNING gqa.py:72: TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:12] INFO model_builder.py:876: Finished loading module token_generation_model in 0.5603015422821045 seconds
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:12] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=3, shape=torch.Size([8]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=5, shape=torch.Size([8]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=6, shape=torch.Size([8]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+(EngineCore_DP0 pid=13898)   warnings.warn(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:14] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.872450351715088 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:14] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:15] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.793018102645874 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:15] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:17] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.7896907329559326 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:17] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:19] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.7976281642913818 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:19] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:21] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.8119688034057617 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:21] INFO model_builder.py:901: generating HLO: token_generation_model, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:23] INFO model_builder.py:915: Finished generating HLO for token_generation_model in 1.8143432140350342 seconds, input example shape = torch.Size([8, 1])
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:23] INFO model_builder.py:600: Generated all HLOs in 84.9660279750824 seconds
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:23] INFO model_builder.py:632: Starting compilation for the priority HLO
+(EngineCore_DP0 pid=13898) [2026-07-31 06:11:23] INFO model_builder.py:635: 'token_generation_model' is the priority model with bucket rank 0
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:287: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+.......
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:13:36.000217:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_441d8caa1e57a6baf669+c5b7a4a0.hlo_module.pb
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:36] INFO model_builder.py:678: Done compilation for the priority HLO in 132.99862217903137 seconds
+2026-07-31 06:13:36.802207: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:36] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:37.034804: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:37] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:37.220183: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:37] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:37.400474: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:37] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:37.612896: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:37] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:37.841082: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:37] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:38.056786: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:38.242911: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:38.429684: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:38.600787: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+2026-07-31 06:13:38.788573: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1205: Updating the hlo module with optimized layout
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:1214: Done optimizing weight layout for all HLOs in 2.6980161666870117 seconds
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:38] INFO model_builder.py:708: Starting compilation for all HLOs
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:39] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk0/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:39] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk1/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:39] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk2/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:39] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk3/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+.(EngineCore_DP0 pid=13898) [2026-07-31 06:13:40] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk4/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+..(EngineCore_DP0 pid=13898) [2026-07-31 06:13:42] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:42] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk1/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:42] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk2/log-neuron-cc.txt
+.(EngineCore_DP0 pid=13898) [2026-07-31 06:13:43] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk3/log-neuron-cc.txt
+.(EngineCore_DP0 pid=13898) [2026-07-31 06:13:44] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk4/log-neuron-cc.txt
+(EngineCore_DP0 pid=13898) [2026-07-31 06:13:45] INFO model_builder.py:733: Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=1 --vectorize-strided-dma ' --lnc=1 -O2  --internal-hlo2tensorizer-options='--verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/token_generation_model/_tp0_bk5/log-neuron-cc.txt
+......................
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:14:42.000278:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_a2cdf8e0643fe80d6ba7+7aaadbc7.hlo_module.pb
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+......
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:14:53.000070:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_a7c9e141d8799357c37b+b3635c12.hlo_module.pb
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+.
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:14:57.000828:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_e8fb96e423b1dc30e905+083d8b38.hlo_module.pb
+(EngineCore_DP0 pid=13898) /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+(EngineCore_DP0 pid=13898)   warnings.warn(SyntaxWarning(
+........
+(EngineCore_DP0 pid=13898) 2026-07-31 06:15:17.000369:  13898  [ERROR]: Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.hlo_module.pb', '--output', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.neff', '--target=inf2', '--auto-cast=none', '--model-type=transformer', '--tensorizer-options=--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ', '--lnc=1', '-O1', '--internal-hlo2tensorizer-options= --modular-flow-mac-threshold=10  --verify-hlo=true', '--verbose=35', '--logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt']:
+(EngineCore_DP0 pid=13898) [INTERNAL_ERROR] [NCC_INLA001] Unhandled exception with message: Error from ./neuronxcc/walrus/verifier/src/inst_visitor.cpp:1884 in function 'checkDMATranspose':
+(EngineCore_DP0 pid=13898) (DMACopy: I-54_inst__I-203-0)Source Kernel "nkilib.core.attention.attention_cte.attention_cte"File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/attention/attention_cte.py",line 3038 Instruction DMACopy I-54_inst__I-203-0: transpose only supported for HBM->SB - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=13898) 2026-07-31T06:15:17Z Non-signal exit. Backend exited with code 1 and stderr: [INTERNAL_ERROR] [NCC_INLA001] Unhandled exception with message: Error from ./neuronxcc/walrus/verifier/src/inst_visitor.cpp:1884 in function 'checkDMATranspose':
+(EngineCore_DP0 pid=13898) (DMACopy: I-54_inst__I-203-0)Source Kernel "nkilib.core.attention.attention_cte.attention_cte"File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/attention/attention_cte.py",line 3038 Instruction DMACopy I-54_inst__I-203-0: transpose only supported for HBM->SB - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=13898) [libneuronxla 2.2.17544.0+fb9962bf]
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] EngineCore failed to start.
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] Traceback (most recent call last):
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 996, in run_engine_core
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 740, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     super().__init__(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 106, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model_executor = executor_class(vllm_config)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self._init_executor()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 48, in _init_executor
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.driver_worker.load_model()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuron_worker.py", line 155, in load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model_runner.load_model()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_runner.py", line 532, in load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model = get_neuron_model(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                  ^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     model.load_weights(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 601, in load_weights
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self._compile_and_load_model(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 270, in _compile_and_load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model.compile(compiled_path)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 305, in compile
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     traced_model = self.get_builder(debug).trace(**trace_kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 750, in trace
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     key, bucket_rank, neff_bytes = future.result()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                                    ^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     return self.__get_result()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]            ^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise self._exception
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     result = self.fn(*self.args, **self.kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 618, in submit_compilation_job_with_cache
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     compile_result = neuron_xla_compile(**neuron_xla_compile_kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 261, in neuron_xla_compile
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     neuron_xla_compile_impl(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 393, in neuron_xla_compile_impl
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     return compile_cache_entry(output, entry, execution_mode,
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 235, in compile_cache_entry
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise (e)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 207, in compile_cache_entry
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     ret = call_neuron_compiler(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]           ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 120, in call_neuron_compiler
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise subprocess.CalledProcessError(res.returncode, cmd, stderr=error_with_cmd)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] subprocess.CalledProcessError: Command '['neuronx-cc', 'compile', '--framework=XLA', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.hlo_module.pb', '--output', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.neff', '--target=inf2', '--auto-cast=none', '--model-type=transformer', '--tensorizer-options=--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ', '--lnc=1', '-O1', '--internal-hlo2tensorizer-options= --modular-flow-mac-threshold=10  --verify-hlo=true', '--verbose=35', '--logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt']' returned non-zero exit status 70.
+(EngineCore_DP0 pid=13898) Process EngineCore_DP0:
+(EngineCore_DP0 pid=13898) Traceback (most recent call last):
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore_DP0 pid=13898)     self.run()
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+(EngineCore_DP0 pid=13898)     self._target(*self._args, **self._kwargs)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1010, in run_engine_core
+(EngineCore_DP0 pid=13898)     raise e
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 996, in run_engine_core
+(EngineCore_DP0 pid=13898)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore_DP0 pid=13898)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 740, in __init__
+(EngineCore_DP0 pid=13898)     super().__init__(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 106, in __init__
+(EngineCore_DP0 pid=13898)     self.model_executor = executor_class(vllm_config)
+(EngineCore_DP0 pid=13898)                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore_DP0 pid=13898)     self._init_executor()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 48, in _init_executor
+(EngineCore_DP0 pid=13898)     self.driver_worker.load_model()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuron_worker.py", line 155, in load_model
+(EngineCore_DP0 pid=13898)     self.model_runner.load_model()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_runner.py", line 532, in load_model
+(EngineCore_DP0 pid=13898)     self.model = get_neuron_model(
+(EngineCore_DP0 pid=13898)                  ^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=13898)     model.load_weights(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 601, in load_weights
+(EngineCore_DP0 pid=13898)     self._compile_and_load_model(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 270, in _compile_and_load_model
+(EngineCore_DP0 pid=13898)     self.model.compile(compiled_path)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 305, in compile
+(EngineCore_DP0 pid=13898)     traced_model = self.get_builder(debug).trace(**trace_kwargs)
+(EngineCore_DP0 pid=13898)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 750, in trace
+(EngineCore_DP0 pid=13898)     key, bucket_rank, neff_bytes = future.result()
+(EngineCore_DP0 pid=13898)                                    ^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore_DP0 pid=13898)     return self.__get_result()
+(EngineCore_DP0 pid=13898)            ^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore_DP0 pid=13898)     raise self._exception
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+(EngineCore_DP0 pid=13898)     result = self.fn(*self.args, **self.kwargs)
+(EngineCore_DP0 pid=13898)              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 618, in submit_compilation_job_with_cache
+(EngineCore_DP0 pid=13898)     compile_result = neuron_xla_compile(**neuron_xla_compile_kwargs)
+(EngineCore_DP0 pid=13898)                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 261, in neuron_xla_compile
+(EngineCore_DP0 pid=13898)     neuron_xla_compile_impl(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 393, in neuron_xla_compile_impl
+(EngineCore_DP0 pid=13898)     return compile_cache_entry(output, entry, execution_mode,
+(EngineCore_DP0 pid=13898)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 235, in compile_cache_entry
+(EngineCore_DP0 pid=13898)     raise (e)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 207, in compile_cache_entry
+(EngineCore_DP0 pid=13898)     ret = call_neuron_compiler(
+(EngineCore_DP0 pid=13898)           ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 120, in call_neuron_compiler
+(EngineCore_DP0 pid=13898)     raise subprocess.CalledProcessError(res.returncode, cmd, stderr=error_with_cmd)
+(EngineCore_DP0 pid=13898) subprocess.CalledProcessError: Command '['neuronx-cc', 'compile', '--framework=XLA', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.hlo_module.pb', '--output', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.neff', '--target=inf2', '--auto-cast=none', '--model-type=transformer', '--tensorizer-options=--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ', '--lnc=1', '-O1', '--internal-hlo2tensorizer-options= --modular-flow-mac-threshold=10  --verify-hlo=true', '--verbose=35', '--logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt']' returned non-zero exit status 70.
+
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:15:18.000930:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_87e4eaa030e3e6faf630+46a7fe3e.hlo_module.pb
+.......
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:15:43.000631:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_17ba44e6c051df52ef86+9eea8402.hlo_module.pb
+....................................................................
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:14.000833:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_f852b8ba3419f8887ad2+6039ba3f.hlo_module.pb
+.
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:19.000326:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_1cdbed667b1a6976bcbe+60fe6028.hlo_module.pb
+.....
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:50.000319:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_096624caa134995960f4+0efe2407.hlo_module.pb
+..
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:21:06.000277:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_800a30521b590d06c0a8+8158b150.hlo_module.pb
+
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:21:18.000323:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_f77c68bdff20db9a0eaf+1ffa51e3.hlo_module.pb
+(APIServer pid=13863) Traceback (most recent call last):
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
+(APIServer pid=13863)     sys.exit(main())
+(APIServer pid=13863)              ^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
+(APIServer pid=13863)     args.dispatch_function(args)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
+(APIServer pid=13863)     uvloop.run(run_server(args))
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=13863)     return __asyncio.run(
+(APIServer pid=13863)            ^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=13863)     return runner.run(main)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=13863)     return self._loop.run_until_complete(task)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=13863)     return await main
+(APIServer pid=13863)            ^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
+(APIServer pid=13863)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
+(APIServer pid=13863)     async with build_async_engine_client(
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13863)     return await anext(self.gen)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
+(APIServer pid=13863)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13863)     return await anext(self.gen)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 137, in build_async_engine_client_from_engine_args
+(APIServer pid=13863)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=13863)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 222, in from_vllm_config
+(APIServer pid=13863)     return cls(
+(APIServer pid=13863)            ^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 148, in __init__
+(APIServer pid=13863)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=13863)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/platform.py", line 224, in _patched_make_async_mp_client
+(APIServer pid=13863)     client = _original(
+(APIServer pid=13863)              ^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 124, in make_async_mp_client
+(APIServer pid=13863)     return AsyncMPClient(*client_args)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 835, in __init__
+(APIServer pid=13863)     super().__init__(
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 490, in __init__
+(APIServer pid=13863)     with launch_core_engines(vllm_config, executor_class, log_stats) as (
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=13863)     next(self.gen)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 925, in launch_core_engines
+(APIServer pid=13863)     wait_for_engine_startup(
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 984, in wait_for_engine_startup
+(APIServer pid=13863)     raise RuntimeError(
+(APIServer pid=13863) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}

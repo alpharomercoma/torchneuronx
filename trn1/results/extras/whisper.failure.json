@@ -1,0 +1,7 @@
+{
+ "lane": "whisper",
+ "status": "lane_failed",
+ "stage": "import",
+ "reason": "FileNotFoundError: [Errno 2] No such file or directory: 'libneuronpjrt-path'",
+ "captured": "2026-07-30T23:51:16Z"
+}

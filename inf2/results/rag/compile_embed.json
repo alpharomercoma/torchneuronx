@@ -1,0 +1,8 @@
+{
+  "model_id": "Qwen/Qwen3-Embedding-0.6B",
+  "out_dir": "/opt/np/models/neuron-compiled/qwen3-embedding-0.6b-b8-s512",
+  "status": "failed",
+  "wall_s": 2.3,
+  "error": "ImportError: cannot import name 'NeuronModelForEmbedding' from 'optimum.neuron' (/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/__init__.py)",
+  "captured": "2026-07-31T08:13:30Z"
+}

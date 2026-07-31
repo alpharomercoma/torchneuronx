@@ -1,0 +1,9 @@
+{
+  "model_key": "llama31_base",
+  "config": "short",
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "status": "server_failed_to_start",
+  "looks_like_capacity_failure": false,
+  "reason": "(APIServer pid=27485) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}",
+  "captured": "2026-07-31T07:29:30Z"
+}

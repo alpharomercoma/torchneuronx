@@ -1,0 +1,9 @@
+{
+  "model_key": "llama31_base",
+  "config": "short",
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "status": "server_failed_to_start",
+  "looks_like_capacity_failure": false,
+  "reason": "(no error line captured; see server tail log)",
+  "captured": "2026-07-30T04:48:38Z"
+}

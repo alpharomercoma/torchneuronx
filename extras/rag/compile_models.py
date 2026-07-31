@@ -60,51 +60,73 @@ def write_json(path, payload):
 
 
 def compile_embedding(out_dir):
-    """Official tutorial path, verbatim shape: get_neuron_config + export."""
-    # Heavy imports stay inside the function: the module must import on a
-    # laptop with no torch/optimum for the local test gate.
-    from optimum.neuron import NeuronModelForEmbedding
-    from transformers import AutoTokenizer
+    """Raw torch_neuronx.trace of the embedding trunk -> last_hidden_state.
 
-    neuron_config = NeuronModelForEmbedding.get_neuron_config(
-        EMBED_ID,
-        batch_size=EMBED_BATCH,
-        sequence_length=EMBED_SEQ,
-        tensor_parallel_size=1,   # one NeuronCore; the LLM ladder owns the rest
-    )
-    # TODO-VERIFY on-box: the tutorial exports with load_weights=False and
-    # then save_pretrained() -- confirm the saved dir round-trips through
-    # from_pretrained with weights intact; if not, re-export with
-    # load_weights=True and record the correction.
-    model = NeuronModelForEmbedding.export(
-        model_id=EMBED_ID, neuron_config=neuron_config, load_weights=False)
-    model.save_pretrained(out_dir)
+    v1 tried the optimum-neuron tutorial class; 0.4.3 exports no
+    NeuronModelForEmbedding at all (receipt: compile_embed.json in git
+    history), and the decoder classes drag in neuronx_distributed, which the
+    inference DLAMI does not ship. The AWS-docs canonical encoder path -- a
+    plain trace returning hidden states, pooling done by the caller -- has no
+    such dependency and is the same fallback that carried CLIP. fp32 on
+    purpose: the CLIP lane measured bf16 autocast NaNs on this silicon.
+    """
+    import torch
+    import torch_neuronx
+    from transformers import AutoModel, AutoTokenizer
+
+    class Trunk(torch.nn.Module):
+        def __init__(self, m):
+            super().__init__()
+            self.m = m
+
+        def forward(self, input_ids, attention_mask):
+            out = self.m(input_ids=input_ids, attention_mask=attention_mask,
+                         return_dict=False)
+            return out[0]                    # last_hidden_state (B, S, H)
+
+    base = AutoModel.from_pretrained(EMBED_ID).eval()
+    base.config.use_cache = False            # no KV outputs in the trace
+    dummy = (torch.ones((EMBED_BATCH, EMBED_SEQ), dtype=torch.int64),
+             torch.ones((EMBED_BATCH, EMBED_SEQ), dtype=torch.int64))
+    traced = torch_neuronx.trace(Trunk(base), dummy,
+                                 compiler_args=["--auto-cast", "none"])
+    os.makedirs(out_dir, exist_ok=True)
+    torch.jit.save(traced, os.path.join(out_dir, "traced_embed.pt"))
     AutoTokenizer.from_pretrained(EMBED_ID).save_pretrained(out_dir)
 
 
 def compile_reranker(out_dir):
-    """NeuronModelForCausalLM export of the 0.6B reranker (ATTEMPT).
+    """Raw trace of the reranker returning ONLY last-position logits (ATTEMPT).
 
-    The reranker is a causal LM scored via yes/no token logits (HF model
-    card pattern; scoring lives in query.NeuronReranker). Export shape:
-    batch 4, seq 1024, TP=1, bf16.
+    Same raw-trace rationale as compile_embedding (the optimum decoder path
+    needs neuronx_distributed -- absent on this DLAMI; receipt in git
+    history). Returning logits[:, -1, :] keeps the output at (B, vocab)
+    instead of a multi-GB (B, S, vocab) tensor; query.NeuronReranker only
+    reads the yes/no logits at the last position (left padding guarantees
+    position -1 is real).
     """
-    from optimum.neuron import NeuronModelForCausalLM
-    from transformers import AutoTokenizer
+    import torch
+    import torch_neuronx
+    from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    kwargs = dict(export=True, batch_size=RERANK_BATCH,
-                  sequence_length=RERANK_SEQ, auto_cast_type="bf16")
-    try:
-        model = NeuronModelForCausalLM.from_pretrained(
-            RERANK_ID, tensor_parallel_size=1, **kwargs)
-    except TypeError:
-        # TODO-VERIFY on-box: optimum-neuron API drift -- some 0.4.x decoder
-        # export paths spell the parallelism knob num_cores instead of
-        # tensor_parallel_size. Retry once with the older spelling; any
-        # other failure falls through to the structured receipt.
-        model = NeuronModelForCausalLM.from_pretrained(
-            RERANK_ID, num_cores=1, **kwargs)
-    model.save_pretrained(out_dir)
+    class LastLogits(torch.nn.Module):
+        def __init__(self, m):
+            super().__init__()
+            self.m = m
+
+        def forward(self, input_ids, attention_mask):
+            out = self.m(input_ids=input_ids, attention_mask=attention_mask,
+                         return_dict=False)
+            return out[0][:, -1, :]          # (B, vocab)
+
+    base = AutoModelForCausalLM.from_pretrained(RERANK_ID).eval()
+    base.config.use_cache = False
+    dummy = (torch.ones((RERANK_BATCH, RERANK_SEQ), dtype=torch.int64),
+             torch.ones((RERANK_BATCH, RERANK_SEQ), dtype=torch.int64))
+    traced = torch_neuronx.trace(LastLogits(base), dummy,
+                                 compiler_args=["--auto-cast", "none"])
+    os.makedirs(out_dir, exist_ok=True)
+    torch.jit.save(traced, os.path.join(out_dir, "traced_rerank.pt"))
     AutoTokenizer.from_pretrained(RERANK_ID).save_pretrained(out_dir)
 
 

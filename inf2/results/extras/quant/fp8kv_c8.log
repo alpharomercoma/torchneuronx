@@ -1,0 +1,2 @@
+# fallback_client  model=meta-llama/Llama-3.1-8B-Instruct  mode=closed  prompts=32  conc=8  isl=1024  osl=1024  seed=42
+out_tok/s=120.76  ttft_p50=1959.569ms  p99=3655.601ms  tpot_p50=64.505ms  completed=32/32  duration=271.351s -> /opt/np/repo/inf2/results/extras/quant/fp8kv_c8.json

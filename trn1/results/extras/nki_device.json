@@ -1,0 +1,6 @@
+{
+ "status": "device_failed",
+ "reason": "ValueError('RunNeuronCCImpl: error condition error != 0: Failed compilation with [\\'neuronx-cc\\', \\'compile\\', \\'--framework=XLA\\', \\'/tmp/root/neuroncc_compile_workdir/89fbacf9-66d1-4034-8225-e82621911b5c/model.MODULE_14538351619776942213+e30acd3a.hlo_module.pb\\', \\'--output\\', \\'/tmp/root/neuroncc_compile_workdir/89fbacf9-66d1-4034-8225-e82621911b5c/model.MODULE_14538351619776942213+e30acd3a.nef",
+ "nki_note": "nki 0.5.0 API attempted per on-box inventory; receipt recorded for the report either way",
+ "captured": "2026-07-31T06:53:50Z"
+}

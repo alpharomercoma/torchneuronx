@@ -1,0 +1,200 @@
+(EngineCore_DP0 pid=13898) (DMACopy: I-54_inst__I-203-0)Source Kernel "nkilib.core.attention.attention_cte.attention_cte"File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/attention/attention_cte.py",line 3038 Instruction DMACopy I-54_inst__I-203-0: transpose only supported for HBM->SB - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=13898) 2026-07-31T06:15:17Z Non-signal exit. Backend exited with code 1 and stderr: [INTERNAL_ERROR] [NCC_INLA001] Unhandled exception with message: Error from ./neuronxcc/walrus/verifier/src/inst_visitor.cpp:1884 in function 'checkDMATranspose':
+(EngineCore_DP0 pid=13898) (DMACopy: I-54_inst__I-203-0)Source Kernel "nkilib.core.attention.attention_cte.attention_cte"File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/attention/attention_cte.py",line 3038 Instruction DMACopy I-54_inst__I-203-0: transpose only supported for HBM->SB - Please open a support ticket at https://github.com/aws-neuron/aws-neuron-sdk/issues/new. You may also be able to obtain more information using the 'XLA_IR_DEBUG' and 'XLA_HLO_DEBUG' environment variables.
+(EngineCore_DP0 pid=13898) [libneuronxla 2.2.17544.0+fb9962bf]
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] EngineCore failed to start.
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] Traceback (most recent call last):
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 996, in run_engine_core
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 740, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     super().__init__(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 106, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model_executor = executor_class(vllm_config)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self._init_executor()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 48, in _init_executor
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.driver_worker.load_model()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuron_worker.py", line 155, in load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model_runner.load_model()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_runner.py", line 532, in load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model = get_neuron_model(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                  ^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     model.load_weights(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 601, in load_weights
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self._compile_and_load_model(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 270, in _compile_and_load_model
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     self.model.compile(compiled_path)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 305, in compile
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     traced_model = self.get_builder(debug).trace(**trace_kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 750, in trace
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     key, bucket_rank, neff_bytes = future.result()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                                    ^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     return self.__get_result()
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]            ^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise self._exception
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     result = self.fn(*self.args, **self.kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 618, in submit_compilation_job_with_cache
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     compile_result = neuron_xla_compile(**neuron_xla_compile_kwargs)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 261, in neuron_xla_compile
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     neuron_xla_compile_impl(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 393, in neuron_xla_compile_impl
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     return compile_cache_entry(output, entry, execution_mode,
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 235, in compile_cache_entry
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise (e)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 207, in compile_cache_entry
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     ret = call_neuron_compiler(
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]           ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 120, in call_neuron_compiler
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006]     raise subprocess.CalledProcessError(res.returncode, cmd, stderr=error_with_cmd)
+(EngineCore_DP0 pid=13898) ERROR 07-31 06:15:17 [core.py:1006] subprocess.CalledProcessError: Command '['neuronx-cc', 'compile', '--framework=XLA', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.hlo_module.pb', '--output', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.neff', '--target=inf2', '--auto-cast=none', '--model-type=transformer', '--tensorizer-options=--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ', '--lnc=1', '-O1', '--internal-hlo2tensorizer-options= --modular-flow-mac-threshold=10  --verify-hlo=true', '--verbose=35', '--logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt']' returned non-zero exit status 70.
+(EngineCore_DP0 pid=13898) Process EngineCore_DP0:
+(EngineCore_DP0 pid=13898) Traceback (most recent call last):
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore_DP0 pid=13898)     self.run()
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+(EngineCore_DP0 pid=13898)     self._target(*self._args, **self._kwargs)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1010, in run_engine_core
+(EngineCore_DP0 pid=13898)     raise e
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 996, in run_engine_core
+(EngineCore_DP0 pid=13898)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore_DP0 pid=13898)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 740, in __init__
+(EngineCore_DP0 pid=13898)     super().__init__(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 106, in __init__
+(EngineCore_DP0 pid=13898)     self.model_executor = executor_class(vllm_config)
+(EngineCore_DP0 pid=13898)                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore_DP0 pid=13898)     self._init_executor()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 48, in _init_executor
+(EngineCore_DP0 pid=13898)     self.driver_worker.load_model()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuron_worker.py", line 155, in load_model
+(EngineCore_DP0 pid=13898)     self.model_runner.load_model()
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_runner.py", line 532, in load_model
+(EngineCore_DP0 pid=13898)     self.model = get_neuron_model(
+(EngineCore_DP0 pid=13898)                  ^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=13898)     model.load_weights(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 601, in load_weights
+(EngineCore_DP0 pid=13898)     self._compile_and_load_model(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 270, in _compile_and_load_model
+(EngineCore_DP0 pid=13898)     self.model.compile(compiled_path)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 305, in compile
+(EngineCore_DP0 pid=13898)     traced_model = self.get_builder(debug).trace(**trace_kwargs)
+(EngineCore_DP0 pid=13898)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 750, in trace
+(EngineCore_DP0 pid=13898)     key, bucket_rank, neff_bytes = future.result()
+(EngineCore_DP0 pid=13898)                                    ^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore_DP0 pid=13898)     return self.__get_result()
+(EngineCore_DP0 pid=13898)            ^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore_DP0 pid=13898)     raise self._exception
+(EngineCore_DP0 pid=13898)   File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+(EngineCore_DP0 pid=13898)     result = self.fn(*self.args, **self.kwargs)
+(EngineCore_DP0 pid=13898)              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 618, in submit_compilation_job_with_cache
+(EngineCore_DP0 pid=13898)     compile_result = neuron_xla_compile(**neuron_xla_compile_kwargs)
+(EngineCore_DP0 pid=13898)                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 261, in neuron_xla_compile
+(EngineCore_DP0 pid=13898)     neuron_xla_compile_impl(
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 393, in neuron_xla_compile_impl
+(EngineCore_DP0 pid=13898)     return compile_cache_entry(output, entry, execution_mode,
+(EngineCore_DP0 pid=13898)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 235, in compile_cache_entry
+(EngineCore_DP0 pid=13898)     raise (e)
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 207, in compile_cache_entry
+(EngineCore_DP0 pid=13898)     ret = call_neuron_compiler(
+(EngineCore_DP0 pid=13898)           ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=13898)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py", line 120, in call_neuron_compiler
+(EngineCore_DP0 pid=13898)     raise subprocess.CalledProcessError(res.returncode, cmd, stderr=error_with_cmd)
+(EngineCore_DP0 pid=13898) subprocess.CalledProcessError: Command '['neuronx-cc', 'compile', '--framework=XLA', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.hlo_module.pb', '--output', '/tmp/nxd_model/context_encoding_model/_tp0_bk5/model.MODULE_41148e6ca3adbee27b09+07f325ed.neff', '--target=inf2', '--auto-cast=none', '--model-type=transformer', '--tensorizer-options=--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ', '--lnc=1', '-O1', '--internal-hlo2tensorizer-options= --modular-flow-mac-threshold=10  --verify-hlo=true', '--verbose=35', '--logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk5/log-neuron-cc.txt']' returned non-zero exit status 70.
+
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:15:18.000930:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_87e4eaa030e3e6faf630+46a7fe3e.hlo_module.pb
+.......
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:15:43.000631:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_17ba44e6c051df52ef86+9eea8402.hlo_module.pb
+....................................................................
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:14.000833:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_f852b8ba3419f8887ad2+6039ba3f.hlo_module.pb
+.
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:19.000326:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_1cdbed667b1a6976bcbe+60fe6028.hlo_module.pb
+.....
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:20:50.000319:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_096624caa134995960f4+0efe2407.hlo_module.pb
+..
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:21:06.000277:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_800a30521b590d06c0a8+8158b150.hlo_module.pb
+
+Compiler status PASS
+(EngineCore_DP0 pid=13898) 2026-07-31 06:21:18.000323:  13898  [INFO]: Compilation Successfully Completed for model.MODULE_f77c68bdff20db9a0eaf+1ffa51e3.hlo_module.pb
+(APIServer pid=13863) Traceback (most recent call last):
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
+(APIServer pid=13863)     sys.exit(main())
+(APIServer pid=13863)              ^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
+(APIServer pid=13863)     args.dispatch_function(args)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
+(APIServer pid=13863)     uvloop.run(run_server(args))
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=13863)     return __asyncio.run(
+(APIServer pid=13863)            ^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=13863)     return runner.run(main)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=13863)     return self._loop.run_until_complete(task)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=13863)     return await main
+(APIServer pid=13863)            ^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
+(APIServer pid=13863)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
+(APIServer pid=13863)     async with build_async_engine_client(
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13863)     return await anext(self.gen)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
+(APIServer pid=13863)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13863)     return await anext(self.gen)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 137, in build_async_engine_client_from_engine_args
+(APIServer pid=13863)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=13863)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 222, in from_vllm_config
+(APIServer pid=13863)     return cls(
+(APIServer pid=13863)            ^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 148, in __init__
+(APIServer pid=13863)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=13863)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/platform.py", line 224, in _patched_make_async_mp_client
+(APIServer pid=13863)     client = _original(
+(APIServer pid=13863)              ^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 124, in make_async_mp_client
+(APIServer pid=13863)     return AsyncMPClient(*client_args)
+(APIServer pid=13863)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 835, in __init__
+(APIServer pid=13863)     super().__init__(
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 490, in __init__
+(APIServer pid=13863)     with launch_core_engines(vllm_config, executor_class, log_stats) as (
+(APIServer pid=13863)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=13863)     next(self.gen)
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 925, in launch_core_engines
+(APIServer pid=13863)     wait_for_engine_startup(
+(APIServer pid=13863)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 984, in wait_for_engine_startup
+(APIServer pid=13863)     raise RuntimeError(
+(APIServer pid=13863) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}

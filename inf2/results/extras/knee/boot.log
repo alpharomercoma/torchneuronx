@@ -1,0 +1,9 @@
+=== launch_vllm: llama31_base (short) ===
+    model_id      : meta-llama/Llama-3.1-8B-Instruct
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 32
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/extras/knee/boot.json
+--- server pid 11490; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 1793s (cache 1254 -> 1254 MB); boot recorded in /opt/np/repo/inf2/results/extras/knee/boot.json ---

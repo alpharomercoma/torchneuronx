@@ -1,0 +1,11 @@
+{
+  "model_key": "llama31_base",
+  "config": "short",
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "boot_wall_s": 2303,
+  "cache_dir_size_mb_before": 1683,
+  "cache_dir_size_mb_after": 1799,
+  "warm": false,
+  "server_pid": 29334,
+  "captured": "2026-07-31T08:08:03Z"
+}

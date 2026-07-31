@@ -15,8 +15,11 @@ mkdir -p "$OUT"
 export NEURON_COMPILE_CACHE_URL="${NEURON_COMPILE_CACHE_URL:-/opt/np/cache/neuron-compile-cache}"
 export VLLM_NEURON_FRAMEWORK=neuronx-distributed-inference NEURON_SKIP_EFA_AFFINITY=1
 start() { # $1 core  $2 port
+  # --no-enable-prefix-caching mirrors launch_vllm.sh: without it this build
+  # asserts "When prefix caching is enabled, block_size must be set".
   NEURON_RT_VISIBLE_CORES="$1" nohup "$VLLM" serve "$M" --tensor-parallel-size 1 \
-    --max-model-len 2048 --max-num-seqs 8 --port "$2" \
+    --max-model-len 2048 --max-num-seqs 8 --no-enable-prefix-caching --seed 0 \
+    --port "$2" \
     > "$OUT/server_core$1.log" 2>&1 & echo $!
 }
 P0=$(start 0 8000); P1=$(start 1 8001)

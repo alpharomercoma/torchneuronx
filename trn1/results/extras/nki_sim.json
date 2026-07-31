@@ -1,0 +1,12 @@
+{
+ "mode": "simulate",
+ "shape": [
+  128,
+  512
+ ],
+ "max_abs_err_vs_numpy": 0.0,
+ "correct": true,
+ "simulate_wall_s": 1.04,
+ "seed": 0,
+ "captured": "2026-07-31T04:04:42Z"
+}

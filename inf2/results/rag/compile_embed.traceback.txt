@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/opt/np/repo/extras/rag/compile_models.py", line 132, in build_one
+    fn(out_dir)
+  File "/opt/np/repo/extras/rag/compile_models.py", line 66, in compile_embedding
+    from optimum.neuron import NeuronModelForEmbedding
+ImportError: cannot import name 'NeuronModelForEmbedding' from 'optimum.neuron' (/opt/np/venvs/rag-overlay/lib/python3.12/site-packages/optimum/neuron/__init__.py)

@@ -1,0 +1,2 @@
+# fallback_client  model=mistralai/Mistral-7B-Instruct-v0.3  mode=closed  prompts=128  conc=32  isl=1024  osl=1024  seed=42
+out_tok/s=497.44  ttft_p50=3250.19ms  p99=6275.935ms  tpot_p50=61.191ms  completed=128/128  duration=263.473s -> /opt/np/repo/inf2/results/extras/serve/mistral7b_short/isl1024_osl1024_c32.json
