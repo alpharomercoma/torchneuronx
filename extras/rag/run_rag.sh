@@ -52,8 +52,12 @@ if ! bash "$RAG_DIR/setup_venv.sh" "$RESULTS_DIR/rag_venv.failure.json"; then
   echo "overlay venv FAILED -- receipt at $RESULTS_DIR/rag_venv.failure.json"
   exit 1
 fi
-PY="$RAG_VENV/bin/python"
-export PATH="$RAG_VENV/bin:${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}/bin:$PATH"  # libneuronpjrt-path (Phase-1 gotcha #2)
+# Execution contract (see setup_venv.sh v3): UNDERLAY python + overlay on
+# PYTHONPATH. The overlay dir is not a runnable venv on its own.
+NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
+PY="$NP_VENV/bin/python"
+export PYTHONPATH="$RAG_VENV/lib/python3.12/site-packages${PYTHONPATH:+:$PYTHONPATH}"
+export PATH="$NP_VENV/bin:$PATH"  # libneuronpjrt-path (Phase-1 gotcha #2)
 
 # ------------------------------------------------------------ F1: postgres
 echo; echo "############ rag: setup_pg ############"; echo
@@ -111,7 +115,9 @@ fi
 echo; echo "############ rag: LLM boot ($RAG_LLM_KEY, short) ############"; echo
 BOOT_JSON="$RESULTS_DIR/${RAG_LLM_KEY}_boot.json"
 SERVER_UP=0
-if bash "$BENCH_DIR/shared/serve/launch_vllm.sh" "$RAG_LLM_KEY" short "$BOOT_JSON"; then
+# env -u PYTHONPATH: the overlay (optimum-neuron + its vllm platform plugin
+# entry point) must NEVER be visible to a vLLM server process.
+if env -u PYTHONPATH bash "$BENCH_DIR/shared/serve/launch_vllm.sh" "$RAG_LLM_KEY" short "$BOOT_JSON"; then
   SERVER_UP=1
 else
   echo "  LLM boot FAILED -- load_failure.json recorded next to $BOOT_JSON;"
@@ -137,7 +143,7 @@ if [ "$SERVER_UP" = "1" ]; then
   fi
 
   echo; echo "############ rag: stop LLM ############"; echo
-  bash "$BENCH_DIR/shared/serve/launch_vllm.sh" stop "$BOOT_JSON"
+  env -u PYTHONPATH bash "$BENCH_DIR/shared/serve/launch_vllm.sh" stop "$BOOT_JSON"
 fi
 
 # ------------------------------------------------------------------- push
