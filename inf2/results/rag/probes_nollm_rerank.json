@@ -1,0 +1,177 @@
+{
+  "mode": "retrieval_only",
+  "llm_model": null,
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "answer": null,
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1915.66,
+        "retrieve_ms": 477.86,
+        "rerank_ms": 1924.23,
+        "ttft_ms": null,
+        "e2e_ms": 117106.66
+      },
+      "probe_wall_ms": 158436.5
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "answer": null,
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "07-inference-lanes::lane-5-30-min-sustained-lane-6-quality-l-0000-tail-f-inf2-results-serve-llama31-base-s"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 631.38,
+        "retrieve_ms": 381.69,
+        "rerank_ms": 1868.82,
+        "ttft_ms": null,
+        "e2e_ms": 122098.91
+      },
+      "probe_wall_ms": 129406.6
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "METHODOLOGY::6-kv-cache-arithmetic-drives-the-serving-0000-llama-3-1-8b-32-layers-8-kv-heads-128-he",
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 605.2,
+        "retrieve_ms": 227.73,
+        "rerank_ms": 1869.91,
+        "ttft_ms": null,
+        "e2e_ms": 103690.64
+      },
+      "probe_wall_ms": 111156.9
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "01-security-hardening::2-new-keys-new-profile-also-make-it-the-0000-aws-iam-create-access-key-user-name-neur",
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 631.8,
+        "retrieve_ms": 178.55,
+        "rerank_ms": 1870.04,
+        "ttft_ms": null,
+        "e2e_ms": 98788.15
+      },
+      "probe_wall_ms": 105919.9
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::caveats-worth-knowing-before-you-read-th-0000-compile-time-is-real-and-reported-rule-3",
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 661.41,
+        "retrieve_ms": 237.61,
+        "rerank_ms": 1870.18,
+        "ttft_ms": null,
+        "e2e_ms": 102027.1
+      },
+      "probe_wall_ms": 109358.6
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": true,
+      "answer": null,
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met",
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1116.86,
+        "retrieve_ms": 301.62,
+        "rerank_ms": 1881.76,
+        "ttft_ms": null,
+        "e2e_ms": 102823.39
+      },
+      "probe_wall_ms": 113391.0
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "answer": null,
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 849.14,
+        "retrieve_ms": 349.75,
+        "rerank_ms": 1881.58,
+        "ttft_ms": null,
+        "e2e_ms": 102896.2
+      },
+      "probe_wall_ms": 111805.9
+    }
+  ],
+  "passed": 4,
+  "total": 7,
+  "pass_rate": 0.571,
+  "errored": 0,
+  "captured": "2026-07-31T15:46:47Z"
+}

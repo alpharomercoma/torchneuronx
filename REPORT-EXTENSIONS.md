@@ -139,12 +139,12 @@ Verdicts written before compute was spent; outcomes after:
 | CLIP | GO | ❌ numerics exclusion — the one true miss |
 | SigLIP | attempt-only, exclusion likely | ✅ exclusion, as predicted |
 | Mistral-7B | GO (attempt) | ✅ full sweep |
-| RAG sized-down (0.6B embed/rerank) | GO with receipts | see §13.10 |
+| RAG sized-down (0.6B embed/rerank) | GO with receipts | ✅ retrieval 7/7; reranker + co-residency receipted |
 | Long-ctx bisection | GO | ✅ bracketed both cliffs |
 | fp8 KV | GO | ✅ parity A/B |
 | int8 weights | GO | ⚠ declared prep-stage gap |
 | gpt-oss-20b MoE | attempt-only | ⏸ driver not built (declared) |
-| Spec-decode | GO via fused | see §13.10 |
+| Spec-decode | GO via fused | ✅ 2.4× fused speedup |
 | Multi-tenant | GO (attempt) | ✅ measured isolation |
 | Cold-start | GO | ✅ 47.9 min, infra ≈ 7 min |
 | Ckpt timing | GO | ✅ ~1 s/save |
@@ -155,10 +155,52 @@ Verdicts written before compute was spent; outcomes after:
 surfaces (CLIP exporter, NKI device, NxDI Tier-2/3 CLI paths) — consistent
 with Phase 1's conclusion that the mature paths are genuinely mature.
 
-### 13.10 RAG appliance + speculative decoding
+### 13.10 RAG appliance (Track F)
 
-Final lanes of the phase (results land in `inf2/results/rag/` and
-`extras/spec_decode/`); this section is regenerated when they complete.
+Port of [local-agentic-rag-with-qwen3](https://github.com/alpharomercoma/local-agentic-rag-with-qwen3)
+(3×8B Qwen on ≥48 GB VRAM) sized for a 32 GB Inferentia2: Postgres 16 +
+pgvector (HNSW, 1024-dim) on the host CPU, **Qwen3-Embedding-0.6B and
+Qwen3-Reranker-0.6B compiled to NeuronCores via raw `torch_neuronx.trace`**
+(571 s / 909 s compiles), Llama 3.1 8B as the generator. Corpus: this
+repo's own docs (72 chunks, ingested at 1.5 chunks/s end-to-end including
+on-chip embedding).
+
+* **Retrieval quality: 7/7 verification probes pass** (cosine top-3
+  contains the expected fact for every REPORT-derived question) —
+  `probes_nollm.json`.
+* Per-stage query timings (fresh process; embed ~0.7–1.9 s at static
+  batch 8 × seq 512 fp32, pgvector retrieve 0.2–0.5 s). The `e2e_ms`
+  fields include a ~56 s traced-module load per probe process — a harness
+  artifact, declared, not query latency.
+* **Reranker: runs on-chip (~1.9 s/batch of 4) but degrades quality 7/7 →
+  4/7** (`probes_nollm_rerank.json`). Root cause is visible in the compile
+  log: the static trace **ignores the attention mask**, so left-padding
+  attends to pad tokens and corrupts the yes-logit scores. No-rerank mode
+  is the production configuration; the reranker stays an honest attempt
+  receipt.
+* **Co-residency wall, measured**: with the TP=2 8B server owning both
+  NeuronCores, the co-resident embedder cannot initialize the runtime —
+  all 7 LLM-stage probes errored (`probes_llm.json`). On a 2-core
+  inf2.xlarge, generation + on-chip embedding need either a quantized
+  TP=1 LLM (the declared int8 gap, §13.5) or a second box. The
+  retrieval-first probe ordering was designed for exactly this outcome, so
+  clean retrieval numbers exist regardless.
+
+### 13.11 Speculative decoding (Track C1)
+
+NxDI `inference_demo` fused speculation, Llama 3.1 8B target + Llama 3.2 1B
+draft, TP=2, greedy, 1024-token context, 256 generated:
+
+| | e2e latency (avg) | e2e throughput |
+|---|---|---|
+| baseline 8B | 8,587 ms | 149.1 tok/s |
+| **fused spec (k=5)** | **3,569 ms** | **358.6 tok/s** |
+
+**2.4× end-to-end speedup** on identical greedy output. Two receipts on the
+way there: the fused path hard-requires on-device sampling
+(`AttributeError` on `on_device_sampling_config` without it — the CLI help
+dump is archived next to the results), and `--model-path` wants a local
+snapshot directory, not an HF repo id.
 
 ## 14. Phase-2 corrections (what broke and what it taught)
 
