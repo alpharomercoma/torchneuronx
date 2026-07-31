@@ -85,4 +85,4 @@ make pull-results && make report     # regenerate REPORT.md numbers
 
 ## Status
 
-Complete. Measured results in [REPORT.md](REPORT.md); every number regenerates from `analysis/comparison.json` via `make report`.
+Complete. Measured results in [REPORT.md](REPORT.md) + [REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from `analysis/comparison.json` via `make report`.

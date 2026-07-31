@@ -157,3 +157,9 @@ Qwen repeat), demonstration-scale SFT with no quality claims, primary
 client is this repo's own (schema-identical, exact-ISL), no energy numbers,
 previous-generation Neuron silicon by design. Prices: trn1.2xlarge
 $1.34/hr, inf2.xlarge $0.76/hr, us-west-2 on-demand, July 2026.
+
+---
+
+Phase 2 (mlx-parity models, Mistral, open-loop goodput, context-cliff
+bisections, quantization, multi-tenancy, cold-start, NKI, RAG appliance)
+continues in **[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md)**.
