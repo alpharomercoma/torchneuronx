@@ -1,0 +1,2 @@
+# fallback_client  model=TinyLlama/TinyLlama-1.1B-Chat-v1.0  mode=closed  prompts=32  conc=4  isl=256  osl=256  seed=42
+out_tok/s=233.44  ttft_p50=118.571ms  p99=1468.691ms  tpot_p50=16.151ms  completed=32/32  duration=35.092s -> /opt/np/repo/inf2/results/extras/multitenant/tenant0_c4.json

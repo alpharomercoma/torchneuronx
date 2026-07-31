@@ -1,0 +1,4 @@
+{
+ "max_model_len": 3072, "max_num_seqs": 8, "status": "healthy",
+ "boot_json": "len_3072.boot.json", "captured": "2026-07-31T09:58:05Z"
+}

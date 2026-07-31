@@ -26,7 +26,7 @@ RAG_VENV="${RAG_VENV:-/opt/np/venvs/rag-overlay}"
 OVERLAY_SITE="$RAG_VENV/lib/python3.12/site-packages"
 RECEIPT="${1:-/tmp/rag_venv_receipt.json}"
 export PATH="$NP_VENV/bin:$PATH"   # libneuronpjrt-path (Phase-1 gotcha #2)
-CHECK="import optimum.neuron; from transformers.integrations import PeftAdapterMixin; import torch_neuronx"
+CHECK="import optimum.neuron; import torch_neuronx"  # NOT PeftAdapterMixin: genuine transformers 4.57 moved it; optimum.neuron importing IS the gate
 
 fail() {
   mkdir -p "$(dirname "$RECEIPT")"
@@ -60,7 +60,7 @@ PIP="$RAG_VENV/bin/pip"
 # The overlay resolved deps against a bare venv, so it holds its own torch;
 # strip it (and companions) so the underlay's Neuron-matched torch wins
 # under PYTHONPATH. Errors ignored: absent is the goal state.
-"$PIP" uninstall -y torch torchgen torchvision torchaudio >/dev/null 2>&1 || true
+"$PIP" uninstall -y torch torchgen torchvision torchaudio numpy >/dev/null 2>&1 || true
 
 PYTHONPATH="$OVERLAY_SITE" "$NP_VENV/bin/python" -c "$CHECK" \
   || fail verify "combined underlay+overlay import check failed"
