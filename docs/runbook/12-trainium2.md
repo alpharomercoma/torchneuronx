@@ -143,20 +143,31 @@ Completion marker: `PHASE3 TRN2 ALL COMPLETE`. Reattach from any machine with
 The master runs, in this order and for these reasons:
 
 1. **TP probe** (`extras/tp_probe_trn2.sh`) — the cheapest thing that can
-   invalidate everything after it. World = TP, so the intended config is TP=4,
-   but the Neuron runtime docs state collectives are limited to world size
-   1/2/8/32 and **4 is not in that list**. The probe descends a declared ladder
-   on TinyLlama and writes the winner to `trn2/results/extras/tp_probe.json`:
+   invalidate everything after it. World = TP, so the intended config is TP=4.
+
+   **The docs are genuinely silent on whether world size 4 is valid on
+   Trainium2**, which is the whole reason this is measured. The often-quoted
+   "world size limited to 1, 2, 8, 32" sentence lives on a page tagged for Trn2,
+   so it cannot be dismissed as stale — but it is worded as a *performance
+   placement* heuristic and its examples (0/8/16/24) are trn1.32xlarge-shaped.
+   Meanwhile AWS's own `neuronx-distributed` docs use `tensor_parallel_size=4`
+   freely, no doc states a power-of-2 or divisibility rule, and **no AWS example
+   anywhere runs a single Trainium2 chip at any TP**. So: ladder, not assumption.
 
    | rung | LNC | world | TP | note |
    |---|---|---|---|---|
    | 1 | 2 | 4 | 4 | the whole chip, 24 GiB per logical core |
    | 2 | 2 | 2 | 2 | **half the chip idle — not a 1:1 comparison** |
-   | 3 | 1 | 8 | 8 | 8 physical v3 cores, 12 GiB banks |
+   | 3 | 1 | 8 | 8 | 8 physical v3 cores. Do **not** assume 12 GiB each: the docs say "both physical NeuronCores have access to the entire 24GB HBM bank" |
 
    If rung 2 wins, `full_chip: false` is recorded and **the report must say the
    comparison is against half a Trainium2**. If no rung passes, the master
    halts — there is no training lane without a working collective.
+
+   Hard rule from the LNC docs: the compiler's `-lnc` flag and the runtime's
+   `NEURON_LOGICAL_NC_CONFIG` **must match**. Neuron does not support compiling
+   for one and running the other, so each rung sets the runtime variable before
+   anything in that rung compiles.
 
 2. **NEFF cache seed** from `s3://.../neuron-cache-v3/`. NEFFs are compiled per
    NeuronCore version: v3 artifacts must **never** land in the `neuron-cache/`
