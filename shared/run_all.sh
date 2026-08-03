@@ -15,7 +15,7 @@ set -uo pipefail
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 RESULTS_DIR="${RESULTS_DIR:-$(dirname "$BENCH_DIR")/results}"
 MODELS_DIR="${MODELS_DIR:-/opt/np/models}"
-BOX="${BOX:?set BOX=trn1 or BOX=inf2 (the per-box wrapper does this)}"
+BOX="${BOX:?set BOX=trn1, trn2 or inf2 (the per-box wrapper does this)}"
 TELEM="$BENCH_DIR/shared/telemetry.py"
 FORCE="${FORCE:-0}"
 
@@ -24,6 +24,12 @@ FORCE="${FORCE:-0}"
 NP_VENV="${NP_VENV:-$(ls -d /opt/aws_neuronx_venv* 2>/dev/null | head -1)}"
 PY="${NP_VENV:+$NP_VENV/bin/python}"
 PY="${PY:-python3}"
+
+# torch-neuronx's initializer shells out to `libneuronpjrt-path`, a helper that
+# lives in the venv's bin/. Running "$NP_VENV/bin/python" without the venv on
+# PATH gives FileNotFoundError: 'libneuronpjrt-path' -- one missing export
+# produced failure receipts across seven Phase-2 lanes before it was found.
+[ -n "$NP_VENV" ] && export PATH="$NP_VENV/bin:$PATH"
 
 mkdir -p "$RESULTS_DIR"/{train,serve,cpu,quality,sustained,compile}
 
@@ -51,8 +57,14 @@ else
     > "$RESULTS_DIR/cpu/cpu.log" 2>&1 || echo "  cpu FAILED"
 fi
 
-if [ "$BOX" = "trn1" ]; then
+if [ "$BOX" = "trn1" ] || [ "$BOX" = "trn2" ]; then
   # ============================================================ TRAINING BOX
+  # trn1 and trn2 share this branch DELIBERATELY and byte-for-byte. The whole
+  # point of the Trainium2 lane is an apples-to-apples comparison, so the two
+  # boxes must run the same lanes with the same hyperparameters; the only
+  # difference is the device profile sft_lora.py resolves (see NP_DEVICE in
+  # /etc/profile.d/neuron-pipelines.sh, written by the stack's user-data).
+  # A per-generation lane list here would quietly destroy the comparison.
 
   # ------------------------------------------------- lane 2: plumbing smoke
   # TinyLlama-1.1B, 20 steps, ungated. Validates the whole path (dataset ->

@@ -1,4 +1,4 @@
-neuron-pipelines comparison  (generated 2026-07-30T06:27:57Z)
+neuron-pipelines comparison  (generated 2026-08-03T16:46:47Z)
 ================================================================
 
 [trn1] lanes: ['compile_llama31_train', 'cpu_cpu', 'train_llama31_lora', 'train_merge_llama31', 'train_qwen3_lora', 'train_smoke_tinyllama']
@@ -20,6 +20,7 @@ neuron-pipelines comparison  (generated 2026-07-30T06:27:57Z)
   serve/smoke_tinyllama_smoke: 1 points, boot 126s (warm=True)
     isl128_osl128_c1: out_tok/s=118.92 ttft_p50=21.88ms tpot_p50=8.085ms util=100.0%
   serve/llama31_base_long:load: RECORDED FAILURE (server_failed_to_start)
+  serve/llama31_base_short:load: RECORDED FAILURE (server_failed_to_start)
   serve/qwen3_base_short:generation: RECORDED FAILURE (boots_but_generation_crashes)
 
 dropped_no_telemetry: 5

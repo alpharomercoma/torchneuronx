@@ -88,3 +88,82 @@ def test_patch_walks_sys_modules(monkeypatch):
     # second call: already shimmed, not re-patched
     assert "modeling_llama" not in sft_lora.patch_optimum_modeling_checkpoint(
         lambda v: False)
+
+
+# --------------------------------------------------- device profiles (Phase 3)
+def test_trn1_profile_reproduces_published_phase1_config():
+    """The published 68.3% MFU is only reproducible if trn1 stays 2/2/210e12.
+
+    A change here silently invalidates every Phase-1 and Phase-2 training
+    number in REPORT.md, so it is pinned as hard as the FLOPs formula is.
+    """
+    args = sft_lora.build_parser().parse_args(["--tag", "t", "--out", "/tmp/o"])
+    p = sft_lora.resolve_device_profile(args, env={})
+    assert p["device_profile"] == "trn1"
+    assert (p["nproc"], p["tp"], p["pp"]) == (2, 2, 1)
+    assert p["peak_bf16_flops"] == 210e12
+    assert p["logical_nc_config"] is None
+
+
+def test_trn2_profile_is_four_logical_cores_at_667_tflops():
+    args = sft_lora.build_parser().parse_args(
+        ["--tag", "t", "--out", "/tmp/o", "--device-profile", "trn2"])
+    p = sft_lora.resolve_device_profile(args, env={})
+    assert (p["nproc"], p["tp"]) == (4, 4)
+    assert p["peak_bf16_flops"] == 667e12
+    assert p["logical_nc_config"] == 2      # Neuron default on Trainium2
+    assert p["hbm_gib_per_core"] == 24      # vs 16 on trn1 -- the ctx-cliff lever
+
+
+def test_tp_ladder_overrides_beat_the_profile():
+    """The trn2 TP fallback ladder must be a flag change, never a code edit."""
+    args = sft_lora.build_parser().parse_args(
+        ["--tag", "t", "--out", "/tmp/o", "--device-profile", "trn2",
+         "--nproc-per-node", "8", "--tensor-parallel-size", "8"])
+    p = sft_lora.resolve_device_profile(args, env={})
+    assert (p["nproc"], p["tp"]) == (8, 8)
+    assert p["peak_bf16_flops"] == 667e12   # still the same chip
+
+
+def test_detect_device_key_precedence():
+    # explicit instance type beats the environment
+    assert sft_lora.detect_device_key(
+        env={"NP_DEVICE": "trn1"}, instance_type="trn2.3xlarge") == "trn2"
+    # environment beats the default
+    assert sft_lora.detect_device_key(env={"NP_DEVICE": "trn2"}) == "trn2"
+    # an unknown family falls back rather than crashing a multi-hour lane
+    assert sft_lora.detect_device_key(env={}, instance_type="p5.48xlarge") == "trn1"
+    assert sft_lora.detect_device_key(env={}) == "trn1"
+
+
+def test_unknown_profile_fails_fast():
+    import pytest
+    args = sft_lora.build_parser().parse_args(["--tag", "t", "--out", "/tmp/o"])
+    args.device_profile = "trn9"
+    with pytest.raises(SystemExit):
+        sft_lora.resolve_device_profile(args, env={})
+
+
+def test_torchrun_argv_carries_the_profile_rank_count():
+    argv = sft_lora.torchrun_argv("/x/sft_lora.py", ["--tag", "t"],
+                                  nproc_per_node=4)
+    assert "--nproc_per_node=4" in argv
+    assert argv[1:3] == ["-m", "torch.distributed.run"]
+
+
+def test_lnc_env_is_set_only_for_trainium2():
+    env = {}
+    sft_lora.apply_neuron_env(env=env, cache_dir="/tmp/c",
+                              profile=sft_lora.DEVICE_PROFILES["trn1"])
+    assert "NEURON_LOGICAL_NC_CONFIG" not in env
+
+    env = {}
+    sft_lora.apply_neuron_env(env=env, cache_dir="/tmp/c",
+                              profile=sft_lora.DEVICE_PROFILES["trn2"])
+    assert env["NEURON_LOGICAL_NC_CONFIG"] == "2"
+
+    # setdefault: the ladder can force LNC=1 from the driver
+    env = {"NEURON_LOGICAL_NC_CONFIG": "1"}
+    sft_lora.apply_neuron_env(env=env, cache_dir="/tmp/c",
+                              profile=sft_lora.DEVICE_PROFILES["trn2"])
+    assert env["NEURON_LOGICAL_NC_CONFIG"] == "1"

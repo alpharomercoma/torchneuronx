@@ -41,15 +41,27 @@ script re-execs ITSELF under `python -m torch.distributed.run
 --nproc_per_node=2` when WORLD_SIZE is absent. Arguments are parsed BEFORE the
 re-exec so a typo fails once, in one process, instead of twice inside torchrun.
 
-WHY nproc_per_node=2 and tensor_parallel_size=2
------------------------------------------------
-trn1.2xlarge carries one Trainium1 device = 2 NeuronCores. One rank per core
-gives world=2; spending the whole world on tensor parallelism gives TP=2, DP=1.
-Llama 3.1 8B in BF16 is ~16 GiB of weights against 32 GiB of device HBM -- it
-would nominally fit on one core, but activations, gradients and optimizer state
-would not, so TP=2 is what makes the primary lane run at all. DP=1 is therefore
-a consequence of the instance, not a tuning choice, and it is why the token
-accounting below has no data-parallel multiplier on this box.
+WHY world == TP, AND WHY IT IS A PROFILE
+----------------------------------------
+One rank per logical NeuronCore, and the whole world spent on tensor
+parallelism, so DP=1. That is a consequence of the instance, not a tuning
+choice, and it is why the token accounting below has no data-parallel
+multiplier on either box.
+
+  trn1.2xlarge  1x Trainium1, 2x NeuronCore-v2  -> world 2, TP=2, 16 GiB/core
+  trn2.3xlarge  1x Trainium2, 8x NeuronCore-v3 grouped into 4 logical cores
+                at LNC=2 (the Neuron default)   -> world 4, TP=4, 24 GiB/core
+
+Llama 3.1 8B in BF16 is ~16 GiB of weights; it would nominally fit on one trn1
+core, but activations, gradients and optimizer state would not, so TP is what
+makes the primary lane run at all.
+
+These live in DEVICE_PROFILES, selected by --device-profile, else NP_DEVICE,
+else the instance type from IMDS, else trn1. The profile also carries the peak
+BF16 FLOP/s that MFU is divided by -- so an MFU number can never be silently
+compared against the wrong chip. --nproc-per-node and --tensor-parallel-size
+override it, which is what makes the trn2 TP ladder a flag change rather than
+an edit to this file mid-study.
 
 WHY THE FLOPS FORMULA IS NOT 6N
 -------------------------------
@@ -111,10 +123,51 @@ DEFAULT_WARMUP_STEPS = 5
 DEFAULT_ADAPTER_ROOT = "/opt/np/models/adapters"
 DEFAULT_CACHE_DIR = "/opt/np/cache/neuron-compile-cache"
 
-# trn1.2xlarge: one Trainium1 = 2 NeuronCores. World = TP, so DP = 1.
-NPROC_PER_NODE = 2
-TENSOR_PARALLEL_SIZE = 2
-PIPELINE_PARALLEL_SIZE = 1
+# One profile per accelerator generation this study runs on. Everything that
+# differs between Trainium1 and Trainium2 lives here and nowhere else, so a
+# result JSON always carries the denominator its MFU was computed against.
+#
+# World = TP on both boxes (one rank per logical NeuronCore, DP = 1): the point
+# of this study is per-chip efficiency, so the whole chip goes to one model.
+#
+# peak_bf16_flops is per CHIP, dense BF16, because TP spreads every token
+# across all of the chip's cores. Trainium1: AWS quotes trn1.32xlarge at
+# 3.4 PFLOP/s over 16 devices -> 212.5 TFLOP/s/device, rounded to 210e12 and
+# used consistently since Phase 1. Trainium2: 667 TFLOP/s BF16 published
+# per chip (Neuron docs, general/arch/neuron-hardware/trainium2).
+DEVICE_PROFILES = {
+    "trn1": {
+        "instance_type": "trn1.2xlarge",
+        "nproc": 2,
+        "tp": 2,
+        "pp": 1,
+        "peak_bf16_flops": 210e12,
+        "hbm_gib_per_core": 16,
+        "logical_nc_config": None,   # LNC does not exist on NeuronCore-v2
+        "note": ("trn1.2xlarge: 1x Trainium1, 2x NeuronCore-v2, 32 GiB HBM "
+                 "(16 GiB per core). 210 TFLOP/s BF16 per chip."),
+    },
+    "trn2": {
+        "instance_type": "trn2.3xlarge",
+        "nproc": 4,
+        "tp": 4,
+        "pp": 1,
+        "peak_bf16_flops": 667e12,
+        "hbm_gib_per_core": 24,
+        "logical_nc_config": 2,      # Neuron default on Trainium2
+        "note": ("trn2.3xlarge: 1x Trainium2, 8x NeuronCore-v3 grouped into 4 "
+                 "logical cores at LNC=2 (the Neuron default), 96 GiB HBM "
+                 "(24 GiB per logical core). 667 TFLOP/s BF16 per chip."),
+    },
+}
+DEFAULT_DEVICE = "trn1"
+
+# Module-level aliases kept for the trn1 lanes published in Phase 1/2: those
+# numbers must stay byte-reproducible, so the historical names still resolve to
+# the historical values. New code reads the profile.
+NPROC_PER_NODE = DEVICE_PROFILES[DEFAULT_DEVICE]["nproc"]
+TENSOR_PARALLEL_SIZE = DEVICE_PROFILES[DEFAULT_DEVICE]["tp"]
+PIPELINE_PARALLEL_SIZE = DEVICE_PROFILES[DEFAULT_DEVICE]["pp"]
 
 # LoRA target modules: every projection in the transformer block. Attention
 # only (q,k,v,o) trains ~half as many parameters and reliably underperforms on
@@ -124,12 +177,10 @@ LORA_TARGET_MODULES = [
     "gate_proj", "up_proj", "down_proj",
 ]
 
-# One Trainium1 device, dense BF16. AWS quotes trn1.32xlarge at 3.4 PFLOP/s
-# BF16 across 16 Trainium devices -> 212.5 TFLOP/s per device; 210e12 is the
-# rounded per-device figure used consistently across this study. MFU is
-# measured against the WHOLE device because TP=2 means both NeuronCores
-# cooperate on every token.
-PEAK_BF16_FLOPS = 210e12
+# Historical alias for the Trainium1 peak; see DEVICE_PROFILES above. Kept so
+# throughput_metrics() has the same default it had when Phase-1 numbers were
+# recorded, and so a caller that never heard of profiles still gets trn1.
+PEAK_BF16_FLOPS = DEVICE_PROFILES[DEFAULT_DEVICE]["peak_bf16_flops"]
 
 # Steps excluded from the median. Step 1 pays graph tracing/compile; the next
 # few pay cache warm-up and dataloader spin-up.
@@ -192,8 +243,17 @@ def build_parser():
     ap.add_argument("--dataset", default=DEFAULT_DATASET)
     ap.add_argument("--adapter-out", default=None,
                     help=f"default {DEFAULT_ADAPTER_ROOT}/<tag>")
-    ap.add_argument("--tensor-parallel-size", type=int,
-                    default=TENSOR_PARALLEL_SIZE)
+    ap.add_argument("--tensor-parallel-size", type=int, default=None,
+                    help="default: the device profile's tp (trn1 2, trn2 4)")
+    ap.add_argument("--device-profile", default=None,
+                    choices=sorted(DEVICE_PROFILES),
+                    help="accelerator profile: sets ranks, TP and the peak "
+                         "FLOP/s that MFU is measured against. Default: "
+                         "NP_DEVICE, else the instance type from IMDS, else "
+                         f"{DEFAULT_DEVICE}")
+    ap.add_argument("--nproc-per-node", type=int, default=None,
+                    help="override the profile's rank count (one rank per "
+                         "logical NeuronCore). Used by the trn2 TP ladder")
     ap.add_argument("--attn-impl", default="flash_attention_2",
                     help="flash_attention_2 needs seq-len to be a multiple of "
                          "2048; pass eager to disable")
@@ -495,6 +555,74 @@ def world_size(env=None):
         return 1
 
 
+def detect_device_key(env=None, instance_type=None):
+    """Pick a DEVICE_PROFILES key. Pure given its inputs, so it is unit-tested.
+
+    Order: explicit instance type (from IMDS, passed in by the caller) beats
+    NP_DEVICE in the environment, which beats the trn1 default. The default is
+    trn1 rather than "fail loudly" because every Phase-1/2 lane ran without
+    this flag existing and must keep reproducing byte-for-byte.
+    """
+    env = os.environ if env is None else env
+    if instance_type:
+        family = str(instance_type).split(".")[0].lower()
+        if family in DEVICE_PROFILES:
+            return family
+    requested = (env.get("NP_DEVICE") or "").strip().lower()
+    if requested in DEVICE_PROFILES:
+        return requested
+    return DEFAULT_DEVICE
+
+
+def read_imds_instance_type(timeout=1.0):
+    """Ask IMDSv2 for this box's instance type, or None. Never raises.
+
+    Best-effort only: a wrong answer here would silently change the MFU
+    denominator, so every caller also honours --device-profile / NP_DEVICE,
+    and the resolved profile is written into the result JSON for audit.
+    """
+    try:
+        import urllib.request
+
+        def _get(url, headers, method="GET"):
+            req = urllib.request.Request(url, headers=headers, method=method)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode().strip()
+
+        token = _get("http://169.254.169.254/latest/api/token",
+                     {"X-aws-ec2-metadata-token-ttl-seconds": "60"}, "PUT")
+        return _get("http://169.254.169.254/latest/meta-data/instance-type",
+                    {"X-aws-ec2-metadata-token": token})
+    except Exception:
+        return None
+
+
+def resolve_device_profile(args, env=None, instance_type=None):
+    """(args, env) -> a DEVICE_PROFILES entry with CLI overrides applied.
+
+    Returns a fresh dict so callers can stash it straight into the result JSON.
+    --nproc-per-node and --tensor-parallel-size override the profile; that is
+    what makes the trn2 TP ladder (4 -> 2 -> 8 at LNC=1) a flag change rather
+    than an edit to this file mid-study.
+    """
+    key = getattr(args, "device_profile", None)
+    if key:
+        key = key.strip().lower()
+        if key not in DEVICE_PROFILES:
+            raise SystemExit(f"unknown --device-profile {key!r}; "
+                             f"known: {sorted(DEVICE_PROFILES)}")
+    else:
+        key = detect_device_key(env=env, instance_type=instance_type)
+
+    profile = dict(DEVICE_PROFILES[key])
+    profile["device_profile"] = key
+    if getattr(args, "nproc_per_node", None):
+        profile["nproc"] = int(args.nproc_per_node)
+    if getattr(args, "tensor_parallel_size", None):
+        profile["tp"] = int(args.tensor_parallel_size)
+    return profile
+
+
 def torchrun_argv(script_path, argv, nproc_per_node=NPROC_PER_NODE):
     """Build the `python -m torch.distributed.run ...` argv. Pure, so the
     re-exec command is testable without ever executing it.
@@ -509,7 +637,7 @@ def torchrun_argv(script_path, argv, nproc_per_node=NPROC_PER_NODE):
             os.path.abspath(script_path)] + list(argv)
 
 
-def apply_neuron_env(env=None, cache_dir=None):
+def apply_neuron_env(env=None, cache_dir=None, profile=None):
     """Set the Neuron compiler/runtime env vars, without clobbering the user's.
 
     Must run before torch_xla is imported anywhere, hence before the re-exec:
@@ -518,6 +646,11 @@ def apply_neuron_env(env=None, cache_dir=None):
     env = os.environ if env is None else env
     for key, value in NEURON_ENV.items():
         env.setdefault(key, value)
+    # Logical NeuronCore config exists only from Trainium2 on. setdefault, so
+    # the TP ladder can force LNC=1 from the driver without editing code.
+    lnc = (profile or {}).get("logical_nc_config")
+    if lnc:
+        env.setdefault("NEURON_LOGICAL_NC_CONFIG", str(lnc))
     cache = cache_dir or env.get("NEURON_COMPILE_CACHE_URL") or DEFAULT_CACHE_DIR
     # NEURON_COMPILE_CACHE_URL is the repo-wide convention -- shared/bin/
     # sync_neuron_cache.sh syncs exactly this directory to S3, so a replaced
@@ -531,25 +664,41 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     args = build_parser().parse_args(argv)
 
-    cache_dir = apply_neuron_env()
+    # IMDS is only worth asking before the re-exec: the children inherit
+    # NP_DEVICE below, so exactly one HTTP call happens per lane.
+    if not is_distributed_launch() and not args.device_profile \
+            and not os.environ.get("NP_DEVICE"):
+        detected = read_imds_instance_type()
+        if detected:
+            print(f"[sft_lora] IMDS instance-type: {detected}", flush=True)
+    else:
+        detected = None
+    profile = resolve_device_profile(args, instance_type=detected)
+
+    cache_dir = apply_neuron_env(profile=profile)
     random.seed(args.seed)
 
     # Re-exec under torchrun if we were launched as plain `python`. Arguments
     # are already validated at this point, so a bad flag has failed once rather
     # than twice inside the elastic launcher.
     if not is_distributed_launch():
-        cmd = torchrun_argv(__file__, argv)
-        print(f"[sft_lora] no WORLD_SIZE in env -- re-exec under torchrun "
-              f"(--nproc_per_node={NPROC_PER_NODE}, one rank per NeuronCore)",
-              flush=True)
+        # Pin the resolved profile for the children so they do not re-detect
+        # and cannot disagree with the parent about the MFU denominator.
+        os.environ["NP_DEVICE"] = profile["device_profile"]
+        cmd = torchrun_argv(__file__, argv, nproc_per_node=profile["nproc"])
+        print(f"[sft_lora] profile={profile['device_profile']} "
+              f"({profile['instance_type']}) -- re-exec under torchrun "
+              f"(--nproc_per_node={profile['nproc']}, one rank per logical "
+              f"NeuronCore)", flush=True)
         print(f"[sft_lora] {' '.join(cmd)}", flush=True)
         os.execv(sys.executable, cmd)
 
-    return run(args, cache_dir)
+    return run(args, cache_dir, profile)
 
 
-def run(args, cache_dir):
+def run(args, cache_dir, profile=None):
     """The distributed body. Every heavy import lives below this line."""
+    profile = profile or resolve_device_profile(args)
     import torch
     from datasets import load_dataset
     from peft import LoraConfig
@@ -569,7 +718,9 @@ def run(args, cache_dir):
 
     adapter_out = resolve_adapter_out(args.adapter_out, args.tag)
     packing = not args.no_packing
-    tp_size = args.tensor_parallel_size
+    tp_size = profile["tp"]
+    pp_size = profile["pp"]
+    peak_flops = profile["peak_bf16_flops"]
     dp_size = max(1, world // tp_size)
     max_steps = args.max_steps if args.max_steps is not None else -1
 
@@ -601,7 +752,7 @@ def run(args, cache_dir):
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
         tensor_parallel_size=tp_size,
-        pipeline_parallel_size=PIPELINE_PARALLEL_SIZE,
+        pipeline_parallel_size=pp_size,
         logging_steps=1,          # every optimizer step; the trace needs them all
         # Default: one explicit save at the end. Track C4 overrides to timed
         # periodic saves -- checkpoint cost is a production ops number.
@@ -754,7 +905,7 @@ def run(args, cache_dir):
         say("  params trainable   : unknown (degenerate recount; MFU nulled)")
     say(f"  grad checkpointing : {not args.no_gradient_checkpointing}")
     say(f"  parallelism        : world={world} tp={tp_size} dp={dp_size} pp="
-        f"{PIPELINE_PARALLEL_SIZE}")
+        f"{pp_size}")
     say(f"  lora               : r={args.lora_r} alpha={args.lora_alpha} "
         f"dropout={args.lora_dropout}")
     say(f"  lora targets       : {','.join(LORA_TARGET_MODULES)}")
@@ -806,6 +957,7 @@ def run(args, cache_dir):
     if tok_s is not None and params_trainable is not None:
         perf = throughput_metrics(
             params_trainable, params_total - params_trainable, tok_s,
+            peak_flops=peak_flops,
             gradient_checkpointing=not args.no_gradient_checkpointing)
 
     payload = {
@@ -839,10 +991,17 @@ def run(args, cache_dir):
             "dtype": "bfloat16",
             "world_size": world,
             "tensor_parallel_size": tp_size,
-            "pipeline_parallel_size": PIPELINE_PARALLEL_SIZE,
+            "pipeline_parallel_size": pp_size,
             "data_parallel_size": dp_size,
             "neuron_compile_cache_url": cache_dir,
             "neuron_cc_flags": os.environ.get("NEURON_CC_FLAGS"),
+            # Every number below is only meaningful against this denominator.
+            "device_profile": profile["device_profile"],
+            "instance_type": profile["instance_type"],
+            "nproc_per_node": profile["nproc"],
+            "logical_nc_config": os.environ.get("NEURON_LOGICAL_NC_CONFIG"),
+            "hbm_gib_per_core": profile["hbm_gib_per_core"],
+            "device_note": profile["note"],
         },
         "versions": resolve_versions(),
         "tokens_per_optimizer_step": tok_per_step,
@@ -862,7 +1021,7 @@ def run(args, cache_dir):
         "flops_formula": "6*params_trainable + 4*params_frozen",
         "tflops": round(perf["tflops"], 3) if perf else None,
         "mfu_pct": round(perf["mfu_pct"], 3) if perf else None,
-        "peak_bf16_flops": PEAK_BF16_FLOPS,
+        "peak_bf16_flops": peak_flops,
         "peak_host_mem_mib": read_peak_host_mem_mib(),
         "peak_device_mem_mib": None,
         "peak_device_mem_note": (

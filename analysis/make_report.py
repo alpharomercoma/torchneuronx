@@ -28,15 +28,26 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "shared"))
 import summarize  # noqa: E402  (load_telemetry + busy-window rule)
 
+# The trn2 list is a copy of trn1's, not a subset: the Trainium1-vs-Trainium2
+# comparison is only meaningful if both chips completed the identical lanes, so
+# a partial trn2 suite must fail the completeness check like any other gap.
+_TRAINING_LANES = ["train/smoke_tinyllama.json", "compile/llama31_train.json",
+                   "train/llama31_lora.json", "train/qwen3_lora.json",
+                   "train/merge_llama31.json", "cpu/cpu.json"]
+
 EXPECTED = {
-    "trn1": ["train/smoke_tinyllama.json", "compile/llama31_train.json",
-             "train/llama31_lora.json", "train/qwen3_lora.json",
-             "train/merge_llama31.json", "cpu/cpu.json"],
+    "trn1": list(_TRAINING_LANES),
+    "trn2": list(_TRAINING_LANES),
     "inf2": ["serve/llama31_base_short/grid.json",
              "serve/llama31_base_long/grid.json",
              "serve/llama31_dolly_short/grid.json",
              "sustained/sustained.json", "cpu/cpu.json"],
 }
+
+# Iteration order for every per-box loop. A box with no results/ directory is
+# skipped rather than reported missing, so this file stays runnable while the
+# trn2 lane is still in flight.
+BOXES = ("trn1", "trn2", "inf2")
 
 
 def load_json(path):
@@ -128,8 +139,10 @@ def collect_box(box):
 def render(cmp):
     lines = ["neuron-pipelines comparison  (generated %s)" % cmp["captured"],
              "=" * 64]
-    for box in ("trn1", "inf2"):
-        b = cmp[box]
+    for box in BOXES:
+        b = cmp.get(box)
+        if b is None:
+            continue
         lines.append(f"\n[{box}] lanes: {sorted(b['lanes'])}")
         for run, d in sorted(b.get("serve", {}).items()):
             n = len(d["points"])
@@ -159,7 +172,11 @@ def main():
     cmp, dropped = {"captured": datetime.now(timezone.utc)
                     .strftime("%Y-%m-%dT%H:%M:%SZ")}, 0
     missing = []
-    for box in ("trn1", "inf2"):
+    for box in BOXES:
+        # A box whose results/ has never been populated is not yet part of the
+        # study; reporting six "missing" lanes for it would bury real gaps.
+        if not os.path.isdir(os.path.join(ROOT, box, "results")):
+            continue
         cmp[box], drp = collect_box(box)
         dropped += drp
         for rel in EXPECTED[box]:

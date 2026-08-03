@@ -13,7 +13,7 @@ def test_default_instance_type_inf2_xlarge(inferentia_template):
 
 def test_instance_type_context_override():
     """inf2InstanceType is context-switchable (8xlarge once quota lands)."""
-    _, _, inferentia = make_stacks({"inf2InstanceType": "inf2.8xlarge"})
+    _, _, inferentia, _ = make_stacks({"inf2InstanceType": "inf2.8xlarge"})
     template = Template.from_stack(inferentia)
     template.has_resource_properties(
         "AWS::EC2::Instance", {"InstanceType": "inf2.8xlarge"}
@@ -80,7 +80,7 @@ def test_tags(inferentia_template):
 
 def test_inf2_ami_id_escape_hatch():
     """When -c inf2AmiId=... is set, the template uses exactly that AMI."""
-    _, _, inferentia = make_stacks({"inf2AmiId": "ami-0123456789abcdef0"})
+    _, _, inferentia, _ = make_stacks({"inf2AmiId": "ami-0123456789abcdef0"})
     template = Template.from_stack(inferentia)
     template.has_resource_properties(
         "AWS::EC2::Instance", {"ImageId": "ami-0123456789abcdef0"}

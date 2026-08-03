@@ -6,8 +6,9 @@ push-code:      ## sync harness to S3 (boxes pull with shared/bin/pull_code.sh)
 	  --exclude ".git/*" --exclude "*/results/*" --exclude "cdk/cdk.out/*" \
 	  --exclude "cdk/.venv/*" --exclude ".venv/*" --exclude "*__pycache__*"
 
-pull-results:   ## fetch raw triplets from both boxes
+pull-results:   ## fetch raw triplets from all three boxes
 	aws s3 sync s3://$(BUCKET)/results/trn1/ trn1/results/
+	aws s3 sync s3://$(BUCKET)/results/trn2/ trn2/results/
 	aws s3 sync s3://$(BUCKET)/results/inf2/ inf2/results/
 
 report:         ## regenerate comparison.json + REPORT tables from results/

@@ -1,5 +1,5 @@
 {
- "captured": "2026-07-30T06:27:57Z",
+ "captured": "2026-08-03T16:46:47Z",
  "dropped_no_telemetry": 5,
  "inf2": {
   "failures": {
@@ -10,6 +10,15 @@
     "model_id": "meta-llama/Llama-3.1-8B-Instruct",
     "model_key": "llama31_base",
     "reason": "(APIServer pid=147194) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}",
+    "status": "server_failed_to_start"
+   },
+   "llama31_base_short:load": {
+    "captured": "2026-07-30T04:48:38Z",
+    "config": "short",
+    "looks_like_capacity_failure": false,
+    "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_key": "llama31_base",
+    "reason": "(no error line captured; see server tail log)",
     "status": "server_failed_to_start"
    },
    "qwen3_base_short:generation": {

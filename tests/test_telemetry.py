@@ -66,3 +66,30 @@ def test_real_captured_sample_parses():
     with open(real) as fh:
         obj = json.load(fh)
     assert telemetry.NeuronSampler.parse(obj) == (0.0, 0.0, 0.0, 0.0, 0.0)
+
+
+# ------------------------------------------- per-core columns scale (Phase 3)
+def test_neuron_core_count_precedence():
+    assert telemetry.neuron_core_count(env={}) == 2                    # trn1/inf2
+    assert telemetry.neuron_core_count(env={"NP_DEVICE": "trn2"}) == 4
+    # explicit override wins: LNC=1 exposes 8 cores, which no table predicts
+    assert telemetry.neuron_core_count(
+        env={"NP_DEVICE": "trn2", "NP_TELEMETRY_CORES": "8"}) == 8
+    # junk falls back rather than crashing a lane at second 1
+    assert telemetry.neuron_core_count(env={"NP_TELEMETRY_CORES": "x"}) == 2
+    assert telemetry.neuron_core_count(env={"NP_DEVICE": "unknown"}) == 2
+
+
+def test_parse_emits_one_column_per_requested_core():
+    obj = load_fixture()
+    assert len(telemetry.NeuronSampler.parse(obj, cores=2)) == 5
+    assert len(telemetry.NeuronSampler.parse(obj, cores=4)) == 7
+    # cores beyond what the runtime reports read 0.0, not missing
+    assert telemetry.NeuronSampler.parse(obj, cores=4)[4:6] == (0.0, 0.0)
+
+
+def test_util_mean_ignores_the_requested_core_count():
+    """A wrong core count must not be able to deflate headline utilization."""
+    obj = load_fixture()
+    assert (telemetry.NeuronSampler.parse(obj, cores=8)[0]
+            == telemetry.NeuronSampler.parse(obj, cores=2)[0])
