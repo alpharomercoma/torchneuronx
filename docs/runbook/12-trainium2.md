@@ -87,6 +87,22 @@ A reservation **bills at the on-demand rate from the moment it is created**,
 whether or not an instance occupies it — always set a limited `--end-date` so a
 forgotten hold self-expires, and deploy immediately once one succeeds.
 
+`extras/trn2_capacity_watch.sh` automates exactly this. It runs unattended from
+the laptop, rotates all three AZs every 150 s, and on success deploys the stack
+into whichever AZ opened — then exits:
+
+```bash
+nohup caffeinate -i bash extras/trn2_capacity_watch.sh \
+  >> ~/trn2_capacity_watch.log 2>&1 &
+disown          # macOS has no setsid; nohup + disown reparents to PID 1
+```
+
+`caffeinate -i` matters: a sleeping laptop polls nothing. Check on it with
+`cat ~/trn2_capacity_watch.status` (one line: WATCHING / CAPACITY SECURED /
+DEPLOYED / GAVE UP) or tail the log. A PID lockfile prevents two watchers
+racing for the same reservation, and a failed deploy cancels the hold rather
+than paying for an empty one.
+
 EC2 **Capacity Blocks** are the other reservation mechanism and would let you
 book a future window, but they need their own quota: this account gets
 `CapacityBlockDescribeLimitExceeded` on `describe-capacity-block-offerings`,
