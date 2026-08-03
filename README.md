@@ -26,7 +26,20 @@ trn1.2xlarge  (us-west-2)                 inf2.xlarge  (us-west-2)
   Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04)  Neuron vLLM 0.16 DLAMI (Ubuntu 24.04)
   torch-neuronx 2.9.0 | neuronx-cc 2.26     vllm 0.16.0 | NxDI 0.10 | neuronx-cc 2.26
   optimum-neuron 0.4.3 (pins: trl 0.24.0)   ami-035c945d557065665 (pin is load-bearing)
+
+trn2.3xlarge  (sa-east-1)                  <- Phase 3, generational comparison
+  1x Trainium2: 8 NeuronCores v3
+    -> 4 logical cores at LNC=2 (default)
+  96 GB HBM, 2.9 TB/s (24 GB per logical core)
+  ~667 TFLOP/s dense BF16 (paper) = 3.18x trn1
+  12 vCPU, 128 GiB host RAM
+  Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04), no AMI pin needed
 ```
+
+sa-east-1 is not a preference: it is the only region on earth offering the
+small Trainium2 SKU. The artifacts bucket stays in us-west-2 and all three
+boxes report into one comparison; v3 NEFFs use a separate S3 cache prefix
+because a NEFF is compiled for a specific NeuronCore version.
 
 Both boxes are provisioned by the CDK app in [cdk/](cdk/), accessed only via
 SSM Session Manager (no SSH, zero ingress rules), and stopped — not

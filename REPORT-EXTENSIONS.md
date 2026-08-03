@@ -223,3 +223,113 @@ snapshot directory, not an HF repo id.
 7. A 0-byte receipt is worse than no receipt — `xargs` ate a traceback's
    quotes; receipt writers now use plain variables and a tail-of-log
    fallback so "failed" always says *why*.
+
+---
+
+## 15. Trainium1 vs Trainium2, one chip each (Phase 3)
+
+**Status: infrastructure and harness complete, measurements not taken.** The
+lane is blocked on AWS capacity, not on work. This section is scaffolded with
+the declared design so that when a box lands, the numbers drop into a shape
+that was fixed *before* any result was seen.
+
+### 15.1 What is being compared, and why it is fair
+
+One Trainium1 chip against one Trainium2 chip, on the identical workload:
+Llama 3.1 8B, LoRA r16/α32, micro-batch 1, grad-accum 8, dolly-15k, 3 epochs,
+seed 42, seq 2048 — the same lane list through the same `shared/run_all.sh`
+branch, byte-for-byte. World = TP on both boxes, so the whole chip works on
+every token and MFU is measured against the whole chip.
+
+| | trn1.2xlarge | trn2.3xlarge |
+|---|---|---|
+| NeuronCores | 2 × v2 | 8 × v3 → 4 logical at LNC=2 |
+| HBM / chip | 32 GiB | 96 GiB |
+| HBM / logical core | 16 GiB | 24 GiB |
+| BF16 dense peak | 210 TFLOP/s | 667 TFLOP/s |
+| Ratio | — | **3.18×** |
+
+3.18× is the ceiling the measurement is judged against. If achieved speedup
+lands materially below it, that gap is the finding and gets profiled — not
+buried.
+
+### 15.2 The parallelism question was open, and was measured
+
+AWS documentation does **not** state whether tensor-parallel/world size 4 is
+valid on Trainium2. The often-cited "world size limited to 1, 2, 8, 32" line
+appears on a page tagged for Trn2 — so it cannot be waved away as stale — but
+it is worded as a performance *placement* heuristic and its examples
+(0/8/16/24) are trn1.32xlarge-shaped. Meanwhile AWS's own `neuronx-distributed`
+documentation uses `tensor_parallel_size=4` freely, no document states a
+power-of-two or divisibility rule, and **no AWS example anywhere runs a single
+Trainium2 chip at any TP**.
+
+That absence is why `extras/tp_probe_trn2.sh` descends a declared ladder on
+TinyLlama before any 8B lane is allowed to run, and keeps every rung's outcome:
+
+| rung | LNC | world | TP | consequence if it wins |
+|---|---|---|---|---|
+| 1 | 2 | 4 | 4 | the whole chip; a clean 1:1 comparison |
+| 2 | 2 | 2 | 2 | **half the chip idle** — every downstream number is labelled a partial-chip configuration |
+| 3 | 1 | 8 | 8 | 8 physical v3 cores; per-rank HBM to be measured, not assumed |
+
+### 15.3 The context cliff (Track B4)
+
+The strongest single prediction this phase makes. On trn1, seq 4096 passed at
+82.7% MFU and seq 8192 died:
+
+```
+NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of 16.00GB for Trn1
+```
+
+24 GiB per logical core should clear 18.12 GiB. The ladder therefore extends to
+**16384**, to locate the new cliff rather than merely confirm the old one moved.
+Either outcome is a receipt.
+
+### 15.4 Declared efficiency levers
+
+Run only after the untuned baseline exists, each as its own lane with its own
+triplet:
+
+- **E1** seq 4096 as the efficient operating point (mirrors trn1's own
+  2048→4096 gain of 68.3% → 82.7% MFU).
+- **E2** activation recomputation off — worth +2·N FLOPs/token in the MFU
+  accounting; more HBM may make it unnecessary.
+
+### 15.5 Blocked on capacity, and that is itself a finding
+
+A granted quota tells you nothing about whether you can launch. `L-2C3B7624`
+was granted at 12 vCPU in sa-east-1 — exactly one trn2.3xlarge — and on
+2026-08-04 all three AZs returned `InsufficientInstanceCapacity`, as did
+us-east-2 for trn2.48xlarge. Spot placement scores were 1/10 and 3/10
+respectively. The AWS pricing API carries **no on-demand record** for
+trn2.48xlarge, only a Capacity Block line item, which suggests Trainium2 is
+sold primarily through Capacity Blocks — and explains why the on-demand pools
+are bare.
+
+For a talk about *production* LLMs on Trainium, that is not an inconvenience to
+apologise for. It is the most practically useful thing in this section: the
+newest accelerator generation is capacity-rationed, and the previous generation
+— which the rest of this report measures end to end — is the one you can
+actually get.
+
+## 16. Phase-3 corrections
+
+1. **Trainium2 HBM is 96 GiB per chip, not 512.** `describe-instance-types`
+   reports `TotalNeuronDeviceMemoryInMiB = 524288` for trn2.3xlarge, a
+   single-chip instance. The Neuron architecture docs and the NKI architecture
+   guide independently state 96 GiB @ 2.9 TB/s, consistent with trn2.48xlarge's
+   advertised 1,536 GiB across 16 chips. An earlier note in this project
+   repeated the API figure; it was wrong. Trust the docs over the API for
+   device memory, and confirm with `neuron-ls` on the box.
+
+2. **"There is no small trn2" was wrong.** An earlier claim in this project
+   held that Trainium2 ships only as a 48xlarge. `describe-instance-type-
+   offerings` disproves it: trn2.3xlarge exists, in sa-east-1 only. Check
+   offerings per region before quoting instance sizes — AWS added the small
+   size without it appearing in any US region.
+
+3. **Do not assume 12 GiB per core at LNC=1.** The LNC documentation says both
+   physical NeuronCores "have access to the entire 24GB HBM bank"; it does not
+   say the bank is halved. The rung-3 design was corrected to measure rather
+   than assume.

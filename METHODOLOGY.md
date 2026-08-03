@@ -147,4 +147,16 @@ never headline; they bound the serving numbers' interpretation.
 - Trainium1 and Inferentia2 are the *previous* Neuron generation (Trn2/Inf2
   successors exist). That is deliberate: these are the instances whose quotas,
   prices, and availability make them the realistic first contact with the
-  platform — but claims here do not extend to Trainium2.
+  platform. Phase 3 adds a **training** lane on one Trainium2
+  (trn2.3xlarge, sa-east-1) so the generational comparison is measured rather
+  than assumed — but the *serving* results here still do not extend to
+  Trainium2, and the inf2 vLLM 0.16 AMI pin exists precisely because the
+  Trn2-targeted DLAMI cannot boot on NeuronCore-v2 at all.
+- Phase 3 rule, inherited from rule 6: **the trn2 box runs the identical lane
+  list and identical hyperparameters as trn1, through the same driver branch.**
+  A tuned Trainium2 measured against an untuned Trainium1 is not a comparison.
+  Efficiency levers (longer sequences, recompute off) are separate declared
+  lanes with their own triplets, never edits to the primary lane. And because
+  the parallelism degree is decided by a probe rather than assumed, any result
+  that ran on fewer than all four logical cores is labelled as a partial-chip
+  configuration wherever it appears.
