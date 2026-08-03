@@ -16,7 +16,23 @@
 #   rung 1  LNC=2, world 4, TP=4   the whole chip, 24 GiB per logical core
 #   rung 2  LNC=2, world 2, TP=2   HALF THE CHIP IDLE -- not a 1:1 comparison,
 #                                  and the report must label it as such
-#   rung 3  LNC=1, world 8, TP=8   8 physical v3 cores, 12 GiB per core bank
+#   rung 3  LNC=1, world 8, TP=8   8 physical v3 cores. The docs say "both
+#                                  physical NeuronCores have access to the
+#                                  entire 24GB HBM bank" -- they do NOT say the
+#                                  bank is halved, so do not assume 12 GiB per
+#                                  rank here; measure it.
+#
+# Doc status as of 2026-08-04, checked rather than assumed: there is NO AWS
+# statement either supporting or forbidding world size 4 on Trainium2. The
+# "1, 2, 8, 32" sentence is on a page tagged for Trn2 but is worded as a
+# performance-placement heuristic with trn1-shaped examples, and AWS's own
+# neuronx-distributed docs use tensor_parallel_size=4 freely. No AWS example
+# runs a single Trainium2 chip at all. Hence: measure.
+#
+# LNC HARD RULE (docs, logical-neuroncore-config): the compiler -lnc flag and
+# the runtime NEURON_LOGICAL_NC_CONFIG must MATCH; Neuron does not support
+# compiling for one and running the other. Each rung therefore sets the runtime
+# variable before any compile happens in that rung.
 #
 # Every rung's outcome is kept, not just the winner: a ladder that reports only
 # its last step is indistinguishable from one that never ran.
