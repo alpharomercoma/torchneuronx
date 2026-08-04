@@ -148,7 +148,7 @@ Two things about a block that an ODCR does not do:
 
 ```bash
 npx aws-cdk@latest deploy NeuronPipelinesTrainium2 --require-approval never \
-  -c trn2CapacityReservationId=cr-06bed0d84f5e2e6e2 \
+  -c trn2CapacityReservationId=cr-08dc8b22d254cd3da \
   -c trn2Az=sa-east-1b -c trn2SubnetId=subnet-092833ea4d9c0210c
 ```
 

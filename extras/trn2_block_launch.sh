@@ -38,7 +38,7 @@ set -uo pipefail
 export AWS_PAGER=""
 
 REGION="${REGION:-sa-east-1}"
-CR_ID="${CR_ID:-cr-06bed0d84f5e2e6e2}"
+CR_ID="${CR_ID:-cr-08dc8b22d254cd3da}"
 AZ="${AZ:-sa-east-1b}"
 SUBNET="${SUBNET:-subnet-092833ea4d9c0210c}"
 REPO="${REPO:-/Users/alpha/neuron-pipelines}"

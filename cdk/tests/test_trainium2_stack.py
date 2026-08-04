@@ -166,7 +166,7 @@ def test_security_group_is_egress_only(trainium2_template):
 # attempt while the block bills for its entire window regardless.
 # ---------------------------------------------------------------------------
 
-CR_ID = "cr-06bed0d84f5e2e6e2"
+CR_ID = "cr-08dc8b22d254cd3da"
 CR_CONTEXT = {
     "trn2CapacityReservationId": CR_ID,
     "trn2Az": "sa-east-1b",

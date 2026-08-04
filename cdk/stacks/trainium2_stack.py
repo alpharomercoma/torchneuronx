@@ -90,7 +90,7 @@ class Trainium2Stack(Stack):
             raise ValueError(
                 "trn2CapacityReservationId requires explicit trn2Az and "
                 "trn2SubnetId matching the block's availability zone "
-                "(cr-06bed0d84f5e2e6e2 is in sa-east-1b / "
+                "(cr-08dc8b22d254cd3da is in sa-east-1b / "
                 "subnet-092833ea4d9c0210c)"
             )
 
