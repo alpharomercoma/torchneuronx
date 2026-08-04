@@ -70,15 +70,39 @@ while [ "$(date +%s)" -lt "$DEADLINE" ]; do
   attempt=$((attempt+1))
   for az in sa-east-1a sa-east-1b sa-east-1c; do
     END=$(date -u -v+${RESERVE_HOURS}H +%Y-%m-%dT%H:%M:%SZ)
+    # Capture stderr rather than discarding it. Discarding it made an expired
+    # session look identical to absent capacity, so the watcher polled blind
+    # for hours and could never have succeeded even if a slot opened. An error
+    # this loop cannot act on must be loud, not silent.
+    ERR=$(mktemp)
     CRID=$(aws ec2 create-capacity-reservation \
       --instance-type trn2.3xlarge --instance-platform Linux/UNIX \
       --availability-zone "$az" --instance-count 1 \
       --end-date-type limited --end-date "$END" \
       --instance-match-criteria open \
       --region "$REGION" \
-      --query 'CapacityReservation.CapacityReservationId' --output text 2>/dev/null)
+      --query 'CapacityReservation.CapacityReservationId' --output text 2>"$ERR")
+    ERRTXT=$(tr -d '\n' < "$ERR"); rm -f "$ERR"
 
-    [ -n "$CRID" ] && [ "$CRID" != "None" ] || continue
+    if [ -z "$CRID" ] || [ "$CRID" = "None" ]; then
+      case "$ERRTXT" in
+        *InsufficientInstanceCapacity*|*"Insufficient capacity"*)
+          : ;;  # the expected answer; keep polling quietly
+        *ExpiredToken*|*"session has expired"*|*InvalidClientTokenId*|\
+        *UnrecognizedClient*|*AuthFailure*|*"security token"*)
+          log "CREDENTIALS EXPIRED -- cannot poll. Run 'aws login', then relaunch:"
+          log "  nohup caffeinate -i bash extras/trn2_capacity_watch.sh >> ~/trn2_capacity_watch.log 2>&1 & disown"
+          status "STOPPED $(date -u +%Y-%m-%dT%H:%M:%SZ): AWS credentials expired -- re-auth and relaunch"
+          exit 2 ;;
+        *UnauthorizedOperation*|*AccessDenied*)
+          log "NOT AUTHORIZED to create capacity reservations: $ERRTXT"
+          status "STOPPED $(date -u +%Y-%m-%dT%H:%M:%SZ): not authorized"
+          exit 3 ;;
+        ?*)
+          log "unexpected error in $az (continuing): $ERRTXT" ;;
+      esac
+      continue
+    fi
 
     log "CAPACITY SECURED: $CRID in $az (round $attempt)"
     status "CAPACITY SECURED $CRID in $az at $(date -u +%Y-%m-%dT%H:%M:%SZ); deploying"
