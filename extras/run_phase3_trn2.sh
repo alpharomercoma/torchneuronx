@@ -63,3 +63,18 @@ bash shared/bin/sync_neuron_cache.sh push || echo "cache push FAILED"
 bash shared/bin/push_results.sh trn2 || echo "push FAILED (push manually)"
 
 echo "############ PHASE3 TRN2 ALL COMPLETE ############"
+
+# ---------------------------------------------------------------------------
+# Everything above is what the Capacity Block was bought for, and it is now on
+# S3. Everything below is spending the remainder of a window that cannot be
+# refunded: the trn1 suite measured 5.9 h against a 23.5 h block, so idle time
+# is the only way left to waste the money.
+#
+# Deliberately AFTER the completion marker and after the push, so a failure
+# down here can never cost a result from up there. run_opportunistic_trn2.sh
+# re-checks the marker itself, hard-stops at 10:00Z (30 min before the deadline
+# pusher, an hour before EC2 starts terminating), refuses to start any lane it
+# cannot finish, and pushes after every single lane.
+# ---------------------------------------------------------------------------
+echo "############ PHASE3-TRN2: opportunistic lanes (paid-for remainder) ############"
+bash extras/run_opportunistic_trn2.sh || echo "opportunistic pass ended early (by design or receipt)"
