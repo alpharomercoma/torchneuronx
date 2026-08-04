@@ -84,7 +84,16 @@ while :; do
 
   case "$STATE" in
     active)   log "block is ACTIVE -- deploying"; break ;;
-    expired|cancelled|failed)
+    payment-failed)
+      # Learned the hard way: a purchased block whose charge is declined never
+      # becomes active, and its EndDate is silently rewritten to ~now. Waiting
+      # for "active" here would wait forever. Payment health is not something
+      # this script can fix -- exit loudly so a human sees it.
+      log "FATAL: block payment FAILED -- the charge was declined, no capacity"
+      log "  fix the account payment method in the Billing console, then re-purchase"
+      status "FAILED $(date -u +%Y-%m-%dT%H:%M:%SZ): block payment-failed"
+      exit 8 ;;
+    expired|cancelled|failed|payment-pending-cancelled)
       log "FATAL: block state is '$STATE' -- nothing to launch into"
       status "FAILED $(date -u +%Y-%m-%dT%H:%M:%SZ): block $STATE"
       exit 4 ;;
