@@ -152,6 +152,7 @@ CMD_ID=$(aws ssm send-command --region "$REGION" \
     "aws s3 cp s3://neuron-pipelines-artifacts-600627330911/code/shared/bin/pull_code.sh - | bash",
     "cd /opt/np/repo",
     "setsid nohup bash extras/run_phase3_trn2.sh >> /opt/np/phase3_trn2.log 2>&1 &",
+    "setsid nohup bash extras/trn2_deadline_push.sh >> /opt/np/deadline_push.log 2>&1 &",
     "sleep 5; echo kicked off"
   ]' \
   --query 'Command.CommandId' --output text 2>&1)

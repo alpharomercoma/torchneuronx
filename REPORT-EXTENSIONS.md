@@ -296,22 +296,60 @@ triplet:
 - **E2** activation recomputation off — worth +2·N FLOPs/token in the MFU
   accounting; more HBM may make it unnecessary.
 
-### 15.5 Blocked on capacity, and that is itself a finding
+### 15.5 How you actually get a Trainium2, and what it costs
 
 A granted quota tells you nothing about whether you can launch. `L-2C3B7624`
 was granted at 12 vCPU in sa-east-1 — exactly one trn2.3xlarge — and on
 2026-08-04 all three AZs returned `InsufficientInstanceCapacity`, as did
 us-east-2 for trn2.48xlarge. Spot placement scores were 1/10 and 3/10
-respectively. The AWS pricing API carries **no on-demand record** for
-trn2.48xlarge, only a Capacity Block line item, which suggests Trainium2 is
-sold primarily through Capacity Blocks — and explains why the on-demand pools
-are bare.
+respectively. Roughly ten hours of polling with `create-capacity-reservation`
+(which fails in seconds and costs nothing, unlike `cdk deploy`) never once
+found a free slot.
 
-For a talk about *production* LLMs on Trainium, that is not an inconvenience to
-apologise for. It is the most practically useful thing in this section: the
-newest accelerator generation is capacity-rationed, and the previous generation
-— which the rest of this report measures end to end — is the one you can
-actually get.
+The signal that explained it was in the pricing API: **no on-demand record for
+trn2.48xlarge at all**, only a Capacity Block line item. Trainium2 is sold
+primarily through **Capacity Blocks**, which is precisely why the on-demand
+pools are bare. The unblock was the corresponding quota — `L-64569A79`,
+"Concurrent TRN2 Capacity Blocks per account", moving 0 → 192. Before that
+grant `describe-capacity-block-offerings` returned
+`CapacityBlockDescribeLimitExceeded`; after it, real inventory appeared
+immediately. (The per-*organization* twin `L-24E8B4C0` remained 0 throughout and
+gated nothing.)
+
+**This is the first published price for trn2.3xlarge that we are aware of.**
+A 24-hour block in sa-east-1b cost **$53.64**, i.e. **$2.235/hr**:
+
+| | trn1.2xlarge | trn2.3xlarge |
+|---|---|---|
+| Rate | $1.34/hr | **$2.235/hr** (1.67×) |
+| BF16 dense peak | 210 TFLOP/s | 667 TFLOP/s (3.18×) |
+| **Peak TFLOP/s per dollar-hour** | 157 | **298 (1.90×)** |
+
+So on *list* terms Trainium2 is a ~1.9× better deal per peak FLOP. Whether it
+is a better deal per *delivered* token is the entire point of §15.1–15.4: peak
+FLOPs are the denominator of MFU, not a result. If the measured speedup lands
+materially below 3.18×, the price advantage narrows accordingly, and that is
+the number a buyer actually needs.
+
+Three procurement facts worth carrying into any Trainium2 plan:
+
+1. **24 h is the minimum block**; 6 h and 12 h are rejected as
+   `InvalidParameterValue`. You buy a fixed *window*, not a duration, and
+   cancellation is not permitted.
+2. **The launch must target the reservation.** `InstanceMatchCriteria` is
+   `targeted`, so an ordinary launch does not fall into the block — it fails on
+   capacity exactly like an unreserved attempt, while the block bills for its
+   whole window regardless. Both `InstanceMarketOptions.MarketType =
+   capacity-block` and the reservation ID are required.
+3. **Instances are terminated, not stopped.** Blocks end at 11:30 UTC and AWS
+   begins terminating at **11:00 UTC** on the final day. EBS goes with the
+   instance, taking the warm NEFF cache with it — so a 24 h block is 23.5 h of
+   usable time and the last half hour is a hard deadline, not a grace period.
+
+For a talk about *production* LLMs on Trainium, this is more practically useful
+than a benchmark: the newest accelerator generation is capacity-rationed and
+sold in fixed pre-paid windows, while the previous generation — which the rest
+of this report measures end to end — is the one you can get on demand.
 
 ## 16. Phase-3 corrections
 
@@ -333,3 +371,20 @@ actually get.
    physical NeuronCores "have access to the entire 24GB HBM bank"; it does not
    say the bank is halved. The rung-3 design was corrected to measure rather
    than assume.
+
+4. **"trn2.3xlarge is sa-east-1 only" is true for on-demand, not for Capacity
+   Blocks.** `describe-instance-type-offerings` across all 17 enabled regions
+   returned sa-east-1 alone, and correction 2 above records that. But the
+   Capacity Blocks supported-regions table lists trn2.3xlarge in
+   **ap-southeast-4 (Melbourne) as well as sa-east-1**. Availability is per
+   *purchase mechanism*, not merely per region: an offerings scan can therefore
+   understate where a type can actually be obtained.
+
+5. **A capacity poller that discards stderr is not polling.** The on-demand
+   watcher ran `create-capacity-reservation` with `2>/dev/null`, which made an
+   expired AWS session indistinguishable from absent capacity. It ran ~9 hours
+   and ~204 rounds in a state where it could not have succeeded even if a slot
+   had opened; only the first hour's attempts are trustworthy evidence. Fixed by
+   classifying the error text and exiting loudly on auth failures. The general
+   rule: an unattended loop must treat "the answer I expected" and "I could not
+   ask the question" as different outcomes.

@@ -16,6 +16,7 @@ box, and what bit us getting there.
 | HBM | **96 GiB** @ 2.9 TB/s → 24 GiB per logical core | Neuron trn2-arch + NKI arch guide |
 | BF16 dense peak | 667 TFLOP/s per chip | Neuron trn2-arch |
 | AMI | `ami-0b1b0d3aaa2171e1f` (Neuron PyTorch 2.9 DLAMI, Ubuntu 24.04) | SSM param, resolved at deploy |
+| Price | **$2.235/hr** | derived: $53.64 per 24 h Capacity Block; no pricing-API record exists |
 
 ### The EC2 API reports the wrong HBM
 
@@ -75,8 +76,21 @@ gated-model 401 as a compiler failure in Phase 2.
    The first 8B compile is paid in full. Per METHODOLOGY rule 3 that is a
    first-class result, not overhead to hide.
 
-4. **Quota is not capacity.** See runbook 12. All three sa-east-1 AZs refused
-   `trn2.3xlarge` on 2026-08-04 despite a granted 12-vCPU quota.
+4. **Quota is not capacity, and on-demand never arrived.** All three sa-east-1
+   AZs refused `trn2.3xlarge` on 2026-08-04 despite a granted 12-vCPU quota,
+   through ~10 h of ODCR polling. The box was ultimately obtained with a
+   purchased **Capacity Block** — see runbook 12. Consequences for this box:
+
+   - It launches only via `-c trn2CapacityReservationId=...` plus an explicit
+     `trn2Az`/`trn2SubnetId`; the stack refuses to synth otherwise, because a
+     block lives in one AZ and a silent default would miss it.
+   - The real price is **$2.235/hr** ($53.64 per 24 h block), a figure the AWS
+     pricing API does not carry.
+   - **The instance is terminated, not stopped, at the end of the window** —
+     termination begins 11:00 UTC, 30 min before the 11:30 UTC end. `/scratch`
+     *and the EBS root* both go, so unlike a normal stop the warm v3 NEFF cache
+     does not survive. Push to `neuron-cache-v3/` before the deadline or the
+     next block starts cold again.
 
 ## Extra packages
 
