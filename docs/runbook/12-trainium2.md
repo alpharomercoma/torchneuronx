@@ -152,17 +152,62 @@ npx aws-cdk@latest deploy NeuronPipelinesTrainium2 --require-approval never \
   -c trn2Az=sa-east-1b -c trn2SubnetId=subnet-092833ea4d9c0210c
 ```
 
-`extras/trn2_block_launch.sh` waits for the reservation to go `active` and then
-runs exactly that, so no paid minutes are lost to a missed alarm:
+### Scheduled launch — keep the laptop off the critical path
+
+`extras/trn2_block_launch.sh` waits for `active` and then deploys, but it runs
+on a laptop, and that laptop must have its lid open and **unexpired** AWS
+credentials at the instant the block opens. `aws login` issues temporary
+credentials; ours expired mid-session more than once. A missed window costs the
+entire upfront fee, so prefer the scheduled path and treat the laptop launcher
+as a manual fallback only.
+
+Pass `trn2ScheduleLaunchAt` and the stack builds an **Auto Scaling group** at
+`desired=0` with two one-time scheduled actions instead of a bare instance.
+AWS scales it to 1 when the block opens. This is the pattern AWS documents for
+Capacity Blocks, and unlike a one-shot `RunInstances` it **retries transient
+launch failures on its own**.
 
 ```bash
-nohup caffeinate -i bash extras/trn2_block_launch.sh \
-  >> ~/trn2_block_launch.log 2>&1 &
-disown
+npx aws-cdk@latest deploy NeuronPipelinesTrainium2 --require-approval never \
+  -c trn2CapacityReservationId=cr-08dc8b22d254cd3da \
+  -c trn2Az=sa-east-1b -c trn2SubnetId=subnet-092833ea4d9c0210c \
+  -c trn2ScheduleLaunchAt=2026-08-05T11:31:00Z \
+  -c trn2ScheduleStopAt=2026-08-06T10:50:00Z
 ```
 
-**Stop the ODCR watcher before buying a block.** If it ever succeeded it would
-hold a second, separately-billing reservation.
+Both schedule flags are mandatory together, and the stack refuses to synth
+without a reservation id. The **stop** action is not bookkeeping — per the Auto
+Scaling guidance, *"Scale in your Auto Scaling group to zero more than 30
+minutes before the Capacity Block reservation end time."* Left at `desired=1`,
+EC2 reclaims the instance, the ASG reads that as a failed health check, and it
+spends the rest of the window trying to replace an instance it can never get.
+
+In scheduled mode the box also **starts the suite itself** from user-data
+(`cdk/user_data/trn2_autorun.sh` → `np-autorun.service`): it waits for S3,
+pulls the code, then launches `run_phase3_trn2.sh` and
+`trn2_deadline_push.sh`. Scheduling the launch but not the kickoff would put
+the laptop right back on the critical path and pay for an idle box. A plain
+`cdk deploy` without the schedule flags still gives a quiet box to drive by
+hand.
+
+Verify AWS actually registered it — the deploy output is not proof:
+
+```bash
+ASG=$(aws cloudformation describe-stacks --stack-name NeuronPipelinesTrainium2 \
+  --region sa-east-1 --query \
+  'Stacks[0].Outputs[?OutputKey==`AutoScalingGroupName`].OutputValue' --output text)
+aws autoscaling describe-scheduled-actions --auto-scaling-group-name "$ASG" \
+  --region sa-east-1 --query \
+  'ScheduledUpdateGroupActions[*].[StartTime,DesiredCapacity,Recurrence]' --output text
+```
+
+`Recurrence` must be `None` on both — a cron would relaunch daily into a block
+that no longer exists.
+
+**Do not leave the laptop launcher running alongside this.** It deploys
+*without* the schedule flags, which would replace the ASG with a plain
+instance. Likewise, stop the ODCR watcher before buying a block — if it ever
+succeeded it would hold a second, separately-billing reservation.
 
 No AMI pin is needed. The same SSM parameter the trn1 stack uses
 (`/aws/service/neuron/dlami/pytorch-2.9/ubuntu-24.04/latest/image_id`) resolves

@@ -238,3 +238,142 @@ def test_capacity_block_without_an_explicit_az_is_refused():
     with pytest.raises(ValueError, match="requires explicit trn2Az"):
         make_stacks({"trn2CapacityReservationId": CR_ID, "trn2Az": None,
                      "trn2SubnetId": None})
+
+
+# ---------------------------------------------------------------------------
+# Scheduled launch (ASG mode)
+#
+# A Capacity Block opens at a fixed instant whether or not anyone is awake, and
+# the laptop-side launcher depends on an open lid and on `aws login` credentials
+# that expire. Both had already failed once. In scheduled mode AWS itself scales
+# the group to 1 when the block opens, and the box starts the suite from
+# user-data -- no operator in the loop at any point.
+# ---------------------------------------------------------------------------
+
+SCHEDULE_CONTEXT = {
+    **CR_CONTEXT,
+    "trn2ScheduleLaunchAt": "2026-08-05T11:31:00Z",
+    "trn2ScheduleStopAt": "2026-08-06T10:50:00Z",
+}
+
+
+def _scheduled_template():
+    from aws_cdk.assertions import Template
+
+    from conftest import make_stacks
+
+    return Template.from_stack(make_stacks(SCHEDULE_CONTEXT)[3])
+
+
+def test_scheduled_mode_replaces_the_instance_with_an_asg():
+    """An ec2.Instance cannot be scheduled; the ASG is the whole point."""
+    template = _scheduled_template()
+    template.resource_count_is("AWS::EC2::Instance", 0)
+    template.resource_count_is("AWS::AutoScaling::AutoScalingGroup", 1)
+
+
+def test_scheduled_asg_starts_empty_and_is_capped_at_one():
+    """Capacity Blocks reserve an exact instance count. A group that could scale
+    past it would launch instances the block cannot hold."""
+    (asg,) = _scheduled_template().find_resources(
+        "AWS::AutoScaling::AutoScalingGroup"
+    ).values()
+    assert asg["Properties"]["MinSize"] == "0"
+    assert asg["Properties"]["MaxSize"] == "1"
+    assert asg["Properties"]["DesiredCapacity"] == "0"
+
+
+def test_scheduled_actions_are_one_time_and_bracket_the_window():
+    """Two one-time actions: scale out at the block start, and scale IN before
+    EC2 reclaims. AWS guidance: 'Scale in your Auto Scaling group to zero more
+    than 30 minutes before the Capacity Block reservation end time.' Leaving it
+    at 1 makes the ASG fight the reclaim with replacement launches."""
+    actions = _scheduled_template().find_resources(
+        "AWS::AutoScaling::ScheduledAction"
+    ).values()
+    by_time = {a["Properties"]["StartTime"]: a["Properties"] for a in actions}
+    assert set(by_time) == {"2026-08-05T11:31:00Z", "2026-08-06T10:50:00Z"}
+
+    up = by_time["2026-08-05T11:31:00Z"]
+    assert up["DesiredCapacity"] == 1 and up["MaxSize"] == 1
+    down = by_time["2026-08-06T10:50:00Z"]
+    assert down["DesiredCapacity"] == 0 and down["MaxSize"] == 0
+
+    # No Recurrence == fires exactly once. A cron here would relaunch daily
+    # into a block that no longer exists.
+    for props in by_time.values():
+        assert "Recurrence" not in props
+
+
+def test_scheduled_stop_precedes_the_reclaim_deadline():
+    """The block ends 2026-08-06T11:30Z and EC2 starts terminating at 11:00Z."""
+    import datetime
+
+    (down,) = [
+        a["Properties"]
+        for a in _scheduled_template()
+        .find_resources("AWS::AutoScaling::ScheduledAction")
+        .values()
+        if a["Properties"]["DesiredCapacity"] == 0
+    ]
+    stop = datetime.datetime.fromisoformat(down["StartTime"].replace("Z", "+00:00"))
+    reclaim = datetime.datetime(2026, 8, 6, 11, 0, tzinfo=datetime.timezone.utc)
+    assert stop < reclaim
+
+
+def test_scheduled_launch_template_is_self_sufficient():
+    """An ASG launches from the template ALONE -- there is no ec2.Instance left
+    to supply the image, type, security group, profile or user data."""
+    data = _launch_template_data(_scheduled_template())
+    assert data["InstanceType"] == "trn2.3xlarge"
+    assert "ImageId" in data
+    assert "SecurityGroupIds" in data
+    assert "IamInstanceProfile" in data
+    assert "UserData" in data
+    # and it still targets the block
+    assert data["InstanceMarketOptions"] == {"MarketType": "capacity-block"}
+    assert (
+        data["CapacityReservationSpecification"]["CapacityReservationTarget"][
+            "CapacityReservationId"
+        ]
+        == CR_ID
+    )
+
+
+def test_scheduled_mode_autoruns_the_suite():
+    """Scheduling the launch but not the kickoff would put the laptop straight
+    back on the critical path and pay for an idle box."""
+    import base64
+
+    data = _launch_template_data(_scheduled_template())
+    user_data = str(data["UserData"])
+    assert "np-autorun" in user_data
+    assert "run_phase3_trn2.sh" in user_data
+    assert "trn2_deadline_push.sh" in user_data
+
+
+def test_unscheduled_mode_does_not_autorun():
+    """A manual deploy still gives a quiet box you can drive by hand."""
+    (instance,) = _capacity_block_template().find_resources(
+        "AWS::EC2::Instance"
+    ).values()
+    assert "np-autorun" not in str(instance["Properties"]["UserData"])
+
+
+def test_schedule_without_a_reservation_is_refused():
+    import pytest
+
+    from conftest import make_stacks
+
+    with pytest.raises(ValueError, match="nothing to schedule a launch into"):
+        make_stacks({"trn2ScheduleLaunchAt": "2026-08-05T11:31:00Z"})
+
+
+def test_schedule_without_a_stop_time_is_refused():
+    """An ASG left at desired=1 fights EC2's end-of-block reclaim."""
+    import pytest
+
+    from conftest import make_stacks
+
+    with pytest.raises(ValueError, match="requires trn2ScheduleStopAt"):
+        make_stacks({**CR_CONTEXT, "trn2ScheduleLaunchAt": "2026-08-05T11:31:00Z"})
