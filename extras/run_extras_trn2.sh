@@ -66,6 +66,51 @@ have "$OUT/ckpt_timing.json" || "$PY" "$TELEM" --out "$OUT/ckpt_timing.telemetry
     "${TP_ARGS[@]}" --max-steps 30 --save-steps 10 --out "$OUT/ckpt_timing.json" \
   > "$OUT/ckpt_timing.log" 2>&1 || echo "  ckpt timing FAILED"
 
+# ------------------------------------------------- trn1 PARITY: NKI (Track E)
+# The kernel was written and benchmarked against NeuronCore-v2. Whether it even
+# compiles for v3 is unknown, and that is worth measuring rather than skipping:
+# "the custom kernel from the previous generation does not carry over" is a
+# genuine, reportable portability finding for anyone planning a Trainium2
+# migration. The simulate gate runs on CPU and is nearly free, and the device
+# bench only runs if simulate is green -- same gating as trn1.
+step "E: NKI simulate (CPU correctness gate)"
+have "$OUT/nki_sim.json" || "$PY" "$BENCH_DIR/extras/nki_softmax.py" \
+  --mode simulate --out "$OUT/nki_sim.json" > "$OUT/nki_sim.log" 2>&1 \
+  || echo "  nki simulate FAILED"
+
+step "E: NKI device benchmark vs torch (NeuronCore-v3 -- kernel was tuned for v2)"
+if have "$OUT/nki_sim.json" && grep -q '"correct": true' "$OUT/nki_sim.json"; then
+  have "$OUT/nki_device.json" || "$PY" "$TELEM" --out "$OUT/nki_device.telemetry.csv" -- \
+    "$PY" "$BENCH_DIR/extras/nki_softmax.py" --mode device --out "$OUT/nki_device.json" \
+    > "$OUT/nki_device.log" 2>&1 || {
+      REASON=$(grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}" "$OUT/nki_device.log" | head -1 | sed "s/\"/'/g")
+      [ -n "$REASON" ] || REASON=$(tail -c 300 "$OUT/nki_device.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"tag":"nki_device","status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/nki_device.failure.json"
+      echo "  nki device FAILED (receipt -- v2 kernel may not target v3)"; }
+else
+  echo "  skip device bench: simulate gate not green (receipt stands)"
+fi
+
+# ------------------------------------ trn1 PARITY: whisper / clip / siglip (A)
+# These ran on trn1 rather than inf2 because the vLLM DLAMI ships a patched
+# transformers under an upstream version number and optimum-neuron cannot
+# co-reside with it (receipts in inf2/results/extras). Running them here puts
+# the same three lanes on v3 silicon. On trn1, clip and whisper produced failure
+# receipts -- if either now passes on v3 that is itself a result.
+step "A-parity: whisper / clip / siglip on NeuronCore-v3"
+for lane in whisper clip siglip; do
+  { have "$OUT/$lane.json" || have "$OUT/$lane.failure.json"; } && \
+    { echo "skip $lane (recorded)"; continue; }
+  "$PY" "$TELEM" --out "$OUT/$lane.telemetry.csv" -- \
+    "$PY" "$BENCH_DIR/extras/${lane}_lane.py" --out "$OUT/$lane.json" \
+    > "$OUT/$lane.log" 2>&1 || {
+      REASON=$(tail -c 300 "$OUT/$lane.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"tag":"%s","status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$lane" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$lane.failure.json"
+      echo "  $lane FAILED (receipt)"; }
+done
+
 # ------------------------------------------------------ efficiency levers (E1/E2)
 # Deliberately AFTER the baseline lanes. Each is a separate declared lane with
 # its own triplet, never an edit to the primary llama31_lora lane -- a tuned
@@ -89,6 +134,35 @@ have "$OUT/eff_norecompute.json" || "$PY" "$TELEM" --out "$OUT/eff_norecompute.t
     printf '{"tag":"eff_norecompute","status":"failed","reason":"%s","captured":"%s"}\n' \
       "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/eff_norecompute.failure.json"
     echo "  eff_norecompute FAILED (receipt)"; }
+
+# --------------------------------------------- E3: micro-batch ladder (NEW)
+# The most likely way this whole comparison MISLEADS.
+#
+# micro-batch 1 was chosen against trn1's 16 GiB per NeuronCore-v2, where seq
+# 8192 already died at 18.12 GB. Trainium2 has 24 GiB per logical core and 3.18x
+# the dense FLOPs, so the same micro-batch may simply UNDERFEED it -- and since
+# MFU is measured against the whole chip, an underfed chip reports a low MFU
+# that looks like a hardware verdict when it is really a configuration artifact.
+#
+# The fix is NOT to retune lane 4: that lane must stay identical to trn1's or
+# there is no comparison left. This is a separate declared lane that finds the
+# efficient operating point, so the report can state both "like-for-like" and
+# "best-effort" numbers instead of conflating them.
+step "E3: micro-batch ladder at seq 2048 (does micro-batch 1 underfeed Trainium2?)"
+for MB in 2 4; do
+  T="$OUT/eff_mb${MB}.json"
+  { have "$T" || have "$OUT/eff_mb${MB}.failure.json"; } && { echo "skip mb $MB (recorded)"; continue; }
+  "$PY" "$TELEM" --out "$OUT/eff_mb${MB}.telemetry.csv" -- \
+    "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
+      --model meta-llama/Llama-3.1-8B-Instruct --tag "eff_mb${MB}" \
+      "${TP_ARGS[@]}" --micro-batch "$MB" --max-steps 100 --out "$T" \
+    > "$OUT/eff_mb${MB}.log" 2>&1 || {
+      REASON=$(grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}" "$OUT/eff_mb${MB}.log" | head -1 | sed "s/\"/'/g")
+      [ -n "$REASON" ] || REASON=$(tail -c 300 "$OUT/eff_mb${MB}.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"tag":"eff_mb%s","micro_batch":%s,"status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$MB" "$MB" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/eff_mb${MB}.failure.json"
+      echo "  eff_mb$MB FAILED (receipt)"; }
+done
 
 step "TRN2 EXTRAS COMPLETE"
 bash "$BENCH_DIR/shared/bin/push_results.sh" trn2 || echo "  push FAILED"

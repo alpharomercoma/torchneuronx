@@ -46,8 +46,17 @@ bash shared/bin/sync_neuron_cache.sh pull || echo "cache pull FAILED (cold compi
 echo "############ PHASE3-TRN2: main suite (same lanes as trn1) ############"
 bash trn2/scripts/run_all.sh || echo "main suite FAILED (receipts recorded)"
 
-echo "############ PHASE3-TRN2: extras (ctx ladder, ckpt, efficiency levers) ############"
+echo "############ PHASE3-TRN2: extras (ctx ladder, ckpt, NKI, A-parity, levers) ############"
 bash extras/run_extras_trn2.sh || echo "extras pass FAILED (receipts recorded)"
+
+# Academic track LAST of the parity work: 6 small lanes (mnist/cifar x
+# mlp/cnn/vit) that trn1 ran and trn2 would otherwise be missing. Deliberately
+# after the 8B lanes -- these are minutes-scale and must never delay the
+# measurement the block was bought for. BOX=trn2 keeps the results out of the
+# trn1 set; the runner used to hardcode trn1 in both the path and the push.
+echo "############ PHASE3-TRN2: academic track (trn1 parity, 6 lanes) ############"
+BOX=trn2 RESULTS_DIR="$BENCH_DIR/trn2/results" \
+  bash academic/run_academic.sh || echo "academic pass FAILED (receipts recorded)"
 
 echo "############ PHASE3-TRN2: push cache + results ############"
 bash shared/bin/sync_neuron_cache.sh push || echo "cache push FAILED"
