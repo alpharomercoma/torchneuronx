@@ -153,3 +153,88 @@ def test_security_group_is_egress_only(trainium2_template):
     """SSM Session Manager needs zero inbound rules."""
     (sg,) = trainium2_template.find_resources("AWS::EC2::SecurityGroup").values()
     assert not sg["Properties"].get("SecurityGroupIngress")
+
+
+# ---------------------------------------------------------------------------
+# Capacity Blocks
+#
+# On-demand trn2.3xlarge capacity was empty in every sa-east-1 AZ for ~10h, so
+# the box launches into a purchased EC2 Capacity Block. That needs BOTH a
+# capacity-block market type and a TARGETED reservation id -- the block's
+# InstanceMatchCriteria is "targeted", so a launch that names only one of the
+# two does not fall into the block, it fails on capacity like every other
+# attempt while the block bills for its entire window regardless.
+# ---------------------------------------------------------------------------
+
+CR_ID = "cr-06bed0d84f5e2e6e2"
+CR_CONTEXT = {
+    "trn2CapacityReservationId": CR_ID,
+    "trn2Az": "sa-east-1b",
+    "trn2SubnetId": "subnet-092833ea4d9c0210c",
+}
+
+
+def _capacity_block_template():
+    from aws_cdk.assertions import Template
+
+    from conftest import make_stacks
+
+    return Template.from_stack(make_stacks(CR_CONTEXT)[3])
+
+
+def _launch_template_data(template):
+    (lt,) = template.find_resources("AWS::EC2::LaunchTemplate").values()
+    return lt["Properties"]["LaunchTemplateData"]
+
+
+def test_no_capacity_block_wiring_by_default(trainium2_template):
+    """Without the context key this stays an ordinary on-demand launch.
+
+    A stray capacity-block market type on a normal deploy would fail the launch
+    outright, so the default path must carry neither field.
+    """
+    data = _launch_template_data(trainium2_template)
+    assert "InstanceMarketOptions" not in data
+    assert "CapacityReservationSpecification" not in data
+
+
+def test_capacity_block_sets_market_type_and_targets_the_reservation():
+    data = _launch_template_data(_capacity_block_template())
+    assert data["InstanceMarketOptions"] == {"MarketType": "capacity-block"}
+    assert (
+        data["CapacityReservationSpecification"]["CapacityReservationTarget"][
+            "CapacityReservationId"
+        ]
+        == CR_ID
+    )
+
+
+def test_capacity_block_preserves_imdsv2_and_gp3_throughput():
+    """The market/reservation fields are grafted onto LaunchTemplateData with an
+    escape hatch, which rebuilds the whole property -- so assert the two things
+    that only exist BECAUSE of the launch template are still there."""
+    data = _launch_template_data(_capacity_block_template())
+    assert data["MetadataOptions"]["HttpTokens"] == "required"
+    (mapping,) = data["BlockDeviceMappings"]
+    assert mapping["Ebs"]["VolumeType"] == "gp3"
+    assert mapping["Ebs"]["Throughput"] == 250
+    assert mapping["Ebs"]["Encrypted"] is True
+
+
+def test_capacity_block_lands_in_the_blocks_availability_zone():
+    template = _capacity_block_template()
+    (instance,) = template.find_resources("AWS::EC2::Instance").values()
+    assert instance["Properties"]["AvailabilityZone"] == "sa-east-1b"
+    assert instance["Properties"]["SubnetId"] == "subnet-092833ea4d9c0210c"
+
+
+def test_capacity_block_without_an_explicit_az_is_refused():
+    """A block lives in exactly ONE az. Silently defaulting to sa-east-1a would
+    miss a sa-east-1b block and burn the paid-for window on a failed launch."""
+    import pytest
+
+    from conftest import make_stacks
+
+    with pytest.raises(ValueError, match="requires explicit trn2Az"):
+        make_stacks({"trn2CapacityReservationId": CR_ID, "trn2Az": None,
+                     "trn2SubnetId": None})

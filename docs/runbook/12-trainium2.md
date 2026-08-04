@@ -22,7 +22,7 @@ regions). It is the only Trainium2 SKU this account can run: quota
 | BF16 dense peak | 210 TFLOP/s | 667 TFLOP/s (3.18×) |
 | vCPU / host RAM | 8 / 32 GiB | 12 / 128 GiB |
 | Local NVMe | ~475 GB | 470 GB |
-| Price | $1.34/hr | **unpublished** — 0 records in the AWS pricing API |
+| Price | $1.34/hr | **$2.235/hr** — no pricing-API record; derived from a 24 h Capacity Block at $53.64 |
 
 The per-core HBM row is the one that matters most: seq-len 8192 died on trn1
 with `NCC_EOOM002] Maximum peak HBM usage of 18.12GB exceeds HBM limit of
@@ -103,10 +103,66 @@ DEPLOYED / GAVE UP) or tail the log. A PID lockfile prevents two watchers
 racing for the same reservation, and a failed deploy cancels the hold rather
 than paying for an empty one.
 
-EC2 **Capacity Blocks** are the other reservation mechanism and would let you
-book a future window, but they need their own quota: this account gets
-`CapacityBlockDescribeLimitExceeded` on `describe-capacity-block-offerings`,
-so that route requires a support request first.
+### Capacity Blocks — the route that actually worked
+
+On-demand polling never produced a slot. What did: **EC2 Capacity Blocks**,
+once `L-64569A79` ("Concurrent TRN2 Capacity Blocks per account") was granted
+on 2026-08-04. Before the grant, `describe-capacity-block-offerings` returned
+`CapacityBlockDescribeLimitExceeded`; after it, real offerings appear. Note the
+*per-organization* quota `L-24E8B4C0` is still 0 and does **not** block this —
+the per-account grant is the one that counts.
+
+```bash
+aws ec2 describe-capacity-block-offerings --region sa-east-1 \
+  --instance-type trn2.3xlarge --instance-count 1 --capacity-duration-hours 24
+```
+
+**24 h is the minimum** — 6 and 12 are rejected with `InvalidParameterValue`.
+Offerings come with a fixed start time; you buy that window, not a duration.
+
+```bash
+aws ec2 purchase-capacity-block --region sa-east-1 \
+  --capacity-block-offering-id cb-... --instance-platform Linux/UNIX
+```
+
+**This finally prices the instance.** $53.64 for 24 h = **$2.235/hr** for
+trn2.3xlarge — 1.67× the trn1.2xlarge rate of $1.34/hr, for 3.18× the peak
+FLOPs. The pricing API still has no on-demand record; this is the real number.
+
+Two things about a block that an ODCR does not do:
+
+1. **It bills for the entire window from its start time**, occupied or not. The
+   clock does not wait for you. Automate the launch (see below) rather than
+   planning to be awake for it.
+2. **`InstanceMatchCriteria` is `targeted`.** An ordinary launch does *not*
+   fall into the block — it fails on capacity exactly like every unreserved
+   attempt. The launch must carry **both**:
+   - `InstanceMarketOptions.MarketType = capacity-block`
+   - `CapacityReservationTarget.CapacityReservationId = cr-...`
+
+   `AWS::EC2::Instance` cannot express market options, so both live on the
+   launch template. `cdk deploy` wires them when `trn2CapacityReservationId` is
+   set, and **refuses to synth** unless `trn2Az`/`trn2SubnetId` are also given
+   explicitly — a block lives in exactly one AZ, and silently defaulting to
+   `sa-east-1a` would miss a `sa-east-1b` block and burn the paid window.
+
+```bash
+npx aws-cdk@latest deploy NeuronPipelinesTrainium2 --require-approval never \
+  -c trn2CapacityReservationId=cr-06bed0d84f5e2e6e2 \
+  -c trn2Az=sa-east-1b -c trn2SubnetId=subnet-092833ea4d9c0210c
+```
+
+`extras/trn2_block_launch.sh` waits for the reservation to go `active` and then
+runs exactly that, so no paid minutes are lost to a missed alarm:
+
+```bash
+nohup caffeinate -i bash extras/trn2_block_launch.sh \
+  >> ~/trn2_block_launch.log 2>&1 &
+disown
+```
+
+**Stop the ODCR watcher before buying a block.** If it ever succeeded it would
+hold a second, separately-billing reservation.
 
 No AMI pin is needed. The same SSM parameter the trn1 stack uses
 (`/aws/service/neuron/dlami/pytorch-2.9/ubuntu-24.04/latest/image_id`) resolves
@@ -205,8 +261,11 @@ The master runs, in this order and for these reasons:
 
 ## Cost control
 
-The hourly rate is **not published**. Read the real one within the first hour
-rather than estimating, and report it before committing to the long lanes:
+The rate is **$2.235/hr**, derived from the Capacity Block price rather than
+published anywhere. A 24 h block is $53.64 against the **$100** ceiling, and it
+is spent the moment the window opens — the remaining risk is not overspend but
+*waste*, so the lanes must be running by 11:30Z. Confirm against the real bill
+once a line item appears:
 
 ```bash
 aws ce get-cost-and-usage --time-period Start=$(date -u +%Y-%m-%d),End=$(date -u -v+1d +%Y-%m-%d) \
@@ -226,3 +285,22 @@ aws ec2 stop-instances --region sa-east-1 --instance-ids i-...
 
 **Stop, never terminate.** The warm v3 compile cache on EBS is the asset, and
 `cdk destroy` would take the instance store and the cache with it.
+
+**Push results before the block ends — the deadline is 11:00Z, not 11:30Z.**
+AWS docs: *"Capacity Blocks end at 11:30AM Coordinated Universal Time (UTC). The
+termination process for instances running in a Capacity Block begins at 11:00AM
+Coordinated Universal Time (UTC) on the final day of the reservation."*
+
+So the instance is **terminated**, not stopped — the one case where the
+stop-never-terminate rule cannot save you. Anything not in S3 by 11:00Z on the
+final day is gone, including the warm v3 NEFF cache on EBS. For the block
+purchased here that means:
+
+| | UTC |
+|---|---|
+| Window opens, billing starts | 2026-08-04 **11:30** |
+| **Hard deadline — push everything** | 2026-08-05 **11:00** |
+| Nominal end | 2026-08-05 11:30 |
+
+Usable time is therefore **23.5 h**, not 24. Cancellations are not permitted,
+so the money is spent either way.

@@ -67,10 +67,35 @@ class Trainium2Stack(Stack):
         # All three sa-east-1 AZs offer trn2.3xlarge, but quota is not capacity:
         # on InsufficientInstanceCapacity, redeploy with -c trn2Az=sa-east-1b
         # -c trn2SubnetId=subnet-092833ea4d9c0210c (see runbook 12).
-        subnet_id = (
-            self.node.try_get_context("trn2SubnetId") or "subnet-0489739583976c545"
-        )
-        az = self.node.try_get_context("trn2Az") or "sa-east-1a"
+        subnet_id = self.node.try_get_context("trn2SubnetId")
+        az = self.node.try_get_context("trn2Az")
+
+        # ---- Capacity Block (the only route that actually yielded hardware) ----
+        # On-demand trn2.3xlarge capacity was empty in every AZ for ~10h, so the
+        # box is launched into a purchased EC2 Capacity Block instead. That needs
+        # TWO things a normal launch does not, and BOTH live on the launch
+        # template because AWS::EC2::Instance cannot express market options:
+        #
+        #   InstanceMarketOptions.MarketType = capacity-block
+        #   CapacityReservationTarget.CapacityReservationId = cr-...
+        #
+        # The block's InstanceMatchCriteria is "targeted": an untargeted launch
+        # does NOT fall into it, it just fails on capacity like every other
+        # attempt -- while the block bills for its whole window regardless.
+        capacity_reservation_id = self.node.try_get_context("trn2CapacityReservationId")
+
+        if capacity_reservation_id and not (subnet_id and az):
+            # A block lives in exactly one AZ. Defaulting the subnet here would
+            # let a 1a deploy silently miss a 1b block and burn the window.
+            raise ValueError(
+                "trn2CapacityReservationId requires explicit trn2Az and "
+                "trn2SubnetId matching the block's availability zone "
+                "(cr-06bed0d84f5e2e6e2 is in sa-east-1b / "
+                "subnet-092833ea4d9c0210c)"
+            )
+
+        subnet_id = subnet_id or "subnet-0489739583976c545"
+        az = az or "sa-east-1a"
 
         # ---- Networking: the account's default sa-east-1 VPC (no NAT cost) ----
         vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
@@ -182,6 +207,28 @@ class Trainium2Stack(Stack):
                 )
             ],
         )
+
+        if capacity_reservation_id:
+            cfn_lt = launch_template.node.default_child
+            cfn_lt.launch_template_data = ec2.CfnLaunchTemplate.LaunchTemplateDataProperty(
+                **{
+                    **cfn_lt.launch_template_data._values,
+                    "instance_market_options": (
+                        ec2.CfnLaunchTemplate.InstanceMarketOptionsProperty(
+                            market_type="capacity-block",
+                        )
+                    ),
+                    "capacity_reservation_specification": (
+                        ec2.CfnLaunchTemplate.CapacityReservationSpecificationProperty(
+                            capacity_reservation_target=(
+                                ec2.CfnLaunchTemplate.CapacityReservationTargetProperty(
+                                    capacity_reservation_id=capacity_reservation_id,
+                                )
+                            ),
+                        )
+                    ),
+                }
+            )
 
         instance = ec2.Instance(
             self,
