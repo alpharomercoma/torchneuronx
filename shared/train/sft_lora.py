@@ -131,21 +131,50 @@ DEFAULT_CACHE_DIR = "/opt/np/cache/neuron-compile-cache"
 # of this study is per-chip efficiency, so the whole chip goes to one model.
 #
 # peak_bf16_flops is per CHIP, dense BF16, because TP spreads every token
-# across all of the chip's cores. Trainium1: AWS quotes trn1.32xlarge at
-# 3.4 PFLOP/s over 16 devices -> 212.5 TFLOP/s/device, rounded to 210e12 and
-# used consistently since Phase 1. Trainium2: 667 TFLOP/s BF16 published
-# per chip (Neuron docs, general/arch/neuron-hardware/trainium2).
+# across all of the chip's cores.
+#
+# TWO DENOMINATORS, BOTH REPORTED -- AWS's own sources disagree for Trainium1
+# ---------------------------------------------------------------------------
+# The Trainium1 ARCHITECTURE page states "190 FP16/BF16/cFP8/TF32 TFLOPS" per
+# chip. AWS separately markets trn1.32xlarge at 3.4 PFLOP/s, which over 16
+# devices is 212.5 -> the 210e12 this project used for every Phase-1/2 number.
+# 190 x 16 = 3.04 PF, so the two AWS figures cannot both be right.
+#
+# For Trainium2 there is no conflict: the arch page says 667/chip and
+# 667 x 16 = 10.7 PF agrees with the instance-level spec.
+#
+# That asymmetry is the actual bug. Using the INSTANCE figure for trn1 and the
+# ARCH figure for trn2 mixes sources in the direction that flatters the newer
+# chip -- it understates trn1's MFU and shrinks the peak ratio trn2 has to beat
+# from 3.51x to 3.18x. So every lane now reports MFU under BOTH conventions:
+#
+#   primary ("arch")     trn1 190, trn2 667  -> peak ratio 3.51x
+#   alt     ("instance") trn1 210, trn2 667  -> peak ratio 3.18x, and what
+#                                               REPORT.md's published 68.3% /
+#                                               82.7% were computed against
+#
+# A reader must be able to see the denominator, not just the ratio. Neither
+# figure is "the" truth; what matters is that the two boxes are divided by
+# numbers drawn from the same source.
 DEVICE_PROFILES = {
     "trn1": {
         "instance_type": "trn1.2xlarge",
         "nproc": 2,
         "tp": 2,
         "pp": 1,
-        "peak_bf16_flops": 210e12,
+        "peak_bf16_flops": 190e12,
+        "peak_source": ("Neuron arch page arch/neuron-hardware/trainium: "
+                        "190 FP16/BF16/cFP8/TF32 TFLOPS per chip"),
+        "peak_bf16_flops_alt": 210e12,
+        "peak_source_alt": ("trn1.32xlarge marketed at 3.4 PFLOP/s / 16 "
+                            "devices = 212.5, rounded to 210 -- the "
+                            "denominator behind every published Phase-1/2 MFU"),
         "hbm_gib_per_core": 16,
+        "hbm_bandwidth_gbs": 820,
         "logical_nc_config": None,   # LNC does not exist on NeuronCore-v2
         "note": ("trn1.2xlarge: 1x Trainium1, 2x NeuronCore-v2, 32 GiB HBM "
-                 "(16 GiB per core). 210 TFLOP/s BF16 per chip."),
+                 "(16 GiB per core) at 820 GB/s. 190 TFLOP/s BF16 per chip "
+                 "(arch page); 210 under the instance-derived convention."),
     },
     "trn2": {
         "instance_type": "trn2.3xlarge",
@@ -153,11 +182,20 @@ DEVICE_PROFILES = {
         "tp": 4,
         "pp": 1,
         "peak_bf16_flops": 667e12,
+        "peak_source": ("Neuron arch page arch/neuron-hardware/trainium2: "
+                        "667 BF16/FP16/TF32 TFLOPS per chip"),
+        # No conflicting source for Trainium2: 667 x 16 = 10.7 PF matches the
+        # instance spec, so both conventions land on the same number.
+        "peak_bf16_flops_alt": 667e12,
+        "peak_source_alt": ("same figure; arch and instance-level specs agree "
+                            "for Trainium2"),
         "hbm_gib_per_core": 24,
+        "hbm_bandwidth_gbs": 2900,
         "logical_nc_config": 2,      # Neuron default on Trainium2
         "note": ("trn2.3xlarge: 1x Trainium2, 8x NeuronCore-v3 grouped into 4 "
                  "logical cores at LNC=2 (the Neuron default), 96 GiB HBM "
-                 "(24 GiB per logical core). 667 TFLOP/s BF16 per chip."),
+                 "(24 GiB per logical core) at 2.9 TB/s. 667 TFLOP/s BF16 "
+                 "per chip; 1299 FP8 and 2563 sparse are NOT used here."),
     },
 }
 DEFAULT_DEVICE = "trn1"
@@ -241,6 +279,13 @@ def build_parser():
     ap.add_argument("--lr", type=float, default=DEFAULT_LR)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--dataset", default=DEFAULT_DATASET)
+    ap.add_argument("--dataset-fields", default=None,
+                    help=("Remap columns onto the Dolly schema the formatter "
+                          "expects, e.g. 'context=input,response=output' for "
+                          "tatsu-lab/alpaca. Without this a dataset with "
+                          "different column names raises KeyError inside the "
+                          "formatter, which would look like a training bug "
+                          "rather than a schema mismatch."))
     ap.add_argument("--adapter-out", default=None,
                     help=f"default {DEFAULT_ADAPTER_ROOT}/<tag>")
     ap.add_argument("--tensor-parallel-size", type=int, default=None,
@@ -259,6 +304,13 @@ def build_parser():
                          "2048; pass eager to disable")
     ap.add_argument("--no-packing", action="store_true",
                     help="disable example packing (packing is ON by default)")
+    ap.add_argument("--no-lora", action="store_true",
+                    help=("Full fine-tune: update every weight instead of a "
+                          "LoRA adapter. Only reachable on Trainium2 -- the "
+                          "optimizer state alone (fp32 master + 2 moments = "
+                          "12 B/param) exceeds trn1's 16 GiB per core for "
+                          "anything past ~1B. Changes the FLOPs accounting to "
+                          "dense 6N, which is handled in run()."),)
     ap.add_argument("--no-gradient-checkpointing", action="store_true",
                     help="disable activation recomputation (8B models then "
                          "exceed the 16 GB/core HBM limit: NCC_EOOM001)")
@@ -346,24 +398,34 @@ def lora_flops_per_token(params_trainable, params_frozen):
 
 def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
                        peak_flops=PEAK_BF16_FLOPS,
-                       gradient_checkpointing=False):
+                       gradient_checkpointing=False,
+                       peak_flops_alt=None):
     """(trainable, frozen, tok/s) -> flops_per_token, TFLOP/s, MFU%. Pure.
 
     With activation recomputation every parameter pays one extra forward
     GEMM (+2 FLOPs/param/token): frozen 4 -> 6, trainable 6 -> 8. Same
     convention as the GPU study's x4/3 checkpointing adjustment, restated
     for the LoRA-split accounting.
+
+    peak_flops_alt, when given, yields a second MFU under the other published
+    denominator. AWS's arch page and instance marketing disagree for Trainium1
+    (190 vs 210 TFLOP/s), so a single MFU number would hide which one it used --
+    see DEVICE_PROFILES. tflops is denominator-independent and is the number to
+    trust when the two disagree.
     """
     fpt = lora_flops_per_token(params_trainable, params_frozen)
     if gradient_checkpointing:
         fpt += 2.0 * (params_trainable + params_frozen)
     achieved = fpt * tokens_per_s
-    return {
+    out = {
         "flops_per_token": fpt,
         "tflops": achieved / 1e12,
         "mfu_pct": 100.0 * achieved / peak_flops,
         "gradient_checkpointing": bool(gradient_checkpointing),
     }
+    out["mfu_pct_alt"] = (
+        100.0 * achieved / peak_flops_alt if peak_flops_alt else None)
+    return out
 
 
 def make_kwarg_tolerant(checkpoint_fn, is_tensor):
@@ -721,6 +783,7 @@ def run(args, cache_dir, profile=None):
     tp_size = profile["tp"]
     pp_size = profile["pp"]
     peak_flops = profile["peak_bf16_flops"]
+    peak_flops_alt = profile.get("peak_bf16_flops_alt")
     dp_size = max(1, world // tp_size)
     max_steps = args.max_steps if args.max_steps is not None else -1
 
@@ -777,7 +840,10 @@ def run(args, cache_dir, profile=None):
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     ensure_pad_token(tokenizer)
 
-    lora_config = LoraConfig(
+    # --no-lora -> peft_config=None -> NeuronSFTTrainer full fine-tunes.
+    # The LoRA lanes freeze >99% of weights; a full FT updates all of them,
+    # which changes both the memory profile and the FLOPs accounting below.
+    lora_config = None if args.no_lora else LoraConfig(
         r=args.lora_r,
         lora_alpha=args.lora_alpha,
         lora_dropout=args.lora_dropout,
@@ -787,6 +853,18 @@ def run(args, cache_dir, profile=None):
     )
 
     dataset = load_dataset(args.dataset, split="train")
+    if args.dataset_fields:
+        # target=source pairs; rename so format_dolly() keeps working unchanged.
+        # Doing this here rather than branching the formatter keeps every lane
+        # on ONE prompt template -- a different template would confound any
+        # cross-dataset comparison with a formatting change.
+        for pair in args.dataset_fields.split(","):
+            target, _, source = pair.partition("=")
+            target, source = target.strip(), source.strip()
+            if source and source in dataset.column_names:
+                dataset = dataset.rename_column(source, target)
+        if "context" not in dataset.column_names:
+            dataset = dataset.add_column("context", [""] * len(dataset))
 
     sft_config = build_sft_config(NeuronSFTConfig, training_args,
                                   seq_len=args.seq_len, packing=packing)
@@ -850,6 +928,9 @@ def run(args, cache_dir, profile=None):
     metrics_cb = StepMetrics()
     trainer = build_trainer(NeuronSFTTrainer, sft_config, model, lora_config,
                             tokenizer, dataset, args, metrics_cb)
+    if args.no_lora:
+        say("  full fine-tune     : LoRA disabled, every weight trains "
+            "(dense 6N accounting)")
 
     # The checkpoint-kwargs shim MUST be live before the first forward: patch
     # the imported symbol in every optimum-neuron modeling module, plus any
@@ -958,6 +1039,7 @@ def run(args, cache_dir, profile=None):
         perf = throughput_metrics(
             params_trainable, params_total - params_trainable, tok_s,
             peak_flops=peak_flops,
+            peak_flops_alt=peak_flops_alt,
             gradient_checkpointing=not args.no_gradient_checkpointing)
 
     payload = {
@@ -1022,6 +1104,15 @@ def run(args, cache_dir, profile=None):
         "tflops": round(perf["tflops"], 3) if perf else None,
         "mfu_pct": round(perf["mfu_pct"], 3) if perf else None,
         "peak_bf16_flops": peak_flops,
+        "peak_bf16_flops_source": profile.get("peak_source"),
+        # Second denominator: AWS's arch page and instance marketing disagree
+        # for Trainium1 (190 vs 210 TFLOP/s). Reporting one MFU would hide
+        # which was used, and mixing sources across boxes would bias the
+        # comparison. tflops above is denominator-free.
+        "mfu_pct_alt": (round(perf["mfu_pct_alt"], 3)
+                        if perf and perf.get("mfu_pct_alt") is not None else None),
+        "peak_bf16_flops_alt": peak_flops_alt,
+        "peak_bf16_flops_alt_source": profile.get("peak_source_alt"),
         "peak_host_mem_mib": read_peak_host_mem_mib(),
         "peak_device_mem_mib": None,
         "peak_device_mem_note": (

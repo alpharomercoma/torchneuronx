@@ -20,6 +20,23 @@ def test_throughput_metrics_hand_computed():
     assert m["flops_per_token"] == 3.224e10
     assert abs(m["tflops"] - 32.24) < 1e-9
     assert abs(m["mfu_pct"] - 100 * 3.224e13 / 210e12) < 1e-9
+    # No alt denominator asked for -> no second number invented.
+    assert m["mfu_pct_alt"] is None
+
+
+def test_throughput_metrics_reports_both_denominators():
+    """AWS's arch page (190) and instance marketing (210) disagree for trn1.
+
+    tflops is denominator-free and must be identical under both; only the MFU
+    percentage moves. Reporting one number would hide which source was used.
+    """
+    m = sft_lora.throughput_metrics(40e6, 8e9, tokens_per_s=1000,
+                                    peak_flops=190e12, peak_flops_alt=210e12)
+    assert abs(m["tflops"] - 32.24) < 1e-9
+    assert abs(m["mfu_pct"] - 100 * 3.224e13 / 190e12) < 1e-9
+    assert abs(m["mfu_pct_alt"] - 100 * 3.224e13 / 210e12) < 1e-9
+    # The arch-page denominator is smaller, so it reports the HIGHER MFU.
+    assert m["mfu_pct"] > m["mfu_pct_alt"]
 
 
 def test_dense_would_overstate_lora_mfu():
@@ -92,17 +109,51 @@ def test_patch_walks_sys_modules(monkeypatch):
 
 # --------------------------------------------------- device profiles (Phase 3)
 def test_trn1_profile_reproduces_published_phase1_config():
-    """The published 68.3% MFU is only reproducible if trn1 stays 2/2/210e12.
+    """Phase-1/2 published MFU (68.3% @2048) came from 2/2/210e12.
 
-    A change here silently invalidates every Phase-1 and Phase-2 training
-    number in REPORT.md, so it is pinned as hard as the FLOPs formula is.
+    The parallelism is pinned as hard as the FLOPs formula is -- a change to
+    2/2/1 would invalidate every published training number. The DENOMINATOR
+    moved deliberately in Phase 3: the primary is now the arch page's 190e12,
+    and 210e12 survives as the alt so the published numbers stay reproducible
+    and re-derivable rather than being quietly restated.
     """
     args = sft_lora.build_parser().parse_args(["--tag", "t", "--out", "/tmp/o"])
     p = sft_lora.resolve_device_profile(args, env={})
     assert p["device_profile"] == "trn1"
     assert (p["nproc"], p["tp"], p["pp"]) == (2, 2, 1)
-    assert p["peak_bf16_flops"] == 210e12
+    assert p["peak_bf16_flops"] == 190e12        # arch page
+    assert p["peak_bf16_flops_alt"] == 210e12    # what REPORT.md used
     assert p["logical_nc_config"] is None
+
+
+def test_published_phase1_mfu_is_still_derivable_from_the_alt_denominator():
+    """The 68.318% in REPORT.md must remain reconstructible after the switch.
+
+    Reproduce it from the alt denominator, and show the arch-page denominator
+    restates the SAME measurement as 75.5% -- same silicon, same tokens/s,
+    different published peak. This is exactly why both are emitted.
+    """
+    published_mfu, published_peak = 68.318, 210e12
+    achieved = published_mfu / 100.0 * published_peak
+    arch = 100.0 * achieved / 190e12
+    assert abs(arch - 75.51) < 0.05
+    assert abs(published_mfu * (210.0 / 190.0) - arch) < 1e-6
+
+
+def test_peak_ratio_between_the_chips_depends_on_the_source():
+    """Mixing sources across boxes is the bug this guards against.
+
+    Consistently-sourced: 667/190 = 3.51x. The old mixed pairing (instance
+    figure for trn1, arch figure for trn2) understated it as 3.18x -- in the
+    direction that flatters the newer chip.
+    """
+    trn1 = sft_lora.DEVICE_PROFILES["trn1"]
+    trn2 = sft_lora.DEVICE_PROFILES["trn2"]
+    arch_ratio = trn2["peak_bf16_flops"] / trn1["peak_bf16_flops"]
+    mixed_ratio = trn2["peak_bf16_flops"] / trn1["peak_bf16_flops_alt"]
+    assert abs(arch_ratio - 3.51) < 0.01
+    assert abs(mixed_ratio - 3.18) < 0.01
+    assert arch_ratio > mixed_ratio
 
 
 def test_trn2_profile_is_four_logical_cores_at_667_tflops():
@@ -111,6 +162,8 @@ def test_trn2_profile_is_four_logical_cores_at_667_tflops():
     p = sft_lora.resolve_device_profile(args, env={})
     assert (p["nproc"], p["tp"]) == (4, 4)
     assert p["peak_bf16_flops"] == 667e12
+    # Arch and instance specs agree for Trainium2 -- no conflict to report.
+    assert p["peak_bf16_flops_alt"] == 667e12
     assert p["logical_nc_config"] == 2      # Neuron default on Trainium2
     assert p["hbm_gib_per_core"] == 24      # vs 16 on trn1 -- the ctx-cliff lever
 

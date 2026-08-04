@@ -78,3 +78,16 @@ echo "############ PHASE3 TRN2 ALL COMPLETE ############"
 # ---------------------------------------------------------------------------
 echo "############ PHASE3-TRN2: opportunistic lanes (paid-for remainder) ############"
 bash extras/run_opportunistic_trn2.sh || echo "opportunistic pass ended early (by design or receipt)"
+
+# Frontier AFTER opportunistic on purpose. Opportunistic leads with the seed
+# repeats on lane 4, and variance on the HEADLINE number protects the report's
+# central claim; the frontier lanes are additive capability findings. If the
+# window runs short, losing "32B fits" hurts less than publishing n=1.
+echo "############ PHASE3-TRN2: frontier lanes (what trn1 cannot do) ############"
+bash extras/run_frontier_trn2.sh || echo "frontier pass ended early (by design or receipt)"
+
+echo "############ PHASE3-TRN2: roofline analysis (no device time) ############"
+"${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}/bin/python" analysis/roofline.py \
+  --roots trn2/results --out trn2/results/roofline.json \
+  || echo "roofline analysis FAILED"
+bash shared/bin/push_results.sh trn2 || echo "push FAILED"
