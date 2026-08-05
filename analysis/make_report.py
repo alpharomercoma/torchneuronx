@@ -163,6 +163,55 @@ def render(cmp):
     return "\n".join(lines) + "\n"
 
 
+# $/hr. trn1 is the published on-demand rate. trn2 has NO on-demand rate --
+# the pricing API carries no record -- so this is derived from what we actually
+# paid: $53.64 for a 24 h Capacity Block.
+HOURLY_RATE = {"trn1": 1.34, "trn2": 2.235, "inf2": 0.7582}
+
+
+def cost_metrics(box, d):
+    """Cost per million model tokens, both ways, never blended.
+
+    TWO NUMBERS, because they answer different questions and mixing them is
+    marketing arithmetic:
+
+      occupied  -- rate x wall clock of THIS job. What the job cost to run.
+      allocated -- the whole non-refundable Capacity Block divided by this
+                   job's tokens. What it cost if the block ran nothing else.
+
+    On the primary lane the occupied figures are $0.2583/M (trn1) vs $0.1952/M
+    (trn2): Trainium2 is 24.4% CHEAPER per token despite costing 1.67x more per
+    hour, because the 2.21x wall-clock win more than pays for the rate. The
+    allocated figure for a single job on trn2 is $5.0759/M -- twenty times
+    worse -- which is why utilisation of a pre-paid block matters more than the
+    hourly rate.
+
+    "Model tokens" are fixed-shape packed sequence tokens, not raw corpus
+    tokens; packing efficiency is not measured here.
+    """
+    rate = HOURLY_RATE.get(box)
+    wall, steps = d.get("train_wall_s"), d.get("steps_recorded")
+    tok_step = d.get("tokens_per_optimizer_step")
+    if not (rate and wall and steps and tok_step):
+        return None
+    mtok = steps * tok_step / 1e6
+    occupied = rate / 3600.0 * wall
+    out = {
+        "hourly_rate_usd": rate,
+        "model_tokens_m": round(mtok, 4),
+        "job_cost_usd_occupied": round(occupied, 4),
+        "usd_per_m_tokens_occupied": round(occupied / mtok, 4),
+        "token_basis": "packed fixed-shape sequence tokens, not raw corpus tokens",
+    }
+    if box == "trn2":
+        out["block_cost_usd"] = 53.64
+        out["usd_per_m_tokens_block_allocated"] = round(53.64 / mtok, 4)
+        out["allocation_note"] = ("the block is non-refundable and cannot be "
+                                  "cancelled, so a single job carries its whole "
+                                  "cost. Report both; never blend them.")
+    return out
+
+
 def end_to_end_fields(d):
     """Return (tokens/s, MFU%, source) end-to-end, deriving when not recorded.
 
@@ -219,6 +268,7 @@ def collect_trn1_reruns():
             out["dropped_no_telemetry"].append(name)   # invariant 1
             continue
         e2e_tps, e2e_mfu, e2e_src = end_to_end_fields(d)
+        cost = cost_metrics("trn1", d)
         out["lanes"][name] = {
             "tokens_per_s": d.get("tokens_per_s"),
             "tflops": d.get("tflops"),
@@ -231,6 +281,7 @@ def collect_trn1_reruns():
             "tokens_per_s_end_to_end": e2e_tps,
             "mfu_pct_end_to_end": e2e_mfu,
             "end_to_end_source": e2e_src,
+            "cost": cost,
             "telemetry": tel,
         }
     version_delta = load_json(os.path.join(root, "version_delta.json"))
