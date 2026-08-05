@@ -388,3 +388,122 @@ of this report measures end to end — is the one you can get on demand.
    classifying the error text and exiting loudly on auth failures. The general
    rule: an unattended loop must treat "the answer I expected" and "I could not
    ask the question" as different outcomes.
+
+6. **Neuron caches FAILED compiles, and a poisoned entry is silent.** Both
+   Phase-3 serving grids failed at server boot with nothing useful at the
+   caller — just `Engine core initialization failed`. The real cause was buried
+   in the server log:
+
+       [ERROR]: Got a cached failed neff at /opt/np/cache/.../model.neff.
+       Will skip compilation, please set --retry_failed_compilation
+       [NCC_INLA001] ... checkDMATranspose ...   2026-07-29T22:37:54Z
+
+   A compile that died on 2026-07-29 left a **failed** NEFF in the cache. Every
+   later run with the same cache key skips recompilation and inherits that
+   failure, indefinitely, until someone passes `--retry_failed_compilation` or
+   deletes the entry. Nothing surfaces at the call site.
+
+   The upstream mistake was ours and is the more instructive half: the phase
+   grids were pointed at the `long` geometry (9216) on the reasoning that it
+   needed no recompile — **without checking whether `long` works**. It does
+   not. `llama31_base_long: server_failed_to_start` is a recorded failure in
+   this project's own report, and its cache is exactly where the poisoned NEFF
+   lives. The evidence was already in `analysis/comparison.json` and went
+   unread. *"Same geometry requested" is not "same working executable."*
+
+7. **An undefined TPOT is not a satisfied TPOT.** `compute_goodput` counted
+   `tpot is None` as meeting the decode SLO. That is defensible in the ordinary
+   grids, where sub-2-token requests are a small minority, and it is the
+   convention behind every published inf2 number. In the prefill grid it is
+   fatal: `OSL=1` makes **every** request `tpot=None`, so a two-SLO goodput
+   silently degenerates into a TTFT-only one and reports 100% attainment
+   against a decode SLO that was never evaluated once.
+
+   Fixed without restating published numbers: the pass-through convention is
+   unchanged, and only the **degenerate** case — no evaluable TPOT anywhere in
+   the run — now reports `null` goodput with an explicit reason, alongside a
+   new always-defined `ttft_only_attainment_pct`. A first attempt that made
+   undefined TPOT *fail* was caught by the existing test suite precisely
+   because it would have moved published results.
+
+## 17. Prefill vs decode on Inferentia2 (Phase 3)
+
+Every serving grid in Phase 1 and 2 mixed the two phases of a request, so none
+of them could show the mechanism the roofline analysis predicts. Two additive
+grids fix that; nothing published is restated.
+
+    prefill   input-length sweep at OSL=1   -> one output token, so end-to-end
+                                               latency is essentially prefill
+    decode    128 in / 1900 out             -> ~94% of tokens are decode steps
+
+Both run on the **short** server geometry (`MAX_MODEL_LEN=2048`,
+`MAX_NUM_SEQS=32`) — the same compiled graph as the published short lane — so
+the only variable is request shape. Llama 3.1 8B Instruct, inf2.xlarge, one
+Inferentia2, TP=2.
+
+### 17.1 Prefill is compute-bound
+
+Concurrency 1, p50 TTFT, throughput derived as `ISL / TTFT`:
+
+| input tokens | TTFT p50 (ms) | prefill tokens/s |
+|---|---|---|
+| 256 | 116.2 | 2,204 |
+| 512 | 199.8 | 2,563 |
+| 1024 | 397.5 | 2,576 |
+| 1792 | 422.3 | **4,244** |
+
+Throughput **rises with prompt length** — the compute-bound signature. A longer
+prompt raises arithmetic intensity and amortises fixed per-request cost, so the
+accelerator gets *more* efficient the more work it is handed at once.
+
+Stated rather than buried: TTFT includes admission, queueing, parsing, the
+prefill pass, and emission of the first token. At concurrency 1 queueing is
+negligible, so this is a close **lower bound** on true prefill throughput, not
+a server-side phase timing.
+
+### 17.2 Decode is memory-bandwidth-bound
+
+| concurrency | output tokens/s | TPOT p50 (ms) | TTFT p50 (ms) |
+|---|---|---|---|
+| 1 | 17.83 | 56.02 | 66.0 |
+| 4 | 70.89 | 56.37 | 157.1 |
+| 8 | 140.68 | 56.75 | 279.1 |
+
+**TPOT is flat to within 1.3% while aggregate throughput scales 1 : 3.98 :
+7.89.** The flatness is the evidence, not the throughput. Each decode step must
+stream the entire 8B weight set out of HBM to emit one token, so the weights
+are already in flight; a second, fourth or eighth concurrent stream fills
+otherwise-idle compute at almost no per-token cost. Were decode compute-bound,
+TPOT would climb with batch size. It does not move. TTFT does climb
+(66 -> 279 ms) — that is queueing, which should grow with concurrency.
+
+### 17.3 The contrast, on one chip
+
+| | tokens/s | improves with | bound by |
+|---|---|---|---|
+| prefill | 2,204 -> 4,244 | prompt LENGTH | compute |
+| decode | 17.8 per stream (flat) | CONCURRENCY | memory bandwidth |
+
+Roughly a **124-238x per-token gap between the two phases of the same
+request** — same chip, same model, same server process — and the two phases
+reward opposite levers. This is the clearest illustration in the study of why
+an inference accelerator is specified the way it is, and why a single
+"tokens/second" figure for a serving system means little without saying which
+phase produced it.
+
+### 17.4 An anomaly reported, not smoothed
+
+1792 input tokens took only **6% longer** than 1024 (422.3 vs 397.5 ms) despite
+75% more input, which is what produces the 4,244 tok/s outlier. The likely
+cause is NxD Inference's compile-time **bucketing**: both lengths probably fall
+in the same bucket, making the larger prompt nearly free. If so, prefill cost
+is a **step function, not a line** — which matters directly to anyone sizing
+prompts or padding batches. Recorded as an open question; confirming it needs
+the bucket boundaries from the compiled artifacts.
+
+### 17.5 What these grids could NOT do
+
+The planned prefill sweep reached 8192 input tokens on the `long` geometry. It
+could not run: see correction 6. The sweep therefore stops at 1792 and the
+long-context half of the prefill curve is missing. That is the honest cost of
+running on a server that starts.
