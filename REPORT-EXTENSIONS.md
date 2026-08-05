@@ -507,3 +507,53 @@ The planned prefill sweep reached 8192 input tokens on the `long` geometry. It
 could not run: see correction 6. The sweep therefore stops at 1792 and the
 long-context half of the prefill curve is missing. That is the honest cost of
 running on a server that starts.
+
+8. **optimum-neuron 0.4.3 has NO evaluation API.** `NeuronSFTTrainer` does not
+   implement `.evaluate()` -- confirmed on trn1:
+   `AttributeError: 'NeuronSFTTrainer' object has no attribute 'evaluate'`.
+   Held-out scoring, early stopping, and any eval-during-training workflow are
+   simply unavailable through the supported training path. For a study whose
+   every other number measures speed, this is the single biggest gap in the
+   stack: it makes "did it train correctly?" harder to answer than "how fast
+   did it run?".
+
+   **Workaround that does work:** a zero-learning-rate pass over the held-out
+   split using the same trainer machinery -- same collator, same packing, same
+   compiled graph shapes, so no new API and no new compile. With `lr=0` and a
+   constant schedule the optimizer cannot move a weight, so the logged per-step
+   losses are forward losses on unseen rows. Gradients are still computed and
+   discarded; that waste buys correctness through supported APIs instead of a
+   hand-rolled XLA eval loop whose numerics would then need defending.
+
+   Two things had to be fixed to make it run:
+
+   - `max_grad_norm=0.0`. ZeRO-1 clips gradients before stepping, and on a
+     frozen scoring pass there are none:
+     `neuronx_distributed/parallel_layers/grads.py get_grad_norm` raises
+     `IndexError: list index out of range` on the empty list. Clipping a
+     gradient that will never be applied is pointless anyway.
+   - Never re-apply a PEFT adapter to an already-wrapped model on the
+     post-training pass.
+
+9. **A receipt that cannot be acted on is not a receipt.** The first version of
+   the held-out lane caught the exception and recorded only
+   `"IndexError: list index out of range"` with no frame information. That is
+   unactionable: it cost a full round trip to the box to learn nothing. Adding
+   `traceback.format_exc()` to the receipt identified the ZeRO-1 clipping path
+   on the very next run. METHODOLOGY rule 7 says failures are receipts; this
+   sharpens it -- a receipt must carry enough context to fix the failure.
+
+10. **`--seed` does not perturb this stack.** Three trn1 runs at seeds 42, 43
+    and 44 produced BIT-IDENTICAL loss (tail-50 mean 1.102654, stdev 0.0),
+    even though `seed=args.seed` is passed to the trainer. Data order is pinned
+    elsewhere -- most likely by packing, which builds a fixed packed-example
+    sequence. Consequences:
+
+    - The variance lanes measure system TIMING only. That is still useful: the
+      tokens/s spread across three identical runs is **2.4%**, which is the
+      run-to-run noise floor any ratio in this report must clear.
+    - Because runs are deterministic, the trn1/trn2 final-loss difference
+      (1.2063 vs 1.1489) is **not** seed noise. It is real, and the most likely
+      cause is TP=2 vs TP=4 changing collective accumulation order -- the same
+      root as the `params_trainable` discrepancy in 15.x.
+    - Repeating trn2 at seeds 43/44 is therefore redundant.

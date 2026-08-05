@@ -1111,17 +1111,83 @@ def run(args, cache_dir, profile=None):
     # record that as a receipt and still run the lane, rather than losing the
     # throughput measurement to a quality feature.
     eval_before = eval_after = eval_error = None
+    eval_method = None
     eval_wall_s = 0.0
+    nonlocal_tb = []
+
+    def holdout_loss(phase):
+        """Mean forward loss on the held-out split.
+
+        optimum-neuron 0.4.3's NeuronSFTTrainer has NO .evaluate() -- confirmed
+        on trn1: AttributeError. So the primary path is a ZERO-LEARNING-RATE
+        pass over the held-out rows using the SAME trainer machinery: same
+        collator, same packing, same compiled graph shapes, so it needs no new
+        API and no new compile. With lr=0 and a constant schedule the optimizer
+        cannot move a weight, so the logged per-step losses are exactly forward
+        losses on unseen data.
+
+        Gradients are still computed and thrown away. That is wasted work, but
+        it buys correctness through supported APIs instead of hand-rolling an
+        XLA eval loop whose numerics we would then have to defend.
+        """
+        nonlocal eval_error, eval_method
+        try:
+            if hasattr(trainer, "evaluate"):
+                eval_method = "trainer.evaluate"
+                out = trainer.evaluate(eval_dataset=eval_dataset,
+                                       metric_key_prefix=phase)
+                return out.get(f"{phase}_loss")
+            eval_method = "zero_lr_forward_pass"
+            cb = StepMetrics()
+            import dataclasses as _dc
+            # dataclasses.replace keeps every field the real config already
+            # resolved (parallelism, dtype, packing, seq len) and overrides
+            # only what makes this a scoring pass instead of a training one.
+            cfg = _dc.replace(sft_config,
+                              learning_rate=0.0,
+                              num_train_epochs=1,
+                              max_steps=-1,
+                              warmup_steps=0,
+                              lr_scheduler_type="constant",
+                              # ZeRO-1 clips gradients before stepping, and on
+                              # a frozen scoring pass there ARE no gradients:
+                              # neuronx_distributed grads.get_grad_norm([])
+                              # raises IndexError on the empty list. Clipping a
+                              # gradient we never intend to apply is pointless
+                              # anyway, so switch it off rather than fabricate
+                              # gradients to keep the optimizer happy.
+                              max_grad_norm=0.0,
+                              save_strategy="no",
+                              output_dir=f"/tmp/holdout_{phase}")
+            # After training the model is already PEFT-wrapped. Passing a
+            # peft_config again (or letting trl re-wrap) is the most likely
+            # source of the post-pass failure, so use the trainer's own model
+            # when it exists and never re-apply an adapter.
+            base = getattr(trainer, "model", model)
+            ev = build_trainer(NeuronSFTTrainer, cfg, base, None,
+                               tokenizer, eval_dataset, args, cb)
+            ev.train()
+            losses = [e["loss"] for e in cb.trace if e.get("loss") is not None]
+            return round(sum(losses) / len(losses), 6) if losses else None
+        except Exception as exc:                      # noqa: BLE001
+            # Capture the TRACEBACK, not just the message. The first version
+            # recorded "IndexError: list index out of range" with no frame
+            # information, which made the failure undiagnosable and cost a
+            # whole round trip. A receipt that cannot be acted on is not a
+            # receipt.
+            import traceback
+            eval_error = f"{type(exc).__name__}: {exc}"[:200]
+            eval_traceback = traceback.format_exc()[-1800:]
+            say(f"  holdout eval FAILED ({eval_method}): {eval_error}")
+            say("  --- traceback ---")
+            say(eval_traceback)
+            nonlocal_tb.append(eval_traceback)
+            return None
+
     if eval_dataset is not None:
         _t = time.perf_counter()
-        try:
-            eval_before = trainer.evaluate(eval_dataset=eval_dataset,
-                                           metric_key_prefix="holdout_pre")
-            eval_before = eval_before.get("holdout_pre_loss")
-            say(f"  holdout loss (pre) : {eval_before}")
-        except Exception as exc:                      # noqa: BLE001
-            eval_error = f"{type(exc).__name__}: {exc}"[:300]
-            say(f"  holdout eval FAILED: {eval_error}")
+        eval_before = holdout_loss("holdout_pre")
+        say(f"  holdout loss (pre) : {eval_before}  [{eval_method}]")
         eval_wall_s += time.perf_counter() - _t
 
     t_train0 = time.perf_counter()
@@ -1131,14 +1197,8 @@ def run(args, cache_dir, profile=None):
     # ---- held-out loss AFTER training -------------------------------------
     if eval_dataset is not None and eval_error is None:
         _t = time.perf_counter()
-        try:
-            eval_after = trainer.evaluate(eval_dataset=eval_dataset,
-                                          metric_key_prefix="holdout_post")
-            eval_after = eval_after.get("holdout_post_loss")
-            say(f"  holdout loss (post): {eval_after}")
-        except Exception as exc:                      # noqa: BLE001
-            eval_error = f"{type(exc).__name__}: {exc}"[:300]
-            say(f"  holdout post-eval FAILED: {eval_error}")
+        eval_after = holdout_loss("holdout_post")
+        say(f"  holdout loss (post): {eval_after}  [{eval_method}]")
         eval_wall_s += time.perf_counter() - _t
 
     # save_model() writes the adapter (TP-sharded when tp>1 -- merge_adapter.py
@@ -1232,6 +1292,8 @@ def run(args, cache_dir, profile=None):
                            if (eval_before is not None and eval_after is not None)
                            else None),
             "eval_wall_s": round(eval_wall_s, 2),
+            "method": eval_method,
+            "traceback": (nonlocal_tb[-1] if nonlocal_tb else None),
             "error": eval_error,
             "note": ("Held-out in-domain token loss on rows never trained on. "
                      "Supports 'the fine-tune learned, comparably on both "
