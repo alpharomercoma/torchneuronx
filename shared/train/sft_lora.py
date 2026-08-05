@@ -293,6 +293,17 @@ def build_parser():
                           "the loss trajectory at all on this stack (three "
                           "trn1 seeds produced bit-identical loss), so data "
                           "order is pinned elsewhere -- probably by packing."))
+    ap.add_argument("--synthetic-data", type=int, default=0, metavar="N",
+                    help=("DATALOADER ISOLATION. Replace the dataset with N "
+                          "rows of random token IDs, pre-tokenised to exactly "
+                          "--seq-len, with no formatter, no packing and no Hub "
+                          "download. Compiled graph shapes are unchanged so "
+                          "nothing recompiles. Isolates device throughput from "
+                          "host-side dataloader cost -- the leading hypothesis "
+                          "for why trn2 is 1.20x at seq 2048 but 1.92x at "
+                          "4096. THE LOSS FROM THIS LANE IS MEANINGLESS and "
+                          "the result JSON marks it so. 0 disables (every "
+                          "published lane)."))
     ap.add_argument("--dataset-fields", default=None,
                     help=("Remap columns onto the Dolly schema the formatter "
                           "expects, e.g. 'context=input,response=output' for "
@@ -933,27 +944,72 @@ def run(args, cache_dir, profile=None):
         task_type="CAUSAL_LM",
     )
 
-    dataset = load_dataset(args.dataset, split="train")
-    if args.dataset_fields:
-        # target=source pairs; rename so format_dolly() keeps working unchanged.
-        # Doing this here rather than branching the formatter keeps every lane
-        # on ONE prompt template -- a different template would confound any
-        # cross-dataset comparison with a formatting change.
-        for pair in args.dataset_fields.split(","):
-            target, _, source = pair.partition("=")
-            target, source = target.strip(), source.strip()
-            if source and source in dataset.column_names:
-                dataset = dataset.rename_column(source, target)
-        if "context" not in dataset.column_names:
-            dataset = dataset.add_column("context", [""] * len(dataset))
+    if args.synthetic_data:
+        # ---- DATALOADER ISOLATION LANE ------------------------------------
+        # WHY: Trainium2 is only 1.20x faster than Trainium1 at seq 2048 but
+        # 1.92x at seq 4096. One explanation is that at short context the step
+        # is not device-bound at all -- host-side work (tokenise, pack, collate,
+        # copy to device) takes a fixed wall-clock toll that the faster chip
+        # cannot shrink, so it eats a larger FRACTION of trn2's shorter step.
+        #
+        # This lane tests that by deleting the host work. Rows are random token
+        # IDs generated once, already the exact seq_len, already carrying
+        # attention_mask and labels. No Hub download, no tokenisation, no
+        # packing, no formatter. The compiled graph sees IDENTICAL shapes, so
+        # the NEFF cache hits and nothing recompiles.
+        #
+        # If tokens/s jumps, host work was the bottleneck and the 1.20x is a
+        # dataloader artifact. If it does not move, the chip really was
+        # saturated and 1.20x is the honest device-level answer at this shape.
+        # Either outcome is publishable; that is why the lane is worth running.
+        #
+        # The loss from this lane is MEANINGLESS -- random tokens teach nothing.
+        # It is a throughput probe only, and the result JSON says so.
+        from datasets import Dataset as _HFDataset
+
+        rng = random.Random(args.data_seed if args.data_seed is not None else 20260805)
+        vocab = int(getattr(tokenizer, "vocab_size", 32000) or 32000)
+        n_rows = int(args.synthetic_data)
+        say(f"  SYNTHETIC DATA     : {n_rows} rows x {args.seq_len} random ids "
+            f"(vocab {vocab}) -- throughput probe, loss is meaningless")
+        rows = []
+        for _ in range(n_rows):
+            ids = [rng.randrange(vocab) for _ in range(args.seq_len)]
+            rows.append({"input_ids": ids,
+                         "attention_mask": [1] * args.seq_len,
+                         "labels": list(ids)})
+        dataset = _HFDataset.from_list(rows)
+        packing = False          # rows are already exactly seq_len
+    else:
+        dataset = load_dataset(args.dataset, split="train")
+        if args.dataset_fields:
+            # target=source pairs; rename so format_dolly() keeps working
+            # unchanged. Doing this here rather than branching the formatter
+            # keeps every lane on ONE prompt template -- a different template
+            # would confound any cross-dataset comparison with a formatting
+            # change.
+            for pair in args.dataset_fields.split(","):
+                target, _, source = pair.partition("=")
+                target, source = target.strip(), source.strip()
+                if source and source in dataset.column_names:
+                    dataset = dataset.rename_column(source, target)
+            if "context" not in dataset.column_names:
+                dataset = dataset.add_column("context", [""] * len(dataset))
 
     # ---- deterministic held-out split -------------------------------------
     # Same split_seed on both chips => byte-identical held-out rows, so the two
     # boxes are scored on the same examples. Split BEFORE packing: packing
     # concatenates examples, so splitting after it would leak train content
     # into eval sequences.
+    #
+    # Skipped entirely for synthetic data: holding out random tokens would
+    # produce a held-out loss with no meaning, and reporting one would be worse
+    # than reporting none.
     eval_dataset = None
-    if args.holdout_frac and args.holdout_frac > 0:
+    if args.synthetic_data and args.holdout_frac:
+        say("  holdout SKIPPED    : synthetic rows are random tokens; "
+            "a held-out loss on them would be meaningless")
+    elif args.holdout_frac and args.holdout_frac > 0:
         split = dataset.train_test_split(test_size=args.holdout_frac,
                                          seed=args.holdout_split_seed)
         dataset, eval_dataset = split["train"], split["test"]
@@ -1233,7 +1289,17 @@ def run(args, cache_dir, profile=None):
     payload = {
         "tag": args.tag,
         "model": args.model,
-        "dataset": args.dataset,
+        "dataset": ("synthetic:random-token-ids" if args.synthetic_data
+                    else args.dataset),
+        # A throughput probe on random tokens produces a loss number, and a
+        # loss number in a results file WILL eventually be plotted by someone.
+        # Marking it in the payload is the only thing that stops that.
+        "synthetic_data": ({"rows": int(args.synthetic_data),
+                            "seq_len": args.seq_len,
+                            "loss_is_meaningless": True,
+                            "purpose": "isolate device throughput from host "
+                                       "dataloader cost; graph shapes unchanged"}
+                           if args.synthetic_data else None),
         "params_total": params_total,
         "params_trainable": params_trainable,
         "params_frozen": (params_total - params_trainable
@@ -1579,6 +1645,12 @@ def build_trainer(NeuronSFTTrainer, sft_config, model, lora_config, tokenizer,
         "formatting_func": lambda example: format_dolly(example, tokenizer),
         "callbacks": [callback],
     }
+    # Synthetic rows arrive ALREADY tokenized (input_ids/attention_mask/labels),
+    # which is the whole point -- no formatter, no tokenizer, no packing. Passing
+    # a formatting_func anyway would make TRL re-render them as text and the
+    # isolation would measure nothing.
+    if getattr(args, "synthetic_data", 0):
+        kwargs.pop("formatting_func")
     if "processing_class" in params:
         kwargs["processing_class"] = tokenizer
     elif "tokenizer" in params:

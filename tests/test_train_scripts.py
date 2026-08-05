@@ -3,6 +3,7 @@
     python3 -m pytest tests/test_train_scripts.py -q   # 5 passed
 """
 import os
+import pathlib
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "shared", "train"))
@@ -220,3 +221,33 @@ def test_lnc_env_is_set_only_for_trainium2():
     sft_lora.apply_neuron_env(env=env, cache_dir="/tmp/c",
                               profile=sft_lora.DEVICE_PROFILES["trn2"])
     assert env["NEURON_LOGICAL_NC_CONFIG"] == "1"
+
+
+def test_synthetic_data_defaults_off_so_published_lanes_are_unaffected():
+    args = sft_lora.build_parser().parse_args(["--tag", "t", "--out", "/tmp/o"])
+    assert args.synthetic_data == 0
+
+
+def test_synthetic_lane_drops_the_formatter():
+    """The isolation lane feeds pre-tokenised rows.
+
+    If build_trainer still passed formatting_func, TRL would re-render the
+    random ids as text and the lane would measure the very host work it exists
+    to remove -- a silent no-op that would look like a real negative result.
+    """
+    src = pathlib.Path(sft_lora.__file__).read_text()
+    block = src.split("def build_trainer", 1)[1]
+    assert 'kwargs.pop("formatting_func")' in block
+    assert 'getattr(args, "synthetic_data", 0)' in block
+
+
+def test_synthetic_lane_marks_its_loss_meaningless_in_the_payload():
+    """Random tokens teach nothing, so the loss must never be plottable as real."""
+    src = pathlib.Path(sft_lora.__file__).read_text()
+    assert '"loss_is_meaningless": True' in src
+    assert '"synthetic:random-token-ids"' in src
+
+
+def test_synthetic_lane_skips_the_holdout():
+    src = pathlib.Path(sft_lora.__file__).read_text()
+    assert "if args.synthetic_data and args.holdout_frac:" in src
