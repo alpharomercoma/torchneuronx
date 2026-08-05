@@ -84,7 +84,16 @@ chmod +x /usr/local/sbin/np-autorun.sh
 cat > /etc/systemd/system/np-autorun.service <<'SVC'
 [Unit]
 Description=neuron-pipelines: pull code and start the Phase-3 Trainium2 suite
-After=network-online.target np-scratch.service cloud-final.service
+# NOT After=cloud-final.service. This unit is enabled BY user-data, which runs
+# inside cloud-final -- ordering after it deadlocks: systemd queues np-autorun
+# behind cloud-final, and `systemctl enable --now` blocks forever waiting for a
+# unit that can never start. Observed live on 2026-08-05, cost ~6 min of a paid
+# window:
+#     np-autorun.service   start  waiting
+#     cloud-final.service  start  running
+# np-scratch is a real dependency (the suite writes to /scratch) and is safe
+# because it is enabled earlier in the same user-data, before cloud-final ends.
+After=network-online.target np-scratch.service
 Wants=network-online.target
 
 [Service]
