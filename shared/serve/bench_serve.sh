@@ -32,11 +32,19 @@ case "$CONFIG" in
   # input length gives prefill throughput as a function of context -- the
   # compute-bound half of inference, which the existing short/long grids
   # conflate with decode.
-  prefill) SHAPES="256:1 512:1 1024:1 2048:1 4096:1 8192:1"; CONC="1 4" ;;
+  # Shapes fit inside the SHORT geometry (2048), not long (9216). The long
+  # lane is a RECORDED FAILURE in our own report -- server_failed_to_start --
+  # and its cache holds a failed NEFF from 2026-07-29 (NCC_INLA001,
+  # checkDMATranspose). Neuron caches FAILED compiles and skips recompilation,
+  # so anything reusing that geometry inherits the failure. Reusing "the same
+  # geometry" is not the same as reusing a working executable.
+  prefill) SHAPES="256:1 512:1 1024:1 1792:1"; CONC="1 4" ;;
   # DECODE-ISOLATING: tiny prompt, long generation, so nearly all the work is
   # single-token decode steps -- the memory-bound half. TPOT here is the clean
   # per-token decode cost; in the short/long grids it is diluted by prefill.
-  decode) SHAPES="128:2048";          CONC="1 4 8" ;;
+  # 128+1900 = 2028 < 2048, so this also runs on the working short graph.
+  # Still ~94% decode tokens, which is all the isolation needs.
+  decode) SHAPES="128:1900";          CONC="1 4 8" ;;
   *) echo "unknown config '$CONFIG'" >&2; exit 2 ;;
 esac
 

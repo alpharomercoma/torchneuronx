@@ -163,7 +163,10 @@ case "$CONFIG" in
   # So these run on the SAME compiled graph as the published long lane, at zero
   # compile cost, and any difference is attributable to the request shape alone.
   # Concurrency in both grids stays <= 8 to respect MAX_NUM_SEQS.
-  prefill|decode) MAX_MODEL_LEN=9216; MAX_NUM_SEQS=8 ;;
+  # SHORT geometry (2048/32), not long (9216): the long lane never booted --
+  # it is a recorded failure, and its cache entry is a poisoned NEFF from
+  # 2026-07-29. Both phase grids are sized to fit 2048.
+  prefill|decode) MAX_MODEL_LEN=2048; MAX_NUM_SEQS=32 ;;
   *) echo "unknown config: $CONFIG (want short|long|smoke|prefill|decode)" >&2; exit 2 ;;
 esac
 # Probe overrides (Track B bisection): env wins over the config case so a
