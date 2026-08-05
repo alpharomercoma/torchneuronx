@@ -26,9 +26,13 @@ ASG `NeuronPipelinesTrainium2-Trn2AsgASG56F8472A-WzMFVvw2ikkW`, launch template 
 
 ## What is running RIGHT NOW
 
-- **trn2**: `run_phase3_trn2.sh` (was on `llama31_lora`). Re-running the whole suite
-  because the replacement box started with an empty `trn2/results/`.
-- **trn1**: idle. Quality gate finished (3 artifacts).
+- **trn2**: `run_phase3_trn2.sh`, lane 4 `llama31_lora`, epoch 2.81/3 at 19:05Z.
+  Re-running the whole suite because the replacement box started with an empty
+  `trn2/results/`. **This is a second independent sample of the primary lane on
+  a different physical Trainium2** — compare against the published JSON in S3
+  for cross-instance variance, which no other lane in this study measures.
+- **trn1**: running `run_dataloader_isolation.sh` under systemd unit
+  `np-isolation` (log `/opt/np/isolation_trn1.log`). Free, on credits.
 - **inf2**: idle, complete.
 
 ## Active monitors (re-create after compaction if lost)
@@ -117,12 +121,20 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
    extras/run_quality_gate.sh`, script already on the box. Same split seed
    20260805 so both chips score identical held-out rows. Cannot run
    concurrently with the main suite (chip contention).
-2. **Synthetic-input dataloader isolation** (kimi-k3's idea, best unbuilt one):
-   re-run compiled graphs with random token IDs, same shapes, NO recompile,
-   ~30 min. Would prove or kill the "host transfer dominates at short context"
-   explanation for why trn2 is only 1.20x at seq 2048. Run on trn1 (free) first.
-3. **Loss-curve overlay trn1 vs trn2** — free, `loss_trace` already in both
-   result JSONs (645 entries each).
+2. ~~**Synthetic-input dataloader isolation**~~ — **BUILT**
+   (`extras/run_dataloader_isolation.sh`, `--synthetic-data N` in
+   `sft_lora.py`), **RUNNING on trn1** as of 19:08Z. Four paired lanes: a real
+   control and a synthetic twin at seq 2048 and at 4096, all at 40 steps. The
+   discriminating signal is whether the synthetic uplift SHRINKS from 2048 to
+   4096 — that is the signature of a fixed host cost. Must then run on trn2
+   for symmetry.
+3. ~~**Loss-curve overlay trn1 vs trn2**~~ — **DONE**, `analysis/loss_overlay.py`,
+   written up as REPORT §18. Result: the gap grows 3.5× from the first tenth of
+   training (mean |d| 0.0080) to the tail (0.0278) with r=0.9969, and
+   replicates on Qwen3 (0.0088 → 0.0218, r=0.9973). That monotone-growth-from-
+   agreement shape is the accumulation-order signature, not a different model.
+   Caveat recorded: TP width is confounded with the chip, so running trn2 at
+   TP=2 is the controlled follow-up.
 4. **maxutil lane** — queued in `run_phase3_trn2.sh`, selects its config from
    the efficiency sweeps. Needs those sweeps to complete first.
 5. Batch-size sweep at seq 4096 (E3 currently does seq 2048).
