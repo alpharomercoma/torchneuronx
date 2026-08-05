@@ -38,6 +38,25 @@ billing, recent HALT (last 40 log lines only), OOM-kill in last 11 min, invalid
 instance id (= ASG replaced the box again), expired creds. Distinguishes
 "unreachable" from "down".
 
+`bvooj0elr` — trn2 liveness, every 10 min via SSM. **Replaces `bifw2s4jt`,
+which was stopped as defective** (monitor defect #6, below).
+
+### Monitor defect #6 — S3/driver-log freshness is not a liveness signal
+
+`bifw2s4jt` watched the newest object under `results/trn2/` in S3 and alarmed at
+75 min of silence. But the deadline pusher only runs every 30 min AND the driver
+log `/opt/np/phase3_trn2.log` receives only a **banner between lanes** — each
+lane's own output goes to `$OUT/$tag.log`. The 8B primary lane runs ~55 min, so
+a perfectly healthy lane 4 guarantees 55+ min of no new S3 object and no driver
+log line. It fired a false OOM alarm at 18:54Z while the box was at epoch
+2.52/3, 3400 tok/s, writing every few seconds.
+
+The fix: measure freshness as the **newest mtime of any file under
+`trn2/results/`** — which includes the in-progress `.log` and `.telemetry.csv` —
+and alarm at 15 min. Same lesson as "blank ≠ stopped": pick a signal that ticks
+at the cadence of the thing you are watching, not at the cadence of its
+checkpoints.
+
 ## HEADLINE RESULTS (all banked in S3)
 
 Llama 3.1 8B LoRA, identical hyperparameters both chips, 645 steps:
@@ -130,6 +149,7 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
 | inf2 grids failed to boot | reused `long` geometry, which is a RECORDED FAILURE with a poisoned cache | switched to `short` geometry |
 | eval post-pass IndexError | ZeRO-1 clips gradients; frozen pass has none | `max_grad_norm=0.0` |
 | unactionable receipts | only recorded the exception message | receipts now carry `traceback.format_exc()` |
+| false OOM alarm at 18:54Z | freshness measured from S3 pushes (30 min) and driver-log banners (per-lane), not from the running lane | monitor `bvooj0elr` watches newest mtime under `trn2/results/` |
 
 ## DOCUMENTATION STATE
 
