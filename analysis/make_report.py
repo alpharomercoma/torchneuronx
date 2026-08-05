@@ -133,6 +133,19 @@ def collect_box(box):
         out["quality"] = {f[:-5]: load_json(os.path.join(quality_root, f))
                           for f in sorted(os.listdir(quality_root))
                           if f.endswith(".json")}
+
+    # The isolation lane lives in its own directory because its loss is
+    # deliberately meaningless (random tokens) and must never be swept into the
+    # training lanes, where something would eventually plot it. Collecting it
+    # here anyway matters: a result that never reaches comparison.json cannot be
+    # cited under the "every reported number is traceable" rule, so it would
+    # have to be hand-copied out of raw JSON -- exactly the transcription step
+    # that rule exists to forbid.
+    iso_root = os.path.join(res_root, "isolation")
+    if os.path.isdir(iso_root):
+        out["isolation"] = {f[:-5]: load_json(os.path.join(iso_root, f))
+                            for f in sorted(os.listdir(iso_root))
+                            if f.endswith(".json")}
     return out, dropped
 
 
@@ -158,6 +171,26 @@ def render(cmp):
                     f" util={row['telemetry']['gpu_util_pct']['mean']}%")
         for run, f in sorted(b.get("failures", {}).items()):
             lines.append(f"  serve/{run}: RECORDED FAILURE ({f.get('status')})")
+
+        for tag, d in sorted((b.get("quality") or {}).items()):
+            h = (d or {}).get("holdout") or {}
+            if h.get("loss_before") is not None and h.get("loss_after") is not None:
+                lines.append(f"  quality/{tag}: held-out {h['loss_before']:.4f}"
+                             f" -> {h['loss_after']:.4f}"
+                             f" (delta {h['loss_after'] - h['loss_before']:+.4f})")
+            elif (d or {}).get("status") == "failed":
+                lines.append(f"  quality/{tag}: RECORDED FAILURE")
+
+        # The isolation lane's whole point is the PAIRED ratio, so render the
+        # pairs rather than four loose throughput numbers. A reader comparing
+        # them by hand is a reader who will eventually compare the wrong two.
+        iso = b.get("isolation") or {}
+        for seq in (2048, 4096):
+            real = (iso.get(f"real_ctl_{seq}") or {}).get("tokens_per_s")
+            synth = (iso.get(f"synth_{seq}") or {}).get("tokens_per_s")
+            if real and synth:
+                lines.append(f"  isolation/seq{seq}: real {real} -> synthetic "
+                             f"{synth} tok/s, uplift {synth / real:.3f}x")
     lines.append(f"\ndropped_no_telemetry: {cmp['dropped_no_telemetry']}")
     lines.append(f"missing_expected: {cmp['missing_expected']}")
     return "\n".join(lines) + "\n"
