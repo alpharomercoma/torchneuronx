@@ -1,10 +1,12 @@
-neuron-pipelines comparison  (generated 2026-08-05T19:24:27Z)
+neuron-pipelines comparison  (generated 2026-08-05T20:10:05Z)
 ================================================================
 
 [trn1] lanes: ['compile_llama31_train', 'cpu_cpu', 'train_llama31_lora', 'train_merge_llama31', 'train_qwen3_lora', 'train_smoke_tinyllama']
   quality/llama31_lora_holdout: held-out 2.1491 -> 1.2510 (delta -0.8981)
   quality/quality_smoke: held-out 1.7252 -> 1.3962 (delta -0.3290)
   quality/quality_smoke_dataseed.failure: RECORDED FAILURE
+  isolation/seq2048: real 2940.1 -> synthetic 2936.5 tok/s, uplift 0.999x
+  isolation/seq4096: real 3571.1 -> synthetic 3570.5 tok/s, uplift 1.000x
 
 [trn2] lanes: ['compile_llama31_train', 'cpu_cpu', 'train_merge_llama31']
 

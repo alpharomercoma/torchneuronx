@@ -1,0 +1,17 @@
+{
+  "box": "trn1",
+  "shapes": {
+    "2048": {
+      "real_tokens_per_s": 2940.1,
+      "synthetic_tokens_per_s": 2936.5,
+      "uplift": 0.9988
+    },
+    "4096": {
+      "real_tokens_per_s": 3571.1,
+      "synthetic_tokens_per_s": 3570.5,
+      "uplift": 0.9998
+    }
+  },
+  "uplift_shrinks_with_seq_len": false,
+  "interpretation": "no shape-dependent host effect; the device was the bottleneck at both shapes"
+}

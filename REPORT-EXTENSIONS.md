@@ -756,3 +756,94 @@ nothing else varies.
 It also retires a possible objection to §18: someone could argue the trn1/trn2
 loss gap is just hardware variation. It is not. Hardware variation here is
 exactly zero.
+
+---
+
+## 21. Killing our own best explanation: the dataloader isolation lane (Phase 3)
+
+§15's headline is that Trainium2 is **1.20× faster than Trainium1 at seq 2048
+but 1.92× at seq 4096**. The weaker number is the one we lead with, so we owe
+the reader an explanation of why the same two chips produce two such different
+ratios.
+
+The explanation we believed, and which two independent adversarial reviewers
+proposed unprompted, was **host-side dataloader cost**. Tokenising, packing,
+collating, and copying to the device costs roughly the same wall clock on both
+boxes, because both have ordinary CPUs. A fixed host cost is a larger fraction
+of trn2's shorter step than of trn1's longer one, so it would compress the
+observed ratio — and doubling the sequence length doubles device work while
+leaving host work alone, which would make the ratio open up. That is exactly
+the shape of 1.20× → 1.92×. It is a good hypothesis. It is also wrong.
+
+### 21.1 The test
+
+`--synthetic-data N` replaces the dataset with pre-tokenised random token IDs
+of exactly `seq_len`: no Hub download, no tokeniser, no packing, no formatter.
+The compiled graph sees identical shapes, so the NEFF cache hits and nothing
+recompiles. **The only thing removed is host-side data preparation.**
+
+The discriminating comparison is not synthetic-vs-real at one shape — it is how
+the uplift *changes* with sequence length. So each shape gets its own real-data
+control at a matched 40 steps. Comparing a 40-step synthetic run against the
+published 645-step lane would confound the uplift with warmup amortisation.
+
+### 21.2 Result (Trainium1)
+
+| shape | real data | synthetic | uplift |
+|---|---|---|---|
+| seq 2048 | 2940.1 tok/s | 2936.5 tok/s | **0.999×** |
+| seq 4096 | 3571.1 tok/s | 3570.5 tok/s | **1.000×** |
+
+Both real-data controls validate against the published lanes — 2940.1 vs
+2951.8 (0.4%) and 3571.1 vs 3575.0 (0.1%) — so these are sound measurements,
+not a broken comparison.
+
+Removing **all** host-side data preparation changed throughput by −0.12% and
+−0.02%. That is not merely inside the 2.4% noise floor of §20, it is inside a
+twentieth of it. Host dataloader cost is not a measurable share of a training
+step on this stack, at either shape.
+
+**The hypothesis is dead.** It was our best explanation, it was independently
+proposed by two reviewers, and it is not what is happening.
+
+### 21.3 What the answer actually looks like
+
+With the host ruled out, the 1.20×/1.92× split has to come from the device, and
+the MFU column already showed it in plain sight:
+
+| seq | trn2 MFU | trn2 vs trn1 |
+|---|---|---|
+| 2048 | 25.9% | 1.20× |
+| 4096 | 50.3% | 1.92× |
+| 8192 | 60.8% | trn1 cannot run it |
+
+Trainium2 is not being slowed down at seq 2048 — it is **not being filled**. At
+micro-batch 1 and seq 2048 there is not enough work in a step to occupy a chip
+with 3.5× the peak FLOPs and 3× the HBM, so most of it idles and the ratio
+collapses toward parity. Trainium1, at 75.2% MFU on the same shape, is close to
+saturated. The gap between the chips is therefore not a gap in speed but a gap
+in **how much work you must bring to make the bigger chip worth its price**.
+
+That reframes the buying advice. Trainium2 is not "1.20× a Trainium1" — that
+number describes a chip running someone else's problem size. It is 1.92× at
+4096, 2.21× end-to-end on the same job, and it runs seq 8192 at all, which
+trn1 cannot at any speed.
+
+### 21.4 Limits, stated plainly
+
+- This lane has so far run **only on Trainium1**. The queued trn2 run is armed
+  on-box; until it completes, the null is demonstrated on the chip where host
+  cost should matter *least*, since trn1 has the longer step. That is the
+  weaker direction of the test, and the conclusion is correspondingly
+  provisional.
+- A null result bounds host cost below the noise floor; it does not prove it is
+  exactly zero.
+- The occupancy explanation in 21.3 is consistent with every measurement we
+  have — the MFU ladder, the null here, and the context ladder — but it is an
+  inference from throughput, not a profiler trace. Confirming it would need
+  `neuron-profile` on both shapes, which this window did not have room for.
+
+We are reporting a hypothesis we liked, the experiment that killed it, and the
+explanation we now believe with its evidence and its remaining uncertainty. The
+alternative was to leave a plausible-sounding story in the report that we had
+the means to test and did not.
