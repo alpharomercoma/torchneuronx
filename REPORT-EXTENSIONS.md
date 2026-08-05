@@ -650,3 +650,109 @@ hypothesis is consistent with every measurement we have and no other
 explanation fits the shape, but it remains inference from a correlated pair,
 not a controlled experiment. Running trn2 at TP=2 would settle it and is
 recorded here as the obvious follow-up.
+
+---
+
+## 19. The quality gate: did the fine-tune actually learn? (Phase 3)
+
+Every other number in this study measures speed. A practitioner choosing
+hardware will ask the obvious follow-up — *did the model actually train?* —
+and until this lane existed the honest answer was "we don't know".
+
+### 19.1 Why this is harder than it sounds on Neuron
+
+`NeuronSFTTrainer` has **no working `.evaluate()`** on this stack. The
+substitute is a zero-learning-rate forward pass over the held-out rows, reusing
+the same collator, packing, and compiled graph shapes as training, so it needs
+no recompile. Two things had to be discovered the hard way:
+
+1. The frozen pass produces **no gradients**, and ZeRO-1's gradient clipping
+   raises `IndexError` on the empty list. `max_grad_norm=0.0` disables the
+   clipping and the pass runs.
+2. The first receipt for that failure recorded only the exception *message*,
+   which was not enough to diagnose anything. Receipts now carry
+   `traceback.format_exc()`. That change is what turned an opaque failure into
+   a one-line fix.
+
+The held-out split uses a **fixed seed (20260805) applied before packing**, so
+both chips score the identical rows. Splitting after packing would leak
+training content into evaluation sequences, since packing concatenates
+examples.
+
+### 19.2 Result (Trainium1)
+
+| lane | model | held-out loss before | after | delta | eval wall |
+|---|---|---|---|---|---|
+| `llama31_lora_holdout` | Llama 3.1 8B | 2.1491 | **1.2510** | **−0.898** | 843.8 s |
+| `quality_smoke` | TinyLlama 1.1B | 1.7252 | **1.3962** | −0.329 | 291.7 s |
+
+The primary lane's held-out loss falls by **0.898 nats on rows the model never
+saw**. This converts "it ran fast" into "it trained correctly".
+
+Training throughput during the quality lane was 2933.3 tok/s against 2951.8
+tok/s published — a 0.6% difference, well inside the measured 2.4% noise floor,
+so **adding evaluation did not perturb the training measurement**. `eval_wall_s`
+is recorded separately from `train_wall_s` throughout, so no evaluation time
+contaminates any throughput number.
+
+### 19.3 What it does not license
+
+This supports exactly one claim: the fine-tune learned, on held-out data. It
+says nothing about instruction quality, MMLU, or any downstream benchmark.
+Dolly SFT is not designed to move those and evaluator noise would dominate the
+signal — which is why this study does not report them, on the explicit advice
+of every adversarial reviewer consulted.
+
+### 19.4 Status
+
+Trainium2 has not yet run this gate; it cannot run concurrently with the main
+suite because both contend for the same chip. The script is
+`extras/run_quality_gate.sh`, is BOX-parameterized, and uses the same split
+seed, so the two chips will be scored on byte-identical rows. **Until it runs,
+the quality claim is asymmetric and this section says so.**
+
+---
+
+## 20. Replication on a second physical chip (Phase 3)
+
+An instance failure produced an experiment we would not otherwise have run. The
+original Trainium2 box (`i-00e7b6117eac3a122`) was terminated after a host OOM
+and the ASG replaced it with `i-0a3f33482fa319c76`, which started with an empty
+results directory and re-walked the whole suite. The primary lane therefore ran
+twice, same code, same hyperparameters, on **two different physical Trainium2
+chips in the same availability zone**.
+
+Almost no published benchmark reports this. It is the difference between "we
+measured a chip" and "we measured *this* chip".
+
+| | original chip | replacement chip | delta |
+|---|---|---|---|
+| tokens/s (steady) | 3532.8 | 3618.0 | **+2.41%** |
+| median step | 4637.7 ms | 4528.5 ms | −2.35% |
+| train wall | 3322.1 s | 3220.1 s | −3.07% |
+| MFU (/667) | 25.85% | 26.47% | +0.62 pp |
+| compile | 19.4 s | 18.3 s | −5.7% |
+| **final loss** | **1.1489** | **1.1489** | **0.000000** |
+
+Two independent findings, and the second is the more interesting one:
+
+**Timing varies by 2.4% between physical chips.** That is the same magnitude as
+the noise floor measured *within* a single box across three seeds. So the
+2.4% figure is not an artifact of one machine — it holds across hardware, and
+it is the resolution limit for every throughput number in this study. Any claim
+of a difference smaller than ~2.4% is not supported by this methodology, and
+§15 should be read with that band applied.
+
+**The final loss is bit-identical across different silicon.** Not close —
+identical to four decimal places, the same 1.1489. Combined with the
+bit-identical results across three seeds on trn1, this establishes that the
+stack is deterministic *end to end*: same code and same configuration produce
+the same weights regardless of which physical chip executes them. That is a
+strong and genuinely useful property for reproducibility, and it is what makes
+§18's argument possible — because runs are bitwise reproducible, the trn1/trn2
+loss gap must come from the *configuration* difference (TP width), since
+nothing else varies.
+
+It also retires a possible objection to §18: someone could argue the trn1/trn2
+loss gap is just hardware variation. It is not. Hardware variation here is
+exactly zero.
