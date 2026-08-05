@@ -163,6 +163,82 @@ def render(cmp):
     return "\n".join(lines) + "\n"
 
 
+def end_to_end_fields(d):
+    """Return (tokens/s, MFU%, source) end-to-end, deriving when not recorded.
+
+    sft_lora.py only began emitting these on 2026-08-05T10:30Z. Every published
+    Phase-1/2 result predates that, and so does the trn1 rerun (its box pulled
+    at 08:42Z); trn2 launched afterwards and records them natively. Without a
+    derivation the report would show the column filled for one generation and
+    blank for the other -- the asymmetry that makes a comparison unusable. The
+    three inputs exist in every result JSON this project has ever written.
+    """
+    tps = d.get("tokens_per_s_end_to_end")
+    mfu = d.get("mfu_pct_end_to_end")
+    recorded = tps is not None
+    steps, tok = d.get("steps_recorded"), d.get("tokens_per_optimizer_step")
+    wall, fpt = d.get("train_wall_s"), d.get("flops_per_token")
+    peak = d.get("peak_bf16_flops")
+    if tps is None and steps and tok and wall:
+        tps = steps * tok / wall
+    if mfu is None and tps and fpt and peak:
+        mfu = 100.0 * fpt * tps / peak
+    return (round(tps, 1) if tps else None,
+            round(mfu, 3) if mfu else None,
+            "recorded" if recorded else "derived")
+
+
+def collect_trn1_reruns():
+    """The same-silicon, same-software control runs.
+
+    Not part of EXPECTED: these are a CONTROL, not a lane of the study, and a
+    box that never ran them is not incomplete. But leaving them uncollected
+    meant no claim about run-to-run variance or version confounding could be
+    regenerated from comparison.json, which is the file the report is supposed
+    to be reproducible from.
+
+    NOTE ON COMPARABILITY: seed 42 reproduces the published configuration, but
+    its mfu_pct is NOT comparable to the published one -- the denominator moved
+    from 210e12 to 190e12 on 2026-08-05. Compare tokens_per_s or tflops, which
+    are denominator-free. Both denominators are carried here so the ratio can be
+    recomputed either way.
+    """
+    root = os.path.join(ROOT, "trn1", "results", "rerun")
+    if not os.path.isdir(root):
+        return None
+    out = {"note": ("same trn1 box, same software (version_delta identical), "
+                    "warm v2 NEFF cache. Compare tokens_per_s / tflops, NOT "
+                    "mfu_pct: the peak denominator changed after publication."),
+           "lanes": {}, "dropped_no_telemetry": []}
+    for name in ("rerun_seed42", "rerun_seed43", "rerun_seed44"):
+        d = load_json(os.path.join(root, name + ".json"))
+        if d is None:
+            continue
+        tel = summarize.load_telemetry(os.path.join(root, name + ".telemetry.csv"))
+        if tel is None:
+            out["dropped_no_telemetry"].append(name)   # invariant 1
+            continue
+        e2e_tps, e2e_mfu, e2e_src = end_to_end_fields(d)
+        out["lanes"][name] = {
+            "tokens_per_s": d.get("tokens_per_s"),
+            "tflops": d.get("tflops"),
+            "median_step_ms": d.get("median_step_ms"),
+            "train_wall_s": d.get("train_wall_s"),
+            "mfu_pct": d.get("mfu_pct"),
+            "peak_bf16_flops": d.get("peak_bf16_flops"),
+            "mfu_pct_alt": d.get("mfu_pct_alt"),
+            "peak_bf16_flops_alt": d.get("peak_bf16_flops_alt"),
+            "tokens_per_s_end_to_end": e2e_tps,
+            "mfu_pct_end_to_end": e2e_mfu,
+            "end_to_end_source": e2e_src,
+            "telemetry": tel,
+        }
+    version_delta = load_json(os.path.join(root, "version_delta.json"))
+    if version_delta is not None:
+        out["version_delta"] = version_delta
+    return out or None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--strict", action="store_true",
@@ -172,6 +248,7 @@ def main():
     cmp, dropped = {"captured": datetime.now(timezone.utc)
                     .strftime("%Y-%m-%dT%H:%M:%SZ")}, 0
     missing = []
+    recorded_failures = []
     for box in BOXES:
         # A box whose results/ has never been populated is not yet part of the
         # study; reporting six "missing" lanes for it would bury real gaps.
@@ -180,13 +257,30 @@ def main():
         cmp[box], drp = collect_box(box)
         dropped += drp
         for rel in EXPECTED[box]:
-            if not os.path.exists(os.path.join(ROOT, box, "results", rel)) \
-               and not os.path.exists(os.path.join(
-                   ROOT, box, "results", os.path.dirname(rel),
-                   "load_failure.json")):
+            base = os.path.join(ROOT, box, "results")
+            # A lane is ACCOUNTED FOR if it produced a result, a per-lane
+            # failure receipt, or (for serving sweeps) a directory-level
+            # load_failure. Only the per-lane receipt was missing here, so a
+            # recorded failure such as compile/llama31_train.failure.json was
+            # reported as a MISSING lane -- making `make report` exit nonzero
+            # against a suite the report calls complete. A recorded failure is
+            # an outcome, not a gap; that is the whole point of receipts.
+            candidates = [
+                os.path.join(base, rel),
+                os.path.join(base, rel[:-5] + ".failure.json"),
+                os.path.join(base, os.path.dirname(rel), "load_failure.json"),
+            ]
+            if not any(os.path.exists(c) for c in candidates):
                 missing.append(f"{box}/{rel}")
+            elif not os.path.exists(candidates[0]):
+                recorded_failures.append(f"{box}/{rel}")
     cmp["dropped_no_telemetry"] = dropped
     cmp["missing_expected"] = missing
+    # Distinct from missing: the lane ran and its failure was captured.
+    cmp["recorded_failures"] = recorded_failures
+    reruns = collect_trn1_reruns()
+    if reruns:
+        cmp["trn1_reruns"] = reruns
 
     os.makedirs(HERE, exist_ok=True)
     with open(os.path.join(HERE, "comparison.json"), "w") as fh:

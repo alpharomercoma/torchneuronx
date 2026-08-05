@@ -1,5 +1,5 @@
 {
- "captured": "2026-08-03T17:29:38Z",
+ "captured": "2026-08-05T11:02:48Z",
  "dropped_no_telemetry": 5,
  "inf2": {
   "failures": {
@@ -1599,7 +1599,17 @@
    }
   }
  },
- "missing_expected": [],
+ "missing_expected": [
+  "trn2/train/smoke_tinyllama.json",
+  "trn2/compile/llama31_train.json",
+  "trn2/train/llama31_lora.json",
+  "trn2/train/qwen3_lora.json",
+  "trn2/train/merge_llama31.json",
+  "trn2/cpu/cpu.json"
+ ],
+ "recorded_failures": [
+  "inf2/serve/llama31_base_long/grid.json"
+ ],
  "trn1": {
   "failures": {},
   "lanes": {
@@ -9846,6 +9856,11 @@
     }
    }
   },
+  "serve": {}
+ },
+ "trn2": {
+  "failures": {},
+  "lanes": {},
   "serve": {}
  }
 }

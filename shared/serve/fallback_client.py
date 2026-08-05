@@ -78,17 +78,47 @@ def compute_goodput(results, duration_s, slo_ttft_ms, slo_tpot_ms):
 
     The SLO thresholds are declared in the result JSON, never implied --
     goodput without its SLO definition is a number with no meaning.
+
+    tpot is None whenever a request produced <2 tokens, and the established
+    convention here -- pinned by tests and behind every published inf2 number --
+    is that an undefined TPOT PASSES. That is defensible for the ordinary grids,
+    where such requests are a small minority.
+
+    It breaks completely in the prefill grid. OSL=1 makes EVERY request
+    tpot=None, so a two-SLO goodput silently degenerates into a TTFT-only one
+    and reports full attainment against a decode SLO that was never evaluated
+    even once. So the pass-through convention is kept intact (published numbers
+    are not restated), and the DEGENERATE case -- no evaluable TPOT at all -- is
+    reported as null with an explicit reason instead of a confident number.
     """
+    total = len(results)
+    undefined_tpot = sum(1 for r in results if r["tpot"] is None)
+    tpot_evaluable = total - undefined_tpot
+
     good = [r for r in results
             if r["ttft"] <= slo_ttft_ms
             and (r["tpot"] is None or r["tpot"] <= slo_tpot_ms)]
-    total = len(results)
+    ttft_only_good = [r for r in results if r["ttft"] <= slo_ttft_ms]
+
+    both_slos_meaningful = tpot_evaluable > 0
     return {
         "slo_ttft_ms": slo_ttft_ms,
         "slo_tpot_ms": slo_tpot_ms,
-        "slo_attainment_pct": round(100.0 * len(good) / total, 2) if total else None,
-        "goodput_output_tokens_per_s":
-            round(sum(r["ntok"] for r in good) / duration_s, 2) if duration_s else 0,
+        "requests_with_undefined_tpot": undefined_tpot,
+        "slo_attainment_pct": (
+            round(100.0 * len(good) / total, 2)
+            if total and both_slos_meaningful else None),
+        "goodput_output_tokens_per_s": (
+            round(sum(r["ntok"] for r in good) / duration_s, 2)
+            if duration_s and both_slos_meaningful else None),
+        # Always defined, and the only meaningful attainment figure when every
+        # request produced a single token (the prefill grid).
+        "ttft_only_attainment_pct":
+            round(100.0 * len(ttft_only_good) / total, 2) if total else None,
+        "goodput_note": (
+            None if both_slos_meaningful else
+            "every request produced <2 output tokens, so TPOT is undefined; "
+            "two-SLO goodput is null by design. Use ttft_only_attainment_pct."),
     }
 
 
