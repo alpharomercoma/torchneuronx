@@ -297,3 +297,50 @@ Honest expectation, recorded before the run: it probably still fails. Compile
 host memory is the binding constraint and 64 GiB of swap against a 124 GiB
 shortfall is a cushion, not a fix. A clean receipt with the box intact is the
 realistic good outcome; a pass is the upside.
+
+## THE CACHED-FAILURE INCIDENT (2026-08-05 20:40Z) — read this before trusting any ladder
+
+The trn1 batch ladder reported four rungs. **Three of them were not
+measurements.**
+
+What happened: `mb2_seq4096` failed to compile with `NCC_EXTP003` — the
+compiler's instruction-count limit, 2,064,384 generated against a stated limit
+of 150,000. `mb4` and `mb8` then reported the **identical** instruction count.
+Graph size must grow with micro-batch, so identical counts are impossible if
+each rung compiled its own graph. They reused the cached failure. Neuron
+caching failed compiles is a gotcha already recorded in this very document, and
+the ladder walked straight into it.
+
+Left unchecked, this would have been published as a clean finding — "trn1 walls
+at micro-batch 2 on the compiler limit" — resting on two fabricated data points.
+
+Fixes, all committed (`21c333f`):
+- `export NEURON_CC_FLAGS="... --retry_failed_compilation"` so each rung
+  compiles its own graph.
+- Every failure receipt now records `compiler_instructions`. That number is the
+  audit trail: it MUST grow with micro-batch.
+- The summary sets `"INVALID"` on the whole ladder if two or more failed rungs
+  report the same instruction count, and prints it loudly.
+
+The original artifacts were moved to `trn1/results/batch_ladder/invalidated/`,
+not deleted, and the three rungs re-run under unit `np-batchladder2`.
+
+**The generalisable lesson:** a failure mode that produces IDENTICAL output
+across different inputs is not a result, it is a cache. Any lane that sweeps a
+parameter must record a quantity that is expected to CHANGE with that
+parameter, or a cache hit is indistinguishable from a measurement.
+
+⚠️ **trn2's stage-2 ladder is armed with the DEFECTIVE script.** The corrected
+file is in S3 at `code/extras/run_batch_ladder.sh`; it must be copied to
+`/opt/np/repo/extras/run_batch_ladder.sh` on trn2 before `np-followon2` starts,
+or trn2 will reproduce the identical invalid result. Copy the SINGLE FILE — do
+not run `pull_code.sh`, because the three follow-on scripts are executing and
+bash reads a running script lazily by byte offset.
+
+## AWS CREDENTIALS EXPIRED 20:43Z
+
+The laptop's token expired. **Nothing is at risk.** Both boxes run on their own
+IAM instance roles: trn2's four-stage chain, trn1's ladder re-run, and the
+on-box deadline pusher are all independent of the laptop. Everything measured
+is already in S3. Refresh with `aws login`; the only blocked action is the trn2
+single-file copy above.
