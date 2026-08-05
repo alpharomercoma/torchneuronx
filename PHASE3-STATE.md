@@ -38,8 +38,20 @@ billing, recent HALT (last 40 log lines only), OOM-kill in last 11 min, invalid
 instance id (= ASG replaced the box again), expired creds. Distinguishes
 "unreachable" from "down".
 
-`bvooj0elr` — trn2 liveness, every 10 min via SSM. **Replaces `bifw2s4jt`,
-which was stopped as defective** (monitor defect #6, below).
+`bvl1vpy21` — trn2 liveness, every 10 min via SSM. **Replaces `bifw2s4jt`,
+which was stopped as defective** (monitor defect #6, below). Reports progress
+whenever the result-JSON count changes; alarms only on suite-not-running, no
+result-dir write for 15 min, kernel OOM, or a HALTED banner.
+
+Monitor defect #7 (same session, caught in 4 min): the first replacement
+(`bvooj0elr`) embedded a multi-line probe into the SSM `--parameters` JSON with
+a `sed`/`tr` escaping trick that produced malformed JSON. `send-command`
+returned nothing, and an empty reply was folded into the same branch as
+`InvalidInstanceId` — so a **quoting bug in my own monitor** was reported as
+"the ASG replaced the box". Fixed twice over: the probe is now a single line
+that needs no escaping, and empty/garbled replies are reported as UNREACHABLE,
+never as a claim about the box. This is the third time this session that a
+monitor's own failure was rendered as a box failure.
 
 ### Monitor defect #6 — S3/driver-log freshness is not a liveness signal
 

@@ -1,0 +1,5 @@
+python3 -c "import json;d=json.load(open(\"trn2/results/extras/ctx_16384.failure.json\"));print(\"receipt valid:\",d[\"failure_mode\"])"
+systemctl reset-failed np-suite.service 2>/dev/null || true
+systemd-run --unit=np-suite --collect --property=Type=simple --property=TimeoutStartSec=infinity --working-directory=/opt/np/repo /bin/bash extras/run_phase3_trn2.sh
+sleep 12
+systemctl is-active np-suite.service

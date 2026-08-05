@@ -557,3 +557,96 @@ running on a server that starts.
       cause is TP=2 vs TP=4 changing collective accumulation order -- the same
       root as the `params_trainable` discrepancy in 15.x.
     - Repeating trn2 at seeds 43/44 is therefore redundant.
+
+---
+
+## 18. Do the two chips take the same training path? (Phase 3)
+
+Section 15 shows Trainium2 is faster. The quality gate (§19) shows the
+fine-tune learned. Neither answers a third question a reviewer will ask
+immediately: the two chips ended at **different final losses** — 1.2063 on
+trn1, 1.1489 on trn2 — so are they even training the same model?
+
+This section answers it from data already on disk. `loss_trace` is recorded in
+every result JSON (645 entries for the primary lane), so the comparison costs
+no box time, no compile, and no new run. `analysis/loss_overlay.py` aligns the
+two traces **on step number**, never on list position, and reports how the gap
+evolves.
+
+### 18.1 Why the gap cannot be seed noise
+
+Three trn1 runs at seeds 42/43/44 produced **bit-identical** loss (tail-50 mean
+1.102654, stdev 0.0). `--seed` does nothing on this stack because packing pins
+the data order (§16, correction 6). The trajectory is deterministic, so a
+0.0574 difference between the boxes is *structural*. Something about the two
+configurations genuinely differs.
+
+The candidate: the boxes run at different tensor-parallel widths. trn1 is TP=2
+(one Trainium1, two NeuronCore-v2). trn2 is TP=4 (one Trainium2, eight
+NeuronCore-v3 at LNC=2). TP width sets the order in which partial sums are
+reduced across cores, and floating-point addition is not associative — so
+identical mathematics, executed in a different reduction order, produces
+slightly different bits, and gradient descent amplifies the difference over
+hundreds of steps.
+
+### 18.2 The divergence shape distinguishes the hypotheses
+
+Accumulation order and "a materially different model" predict *different
+shapes*, which is what makes this diagnostic rather than decorative:
+
+- **Accumulation order** → curves indistinguishable early, gap growing slowly
+  and monotonically as rounding differences compound.
+- **A different model** (wrong weights, wrong data, a broken adapter) → an
+  early split or a constant offset from the first steps.
+
+Measured, primary lane, Llama 3.1 8B, 645 steps:
+
+| window | steps | trn1 mean | trn2 mean | mean abs delta |
+|---|---|---|---|---|
+| first 10% (post-warmup) | 11–64 | 1.3848 | 1.3858 | **0.0080** |
+| middle | 258–387 | 1.1772 | 1.1627 | 0.0145 |
+| tail 50 | 596–645 | 1.1027 | 1.0748 | **0.0278** |
+
+Pearson r = **0.996923** across all 645 steps. Mean absolute delta 0.0164;
+largest single-step delta 0.0988 at step 62, early and transient. Sustained
+divergence — the first step after which the gap never again falls below the
+threshold — arrives at **step 544 of 645** for 0.01, and only at the final step
+for 0.05.
+
+That is the accumulation-order shape exactly: the gap **grows 3.5× from the
+first tenth of training to the last fifty steps**, and the curves are
+statistically inseparable early.
+
+### 18.3 It replicates on a second architecture
+
+Qwen3 8B, 624 steps, independently:
+
+| window | trn1 mean | trn2 mean | mean abs delta |
+|---|---|---|---|
+| first 10% | 1.4335 | 1.4351 | 0.0088 |
+| middle | 1.2817 | 1.2723 | 0.0094 |
+| tail 50 | 1.2209 | 1.1991 | 0.0218 |
+
+Pearson r = 0.997309, final gap 0.0252, sustained >0.05 divergence **never
+occurs**. Same monotone growth, same early agreement, a different model family.
+One lane showing this pattern is an anecdote; two independent architectures
+showing it is a property of the configuration difference.
+
+### 18.4 What this does and does not license
+
+**Supports:** the two chips train the same model along the same trajectory, and
+the final-loss gap is consistent with tensor-parallel reduction order rather
+than a defect in either lane. It is the same root cause as the
+`params_trainable` discrepancy in §16.
+
+**Does not support:** any claim that one chip trains a *better* model. Loss on
+the training distribution is not quality, and a 0.0574 difference is far too
+small to interpret as such. Whether the fine-tune actually learned is the
+quality gate's question, answered on held-out rows with a shared split seed.
+
+**Does not isolate the variable.** TP width is confounded with the chip itself:
+we cannot run trn1 at TP=4 (it has two cores) and did not run trn2 at TP=2. The
+hypothesis is consistent with every measurement we have and no other
+explanation fits the shape, but it remains inference from a correlated pair,
+not a controlled experiment. Running trn2 at TP=2 would settle it and is
+recorded here as the obvious follow-up.
