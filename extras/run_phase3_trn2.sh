@@ -141,6 +141,15 @@ bash extras/run_opportunistic_trn2.sh || echo "opportunistic pass ended early (b
 echo "############ PHASE3-TRN2: frontier lanes (what trn1 cannot do) ############"
 bash extras/run_frontier_trn2.sh || echo "frontier pass ended early (by design or receipt)"
 
+# MAXUTIL runs AFTER the efficiency sweeps because it selects its config FROM
+# them. Lane 4 answers "same workload, different chip" (1.20x, only 34% of the
+# 3.51x peak ratio -- the chip is starved at micro-batch 1). This answers "what
+# can the chip actually do", at FULL length so it is comparable rather than
+# extrapolated from a 100-step probe. Both numbers go in the report; neither
+# replaces the other, and this never touches lane 4's artifacts.
+echo "############ PHASE3-TRN2: max-utilisation lane (best-effort config) ############"
+bash extras/run_maxutil_trn2.sh || echo "maxutil ended early (by design or receipt)"
+
 echo "############ PHASE3-TRN2: roofline analysis (no device time) ############"
 "${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}/bin/python" analysis/roofline.py \
   --roots trn2/results --out trn2/results/roofline.json \
