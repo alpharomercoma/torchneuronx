@@ -358,3 +358,48 @@ trn2 ladder fix the moment they return, then exits. It reports explicitly
 whether it landed the fix in time (`COPIED`) or arrived after the ladder had
 already started with the defective script (`LADDER_ALREADY_RUNNING`), so a
 late arrival cannot be mistaken for a success.
+
+## QUEUE RE-ORDER AND THE EADDRINUSE SELF-INFLICTED FAILURE (2026-08-05 22:50–23:00Z)
+
+**Situation.** The trn2 main suite printed `PHASE3 TRN2 ALL COMPLETE` at ~22:40Z
+— every primary lane, context ladder, ckpt timing and NKI banked, 27 result
+JSONs in S3. It then began three OPTIONAL passes back to back (opportunistic →
+frontier, which includes a 32B model → maxutil) with the **quality gate queued
+behind all of them**. The gate refuses to start with under 75 min left, so the
+one remaining asymmetry between the chips could have been silently skipped.
+The lane in flight was `llama31_lora_seed43`, which would spend ~55 min of a
+non-refundable window reproducing a bit-identical number (`--seed` is a no-op).
+
+**Action.** Stopped the optional drivers and promoted the quality gate.
+Note: killing `run_phase3_trn2.sh` does NOT stop its children —
+`run_frontier_trn2.sh` survived and had already launched a 30B MoE lane. Each
+driver had to be killed by name.
+
+**The self-inflicted failure.** The kill left a torch distributed rendezvous
+holding **TCP port 29500**. The quality gate and the isolation smoke both
+started seconds later and both died instantly with `EADDRINUSE`. Those two
+receipts say NOTHING about Trainium2 — they are collateral from the kill. Left
+in place, `have()` would treat them as recorded outcomes and never re-run
+either lane, and the window would have ended with a "trn2 quality gate failed"
+receipt that was purely my doing.
+
+**Recovery.** `extras/run_trn2_recover.sh`, unit `np-recover`, replaces stages
+3 and 4 (which were stopped). It:
+- moves the two EADDRINUSE receipts to `invalidated/` with the reason logged,
+  so the lanes actually re-run;
+- **waits for port 29500 as well as the chip before every lane** — the specific
+  bug that cost the first attempt;
+- runs everything remaining in ONE ordered script instead of separate units
+  that each knew about only some of the others and could race:
+  **quality gate → isolation → ctx_16384 → optional passes**, each with its own
+  deadline guard.
+
+**Lessons.**
+- Killing a driver does not kill the lanes it launched, nor free their sockets.
+  A process can be gone while its listening socket is not.
+- `have()` cannot distinguish a real failure from an artifact. Any receipt
+  written during a forced shutdown must be reviewed before it is trusted, and
+  the trigger for review is knowing you caused a shutdown.
+- Chained units that each wait on a subset of the others will eventually race.
+  One ordered script with explicit preconditions is easier to reason about than
+  four units with partial knowledge of each other.
