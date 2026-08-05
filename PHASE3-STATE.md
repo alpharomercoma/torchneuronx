@@ -38,10 +38,15 @@ ASG `NeuronPipelinesTrainium2-Trn2AsgASG56F8472A-WzMFVvw2ikkW`, launch template 
 
 ## Active monitors (re-create after compaction if lost)
 
-`b88x4hqkd` — polls both boxes every 10 min via SSM. Alerts on: SUITE DOWN and
-billing, recent HALT (last 40 log lines only), OOM-kill in last 11 min, invalid
-instance id (= ASG replaced the box again), expired creds. Distinguishes
-"unreachable" from "down".
+`buydk964k` — trn1 batch ladder: rung count, unit state, stall detection.
+Exits (with a final event) when the ladder finishes.
+
+**`b88x4hqkd` was RETIRED at 20:37Z.** It began emitting garbled fields
+(`SUITE-UP | 15 | 0 json`) because its trn1 probe still read
+`results/quality/` and a stale lane-tag pattern. Nothing was wrong with either
+box. A monitor that reports numbers it cannot justify is worse than no monitor:
+every false alarm this session came from one, so it was retired rather than
+patched, and its trn2 duties were already covered by `bvl1vpy21`.
 
 `bvl1vpy21` — trn2 liveness, every 10 min via SSM. **Replaces `bifw2s4jt`,
 which was stopped as defective** (monitor defect #6, below). Reports progress
@@ -161,6 +166,7 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
 | `np-suite` | `run_phase3_trn2.sh` | main Phase-3 suite |
 | `np-followon` | `run_trn2_followon.sh` | quality gate, then dataloader isolation |
 | `np-followon2` | `run_trn2_followon2.sh` | batch ladder |
+| `np-followon3` | `run_trn2_followon3.sh` | deliberate `ctx_16384` retry, LAST |
 
 Each stage waits for the previous to release the chip and refuses to START
 anything it cannot FINISH before the 10:00Z hard stop — a lane terminated
@@ -261,3 +267,33 @@ pi panel: glm-5.2 and kimi-k3 answered. Both independently rejected MLPerf,
 matching codex. Both proposed perf-per-watt, which is impossible here (power
 telemetry empty). glm-5.2's sharpest point: explicitly declare the FP8-training
 gap as headroom an H100 could exploit and we cannot.
+
+## THE ctx_16384 DECISION (2026-08-05 20:29Z)
+
+`ctx_16384` host-OOM'd on the ORIGINAL trn2 instance, took the suite down with
+it, and the box was ultimately replaced. The replacement box started with an
+empty results dir, so `have()` had no receipt to skip on and the ladder was
+about to re-run it **ahead of the quality gate** — the one remaining asymmetry
+between the chips.
+
+Three actions, ~10 min before it would have started:
+
+1. **64 GiB swapfile** added at `/scratch/swapfile` (`swapon --show` confirms).
+   trn1 has always had one; removing it from trn2's user-data is implicated in
+   the original OOM. Swap does not make 16384 fit — it makes an overrun SLOW
+   rather than FATAL, which is the difference between a receipt and a lost
+   instance.
+2. **A `deferred` receipt**, not a fabricated failure. `have()` only needs a
+   non-empty `ctx_16384.failure.json`; writing `"status":"failed"` for a lane
+   this box never attempted would be inventing a measurement. The receipt says
+   `deferred`, gives the scheduling reason, points at the real prior failure in
+   S3, and states in its own text that it is not a measurement. Verified
+   working: the driver logged `skip ctx 16384 (recorded)` and proceeded to C4.
+3. **Stage 3** (`np-followon3`) retries it deliberately, last, after everything
+   of value is in S3, with a hard stop an hour earlier than the other stages so
+   the deadline pusher keeps a clear window if the box goes down.
+
+Honest expectation, recorded before the run: it probably still fails. Compile
+host memory is the binding constraint and 64 GiB of swap against a 124 GiB
+shortfall is a cushion, not a fix. A clean receipt with the box intact is the
+realistic good outcome; a pass is the upside.
