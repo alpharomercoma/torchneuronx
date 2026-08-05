@@ -31,8 +31,9 @@ ASG `NeuronPipelinesTrainium2-Trn2AsgASG56F8472A-WzMFVvw2ikkW`, launch template 
   `trn2/results/`. **This is a second independent sample of the primary lane on
   a different physical Trainium2** — compare against the published JSON in S3
   for cross-instance variance, which no other lane in this study measures.
-- **trn1**: running `run_dataloader_isolation.sh` under systemd unit
-  `np-isolation` (log `/opt/np/isolation_trn1.log`). Free, on credits.
+- **trn1**: isolation DONE (null result, §21). Now running
+  `run_batch_ladder.sh` under systemd unit `np-batchladder`
+  (log `/opt/np/batchladder_trn1.log`). Free, on credits.
 - **inf2**: idle, complete.
 
 ## Active monitors (re-create after compaction if lost)
@@ -143,7 +144,31 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
    TP=2 is the controlled follow-up.
 4. **maxutil lane** — queued in `run_phase3_trn2.sh`, selects its config from
    the efficiency sweeps. Needs those sweeps to complete first.
-5. Batch-size sweep at seq 4096 (E3 currently does seq 2048).
+5. ~~Batch-size sweep at seq 4096~~ — **BUILT AND RUNNING**,
+   `extras/run_batch_ladder.sh`, micro-batch 1/2/4/8 at seq 4096, 30 steps per
+   rung, global batch held constant by halving grad-accum. Directly tests §21's
+   surviving explanation (trn2 is starved, not slowed). Running on trn1 now;
+   armed on trn2 as stage 2 (`np-followon2`). Prediction recorded in the script
+   header BEFORE the run: trn2 should keep gaining past the rung where trn1
+   stops, and trn1 should hit a device-memory wall first (16 vs 24 GiB per
+   logical core). Both chips stalling at the same rung would falsify the
+   occupancy story.
+
+## TRN2 AUTOMATION CHAIN (no laptop in the critical path)
+
+| unit | script | runs |
+|---|---|---|
+| `np-suite` | `run_phase3_trn2.sh` | main Phase-3 suite |
+| `np-followon` | `run_trn2_followon.sh` | quality gate, then dataloader isolation |
+| `np-followon2` | `run_trn2_followon2.sh` | batch ladder |
+
+Each stage waits for the previous to release the chip and refuses to START
+anything it cannot FINISH before the 10:00Z hard stop — a lane terminated
+mid-run yields no artifact and burns window another lane could have used.
+
+**Do NOT edit a script that is currently executing on the box.** bash reads
+lazily by byte offset and will resume at a stale offset. That is why stage 2 is
+a separate file rather than three more lines in stage 1.
 
 ## NEW RESULTS THIS SESSION (post-compaction)
 
