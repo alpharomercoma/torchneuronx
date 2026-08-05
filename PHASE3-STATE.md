@@ -344,3 +344,17 @@ IAM instance roles: trn2's four-stage chain, trn1's ladder re-run, and the
 on-box deadline pusher are all independent of the laptop. Everything measured
 is already in S3. Refresh with `aws login`; the only blocked action is the trn2
 single-file copy above.
+
+### Monitors during the credential outage (20:53Z)
+
+Stopped `bvl1vpy21` (trn2 liveness) and `buydk964k` (trn1 ladder) — with no
+credentials they could only repeat "UNREACHABLE" every 10 minutes, which is
+noise, not information. **Both must be restarted after `aws login`**; their
+full definitions are in the git history of this file and in the commits around
+`c729553`.
+
+`bsxp0xm77` is still running: it polls for valid credentials and applies the
+trn2 ladder fix the moment they return, then exits. It reports explicitly
+whether it landed the fix in time (`COPIED`) or arrived after the ladder had
+already started with the defective script (`LADDER_ALREADY_RUNNING`), so a
+late arrival cannot be mistaken for a success.
