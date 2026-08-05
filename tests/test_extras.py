@@ -134,5 +134,5 @@ def test_batch_ladder_records_the_compiler_instruction_count():
 
 def test_batch_ladder_invalidates_itself_on_identical_failure_counts():
     src = _batch_ladder_src()
-    assert 'summary["INVALID"]' in src
+    assert 'summary["SUSPECT"]' in src
     assert "len(set(counts)) == 1" in src

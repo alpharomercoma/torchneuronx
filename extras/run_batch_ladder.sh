@@ -159,6 +159,19 @@ for mb in (1, 2, 4, 8):
                       "compiler_instructions": d.get("compiler_instructions"),
                       "reason": r[:160]})
 summary = {"box": box, "seq_len": int(seq), "rungs": rungs}
+# Identical compiler instruction counts across failed rungs mean those rungs did
+# not compile independently -- graph size must change with micro-batch. This runs
+# BEFORE the summary is written; computing it afterwards (as the first version of
+# this check did) sets the flag on an object nobody reads.
+counts = [r.get("compiler_instructions") for r in rungs
+          if r.get("status") == "failed" and r.get("compiler_instructions")]
+if len(counts) > 1 and len(set(counts)) == 1:
+    summary["SUSPECT"] = ("identical compiler instruction count across failed rungs "
+                          f"({counts[0]}). Either the rungs reused a cached failure, "
+                          "or the graph that exceeds the limit is not the one that "
+                          "scales with micro-batch. Do NOT report this ladder as "
+                          "locating a batch-size wall without separating the two.")
+    print(f"  *** SUSPECT LADDER: {summary['SUSPECT']} ***")
 done = [r for r in rungs if r.get("tokens_per_s")]
 if done:
     best = max(done, key=lambda r: r["tokens_per_s"])
@@ -167,17 +180,6 @@ if done:
     summary["uplift_over_mb1"] = round(best["tokens_per_s"] / done[0]["tokens_per_s"], 4)
     summary["highest_rung_that_ran"] = done[-1]["micro_batch"]
 (out / "batch_ladder_summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-# Guard the cached-failure trap in the summary too: if two or more failed rungs
-# report the SAME compiler instruction count, they did not compile independently
-# and the ladder must not be read as locating a wall.
-counts = [r.get("compiler_instructions") for r in rungs
-          if r.get("status") == "failed" and r.get("compiler_instructions")]
-if len(counts) > 1 and len(set(counts)) == 1:
-    summary["INVALID"] = ("identical compiler instruction count across failed rungs "
-                          f"({counts[0]}) -- rungs reused a cached failure and were "
-                          "not independently compiled; do not report")
-    print(f"  *** INVALID LADDER: {summary['INVALID']} ***")
-
 for r in rungs:
     if r.get("tokens_per_s"):
         print(f"  mb{r['micro_batch']}: {r['tokens_per_s']} tok/s, MFU {r.get('mfu_pct')}%"
