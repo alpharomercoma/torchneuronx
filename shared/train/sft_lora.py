@@ -396,6 +396,45 @@ def lora_flops_per_token(params_trainable, params_frozen):
     return 6.0 * params_trainable + 4.0 * params_frozen
 
 
+def attention_flops_per_token(n_layers, hidden_size, seq_len,
+                              gradient_checkpointing=False):
+    """Sequence-dependent attention FLOPs per token -- the term 6N omits.
+
+    The parameter-count formula (6*trainable + 4*frozen) covers every GEMM
+    whose cost scales with WEIGHTS. It does not cover the two matmuls whose
+    cost scales with SEQUENCE LENGTH: scores = Q @ K^T and context = A @ V.
+    Per token per layer those are 2*seq*d each, so forward is
+
+        4 * n_layers * seq_len * hidden_size
+
+    and training is ~3x forward (backward is ~2x), plus another forward when
+    activations are recomputed.
+
+    WHY THIS MATTERS HERE, AND ONLY HERE
+    ------------------------------------
+    At seq 2048 on Llama 3.1 8B this is ~6.6% of the parameter term -- small
+    enough that Phase 1/2 ignoring it was defensible. It grows LINEARLY with
+    sequence length while the parameter term stays flat:
+
+        seq  2048   ~7%      seq  8192   ~27%
+        seq  4096   ~13%     seq 16384   ~53%
+
+    The context ladder is the headline of Phase 3, so by seq 16384 the
+    published convention would understate FLOPs -- and therefore MFU -- by
+    roughly a third. This is reported as an ADDITIONAL field rather than folded
+    into flops_per_token, because changing the primary number would silently
+    restate every Phase-1/2 result and destroy comparability with trn1.
+
+    GQA note: grouped-query attention shrinks the K/V PROJECTIONS (already in
+    the parameter term) but not the score/context matmuls, which still run at
+    full head width. So this term is unaffected by the KV-head count.
+    """
+    if not (n_layers and hidden_size and seq_len):
+        return None
+    fwd = 4.0 * n_layers * seq_len * hidden_size
+    return fwd * (4.0 if gradient_checkpointing else 3.0)
+
+
 def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
                        peak_flops=PEAK_BF16_FLOPS,
                        gradient_checkpointing=False,

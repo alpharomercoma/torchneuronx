@@ -27,6 +27,16 @@ case "$CONFIG" in
   short) SHAPES="1024:1024";          CONC="1 4 8 16 32" ;;
   long)  SHAPES="1024:8192 8192:1024"; CONC="1 4 8" ;;
   smoke) SHAPES="128:128";            CONC="1" ;;
+  # PREFILL-ISOLATING: one output token, so end-to-end latency is essentially
+  # the prefill pass and TTFT is not contaminated by any decode step. Sweeping
+  # input length gives prefill throughput as a function of context -- the
+  # compute-bound half of inference, which the existing short/long grids
+  # conflate with decode.
+  prefill) SHAPES="256:1 512:1 1024:1 2048:1 4096:1 8192:1"; CONC="1 4" ;;
+  # DECODE-ISOLATING: tiny prompt, long generation, so nearly all the work is
+  # single-token decode steps -- the memory-bound half. TPOT here is the clean
+  # per-token decode cost; in the short/long grids it is diluted by prefill.
+  decode) SHAPES="128:2048";          CONC="1 4 8" ;;
   *) echo "unknown config '$CONFIG'" >&2; exit 2 ;;
 esac
 

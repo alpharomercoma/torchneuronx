@@ -43,6 +43,36 @@ export NP_TELEMETRY_CORES="$NPROC"
 TP_ARGS=(--device-profile trn2 --nproc-per-node "$NPROC" --tensor-parallel-size "$TP")
 echo "trn2 parallelism (from tp_probe.json): LNC=$LNC world=$NPROC TP=$TP"
 
+# A 20-step TinyLlama rung proves the collective works at 1.1B. It does NOT
+# prove Llama 3.1 8B compiles or fits at that TP -- different graph, different
+# HBM profile, different collective volume. Record an explicit 8B preflight
+# receipt so the report can say which claim the probe actually supports.
+if [ ! -s "$OUT/tp_preflight_8b.json" ] && [ ! -s "$OUT/tp_preflight_8b.failure.json" ]; then
+  step "TP preflight at 8B (the probe validated 1.1B, not this)"
+  "$PY" "$TELEM" --out "$OUT/tp_preflight_8b.telemetry.csv" -- \
+    "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
+      --model meta-llama/Llama-3.1-8B-Instruct --tag tp_preflight_8b \
+      "${TP_ARGS[@]}" --max-steps 20 --out "$OUT/tp_preflight_8b.json" \
+    > "$OUT/tp_preflight_8b.log" 2>&1 || {
+      REASON=$(grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}" "$OUT/tp_preflight_8b.log" | head -1 | sed "s/\"/'/g")
+      [ -n "$REASON" ] || REASON=$(tail -c 300 "$OUT/tp_preflight_8b.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"tag":"tp_preflight_8b","lnc":%s,"nproc":%s,"tp":%s,"status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$LNC" "$NPROC" "$TP" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        > "$OUT/tp_preflight_8b.failure.json"
+      echo "  8B preflight FAILED at TP=$TP (receipt)"; }
+fi
+
+# If the ladder fell back to half the chip, the generational speed comparison
+# is NOT publishable from these lanes -- it would be "a half-fed Trainium2".
+if [ "$NPROC" -lt 4 ]; then
+  echo "WARNING: world=$NPROC < 4 -- HALF THE CHIP IS IDLE."
+  echo "         Lanes still run and are still receipts, but the trn1-vs-trn2"
+  echo "         headline must be labelled an unsupported-configuration result,"
+  echo "         not a one-chip generational comparison."
+  printf '{"full_chip":false,"world":%s,"tp":%s,"note":"half-chip configuration; not the generational headline","captured":"%s"}\n' \
+    "$NPROC" "$TP" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/half_chip_warning.json"
+fi
+
 step "B4: training context ladder (20-step probes) -- 24 GiB/core vs trn1's 16"
 for SL in 4096 8192 16384; do
   T="$OUT/ctx_${SL}.json"

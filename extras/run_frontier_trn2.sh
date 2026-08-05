@@ -104,23 +104,27 @@ echo "frontier lanes: LNC=$LNC world=$NPROC TP=$TP, hard stop ${FRONTIER_DEADLIN
 # rate. Trainium1 lists cFP8 at the same 190 TFLOP/s as BF16 -- i.e. no FP8
 # speedup at all. This is the one lane where trn2 can beat its own 3.51x.
 #
-# Mechanism is a COMPILER flag, not a training-arg: --auto-cast selects which
-# ops to downcast and --auto-cast-type picks the format. Note the caveat that
-# makes this a probe rather than a lane: --auto-cast operates on FP32 ops, and
-# our lanes already run bf16=True, so there may be nothing left for it to cast.
-# If that is what happens, that IS the finding -- FP8 is reachable for
-# inference on this stack but not through this training path.
+# THIS IS NOT AN FP8 TRAINING BENCHMARK, AND MUST NOT BE REPORTED AS ONE.
+# AWS's NxD Training documentation states FP8 TRAINING is unsupported on
+# Neuron, Trn2 included; the FP8 material AWS publishes for Trn2 is INFERENCE
+# (quantized Llama 3.3 70B via NxD Inference). Separately, --auto-cast only
+# rewrites selected FP32 operators, and these lanes already build a bf16=True
+# graph -- so there may be no FP32 left to cast and this can be a complete
+# no-op.
+#
+# A job that converges here therefore proves NOTHING about FP8. It would mean
+# only "the compiler accepted the flag and produced an unverified mixed graph".
+# Recorded as a compiler-cast COMPATIBILITY probe on TinyLlama only: no 8B
+# lane, no throughput claim, and the FP8 peak (1299 TFLOP/s) and FP8 ridge
+# (448 FLOP/byte) must NOT be used as denominators anywhere in the report.
 step "A1: FP8 probe (TinyLlama, 20 steps) -- --auto-cast-type=fp8_e4m3"
 # Subshell so the compiler flag cannot leak into any later lane -- an FP8 NEFF
 # silently reused by a BF16 lane would corrupt the comparison AND the cache.
 ( export NEURON_CC_FLAGS="--auto-cast=all --auto-cast-type=fp8_e4m3"
   lane fp8_probe 25 --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 20 )
-if have "$OUT/fp8_probe.json"; then
-  ( export NEURON_CC_FLAGS="--auto-cast=all --auto-cast-type=fp8_e4m3"
-    lane fp8_llama31_8b 120 --model meta-llama/Llama-3.1-8B-Instruct --max-steps 100 ) || true
-else
-  echo "  skip FP8 8B: probe did not pass (receipt stands)"
-fi
+# Deliberately NO 8B FP8 lane: see above. Whatever this probe returns is a
+# compatibility receipt, not a performance result.
+echo "  fp8 cast probe recorded as COMPATIBILITY ONLY -- no FP8 performance claim"
 
 # ===========================================================================
 # A2. A model that does not fit on the previous generation
@@ -136,9 +140,16 @@ lane qwen3_32b_lora 180 --model Qwen/Qwen3-32B --max-steps 50 || true
 # A3. Mixture-of-Experts on ONE chip
 # ===========================================================================
 # NxD Training added Mixtral 8x7B support and MoE is where frontier models have
-# gone. Qwen3-30B-A3B activates ~3B of 30B params per token, so it is a
-# memory-capacity problem rather than a compute one -- exactly the shape 96 GiB
-# is for. Probe first: optimum-neuron's SFT path may not handle MoE routing.
+# gone.
+#
+# CORRECTION to an earlier framing here: "activates ~3B of 30B params" does NOT
+# make this a capacity problem rather than a compute one. Active parameters
+# determine COMPUTE per token; the full ~30B of BF16 weights (~60 GiB) must
+# still be RESIDENT unless the runtime does expert paging or offload, which is
+# not demonstrated here. So this is a weight-RESIDENCY and compatibility probe:
+# can one chip hold and step a 30B MoE at all. Its MFU is NOT comparable to the
+# dense lanes -- different FLOPs-per-resident-byte entirely -- and must not be
+# put in the same table.
 lane moe_qwen3_30b_a3b 150 --model Qwen/Qwen3-30B-A3B --max-steps 50 || true
 
 # ===========================================================================
@@ -187,18 +198,26 @@ if ! have "$OUT/residency_pair_a.json" && [ "$NPROC" -ge 4 ]; then
     NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_pair_b.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_pair_b --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
-        --model Qwen/Qwen3-1.7B --max-steps 50 \
+        --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
         --out "$OUT/residency_pair_b.json" > "$OUT/residency_pair_b.log" 2>&1 &
     PID_B=$!
     wait $PID_A; wait $PID_B
-    # Solo baseline on the SAME 2 cores -- without it, "interference" is just
-    # a number with nothing to compare against.
+    # SAME model on both halves (was TinyLlama vs Qwen-1.7B): with two
+    # different models, a slowdown cannot be attributed to interference rather
+    # than to the models differing. And a solo baseline is needed for BOTH
+    # core pairs, not just one, or the b-side number has nothing to compare to.
     NEURON_RT_VISIBLE_CORES=0,1 "$PY" "$TELEM" --out "$OUT/residency_solo_a.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_solo_a --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
         --out "$OUT/residency_solo_a.json" > "$OUT/residency_solo_a.log" 2>&1 \
-      || echo "  residency solo FAILED"
+      || echo "  residency solo a FAILED"
+    NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_solo_b.telemetry.csv" -- \
+      "$PY" "$SFT" --tag residency_solo_b --device-profile trn2 \
+        --nproc-per-node 2 --tensor-parallel-size 2 \
+        --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
+        --out "$OUT/residency_solo_b.json" > "$OUT/residency_solo_b.log" 2>&1 \
+      || echo "  residency solo b FAILED"
     bash shared/bin/push_results.sh trn2 >/dev/null 2>&1 || true
   else
     echo "  deadline guard: skipping residency"

@@ -46,6 +46,35 @@ bash shared/bin/sync_neuron_cache.sh pull || echo "cache pull FAILED (cold compi
 echo "############ PHASE3-TRN2: main suite (same lanes as trn1) ############"
 bash trn2/scripts/run_all.sh || echo "main suite FAILED (receipts recorded)"
 
+# ---------------------------------------------------------------------------
+# GATE: the primary lane must actually exist before anything optional runs.
+#
+# shared/run_all.sh isolates each lane with `|| echo FAILED` and exits 0, so a
+# dead headline lane used to sail straight through here: extras would run, the
+# ALL COMPLETE marker would print, and the opportunistic and frontier passes
+# would spend the rest of a non-refundable window on bonus lanes while the one
+# measurement the block was BOUGHT for was missing. The triplet rule is the
+# gate: no telemetry, no number -- so check all three artifacts, not just JSON.
+# ---------------------------------------------------------------------------
+primary_ok() {
+  local d="$BENCH_DIR/trn2/results/train"
+  [ -s "$d/llama31_lora.json" ] && [ -s "$d/llama31_lora.log" ] \
+    && [ -s "$d/llama31_lora.telemetry.csv" ]
+}
+if ! primary_ok; then
+  echo "############ PHASE3 TRN2: PRIMARY LANE MISSING ############"
+  echo "trn2/results/train/llama31_lora.{json,log,telemetry.csv} incomplete."
+  echo "Extras, academic, opportunistic and frontier lanes are SKIPPED: they"
+  echo "would consume the remaining paid window while the headline comparison"
+  echo "does not exist. Retry the primary lane by hand, or accept the receipt."
+  ls -la "$BENCH_DIR/trn2/results/train" 2>/dev/null || true
+  bash shared/bin/sync_neuron_cache.sh push || echo "cache push FAILED"
+  bash shared/bin/push_results.sh trn2 || echo "push FAILED"
+  echo "############ PHASE3 TRN2 HALTED (no primary result) ############"
+  exit 4
+fi
+echo "primary lane verified: llama31_lora triplet present"
+
 echo "############ PHASE3-TRN2: extras (ctx ladder, ckpt, NKI, A-parity, levers) ############"
 bash extras/run_extras_trn2.sh || echo "extras pass FAILED (receipts recorded)"
 
