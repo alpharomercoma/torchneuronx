@@ -124,13 +124,16 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
    isolation lane. Each checks it has enough window to FINISH before the
    10:00Z hard stop — starting a lane that gets terminated mid-run produces no
    artifact and burns window the other lane could have used.
-2. ~~**Synthetic-input dataloader isolation**~~ — **BUILT**
-   (`extras/run_dataloader_isolation.sh`, `--synthetic-data N` in
-   `sft_lora.py`), **RUNNING on trn1** as of 19:08Z. Four paired lanes: a real
-   control and a synthetic twin at seq 2048 and at 4096, all at 40 steps. The
-   discriminating signal is whether the synthetic uplift SHRINKS from 2048 to
-   4096 — that is the signature of a fixed host cost. Must then run on trn2
-   for symmetry.
+2. ~~**Synthetic-input dataloader isolation**~~ — **DONE on trn1**, written up
+   as REPORT §21. **NULL RESULT, and it kills the hypothesis.** Uplift 0.999×
+   at seq 2048 and 1.000× at 4096; both real controls validate against the
+   published lanes (0.4% and 0.1%). Host dataloader cost is below a twentieth
+   of the noise floor at both shapes, so it cannot explain the 1.20×/1.92×
+   split. The remaining explanation is occupancy: trn2 at seq 2048 is not
+   slowed, it is UNFILLED (25.9% MFU vs trn1's 75.2% on the same shape).
+   **Still queued on trn2** via `np-followon` — trn1 is the weaker direction of
+   the test (longer step, so host cost should matter least), which is why the
+   conclusion is provisional until trn2 runs it.
 3. ~~**Loss-curve overlay trn1 vs trn2**~~ — **DONE**, `analysis/loss_overlay.py`,
    written up as REPORT §18. Result: the gap grows 3.5× from the first tenth of
    training (mean |d| 0.0080) to the tail (0.0278) with r=0.9969, and
