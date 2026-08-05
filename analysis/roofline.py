@@ -85,6 +85,46 @@ def min_bytes_per_token(trainable, frozen, gradient_checkpointing,
     return per_forward / float(tokens_per_forward)
 
 
+def end_to_end(d):
+    """Backfill end-to-end throughput/MFU for results that predate the fields.
+
+    sft_lora.py only started emitting tokens_per_s_end_to_end and
+    mfu_pct_end_to_end at 2026-08-05T10:30Z. Every published Phase-1/2 result
+    predates that, and so does the trn1 rerun currently in flight -- it pulled
+    its code at 08:42Z. trn2 launches after the change and WILL have them.
+
+    Without this backfill the report would show an end-to-end column populated
+    for one generation and blank for the other, which is exactly the kind of
+    asymmetry that makes a comparison unusable. The three inputs needed are all
+    present in every result JSON ever written here.
+    """
+    tps = d.get("tokens_per_s_end_to_end")
+    mfu = d.get("mfu_pct_end_to_end")
+    steps = d.get("steps_recorded")
+    tok = d.get("tokens_per_optimizer_step")
+    wall = d.get("train_wall_s")
+    fpt = d.get("flops_per_token")
+    peak = d.get("peak_bf16_flops")
+    if tps is None and steps and tok and wall:
+        tps = steps * tok / wall
+    if mfu is None and tps and fpt and peak:
+        mfu = 100.0 * fpt * tps / peak
+    # End-to-end is only interpretable for FULL-LENGTH lanes. On a 20-step
+    # probe the cold compile dominates the wall clock, so the "end-to-end MFU"
+    # is really a compile-cost measurement wearing a throughput label -- e.g.
+    # ctx_4096 reads 82.7% steady but 9.3% end-to-end purely because 20 steps
+    # cannot amortise a compile. Emit the compile share so a reader can see
+    # when that is happening instead of comparing a probe to a full run.
+    compile_s = d.get("compile_s")
+    compile_share = (round(compile_s / wall, 3)
+                     if compile_s and wall else None)
+    return (round(tps, 1) if tps else None,
+            round(mfu, 3) if mfu else None,
+            d.get("tokens_per_s_end_to_end") is not None,
+            compile_share,
+            (steps or 0) >= 100)
+
+
 def analyse(path):
     try:
         d = json.load(open(path))
@@ -112,6 +152,7 @@ def analyse(path):
     bpt = min_bytes_per_token(tr, fr, gc, tokens_per_forward)
     if not bpt:
         return None
+    e2e_tps, e2e_mfu, e2e_recorded, compile_share, e2e_meaningful = end_to_end(d)
     intensity = fpt / bpt
     ridge = DEVICES[dev]["bf16"] / DEVICES[dev]["bw"]
     achieved = fpt * d["tokens_per_s"]
@@ -130,6 +171,12 @@ def analyse(path):
         "achieved_tflops": round(achieved / 1e12, 2),
         "mfu_pct": d.get("mfu_pct"),
         "mfu_pct_alt": d.get("mfu_pct_alt"),
+        "tokens_per_s_end_to_end": e2e_tps,
+        "mfu_pct_end_to_end": e2e_mfu,
+        "end_to_end_source": "recorded" if e2e_recorded else "derived",
+        "compile_share_of_wall": compile_share,
+        # False on short probes, where compile dominates the wall clock.
+        "end_to_end_comparable": e2e_meaningful,
         "peak_bf16_flops": d.get("peak_bf16_flops"),
     }
 
