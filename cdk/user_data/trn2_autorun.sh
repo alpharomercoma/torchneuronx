@@ -20,7 +20,12 @@ set -euxo pipefail
 cat > /usr/local/sbin/np-autorun.sh <<'EOF'
 #!/bin/bash
 exec >> /opt/np/autorun.log 2>&1
+# pipefail matters here: the code pull is `aws s3 cp ... | bash`, and without it
+# a failed cp is masked by an empty-but-successful bash. /opt/np/repo already
+# exists (common.sh made it), so the cd would succeed too, and the service would
+# mark itself done and background scripts that were never downloaded.
 set -x
+set -o pipefail
 echo "np-autorun starting $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
 # One kickoff per instance. run_phase3_trn2.sh is resumable, but two concurrent
@@ -52,11 +57,22 @@ for _ in $(seq 1 60); do
   sleep 10
 done
 
-aws s3 cp "s3://$NP_BUCKET/code/shared/bin/pull_code.sh" - | bash
-cd /opt/np/repo
+if ! aws s3 cp "s3://$NP_BUCKET/code/shared/bin/pull_code.sh" - | bash; then
+  echo "FATAL: code pull failed -- NOT marking done so a retry can still work"
+  exit 1
+fi
+cd /opt/np/repo || { echo "FATAL: /opt/np/repo missing"; exit 1; }
 
-# Marker BEFORE launching: if the suite dies we want a record that the kickoff
-# happened, not a reboot loop that starts it again.
+# Verify the code actually arrived before claiming success. A missing driver
+# here used to be silent: the marker was written first, the backgrounded
+# `bash extras/...` failed instantly, and the box sat idle for the whole paid
+# window looking like it had started.
+for f in extras/run_phase3_trn2.sh extras/trn2_deadline_push.sh; do
+  [ -s "$f" ] || { echo "FATAL: $f missing after pull -- not marking done"; exit 1; }
+done
+
+# Marker only AFTER the code is verified present: if the suite then dies we
+# want a record that the kickoff happened, not a reboot loop restarting it.
 date -u '+%Y-%m-%dT%H:%M:%SZ' > /opt/np/.autorun-done
 
 setsid nohup bash extras/run_phase3_trn2.sh >> /opt/np/phase3_trn2.log 2>&1 &

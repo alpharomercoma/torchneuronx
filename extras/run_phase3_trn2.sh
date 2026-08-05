@@ -40,6 +40,32 @@ if [ ! -s "trn2/results/extras/tp_probe.json" ]; then
   exit 3
 fi
 
+# ---------------------------------------------------------------------------
+# Make the probe actually GATE the lanes it claims to gate.
+#
+# The extras/frontier/opportunistic drivers all read tp_probe.json. The MAIN
+# SUITE did not: shared/run_all.sh called sft_lora.py with no overrides, so it
+# fell back to the trn2 profile default (world 4 / TP 4) no matter what the
+# ladder decided. If the probe had fallen to LNC=1 that is a compiler/runtime
+# LNC mismatch (NCC_EARG001); if it fell to TP=2 the headline lane would run on
+# half the chip while the report called it a one-chip comparison.
+#
+# NP_SFT_EXTRA_ARGS is unset on trn1, where it expands to nothing.
+# ---------------------------------------------------------------------------
+read -r LNC NPROC TP <<<"$("${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}/bin/python" -c '
+import json,sys
+d=json.load(open(sys.argv[1]))
+print(d["lnc"], d["nproc"], d["tp"])' trn2/results/extras/tp_probe.json)"
+export NEURON_LOGICAL_NC_CONFIG="$LNC"
+export NP_TELEMETRY_CORES="$NPROC"
+export NP_SFT_EXTRA_ARGS="--device-profile trn2 --nproc-per-node $NPROC --tensor-parallel-size $TP"
+echo "main suite will run at LNC=$LNC world=$NPROC TP=$TP (from tp_probe.json)"
+if [ "$NPROC" != "4" ] || [ "$TP" != "4" ]; then
+  echo "WARNING: probe did NOT select the full chip (world=$NPROC TP=$TP)."
+  echo "         Lanes still run and are still receipts, but the trn1-vs-trn2"
+  echo "         headline must be labelled a partial-chip configuration."
+fi
+
 echo "############ PHASE3-TRN2: seed NEFF cache from S3 (v3 prefix) ############"
 bash shared/bin/sync_neuron_cache.sh pull || echo "cache pull FAILED (cold compile ahead)"
 

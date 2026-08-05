@@ -65,6 +65,15 @@ if [ "$BOX" = "trn1" ] || [ "$BOX" = "trn2" ]; then
   # difference is the device profile sft_lora.py resolves (see NP_DEVICE in
   # /etc/profile.d/neuron-pipelines.sh, written by the stack's user-data).
   # A per-generation lane list here would quietly destroy the comparison.
+  #
+  # NP_SFT_EXTRA_ARGS is the ONE escape hatch, and it exists because the trn2
+  # TP probe has to be able to configure the lanes it gates. Unset (trn1) it
+  # expands to nothing and this branch is byte-identical to what Phase 1/2 ran.
+  # On trn2 the phase-3 master sets it from tp_probe.json, so if the ladder
+  # falls back to TP=2 or LNC=1 the HEADLINE lane follows the probe instead of
+  # silently running at the profile default of world 4 / TP 4 -- which at LNC=1
+  # would be a compiler/runtime LNC mismatch, and at TP=2 would publish a
+  # half-chip result as if it were the full-chip comparison.
 
   # ------------------------------------------------- lane 2: plumbing smoke
   # TinyLlama-1.1B, 20 steps, ungated. Validates the whole path (dataset ->
@@ -75,7 +84,7 @@ if [ "$BOX" = "trn1" ] || [ "$BOX" = "trn2" ]; then
     echo "skip smoke (exists)"
   else
     "$PY" "$TELEM" --out "$RESULTS_DIR/train/smoke_tinyllama.telemetry.csv" -- \
-      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
+      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" ${NP_SFT_EXTRA_ARGS:-} \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --tag smoke_tinyllama \
         --max-steps 20 --out "$RESULTS_DIR/train/smoke_tinyllama.json" \
       > "$RESULTS_DIR/train/smoke_tinyllama.log" 2>&1 \
@@ -104,7 +113,7 @@ if [ "$BOX" = "trn1" ] || [ "$BOX" = "trn2" ]; then
     echo "skip llama31 lora (exists)"
   else
     "$PY" "$TELEM" --out "$RESULTS_DIR/train/llama31_lora.telemetry.csv" -- \
-      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
+      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" ${NP_SFT_EXTRA_ARGS:-} \
         --model meta-llama/Llama-3.1-8B-Instruct --tag llama31_lora \
         --out "$RESULTS_DIR/train/llama31_lora.json" \
       > "$RESULTS_DIR/train/llama31_lora.log" 2>&1 \
@@ -117,7 +126,7 @@ if [ "$BOX" = "trn1" ] || [ "$BOX" = "trn2" ]; then
     echo "skip qwen3 lora (exists)"
   else
     "$PY" "$TELEM" --out "$RESULTS_DIR/train/qwen3_lora.telemetry.csv" -- \
-      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" \
+      "$PY" "$BENCH_DIR/shared/train/sft_lora.py" ${NP_SFT_EXTRA_ARGS:-} \
         --model Qwen/Qwen3-8B --tag qwen3_lora \
         --out "$RESULTS_DIR/train/qwen3_lora.json" \
       > "$RESULTS_DIR/train/qwen3_lora.log" 2>&1 \
