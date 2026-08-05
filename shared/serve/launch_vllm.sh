@@ -154,7 +154,17 @@ case "$CONFIG" in
   short) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=32 ;;
   long)  MAX_MODEL_LEN=9216;  MAX_NUM_SEQS=8  ;;  # exactly 1024+8192; 10240 died in NCC_INLA001 (internal compiler bound-check, 2026-07-29)
   smoke) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=4  ;;
-  *) echo "unknown config: $CONFIG (want short|long|smoke)" >&2; exit 2 ;;
+  # Phase-split grids deliberately REUSE the `long` server geometry rather than
+  # introducing new ones. NxDI preallocates KV for max-model-len x max-num-seqs
+  # at COMPILE time, so a new geometry means a cold recompile -- and worse, a
+  # different server, which would confound the phase split with a server change.
+  #
+  # Both grids fit inside 9216: prefill tops out at 8192+1, decode at 128+2048.
+  # So these run on the SAME compiled graph as the published long lane, at zero
+  # compile cost, and any difference is attributable to the request shape alone.
+  # Concurrency in both grids stays <= 8 to respect MAX_NUM_SEQS.
+  prefill|decode) MAX_MODEL_LEN=9216; MAX_NUM_SEQS=8 ;;
+  *) echo "unknown config: $CONFIG (want short|long|smoke|prefill|decode)" >&2; exit 2 ;;
 esac
 # Probe overrides (Track B bisection): env wins over the config case so a
 # probe lane can walk max-model-len without inventing new named configs.
