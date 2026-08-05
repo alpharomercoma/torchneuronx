@@ -279,6 +279,20 @@ def build_parser():
     ap.add_argument("--lr", type=float, default=DEFAULT_LR)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--dataset", default=DEFAULT_DATASET)
+    ap.add_argument("--holdout-frac", type=float, default=0.0,
+                    help=("Fraction of the dataset held out and evaluated "
+                          "BEFORE and AFTER training. Every number this study "
+                          "reports otherwise measures speed; none of them "
+                          "shows the model actually learned. Held-out loss is "
+                          "the minimum credible answer to 'did it train, or "
+                          "just run fast?'. 0 disables (the published lanes)."))
+    ap.add_argument("--holdout-split-seed", type=int, default=20260805,
+                    help="Fixed split seed so both chips hold out the SAME rows.")
+    ap.add_argument("--data-seed", type=int, default=None,
+                    help=("Separate sampler seed. --seed alone did not change "
+                          "the loss trajectory at all on this stack (three "
+                          "trn1 seeds produced bit-identical loss), so data "
+                          "order is pinned elsewhere -- probably by packing."))
     ap.add_argument("--dataset-fields", default=None,
                     help=("Remap columns onto the Dolly schema the formatter "
                           "expects, e.g. 'context=input,response=output' for "
@@ -433,6 +447,29 @@ def attention_flops_per_token(n_layers, hidden_size, seq_len,
         return None
     fwd = 4.0 * n_layers * seq_len * hidden_size
     return fwd * (4.0 if gradient_checkpointing else 3.0)
+
+
+def provenance(args):
+    """Everything needed to reconstruct this run's inputs, not just name them."""
+    import subprocess
+    def sh(cmd):
+        try:
+            return subprocess.check_output(cmd, shell=True, text=True,
+                                           stderr=subprocess.DEVNULL).strip()
+        except Exception:
+            return None
+    return {
+        "git_commit": sh("git -C /opt/np/repo rev-parse HEAD"),
+        "git_dirty": bool(sh("git -C /opt/np/repo status --porcelain")),
+        "argv": sys.argv,
+        "dataset": args.dataset,
+        "dataset_fields": args.dataset_fields,
+        "holdout_frac": args.holdout_frac,
+        "holdout_split_seed": args.holdout_split_seed,
+        "model": args.model,
+        "seed": args.seed,
+        "data_seed": args.data_seed,
+    }
 
 
 def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
@@ -863,6 +900,11 @@ def run(args, cache_dir, profile=None):
         save_total_limit=1,
         report_to=[],             # no wandb/tensorboard phoning home from the box
         seed=args.seed,
+        # HF falls back to `seed` when data_seed is None. Passing it explicitly
+        # is the one lever left for varying data order; if the trajectory is
+        # STILL bit-identical, packing has pinned the order and that is the
+        # finding, not a bug to keep chasing.
+        **({"data_seed": args.data_seed} if args.data_seed is not None else {}),
         disable_tqdm=True,        # log files, not a redrawn progress bar
     )
 
@@ -904,6 +946,20 @@ def run(args, cache_dir, profile=None):
                 dataset = dataset.rename_column(source, target)
         if "context" not in dataset.column_names:
             dataset = dataset.add_column("context", [""] * len(dataset))
+
+    # ---- deterministic held-out split -------------------------------------
+    # Same split_seed on both chips => byte-identical held-out rows, so the two
+    # boxes are scored on the same examples. Split BEFORE packing: packing
+    # concatenates examples, so splitting after it would leak train content
+    # into eval sequences.
+    eval_dataset = None
+    if args.holdout_frac and args.holdout_frac > 0:
+        split = dataset.train_test_split(test_size=args.holdout_frac,
+                                         seed=args.holdout_split_seed)
+        dataset, eval_dataset = split["train"], split["test"]
+        say(f"  holdout            : {len(eval_dataset)} rows "
+            f"({args.holdout_frac:.0%}, split seed {args.holdout_split_seed}); "
+            f"train {len(dataset)}")
 
     sft_config = build_sft_config(NeuronSFTConfig, training_args,
                                   seq_len=args.seq_len, packing=packing)
@@ -1048,9 +1104,42 @@ def run(args, cache_dir, profile=None):
     say("")
 
     # ------------------------------------------------------------- train
+    # ---- held-out loss BEFORE training ------------------------------------
+    # Measured before and after so the reported quantity is an IMPROVEMENT on
+    # unseen data, not an absolute loss whose scale means little on its own.
+    # Wrapped: if NeuronSFTTrainer.evaluate() is unsupported on this stack we
+    # record that as a receipt and still run the lane, rather than losing the
+    # throughput measurement to a quality feature.
+    eval_before = eval_after = eval_error = None
+    eval_wall_s = 0.0
+    if eval_dataset is not None:
+        _t = time.perf_counter()
+        try:
+            eval_before = trainer.evaluate(eval_dataset=eval_dataset,
+                                           metric_key_prefix="holdout_pre")
+            eval_before = eval_before.get("holdout_pre_loss")
+            say(f"  holdout loss (pre) : {eval_before}")
+        except Exception as exc:                      # noqa: BLE001
+            eval_error = f"{type(exc).__name__}: {exc}"[:300]
+            say(f"  holdout eval FAILED: {eval_error}")
+        eval_wall_s += time.perf_counter() - _t
+
     t_train0 = time.perf_counter()
     trainer.train()
     train_wall_s = time.perf_counter() - t_train0
+
+    # ---- held-out loss AFTER training -------------------------------------
+    if eval_dataset is not None and eval_error is None:
+        _t = time.perf_counter()
+        try:
+            eval_after = trainer.evaluate(eval_dataset=eval_dataset,
+                                          metric_key_prefix="holdout_post")
+            eval_after = eval_after.get("holdout_post_loss")
+            say(f"  holdout loss (post): {eval_after}")
+        except Exception as exc:                      # noqa: BLE001
+            eval_error = f"{type(exc).__name__}: {exc}"[:300]
+            say(f"  holdout post-eval FAILED: {eval_error}")
+        eval_wall_s += time.perf_counter() - _t
 
     # save_model() writes the adapter (TP-sharded when tp>1 -- merge_adapter.py
     # consolidates). It is collective, so every rank calls it; only rank 0
@@ -1125,6 +1214,30 @@ def run(args, cache_dir, profile=None):
             "device_note": profile["note"],
         },
         "versions": resolve_versions(),
+        # PROVENANCE. load_dataset(name, split=...) pins nothing: the Hub is
+        # mutable, so "dolly-15k" alone does not let anyone reconstruct the
+        # corpus this trained on. A reviewer must be able to rebuild the exact
+        # inputs, including which rows were held out.
+        "provenance": provenance(args),
+        # THE QUALITY GATE. Throughput without this cannot distinguish "trained
+        # correctly, fast" from "produced garbage, fast". eval_wall_s is kept
+        # OUT of train_wall_s so no throughput number is diluted by evaluation.
+        "holdout": {
+            "enabled": bool(args.holdout_frac),
+            "frac": args.holdout_frac,
+            "split_seed": args.holdout_split_seed,
+            "loss_before": eval_before,
+            "loss_after": eval_after,
+            "loss_delta": (round(eval_after - eval_before, 6)
+                           if (eval_before is not None and eval_after is not None)
+                           else None),
+            "eval_wall_s": round(eval_wall_s, 2),
+            "error": eval_error,
+            "note": ("Held-out in-domain token loss on rows never trained on. "
+                     "Supports 'the fine-tune learned, comparably on both "
+                     "chips'. Does NOT support any claim about instruction "
+                     "quality or downstream benchmarks."),
+        },
         "tokens_per_optimizer_step": tok_per_step,
         "steps_recorded": len(trace),
         "warmup_steps_excluded": WARMUP_STEPS,
