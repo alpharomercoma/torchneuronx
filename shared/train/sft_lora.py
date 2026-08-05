@@ -1138,6 +1138,36 @@ def run(args, cache_dir, profile=None):
         "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
         "train_wall_s": round(train_wall_s, 2),
         "tokens_per_s": round(tok_s, 1) if tok_s is not None else None,
+        # ---- STEADY-STATE vs END-TO-END -----------------------------------
+        # tokens_per_s above is tokens_per_optimizer_step / MEDIAN STEP TIME:
+        # a steady-state, compute-window rate with warmup excluded. That is the
+        # standard convention and the one the GPU study this is compared
+        # against also uses -- but it is NOT what an audience hears when you
+        # say "the chip was N% utilised".
+        #
+        # On the published trn1 lane, 645 steps x 5.55 s = 59.7 min inside a
+        # 122.2 min wall: the measured window is only ~49% of the run. Some of
+        # the remainder is legitimately excluded (compile, model load,
+        # tokenisation), but optimum-neuron's own per-step telemetry reports
+        # ~46% overhead_time_percent, so most of it is BETWEEN steps, not
+        # startup. End-to-end throughput is therefore ~2x lower than the
+        # steady-state figure, and end-to-end MFU correspondingly so.
+        #
+        # Both are emitted so the report can state the convention explicitly
+        # instead of picking whichever flatters. Neither is wrong; they answer
+        # different questions, and the gap between them IS the optimisation
+        # headroom.
+        "tokens_per_s_end_to_end": (
+            round(len(trace) * tok_per_step / train_wall_s, 1)
+            if trace and tok_per_step and train_wall_s else None),
+        "measured_window_fraction": (
+            round(len(trace) * (med_ms / 1000.0) / train_wall_s, 4)
+            if trace and med_ms and train_wall_s else None),
+        "throughput_note": (
+            "tokens_per_s is steady-state (median step, warmup excluded); "
+            "tokens_per_s_end_to_end divides ALL tokens by the full training "
+            "wall clock. measured_window_fraction is what share of wall time "
+            "the median-step window actually covers. Compare like with like."),
         "flops_per_token": perf["flops_per_token"] if perf else None,
         "flops_formula": "6*params_trainable + 4*params_frozen",
         "tflops": round(perf["tflops"], 3) if perf else None,
@@ -1152,6 +1182,12 @@ def run(args, cache_dir, profile=None):
                         if perf and perf.get("mfu_pct_alt") is not None else None),
         "peak_bf16_flops_alt": peak_flops_alt,
         "peak_bf16_flops_alt_source": profile.get("peak_source_alt"),
+        # Same measurement, end-to-end denominator. On the published trn1 lane
+        # this turns 68.3% into roughly 33%.
+        "mfu_pct_end_to_end": (
+            round(100.0 * perf["flops_per_token"] * len(trace) * tok_per_step
+                  / train_wall_s / peak_flops, 3)
+            if perf and trace and tok_per_step and train_wall_s else None),
         "peak_host_mem_mib": read_peak_host_mem_mib(),
         "peak_device_mem_mib": None,
         "peak_device_mem_note": (
