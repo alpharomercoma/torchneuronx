@@ -75,6 +75,13 @@ Wants=network-online.target
 Type=oneshot
 ExecStart=/usr/local/sbin/np-autorun.sh
 RemainAfterExit=yes
+# systemd's DefaultTimeoutStartSec is 90s. np-autorun waits up to 600s for S3
+# to become reachable before pulling code, so on a slow-networking boot systemd
+# would KILL it at 90s -- the box would come up, sit idle, and burn the entire
+# non-refundable window with nothing running. "infinity" disables the timeout.
+# NOTE TimeoutStartSec=0 does NOT mean infinite; it means terminate
+# immediately. Learned that on the inf2 box an hour before this launch.
+TimeoutStartSec=infinity
 
 [Install]
 WantedBy=multi-user.target
