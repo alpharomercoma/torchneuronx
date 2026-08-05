@@ -123,16 +123,29 @@ lane() {   # lane <tag> <args...>
   return 0
 }
 
-# Global batch is held CONSTANT across rungs by halving grad-accum as
-# micro-batch doubles. Otherwise a rung would change two things at once -- work
-# per step AND the optimisation trajectory -- and the throughput comparison
-# would be confounded with a different effective batch size.
-ACCUM_AT_MB1="${ACCUM_AT_MB1:-8}"
+# GRAD-ACCUM IS HELD CONSTANT. The first version of this ladder halved it as
+# micro-batch doubled, to keep the global batch fixed. That was wrong on this
+# stack, and a control run proved it:
+#
+#   micro-batch 1, grad-accum 8 -> 1147 ms per micro-batch
+#   micro-batch 1, grad-accum 4 ->  714 ms per micro-batch, MFU 146.7%
+#
+# Same shape, same graph, and an MFU that cannot be physical. Gradient
+# accumulation is UNROLLED INTO THE COMPILED GRAPH here -- changing it forced a
+# full recompile (1179 s) -- and the per-step timer captures a different share
+# of deferred XLA work at different accumulation depths. So steady-state
+# throughput is NOT comparable across grad_accum values, and a ladder that
+# varied it was comparing numbers that cannot be compared.
+#
+# Holding it constant means the global batch now GROWS with micro-batch. That
+# changes the optimisation trajectory, which would matter for a quality claim
+# and does not matter here: this lane measures throughput only, and its loss is
+# not reported. Trading a confound we cannot measure for one we can name and
+# discount is the right way round.
+GRAD_ACCUM="${GRAD_ACCUM:-8}"
 for MB in $RUNGS; do
-  ACC=$(( ACCUM_AT_MB1 / MB ))
-  [ "$ACC" -lt 1 ] && ACC=1
   lane "mb${MB}_seq${SEQ}" --model "$MODEL" --seq-len "$SEQ" \
-    --micro-batch "$MB" --grad-accum "$ACC" --max-steps "$STEPS"
+    --micro-batch "$MB" --grad-accum "$GRAD_ACCUM" --max-steps "$STEPS"
 done
 
 # ---- Summary ---------------------------------------------------------------

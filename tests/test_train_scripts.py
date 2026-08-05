@@ -251,3 +251,24 @@ def test_synthetic_lane_marks_its_loss_meaningless_in_the_payload():
 def test_synthetic_lane_skips_the_holdout():
     src = pathlib.Path(sft_lora.__file__).read_text()
     assert "if args.synthetic_data and args.holdout_frac:" in src
+
+
+def test_impossible_mfu_is_flagged():
+    """MFU > 100% means the measurement is broken, not that the chip is fast.
+
+    A grad_accum=4 control reported 146.7% because accumulation is unrolled into
+    the compiled graph and the step timer captures a different share of deferred
+    XLA work at different accumulation depths.
+    """
+    out = sft_lora.throughput_metrics(50e6, 8e9, tokens_per_s=10_000_000,
+                                      peak_flops=210e12)
+    assert out["mfu_pct"] > 100.0
+    assert "mfu_impossible" in out
+    assert "tokens_per_s_end_to_end" in out["mfu_impossible"]["use_instead"]
+
+
+def test_plausible_mfu_is_not_flagged():
+    out = sft_lora.throughput_metrics(50e6, 8e9, tokens_per_s=3000,
+                                      peak_flops=210e12)
+    assert out["mfu_pct"] < 100.0
+    assert "mfu_impossible" not in out

@@ -512,6 +512,28 @@ def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
     }
     out["mfu_pct_alt"] = (
         100.0 * achieved / peak_flops_alt if peak_flops_alt else None)
+
+    # MFU ABOVE 100% IS PHYSICALLY IMPOSSIBLE. It means the measurement is
+    # wrong, not that the chip is fast, and it must never reach a chart.
+    #
+    # This fired for real: a control at grad_accum=4 reported 146.7%. The cause
+    # is that gradient accumulation is UNROLLED INTO THE COMPILED GRAPH on this
+    # stack (changing grad_accum triggers a full recompile), and the per-step
+    # timer captures a different fraction of the deferred XLA work at different
+    # accumulation depths. The same micro-batch shape measured 1147 ms/micro-
+    # batch at accum 8 and 714 ms at accum 4. Steady-state throughput is
+    # therefore NOT comparable across grad_accum settings, and the impossible
+    # MFU is the only signal that says so out loud.
+    if out["mfu_pct"] > 100.0:
+        out["mfu_impossible"] = {
+            "measured_mfu_pct": round(out["mfu_pct"], 3),
+            "why": ("MFU > 100% cannot be physical. The steady-state step timer "
+                    "under-measures at this configuration -- most likely a "
+                    "grad_accum different from the published lanes, which "
+                    "recompiles the graph and changes how much deferred XLA "
+                    "work lands inside the timed window."),
+            "use_instead": "tokens_per_s_end_to_end / mfu_pct_end_to_end",
+        }
     return out
 
 
