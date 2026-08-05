@@ -403,3 +403,48 @@ receipt that was purely my doing.
 - Chained units that each wait on a subset of the others will eventually race.
   One ordered script with explicit preconditions is easier to reason about than
   four units with partial knowledge of each other.
+
+## THE BATCH LADDER WAS BROKEN BY DESIGN (2026-08-05 23:30Z) — supersedes two earlier explanations
+
+The identical compiler instruction count (2,064,384) across mb2/mb4/mb8 on trn1
+went through three explanations. Only the third is right.
+
+1. ~~"Neuron cached the failed compile"~~ — plausible (it is a real gotcha here)
+   but WRONG. The re-run used a different compiler-flag hash
+   (`+f7f529f3` → `+e30acd3a`) and each rung produced its own distinct module
+   hash. Those were genuine, independent compiles.
+2. ~~"Unexplained; the failing graph may not scale with micro-batch"~~ — true as
+   far as it went, but not an explanation.
+3. **The ladder design held the varied quantity constant.** To keep global batch
+   fixed, accum was set to `8 / micro_batch`, so every rung had
+   `micro_batch × grad_accum = 8`. Gradient accumulation is **unrolled into the
+   compiled graph** on this stack (changing it forces a full recompile — 1179 s
+   was observed). So all three rungs compiled the SAME total unrolled work and
+   produced the SAME instruction count. The ladder was not varying graph size at
+   all.
+
+**The lane never tested what it claimed to test.** That is a design error, not a
+run error, and it is the third distinct defect in this lane (after the missing
+retry flag and the misplaced validity check). Everything measured under it is in
+`invalidated/` and a corrected ladder — `grad_accum` fixed at 8, global batch
+allowed to grow — is queued as `np-ladder-last`.
+
+### The one genuinely new measurement: the chips wall for DIFFERENT REASONS
+
+| chip | error | meaning |
+|---|---|---|
+| trn1 | `NCC_EXTP003` | **compiler** instruction limit: 2,064,384 vs 150,000 |
+| trn2 | `NCC_EXSP001` | **device HBM** limit: 64.13 GB needed vs 25.77 GB available |
+
+Different subsystems entirely — one is a toolchain ceiling, the other is
+silicon. Both were captured under the broken design, so both must be re-measured
+before they can be reported, but the qualitative split is unlikely to change.
+
+### New safeguard: impossible MFU is now labelled
+
+`throughput_metrics()` attaches `mfu_impossible{}` when MFU exceeds 100%, naming
+the likely cause and pointing at `tokens_per_s_end_to_end` instead. A
+grad_accum=4 control reported **146.7%**; that single impossible number is what
+exposed the entire chain above. Steady-state throughput is NOT comparable across
+`grad_accum` values on this stack — the same micro-batch shape measured
+1147 ms/micro-batch at accum 8 and 714 ms at accum 4.
