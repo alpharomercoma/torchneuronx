@@ -117,10 +117,13 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
 
 ## OUTSTANDING WORK, in priority order
 
-1. **trn2 quality gate** — the ONE symmetry violation. `BOX=trn2 bash
-   extras/run_quality_gate.sh`, script already on the box. Same split seed
-   20260805 so both chips score identical held-out rows. Cannot run
-   concurrently with the main suite (chip contention).
+1. **trn2 quality gate** — the ONE symmetry violation. **ARMED, no longer needs
+   a human or a laptop.** systemd unit `np-followon` on trn2 (script
+   `extras/run_trn2_followon.sh`, log `/opt/np/followon_trn2.log`) is waiting
+   for `run_phase3_trn2.sh` to exit, then runs the quality gate, then the
+   isolation lane. Each checks it has enough window to FINISH before the
+   10:00Z hard stop — starting a lane that gets terminated mid-run produces no
+   artifact and burns window the other lane could have used.
 2. ~~**Synthetic-input dataloader isolation**~~ — **BUILT**
    (`extras/run_dataloader_isolation.sh`, `--synthetic-data N` in
    `sft_lora.py`), **RUNNING on trn1** as of 19:08Z. Four paired lanes: a real
@@ -138,6 +141,40 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
 4. **maxutil lane** — queued in `run_phase3_trn2.sh`, selects its config from
    the efficiency sweeps. Needs those sweeps to complete first.
 5. Batch-size sweep at seq 4096 (E3 currently does seq 2048).
+
+## NEW RESULTS THIS SESSION (post-compaction)
+
+**REPORT §18 — loss-curve overlay.** `analysis/loss_overlay.py`. The trn1/trn2
+gap grows monotonically from mean |Δ| 0.0080 in the first tenth of training to
+0.0278 in the tail, r=0.9969, sustained >0.01 divergence only at step 544/645.
+Replicates on Qwen3 (0.0088 → 0.0218, r=0.9973). That shape is the
+accumulation-order signature, not a different model. Confound disclosed: TP
+width is inseparable from the chip here; running trn2 at TP=2 would settle it.
+
+**REPORT §19 — quality gate**, trn1 numbers, and it states in the text that
+trn2 has not run it yet.
+
+**REPORT §20 — replication on a second physical Trainium2.** The ASG
+replacement accidentally re-ran the primary lane on different silicon:
+
+| | original chip | replacement | delta |
+|---|---|---|---|
+| tokens/s | 3532.8 | 3618.0 | **+2.41%** |
+| median step | 4637.7 ms | 4528.5 ms | −2.35% |
+| train wall | 3322.1 s | 3220.1 s | −3.07% |
+| **final loss** | **1.1489** | **1.1489** | **0.000000** |
+
+Two findings. Timing varies 2.4% *between chips* — the same magnitude as the
+within-box seed noise floor, so 2.4% is the resolution limit for every
+throughput claim in this study. And the loss is **bit-identical across
+different silicon**, which establishes end-to-end determinism and retires the
+"maybe §18's gap is just hardware variation" objection: hardware variation in
+loss is exactly zero.
+
+**Dataloader isolation is REAL and works.** `synth_smoke` on trn1 returned
+4571.3 tok/s with `dataset: synthetic:random-token-ids` and
+`loss_is_meaningless: true`. TRL accepts pre-tokenised rows with no formatter
+on this stack — that was the unverified assumption and it holds.
 
 ## KNOWN ISSUES / GOTCHAS
 
