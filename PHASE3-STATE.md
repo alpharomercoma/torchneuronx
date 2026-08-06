@@ -495,3 +495,28 @@ Two attempts, two different non-answers:
 
 Whether seq 16384 fits on one Trainium2 is **unknown**. It must not be reported
 as a limit.
+
+## FULL NUMBER AUDIT (2026-08-06 04:40Z)
+
+Every cited figure in REPORT-EXTENSIONS §15–§22 was cross-checked against the
+stored JSON. **40/40 verify. No number was wrong.** Four defects were found, all
+in traceability or coverage rather than in the values:
+
+1. **13 files overwritten** by the replacement instance pushing to the same S3
+   keys. Recovered from S3 versioning into `results/trn2/original_chip/`.
+   Written up as §23. No published value changed.
+2. **Three frontier receipts were EADDRINUSE artifacts of my own kills** — the
+   same root cause already cleared for the quality gate and isolation smoke,
+   missed on these. Because the receipts existed, `have()` was silently skipping
+   the FP8 probe, Qwen3-32B and the MoE lane. Two cleared and re-queued.
+3. **The MoE failure is GENUINE and important**: `qwen3_moe is not supported ...
+   Supported types are: ['llama','granite','qwen3']`. An allowlist rejection — a
+   capability limit, not a resource limit. Its receipt had captured only the
+   torchrun wrapper error; rewritten from the log.
+4. **Nine lanes had results and no write-up** — checkpoint timing, the four
+   efficiency sweeps, the academic lanes, the multimodal parity set. Now §24.
+
+Plus §23.4: the two DERIVED metrics (trn1 e2e 1441; inf2 prefill 2204→4244) are
+computed rather than stored, and the report now shows the formulas. A reader
+checking `output_throughput` in the prefill JSONs finds 2.51 tok/s and would
+otherwise conclude the report was wrong.
