@@ -41,6 +41,21 @@ wait_chip() {
   sleep 10; return 0
 }
 
+# ---- 0. cifar_vit: the one academic lane trn2 lacks -------------------------
+# It was ATTEMPTED at 22:11Z and neuronx-cc was forcibly killed ([F137],
+# insufficient system memory). No receipt was written because the academic
+# driver only echoed on failure, so the lane looked "not run" rather than
+# "tried and failed". Two things changed since: a 64 GiB swapfile now exists,
+# and the driver writes a receipt either way. It needs ONE core and ~15 min, so
+# it is cheap enough to go first.
+if wait_chip && [ "$(left)" -ge 25 ]; then
+  log "academic cifar_vit ($(left) min left) -- the other five lanes are recorded and will skip"
+  BOX=trn2 bash academic/run_academic.sh || log "academic ended early (receipt written)"
+  bash shared/bin/push_results.sh trn2 || log "push FAILED"
+else
+  log "SKIP cifar_vit ($(left) min left)"
+fi
+
 # ---- 1. second frontier pass: picks up ONLY the two cleared lanes -----------
 # have() skips everything already recorded, so this re-runs fp8_probe and
 # qwen3_32b_lora and nothing else.
