@@ -899,3 +899,99 @@ We are reporting a hypothesis we liked, the experiment that killed it, and the
 explanation we now believe with its evidence and its remaining uncertainty. The
 alternative was to leave a plausible-sounding story in the report that we had
 the means to test and did not.
+
+---
+
+## 22. The micro-batch ladder: an experiment that could not run (Phase 3)
+
+§21 concluded that Trainium2 at seq 2048 is not slowed but **starved** — 25.9%
+MFU against Trainium1's 75.2% on the identical shape. That was an inference
+from throughput. This lane was built to test it directly with the one lever not
+yet pulled: bring more work per step, and see which chip absorbs it.
+
+**It could not be done.** Neither chip will compile a micro-batch above 1 at
+seq 4096. The lane's value is therefore not the answer it was designed to give,
+but the constraint it discovered, and the honest report of a hypothesis left
+untested.
+
+### 22.1 Result
+
+| micro-batch | trn1 | trn2 |
+|---|---|---|
+| 1 | 3570.4 tok/s, MFU 91.3% | **7004.7 tok/s**, MFU 51.3% |
+| 2 | `NCC_EXTP003` compiler limit | `NCC_EXSP001` device HBM |
+| 4 | `NCC_EXTP003` | `NCC_EXSP001` |
+| 8 | `NCC_EXTP003` | `NCC_EXSP001` |
+
+The baseline rung is a useful independent check: **1.96×**, from a lane with
+its own step count and its own session, against the published 1.92× at seq 4096
+(§15). Two independent measurements 2.2% apart — inside the 2.4% noise floor of
+§20.
+
+### 22.2 The two chips wall in different subsystems
+
+This is the substantive finding, and it is not one we went looking for.
+
+- **Trainium1 hits a *compiler* ceiling.** `NCC_EXTP003`: 2,064,384 instructions
+  generated against a stated limit of 150,000. The silicon is never consulted;
+  the toolchain refuses to emit the graph.
+- **Trainium2 hits a *device memory* ceiling.** `NCC_EXSP001`: 64.13 GB of HBM
+  required against 25.77 GB available per logical core at LNC=2 / TP=4. The
+  graph compiles conceptually; it will not fit.
+
+A practitioner sizing a job needs to know these are different problems. The
+Trainium1 wall might move with a compiler release. The Trainium2 wall moves only
+with sharding, a smaller shape, or more silicon.
+
+### 22.3 What is NOT established, and what was ruled out
+
+On Trainium2 the reported memory requirement **changes** across rungs — 64.13,
+64.15, 64.18 GB — so those were genuinely independent compiles.
+
+On Trainium1 the instruction count is **identical** at every failed rung:
+2,064,384 at micro-batch 2, 4 and 8. Graph size must grow with micro-batch, so
+this is not explicable as three measurements of three graphs. Two candidate
+explanations were tested and both failed:
+
+1. **A cached failure.** Ruled out. The re-run used a different compiler-flag
+   hash (`+f7f529f3` → `+e30acd3a`) and each rung emitted its own distinct
+   module hash. The compiles were fresh.
+2. **The ladder holding the varied quantity constant.** The first design set
+   `grad_accum = 8 / micro_batch` to hold global batch fixed, which — since
+   gradient accumulation is unrolled into the compiled graph here — made every
+   rung compile the same total work. Plausible, and ruled out: the corrected
+   design fixes `grad_accum` at 8, so unrolled work varies 8× across the rungs,
+   and the count is **still identical**.
+
+We do not know why. The summary carries a `SUSPECT` flag saying so, and this
+section will not offer a third theory it has not tested. What is measured is
+that at seq 4096 on Trainium1, micro-batch 1 compiles and nothing above it does.
+
+### 22.4 Three defects in this lane, all found and all disclosed
+
+Recorded because the failure modes generalise to any parameter sweep:
+
+1. **No `--retry_failed_compilation`.** Neuron caches failed compiles, so the
+   first failure would have been reported for every rung above it. Fixed.
+2. **The validity check ran after the summary was written**, so it flagged an
+   object nobody reads. The first corrected run duly produced three identical
+   counts and a summary that said nothing. Fixed.
+3. **The design varied two levers at once** and, worse, held their product
+   constant — so the ladder never varied the thing it existed to vary. Fixed by
+   holding `grad_accum` constant and letting global batch grow.
+
+The general rule this produced: **a parameter sweep must record a quantity that
+is expected to change with the swept parameter.** Without it, a cache hit, a
+degenerate design, and a real measurement are indistinguishable. The instruction
+count is now recorded in every receipt for exactly that reason — and it is what
+exposed all three defects above.
+
+### 22.5 Consequence for §21
+
+The occupancy explanation is **not confirmed and not refuted**. It remains the
+only hypothesis consistent with every measurement — the MFU ladder, the
+dataloader null, the context ladder — but the direct test is unavailable on this
+stack, because the toolchain and the HBM both refuse the larger shapes it would
+require. Varying sequence length (§15) stays the only working instrument for
+work-per-step on these chips, and a `neuron-profile` trace remains the way to
+settle it.
