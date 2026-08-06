@@ -1,0 +1,52 @@
+{
+ "winner": {
+  "tag": "ctx_8192",
+  "tokens_per_s": 8335.8,
+  "seq_len": 8192,
+  "micro_batch": 1,
+  "grad_ckpt": true,
+  "levers": 1
+ },
+ "candidates": [
+  {
+   "tag": "ctx_8192",
+   "tokens_per_s": 8335.8,
+   "seq_len": 8192,
+   "micro_batch": 1,
+   "grad_ckpt": true,
+   "levers": 1
+  },
+  {
+   "tag": "ctx_4096",
+   "tokens_per_s": 7433.2,
+   "seq_len": 4096,
+   "micro_batch": 1,
+   "grad_ckpt": true,
+   "levers": 1
+  },
+  {
+   "tag": "eff_seq4096",
+   "tokens_per_s": 7277.4,
+   "seq_len": 4096,
+   "micro_batch": 1,
+   "grad_ckpt": true,
+   "levers": 1
+  },
+  {
+   "tag": "eff_norecompute",
+   "tokens_per_s": 5265.5,
+   "seq_len": 2048,
+   "micro_batch": 1,
+   "grad_ckpt": false,
+   "levers": 1
+  },
+  {
+   "tag": "llama31_lora (lane 4)",
+   "tokens_per_s": 3618.0,
+   "seq_len": 2048,
+   "micro_batch": 1,
+   "grad_ckpt": true,
+   "levers": 0
+  }
+ ]
+}

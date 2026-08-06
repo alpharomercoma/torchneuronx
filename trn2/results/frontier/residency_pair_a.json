@@ -1,5 +1,5 @@
 {
-  "tag": "residency_solo_b",
+  "tag": "residency_pair_a",
   "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
   "dataset": "databricks/databricks-dolly-15k",
   "synthetic_data": null,
@@ -69,7 +69,7 @@
     "argv": [
       "/opt/np/repo/shared/train/sft_lora.py",
       "--tag",
-      "residency_solo_b",
+      "residency_pair_a",
       "--device-profile",
       "trn2",
       "--nproc-per-node",
@@ -81,7 +81,7 @@
       "--max-steps",
       "50",
       "--out",
-      "/opt/np/repo/trn2/results/frontier/residency_solo_b.json"
+      "/opt/np/repo/trn2/results/frontier/residency_pair_a.json"
     ],
     "dataset": "databricks/databricks-dolly-15k",
     "dataset_fields": null,
@@ -107,27 +107,27 @@
   "tokens_per_optimizer_step": 16384,
   "steps_recorded": 50,
   "warmup_steps_excluded": 10,
-  "first_step_ms": 14176.92,
+  "first_step_ms": 14568.89,
   "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache (lane 3 precompile) collapses this toward the median; a cold cache leaves tens of minutes in it.",
-  "median_step_ms": 2699.995,
-  "compile_s": 11.48,
+  "median_step_ms": 2773.755,
+  "compile_s": 11.8,
   "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
-  "train_wall_s": 165.3,
-  "tokens_per_s": 6068.2,
-  "tokens_per_s_end_to_end": 4956.0,
-  "measured_window_fraction": 0.8167,
+  "train_wall_s": 169.0,
+  "tokens_per_s": 5906.8,
+  "tokens_per_s_end_to_end": 4847.3,
+  "measured_window_fraction": 0.8206,
   "throughput_note": "tokens_per_s is steady-state (median step, warmup excluded); tokens_per_s_end_to_end divides ALL tokens by the full training wall clock. measured_window_fraction is what share of wall time the median-step window actually covers. Compare like with like.",
   "flops_per_token": 6730604544.0,
   "flops_formula": "6*params_trainable + 4*params_frozen",
-  "tflops": 40.842,
-  "mfu_pct": 6.123,
+  "tflops": 39.756,
+  "mfu_pct": 5.96,
   "peak_bf16_flops": 667000000000000.0,
   "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium2: 667 BF16/FP16/TF32 TFLOPS per chip",
-  "mfu_pct_alt": 6.123,
+  "mfu_pct_alt": 5.96,
   "peak_bf16_flops_alt": 667000000000000.0,
   "peak_bf16_flops_alt_source": "same figure; arch and instance-level specs agree for Trainium2",
-  "mfu_pct_end_to_end": 5.001,
-  "peak_host_mem_mib": 4709.3,
+  "mfu_pct_end_to_end": 4.891,
+  "peak_host_mem_mib": 4705.4,
   "peak_device_mem_mib": null,
   "peak_device_mem_note": "Device HBM high-water is not available from torch on XLA. Read it from the matching telemetry CSV (mem_used_mib column, sampled at 1 Hz by neuron-monitor). Deliberately null rather than estimated.",
   "final_loss": 1.5161,
@@ -135,305 +135,305 @@
     {
       "step": 1,
       "loss": 1.7205,
-      "ms": 14176.92,
+      "ms": 14568.89,
       "warmup": true
     },
     {
       "step": 2,
       "loss": 1.5706,
-      "ms": 2704.42,
+      "ms": 2806.91,
       "warmup": true
     },
     {
       "step": 3,
       "loss": 1.5068,
-      "ms": 2658.27,
+      "ms": 2722.96,
       "warmup": true
     },
     {
       "step": 4,
       "loss": 1.1995,
-      "ms": 2650.89,
+      "ms": 2767.97,
       "warmup": true
     },
     {
       "step": 5,
       "loss": 1.5565,
-      "ms": 2680.74,
+      "ms": 2734.84,
       "warmup": true
     },
     {
       "step": 6,
       "loss": 1.6374,
-      "ms": 2692.0,
+      "ms": 2734.77,
       "warmup": true
     },
     {
       "step": 7,
       "loss": 1.5532,
-      "ms": 2694.92,
+      "ms": 2797.96,
       "warmup": true
     },
     {
       "step": 8,
       "loss": 1.6897,
-      "ms": 2809.59,
+      "ms": 2759.46,
       "warmup": true
     },
     {
       "step": 9,
       "loss": 1.5882,
-      "ms": 2745.31,
+      "ms": 2776.08,
       "warmup": true
     },
     {
       "step": 10,
       "loss": 1.4486,
-      "ms": 2757.17,
+      "ms": 2729.7,
       "warmup": true
     },
     {
       "step": 11,
       "loss": 1.3916,
-      "ms": 2851.79,
+      "ms": 2764.56,
       "warmup": false
     },
     {
       "step": 12,
       "loss": 1.5801,
-      "ms": 2853.69,
+      "ms": 2720.73,
       "warmup": false
     },
     {
       "step": 13,
       "loss": 1.2503,
-      "ms": 2732.5,
+      "ms": 2813.33,
       "warmup": false
     },
     {
       "step": 14,
       "loss": 1.443,
-      "ms": 2693.66,
+      "ms": 2746.44,
       "warmup": false
     },
     {
       "step": 15,
       "loss": 1.5161,
-      "ms": 2672.48,
+      "ms": 2723.13,
       "warmup": false
     },
     {
       "step": 16,
       "loss": 1.4845,
-      "ms": 2676.83,
+      "ms": 2732.25,
       "warmup": false
     },
     {
       "step": 17,
       "loss": 1.1466,
-      "ms": 2651.7,
+      "ms": 2758.93,
       "warmup": false
     },
     {
       "step": 18,
       "loss": 1.4359,
-      "ms": 2656.06,
+      "ms": 2772.05,
       "warmup": false
     },
     {
       "step": 19,
       "loss": 1.2541,
-      "ms": 2689.69,
+      "ms": 2809.49,
       "warmup": false
     },
     {
       "step": 20,
       "loss": 1.5038,
-      "ms": 2670.13,
+      "ms": 2859.54,
       "warmup": false
     },
     {
       "step": 21,
       "loss": 1.498,
-      "ms": 2685.19,
+      "ms": 2848.88,
       "warmup": false
     },
     {
       "step": 22,
       "loss": 1.2203,
-      "ms": 2662.18,
+      "ms": 2842.6,
       "warmup": false
     },
     {
       "step": 23,
       "loss": 1.6238,
-      "ms": 2696.71,
+      "ms": 2812.68,
       "warmup": false
     },
     {
       "step": 24,
       "loss": 1.3875,
-      "ms": 2751.17,
+      "ms": 2796.66,
       "warmup": false
     },
     {
       "step": 25,
       "loss": 1.5272,
-      "ms": 2748.28,
+      "ms": 2774.01,
       "warmup": false
     },
     {
       "step": 26,
       "loss": 1.44,
-      "ms": 2633.47,
+      "ms": 2783.66,
       "warmup": false
     },
     {
       "step": 27,
       "loss": 1.6523,
-      "ms": 2703.28,
+      "ms": 2872.81,
       "warmup": false
     },
     {
       "step": 28,
       "loss": 1.4009,
-      "ms": 2720.96,
+      "ms": 2717.44,
       "warmup": false
     },
     {
       "step": 29,
       "loss": 1.4218,
-      "ms": 2732.14,
+      "ms": 2764.26,
       "warmup": false
     },
     {
       "step": 30,
       "loss": 1.6174,
-      "ms": 2677.91,
+      "ms": 2849.58,
       "warmup": false
     },
     {
       "step": 31,
       "loss": 1.5737,
-      "ms": 2751.96,
+      "ms": 2903.86,
       "warmup": false
     },
     {
       "step": 32,
       "loss": 1.3669,
-      "ms": 2784.84,
+      "ms": 2820.78,
       "warmup": false
     },
     {
       "step": 33,
       "loss": 1.4013,
-      "ms": 2642.73,
+      "ms": 2773.5,
       "warmup": false
     },
     {
       "step": 34,
       "loss": 1.278,
-      "ms": 2707.84,
+      "ms": 2747.86,
       "warmup": false
     },
     {
       "step": 35,
       "loss": 1.4404,
-      "ms": 2639.62,
+      "ms": 2776.97,
       "warmup": false
     },
     {
       "step": 36,
       "loss": 1.0314,
-      "ms": 2677.66,
+      "ms": 2773.4,
       "warmup": false
     },
     {
       "step": 37,
       "loss": 1.2269,
-      "ms": 2688.83,
+      "ms": 2815.65,
       "warmup": false
     },
     {
       "step": 38,
       "loss": 1.3427,
-      "ms": 2723.81,
+      "ms": 2719.44,
       "warmup": false
     },
     {
       "step": 39,
       "loss": 1.4841,
-      "ms": 2670.17,
+      "ms": 2769.04,
       "warmup": false
     },
     {
       "step": 40,
       "loss": 1.584,
-      "ms": 2762.71,
+      "ms": 2719.1,
       "warmup": false
     },
     {
       "step": 41,
       "loss": 1.19,
-      "ms": 2732.77,
+      "ms": 2896.49,
       "warmup": false
     },
     {
       "step": 42,
       "loss": 1.5534,
-      "ms": 2879.01,
+      "ms": 2782.1,
       "warmup": false
     },
     {
       "step": 43,
       "loss": 1.2083,
-      "ms": 2708.57,
+      "ms": 2764.34,
       "warmup": false
     },
     {
       "step": 44,
       "loss": 1.4694,
-      "ms": 2684.9,
+      "ms": 2742.79,
       "warmup": false
     },
     {
       "step": 45,
       "loss": 1.2039,
-      "ms": 2634.76,
+      "ms": 2776.5,
       "warmup": false
     },
     {
       "step": 46,
       "loss": 1.2597,
-      "ms": 2704.4,
+      "ms": 2767.92,
       "warmup": false
     },
     {
       "step": 47,
       "loss": 1.5072,
-      "ms": 2726.85,
+      "ms": 2738.57,
       "warmup": false
     },
     {
       "step": 48,
       "loss": 1.4042,
-      "ms": 2742.45,
+      "ms": 2779.58,
       "warmup": false
     },
     {
       "step": 49,
       "loss": 1.1397,
-      "ms": 2687.75,
+      "ms": 2802.14,
       "warmup": false
     },
     {
       "step": 50,
       "loss": 1.5161,
-      "ms": 2728.94,
+      "ms": 2726.51,
       "warmup": false
     }
   ],
   "checkpoint_saves": [],
-  "adapter_out": "/opt/np/models/adapters/residency_solo_b",
-  "captured": "2026-08-06T07:41:09Z"
+  "adapter_out": "/opt/np/models/adapters/residency_pair_a",
+  "captured": "2026-08-06T07:34:30Z"
 }

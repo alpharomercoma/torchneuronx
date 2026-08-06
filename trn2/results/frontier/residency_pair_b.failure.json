@@ -1,0 +1,11 @@
+{
+  "tag": "residency_pair_b",
+  "box": "trn2",
+  "status": "failed",
+  "failure_class": "neuron_runtime_cores_busy",
+  "reason": "NRT:nrt_allocate_neuron_cores -- Logical Neuron Core(s) not available - Requested:lnc1-lnc1 Available:0 Logical Core size:2 (cores busy, ret=-16)",
+  "what_this_means": "The second concurrent job could not claim its logical NeuronCores while the first job held the device, even though the two were given DISJOINT core sets via NEURON_RT_VISIBLE_CORES (0,1 and 2,3).",
+  "why_this_is_not_a_configuration_error": "residency_solo_a (cores 0,1) and residency_solo_b (cores 2,3) BOTH ran successfully with those exact indices when run alone. The indices are therefore valid; what fails is running two jobs at the same time.",
+  "distinct_from_the_earlier_attempt": "An earlier attempt failed with EADDRINUSE because both jobs used torch.distributed default master port 29500. That was fixed (ports 29511/29512, confirmed in both logs) and the failure moved to this Neuron-runtime error -- a different and more informative wall.",
+  "captured": "2026-08-06T07:43:19Z"
+}

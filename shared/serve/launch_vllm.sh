@@ -120,15 +120,37 @@ trap save_log_tail EXIT
 case "$MODEL_KEY" in
   llama31_base)
     MODEL_ID="meta-llama/Llama-3.1-8B-Instruct" ;;
-  llama31_dolly)
-    # The trn1-trained fine-tune: merged on the Trainium box, pushed to S3,
-    # pulled here on first use so a re-provisioned inf2 self-heals.
-    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged"
+  llama31_dolly|llama31_dolly_trn1)
+    # The TRAINIUM1-trained fine-tune.
+    #
+    # This used to pull from artifacts/llama31-8b-dolly-merged/, which BOTH
+    # training boxes wrote to. When Trainium2 ran the same lane it overwrote
+    # trn1's weights at that path, so a later pull would have served trn2's
+    # model under trn1's name -- and `verify_models.sh` would have failed
+    # against the sha256 digests Phase 2 recorded. The two merges genuinely
+    # differ (4 of 6 files), as they must: different final loss.
+    #
+    # Both versions were recovered from S3 versioning into explicit,
+    # box-specific prefixes. Neither key is ambiguous now.
+    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged-trn1"
     if [ ! -d "$MODEL_ID" ] || [ -z "$(ls -A "$MODEL_ID" 2>/dev/null)" ]; then
-      echo "--- $MODEL_ID absent; pulling merged fine-tune from S3 ---"
+      echo "--- $MODEL_ID absent; pulling the trn1 merged fine-tune from S3 ---"
       mkdir -p "$MODEL_ID"
-      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged/" "$MODEL_ID/"; then
-        echo "S3 pull of llama31-8b-dolly-merged failed" >&2
+      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged-trn1/" "$MODEL_ID/"; then
+        echo "S3 pull of llama31-8b-dolly-merged-trn1 failed" >&2
+        exit 1
+      fi
+    fi ;;
+  llama31_dolly_trn2)
+    # The TRAINIUM2-trained fine-tune. Closes the train-then-serve loop for the
+    # newer chip: Phase 2 closed it for Trainium1 only, so every serving number
+    # in this study so far describes weights trained on trn1.
+    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged-trn2"
+    if [ ! -d "$MODEL_ID" ] || [ -z "$(ls -A "$MODEL_ID" 2>/dev/null)" ]; then
+      echo "--- $MODEL_ID absent; pulling the trn2 merged fine-tune from S3 ---"
+      mkdir -p "$MODEL_ID"
+      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged-trn2/" "$MODEL_ID/"; then
+        echo "S3 pull of llama31-8b-dolly-merged-trn2 failed" >&2
         exit 1
       fi
     fi ;;

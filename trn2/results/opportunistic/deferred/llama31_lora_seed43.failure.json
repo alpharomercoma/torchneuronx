@@ -1,0 +1,9 @@
+{
+  "tag": "llama31_lora_seed43",
+  "box": "trn2",
+  "status": "deferred",
+  "reason": "NOT ATTEMPTED YET -- deliberately re-ordered behind higher-value lanes. --seed is a NO-OP on this stack: three trn1 seeds produced BIT-IDENTICAL loss because packing pins the data order. This lane can therefore only re-measure TIMING noise, and REPORT 20 already bounds that at 2.4% across two PHYSICAL Trainium2 chips, which is a stronger measurement than a second seed on one chip. Two lanes that produce information we do not otherwise have -- fp8_probe and qwen3_32b_lora -- were skipped earlier on receipts that turned out to be artifacts, and they get the window first.",
+  "will_run_if": "np-tail finds 70+ min remaining after frontier pass 2; it removes this receipt and runs the lane",
+  "not_a_measurement": true,
+  "captured": "2026-08-06T04:49:58Z"
+}
