@@ -1575,12 +1575,24 @@ and left unexplained.
 The context ladder ends where the *compiler's host memory* ends, not where HBM
 does:
 
-| seq | outcome | evidence |
+| seq | outcome | compiler peak host memory |
 |---|---|---|
-| 4096 | ✅ 7433.2 tok/s | — |
-| 8192 | ✅ 8335.8 tok/s, 61.0% MFU | the study's best MFU |
-| **12288** | ✖ **compiler at 114 GB** | killed by watchdog to preserve a receipt |
-| 16384 | ✖ **compiler at 48.6 GB RSS / 80.8 GB VM** | OOM-killed, twice, independently |
+| 4096 | ✅ 7433.2 tok/s | compiles |
+| 8192 | ✅ 8335.8 tok/s, 61.0% MFU | compiles — the study's best MFU |
+| **10240** | ✖ | **104 GB**, killed by watchdog |
+| **12288** | ✖ | **114 GB**, killed by watchdog |
+| 16384 | ✖ | 48.6 GB RSS / 80.8 GB VM at the kernel's OOM-kill, twice |
+
+The cliff therefore sits between **8192 and 10240**, and the failures are
+ordered the way compilation cost should be: 104 GB at 10240, 114 GB at 12288.
+
+The 16384 figure is **not** comparable to the other two and must not be read as
+"16384 needs less memory than 10240". Those two were killed by our watchdog at a
+70 GB threshold, so their reported peak is where the watchdog caught them on the
+way up. 16384 was killed by the *kernel*, which fires when the whole machine is
+exhausted — a different trigger, sampled at a different moment. All three say
+the same thing: the compiler's working set exceeds what a 124 GiB host can
+give it.
 
 Every failure above 8192 is `walrus_driver` — the Neuron compiler backend —
 exhausting a **124 GiB host**. Compilation never completes, so **no HBM figure
