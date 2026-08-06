@@ -530,3 +530,34 @@ Plus §23.4: the two DERIVED metrics (trn1 e2e 1441; inf2 prefill 2204→4244) a
 computed rather than stored, and the report now shows the formulas. A reader
 checking `output_throughput` in the prefill JSONs finds 2.51 tok/s and would
 otherwise conclude the report was wrong.
+
+## A LANE KILLED BY THE OOM KILLER LEAVES NO RECEIPT (2026-08-06 07:32Z)
+
+`qwen3_32b_lora` on trn1 produced **neither a result nor a failure receipt**.
+The systemd journal explains why:
+
+```
+np-symmetry.service: A process of this unit has been killed by the OOM killer
+np-symmetry.service: Failed with result 'oom-kill'
+```
+
+The 32B compile exhausted trn1's 30 GiB host RAM and the kernel killed the
+**whole unit**, including the driver shell. Every driver in this repo writes its
+receipt in a `|| { ... }` handler — which cannot run if the shell itself is
+gone. The lane simply vanished.
+
+The receipt was reconstructed by hand from the journal and the lane log and is
+marked as such. The finding is real and worth having: **Trainium1 cannot even
+compile Qwen3-32B — it dies on HOST memory before reaching the device**, while
+trn2 trains the same model on one chip.
+
+**The generalisable trap:** a lane that is *absent* looks like a lane that was
+never run. Two lanes hit this today — `cifar_vit` (whose driver echoed instead
+of writing a receipt) and this one (whose driver was killed outright). Both were
+found only by noticing an absence and going to the journal. Any audit of results
+must diff the lanes that were *supposed* to run against the artifacts present,
+because a missing file is silent in a way a failure receipt is not.
+
+A robust fix would be a driver-level `trap` that writes a receipt on SIGTERM, or
+a post-run reconciliation step. Neither is implemented; this is recorded as a
+known limitation.
