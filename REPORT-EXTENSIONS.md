@@ -1665,3 +1665,67 @@ The general lesson, now recorded in three places in this study: **a process that
 can be killed by the kernel cannot be relied upon to record its own death.**
 Either watch it from outside, or reconcile intended lanes against produced
 artifacts afterwards. A missing file is silent in a way a failure receipt is not.
+
+---
+
+## 29. What this study did NOT accomplish
+
+A final audit against the Phase-3 plan and against every lane attempted. The
+sections above report what was measured; this one reports what was not, so the
+gaps are on the record rather than left for a reader to discover.
+
+### 29.1 Questions asked and not answered
+
+| question | why it is unanswered |
+|---|---|
+| Does seq 12288 / 16384 **fit** in Trainium2's 96 GiB HBM? | Compilation never completed — the compiler exhausted a 124 GiB host first. No HBM figure was ever produced, so the accelerator's capacity at those shapes is untested (§28.2). |
+| Why is trn1's compiler instruction count identical at micro-batch 2, 4 and 8? | Two explanations were tested and both falsified: cached failures (ruled out by distinct module hashes) and the design holding the product constant (ruled out by the corrected ladder). No third explanation was tested (§22.3). |
+| Is the 5.1% serving difference between trn1- and trn2-trained weights real? | Above the 2.4% noise floor, consistent in sign, and with no mechanism by which identical-architecture weights would change decode throughput. One paired run, hours apart, different cold compiles. Not claimed (§28.1). |
+| Can FP8 training work on NeuronCore-v3? | The one-flag autocast produces NaN from step 1. Whether a proper quantisation recipe, loss scaling or per-layer control fixes it was not attempted (§25.3). |
+| Is the seq-8192 overhead device-side or framework-side? | The isolation lane ruled out host data preparation at three shapes, which is a bound, not a mechanism. Confirming it needs a `neuron-profile` trace, which no window had room for (§25.1). |
+
+### 29.2 Lanes that were planned and did not run
+
+- **Trainium2 seed variance** (`llama31_lora_seed43/44`, `qwen3_lora_seed43`) —
+  deliberately deferred, then skipped by their own budget guards when under
+  70 minutes remained. `--seed` is a no-op on this stack, so they would have
+  re-measured timing noise that §20 already bounds at 2.4% using two *physical*
+  chips. Their receipts say exactly this.
+- **`ctx_32768`** — gated on 16384 passing, which it did not.
+- **`eff_combined` on trn1** — never attempted; its trn2 counterpart failed on
+  HBM, and §26.1 predicts the same outcome.
+- **`cifar_vit` on trn2** — attempted twice, compiler OOM-killed both times.
+  Recorded as a receipt (§25.4).
+- **Multi-tenant residency on trn1** — physically impossible: the lane needs
+  four logical cores and Trainium1 has two.
+- **Three of five adversarial-review models** (qwen3.8-max, deepseek-v4-pro,
+  minimax-m3) never returned answers. Two did, and their recommendations were
+  implemented or explicitly rejected.
+
+### 29.3 A methodological weakness this study could not resolve
+
+`analysis/roofline.py` reports **arithmetic intensity as an upper bound only**,
+so every lane classifies as "compute-bound (bound only)". That is not a finding
+— it is the analysis being unable to discriminate. Weight traffic is amortised
+analytically rather than measured, because Neuron exposes no HBM-traffic
+counter. A real roofline needs hardware counters this platform does not provide,
+the same gap that makes `power_w`/`temp_c` empty and perf-per-watt unmeasurable.
+
+### 29.4 Artifact-integrity issues found in the final audit
+
+Three classes, all repaired, all recorded because the failure mode generalises:
+
+1. **Zombie artifacts.** `push_results.sh` uses `aws s3 sync` **without
+   `--delete`**, so a file invalidated on the box stays live in S3 at its
+   original path. Seven tags carried both a result and a failure receipt.
+2. **A zero-byte "receipt."** `spec_decode/baseline.failure.json` was 0 bytes —
+   an artifact that looks like a record and contains nothing.
+3. **Archive contamination in analysis.** `roofline.py` globbed `**/*.json` with
+   no exclusions, so it scored `invalidated/residency_pair_b.json` — the very
+   artifact from an experiment that never ran (§27.4).
+
+Stale copies were moved to `superseded/` rather than deleted, the empty file was
+removed, and `roofline.py` now skips `invalidated/`, `deferred/`, `superseded/`
+and `original_chip/`. Three tags legitimately retain both a failure and a
+success — `whisper`, `tp_probe`, `fused_spec` — where a lane failed and a retry
+succeeded; that history is real and is kept.

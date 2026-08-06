@@ -190,8 +190,17 @@ def main():
 
     rows = []
     for root in args.roots:
+        # Archive directories must be EXCLUDED. `results/` accumulates
+        # invalidated/, deferred/, superseded/ and original_chip/ subtrees, and
+        # a recursive glob happily reads all of them -- so an analysis would mix
+        # a lane's live result with the very artifact that was invalidated for
+        # being wrong. This was caught with residency_pair_b, whose invalidated
+        # copy (an experiment that never actually ran) was being scored here.
         for path in sorted(glob.glob(os.path.join(root, "**", "*.json"),
                                      recursive=True)):
+            if any(x in path for x in ("/invalidated/", "/deferred/",
+                                      "/superseded/", "/original_chip/")):
+                continue
             r = analyse(path)
             if r:
                 rows.append(r)
