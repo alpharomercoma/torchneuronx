@@ -1,0 +1,5 @@
+t_s,gpu_util_pct,mem_used_mib,power_w,temp_c,sclk_mhz,mclk_mhz,util_nc0,util_nc1,host_mem_used_mib
+0.0,,,,,,,,,
+1.0,0.0,24763.9,,,,,0.0,0.0,5828.5
+2.0,100.0,24763.9,,,,,100.0,100.0,5828.5
+3.0,77.42,24763.9,,,,,77.42,77.42,5828.5

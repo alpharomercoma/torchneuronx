@@ -1,0 +1,2 @@
+# fallback_client  model=meta-llama/Llama-3.1-8B-Instruct  mode=closed  prompts=8  conc=1  isl=1024  osl=1  seed=42
+out_tok/s=2.51  ttft_p50=397.493ms  p99=401.882ms  tpot_p50=Nonems  completed=8/8  duration=3.19s -> /opt/np/repo/inf2/results/serve/llama31_base_prefill/isl1024_osl1_c1.json

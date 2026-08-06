@@ -1524,3 +1524,91 @@ That is the third lane in this study whose failure showed up as a missing file
 rather than a recorded error, and it is the reason §26 now insists an audit diff
 intended lanes against present artifacts rather than reading what happens to be
 there.
+
+---
+
+## 28. Closing the loop: serving the Trainium2 fine-tune, and the context cliff
+
+### 28.1 A Trainium2 fine-tune serves on Inferentia2, byte-verified
+
+Phase 2 closed the train-then-serve loop for Trainium1: train, merge, push to
+S3, pull onto Inferentia2, serve, with sha256 at both ends. Phase 3 trained the
+same model on Trainium2 and, until now, **never served it** — so every serving
+number in this study described trn1-trained weights.
+
+The trn2 fine-tune now serves, and the provenance check passes:
+
+```
+all_match = True   (config.json, 4 safetensors shards, tokenizer.json)
+```
+
+sha256 of the weights on the *serving* box against the digests
+`merge_adapter.py` recorded on the *training* box. Same grid as the trn1 lane:
+
+| concurrency | trn1 fine-tune | trn2 fine-tune | ratio | TPOT trn1 | TPOT trn2 |
+|---|---|---|---|---|---|
+| 1 | 15.75 tok/s | 15.82 | 1.004 | 62.63 ms | 62.84 ms |
+| 4 | 57.81 | 61.92 | 1.071 | 63.74 | 63.68 |
+| 8 | 114.78 | 120.21 | 1.047 | 65.18 | 64.84 |
+| 16 | 213.17 | 228.30 | 1.071 | 67.31 | 66.86 |
+| 32 | 394.51 | 418.17 | 1.060 | 71.61 | 70.26 |
+
+Mean ratio **1.051**, range 1.004–1.071.
+
+**What this supports:** a fine-tune trained on Trainium2 deploys on Inferentia2
+through the identical path, at the same serving performance. Which chip trained
+the adapter is invisible at serving time — as it should be, since the merged
+artefact is an ordinary set of safetensors. That is the useful, boring result: a
+practitioner can train on whichever Trainium generation they can get and serve
+on the same Inferentia fleet.
+
+**What it does NOT support:** the 5.1% mean difference is above the 2.4% noise
+floor and consistent in sign, but the two lanes ran hours apart on the same box
+with different cold compiles (boot 548 s vs 602 s), and nothing in this study
+isolates a mechanism by which the *weights* would change decode throughput. The
+architecture, shapes, and dtype are identical. Treating 5.1% as a property of
+trn2-trained weights would be over-reading a single paired run; it is recorded
+and left unexplained.
+
+### 28.2 The context cliff is between 8192 and 12288 — and it is the HOST
+
+The context ladder ends where the *compiler's host memory* ends, not where HBM
+does:
+
+| seq | outcome | evidence |
+|---|---|---|
+| 4096 | ✅ 7433.2 tok/s | — |
+| 8192 | ✅ 8335.8 tok/s, 61.0% MFU | the study's best MFU |
+| **12288** | ✖ **compiler at 114 GB** | killed by watchdog to preserve a receipt |
+| 16384 | ✖ **compiler at 48.6 GB RSS / 80.8 GB VM** | OOM-killed, twice, independently |
+
+Every failure above 8192 is `walrus_driver` — the Neuron compiler backend —
+exhausting a **124 GiB host**. Compilation never completes, so **no HBM figure
+is ever produced**: this study cannot say whether seq 12288 or 16384 would fit
+in the chip's 96 GiB, only that they cannot be compiled on this instance.
+
+63 GiB of swap was free and **entirely unused** at the 16384 kill. The kernel
+chose to OOM-kill rather than swap the compiler's working set, so adding swap
+did not help — worth knowing before anyone tries the same mitigation.
+
+**Practical statement:** on a trn2.3xlarge, Llama 3.1 8B LoRA trains at up to
+**seq 8192**, and the binding constraint above that is host RAM for compilation,
+not accelerator memory. A larger build host, or ahead-of-time compilation on a
+memory-rich machine, is the direction to try — not a bigger accelerator.
+
+### 28.3 The watchdog that made 12288 reportable
+
+The 16384 lane was OOM-killed three separate times, and every time the kernel
+took the whole systemd unit with it — including the shell that would have
+written the failure receipt. Each attempt left **no artifact at all**, and was
+recoverable only by noticing an absence and reading `journalctl`.
+
+The 12288 lane ran under a watchdog that polls `walrus_driver`'s RSS and kills
+it deliberately at 70 GB. It fired at **114 GB** and the receipt was written
+normally, carrying the peak memory figure — which is the number that makes the
+result interpretable rather than merely negative.
+
+The general lesson, now recorded in three places in this study: **a process that
+can be killed by the kernel cannot be relied upon to record its own death.**
+Either watch it from outside, or reconcile intended lanes against produced
+artifacts afterwards. A missing file is silent in a way a failure receipt is not.

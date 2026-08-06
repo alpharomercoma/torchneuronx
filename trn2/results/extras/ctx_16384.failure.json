@@ -1,10 +1,23 @@
 {
   "seq_len": 16384,
+  "box": "trn2",
   "status": "failed",
-  "failure_class": "stale_compile_lock_deadlock",
-  "reason": "Ranks spun for ~3 h on 'Another process must be compiling MODULE_...' with ZERO neuronx-cc processes alive and host memory idle (9 GiB of 124 used, swap untouched). This is a stale lock in the Neuron compile cache, left by compiles that were killed earlier when the queue was re-ordered. It is NOT the host-RAM OOM that this rung hit on the original instance, and it is NOT a statement about whether seq 16384 fits on Trainium2.",
-  "distinct_from": "the original i-00e7b6117eac3a122 failure, which WAS a genuine host-RAM OOM during compile",
-  "host_mem_at_kill": "9 GiB used of 124, swap 0 of 63 -- nothing was working",
-  "caused_by": "operator action (killing lanes to re-order the queue) leaving cache locks behind",
-  "captured": "2026-08-06T04:02:18Z"
+  "failure_class": "host_ram_oom_during_compile",
+  "reason": "The Linux OOM killer terminated the Neuron compiler backend during graph compilation. Kernel log: 'Out of memory: Killed process 45043 (walrus_driver) total-vm:80789336kB, anon-rss:48591568kB' under cpuset=np-lastwindow.service.",
+  "compiler_process": "walrus_driver",
+  "peak_anon_rss_gb": 48.6,
+  "peak_total_vm_gb": 80.8,
+  "host_ram_gb": 124,
+  "swap_gb": 63,
+  "swap_used_at_oom_gb": 0,
+  "attempt": 3,
+  "attempt_history": [
+    "attempt 1, original instance i-00e7b6117eac3a122: host RAM OOM during compile -- a genuine result, but it also took the suite down and the instance was replaced",
+    "attempt 2, this instance: stale-compile-lock deadlock caused by operator kills -- NOT a result, receipt marked as such",
+    "attempt 3, this instance with a 64 GiB swapfile present: host RAM OOM during compile again, cleanly reproduced"
+  ],
+  "conclusion": "Two independent, genuine host-memory OOMs during compilation on a 124 GiB machine. Sequence length 16384 could not be COMPILED for Trainium2 on trn2.3xlarge. This is a HOST-side toolchain limit, not a statement about whether the graph would fit in the chip's 96 GiB HBM -- compilation never completed, so no HBM figure was ever produced.",
+  "swap_note": "63 GiB of swap was free and completely unused at the moment of the kill. The kernel chose to OOM-kill rather than swap the compiler's working set, so adding swap did not mitigate this.",
+  "receipt_written_by": "hand, from journalctl -k and the systemd cgroup attribution -- the OOM killed the whole unit including the shell, so the driver's own failure handler could not run",
+  "captured": "2026-08-06T08:56:23Z"
 }
