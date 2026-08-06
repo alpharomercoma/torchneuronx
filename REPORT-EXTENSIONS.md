@@ -228,10 +228,26 @@ snapshot directory, not an HF repo id.
 
 ## 15. Trainium1 vs Trainium2, one chip each (Phase 3)
 
-**Status: infrastructure and harness complete, measurements not taken.** The
-lane is blocked on AWS capacity, not on work. This section is scaffolded with
-the declared design so that when a box lands, the numbers drop into a shape
-that was fixed *before* any result was seen.
+**Status: MEASURED.** A 24-hour Capacity Block ran 2026-08-05/06 on a
+trn2.3xlarge in sa-east-1 ($53.64, non-refundable). Every number below comes
+from that run and is traceable to a stored result JSON.
+
+This section was originally scaffolded with the declared design *before* any
+result was seen — the grid, the denominators and the fairness argument were
+fixed in advance so the numbers could only drop into a shape already committed
+to. That scaffold text survived into the measured version by mistake and, until
+this correction, said the lane had not run while §§18–28 cited its results. The
+pre-registration was real; the "not taken" status was stale.
+
+**Read §15 with three caveats that later sections establish and that this
+section originally did not carry:**
+
+- **MFU here is PROVISIONAL** — the FLOP model omits attention (§30.1).
+- **The two chips ran at different tensor-parallel widths** (trn1 TP=2, trn2
+  TP=4). This is a one-chip *system* comparison at each chip's working default,
+  not an isolated silicon comparison (§30.2).
+- **The $/token figure amortises a non-refundable block** as if fully utilised.
+  The single-job bill was $53.64 (§30.3).
 
 ### 15.1 What is being compared, and why it is fair
 
@@ -1729,3 +1745,119 @@ removed, and `roofline.py` now skips `invalidated/`, `deferred/`, `superseded/`
 and `original_chip/`. Three tags legitimately retain both a failure and a
 success — `whisper`, `tp_probe`, `fused_spec` — where a lane failed and a retry
 succeeded; that history is real and is kept.
+
+---
+
+## 30. Adversarial review: what an independent reviewer broke
+
+Before publication this study was handed to an independent model (codex-cli
+0.146.0) with instructions to attack it rather than praise it. Seven findings
+came back. **Two were critical and both are confirmed.** Every claim below was
+re-verified against the code and the stored JSON rather than accepted.
+
+### 30.1 CRITICAL — MFU is provisional and must not be read as utilisation
+
+`shared/train/sft_lora.py` defines `attention_flops_per_token()` — a
+sequence-dependent term the parameter-count FLOP model cannot capture — and
+**never calls it**. Every MFU in this study is parameter-only.
+
+That is not a rounding detail. The attention term, computed with the study's own
+formula, is:
+
+| seq | attention as % of the parameter term |
+|---|---|
+| 2048 | 8.9% |
+| 4096 | 17.7% |
+| 8192 | 35.5% |
+
+And applying it produces impossible numbers:
+
+| lane | stored MFU | + attention |
+|---|---|---|
+| trn1 `eff_seq4096` (/190) | 91.38% | **107.53%** ← impossible |
+| trn1 `mb1_seq4096` (/190) | 91.33% | **107.47%** ← impossible |
+| trn2 `ctx_8192` (/667) | 61.00% | 82.47% |
+
+**A utilisation above 100% is proof the model is wrong somewhere**, not proof of
+a fast chip. Candidates: the attention formula overestimates; the 190 TFLOP/s
+trn1 denominator is too low (the alternative 210 figure gives 97.3%, still
+implausible); or — most likely — `tokens_per_s` derives from the *median timed
+step*, which §25.1 showed covers only 40–89% of wall clock, so it is an
+instantaneous steady-state rate being compared against a sustained peak.
+
+**Consequences applied throughout:**
+
+- **MFU in this study is a PROVISIONAL, parameter-only lower bound.** It is
+  useful for comparing lanes computed the same way; it is not an absolute
+  utilisation figure and should not be cited as one.
+- §26.3's "91.4% MFU" is **not** "the study's best MFU" in any absolute sense.
+- §21.3's occupancy argument leaned on the MFU ladder. That ladder is
+  directionally informative and quantitatively unreliable — see §30.4.
+- **`tokens_per_s` and wall clock are the trustworthy metrics.** They are
+  measured, not modelled, and every headline ratio in §15 rests on them.
+
+The fix is not to silently wire the attention term in — that would publish
+107% utilisation. It needs a reconciled FLOP model and denominator, which this
+study did not have time to establish.
+
+### 30.2 CRITICAL — §15's status line was stale, and the comparison is TP-confounded
+
+§15 opened with "measurements not taken… blocked on AWS capacity" while §§18–28
+cited its results throughout. That was pre-registration scaffold text left in
+place after the block ran. Corrected in §15.
+
+The reviewer's substantive point stands: **trn1 ran TP=2 and trn2 ran TP=4.**
+That changes collective topology, shard size, HBM per rank, compiler graph and
+reduction order simultaneously with the silicon. §18 already conceded this for
+the loss gap, but §§21 and 26 phrase 1.20×, 1.92×, 2.04× and 2.21× as
+Trainium2 results.
+
+**The defensible claim is a one-chip SYSTEM comparison at each chip's working
+default — trn1 at TP=2 against trn2 at TP=4 — not an isolated silicon effect.**
+A matched-width comparison is structurally impossible here: trn1 has two cores
+and cannot reach TP=4. Running trn2 at TP=2 was possible and was not done; that
+is the missing control, and it is now the single most valuable follow-up.
+
+### 30.3 The cost headline needs both numbers, always
+
+The arithmetic is correct — trn1 $0.2583/M, trn2 $0.1952/M, 24.4% lower — but
+"occupied cost" amortises a **non-refundable** Capacity Block as though it were
+fully utilised. Allocating the whole 24-hour block to this one job gives
+**$5.0759/M**, and the actual bill was **$53.64** regardless of how much of the
+block was used.
+
+Both numbers are already computed by `cost_metrics()` and the study's rule was
+never to blend them. The correction is that the 24.4% figure must appear
+**beside** the block-allocated figure wherever it is quoted, and must never be
+called "what the job cost".
+
+### 30.4 Three claims downgraded from finding to hypothesis
+
+- **§21.3 device occupancy.** "The chip is not being filled" is an inference
+  from an unreliable MFU ladder plus a null host result. The null bounds host
+  cost below the noise floor; it does not license a positive claim about device
+  idling. **Downgraded to a hypothesis requiring `neuron-profile`.**
+- **§25.1 end-to-end generality.** The end-to-end ratios (0.995× and 0.98×) are
+  *inside* the 2.4% noise floor, so "finishes no sooner" is at the edge of what
+  the data supports. The **in-window fraction** collapse (89% → 40%) is a large,
+  real effect measured on both chips; the end-to-end consequence is consistent
+  with it but rests on differences too small to resolve. Two shapes, unequal
+  step counts, and no fixed real-token or fixed-update budget.
+- **§28.1 serving equivalence.** "At the same serving performance" overstates a
+  single unpaired run with different cold compiles. The defensible claim: *the
+  Trainium2-trained artifact deploys through the identical Inferentia2 path and
+  is byte-verified; this study does not establish a serving-performance
+  difference between the two artifacts.*
+
+### 30.5 What survived
+
+The reviewer identified the byte-verified train-to-serve compatibility (§28.1)
+as the strongest valid result, and did not dispute: the held-out quality gate
+(§19), the bit-identical cross-chip determinism (§20), the MoE allowlist
+rejection (§24.5), the host-memory compile cliff (§28.2), the residency runtime
+limit (§27), or any of the recorded failure receipts. The arithmetic audit
+confirmed `tokens_per_optimizer_step`, steady-state tokens/s, end-to-end rates
+and the §20 replication figures all reproduce exactly.
+
+**This section exists because a study that only publishes what survived review
+is not reporting the review.**
