@@ -1245,6 +1245,28 @@ purchasing signal.** MFU rose 2.3×. Time-to-result did not move. A practitioner
 who tuned on MFU alone would have declared a large win and shipped a job that
 finishes at the same time.
 
+**It is not a Trainium2 quirk.** Trainium1 was given the same treatment at ITS
+best shape (seq 4096, 91.4% MFU), full 3 epochs, and behaves identically:
+
+| | trn1 @ seq 4096 | trn2 @ seq 8192 |
+|---|---|---|
+| steady-state vs its own primary lane | **1.21×** | **2.30×** |
+| MFU | 91.4% | 61.0% |
+| in-window fraction | **40.0%** | **40.3%** |
+| untimed wall clock per step | 14.33 s | 12.76 s |
+| **end-to-end vs its own primary lane** | **0.98×** | **0.995×** |
+
+Two different chips, two different sequence lengths, two different MFU regimes —
+and the same outcome: the in-window fraction collapses to **40%** and end-to-end
+throughput does not improve at all. trn1's best configuration is 2% *slower*
+end to end than its published lane, as trn2's is 3% slower in wall clock.
+
+The effect therefore belongs to the shape of the work, not to the silicon:
+fewer, larger optimizer steps amortise a fixed per-step overhead over far fewer
+steps — and §21 and §28 already established that overhead is **not** host data
+preparation. Anyone tuning sequence length upward on either generation should
+expect the throughput metric to improve while the job finishes at the same time.
+
 It also bounds §21's null. Host cost was below the 2.4% noise floor at seq 2048
 and 4096; at seq 8192 the non-step fraction is 63%. We did not run the isolation
 lane at 8192 and cannot attribute that gap to the dataloader specifically, but
