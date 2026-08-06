@@ -561,3 +561,78 @@ because a missing file is silent in a way a failure receipt is not.
 A robust fix would be a driver-level `trap` that writes a receipt on SIGTERM, or
 a post-run reconciliation step. Neither is implemented; this is recorded as a
 known limitation.
+
+---
+
+# TEARDOWN RECORD — written 2026-08-06 09:40Z, before trn2 terminates at 11:00Z
+
+## What survives, and where
+
+| artifact | location | verified |
+|---|---|---|
+| All trn2 results (93 JSON) | `s3://…/results/trn2/` | S3 holds MORE than the box (223 files vs 199) — includes `original_chip/` and `invalidated/` |
+| trn1 results | `s3://…/results/trn1/` | ✅ |
+| inf2 results incl. the trn2 serving grid | `s3://…/results/inf2/` | ✅ |
+| **Original-chip results** (13 files the replacement overwrote) | `s3://…/results/trn2/original_chip/` | ✅ recovered by version ID |
+| **trn1 merged weights** (Phase-2 provenance) | `s3://…/artifacts/llama31-8b-dolly-merged-trn1/` | ✅ 11 objects |
+| **trn2 merged weights** | `s3://…/artifacts/llama31-8b-dolly-merged-trn2/` | ✅ 11 objects, sha256 `all_match=True` on inf2 |
+| **`qwen3_32b_lora` adapter** — a 32B LoRA trained on ONE chip, unreproducible on trn1 | `s3://…/artifacts/adapters-trn2/qwen3_32b_lora/` | ✅ |
+| 22 other LoRA adapters | `s3://…/artifacts/adapters-trn2/` | 🔄 uploading |
+| v3 NEFF compile cache | `s3://…/neuron-cache-v3/` | 🔄 queued |
+| `fullft_qwen3_1_7b` (17 G) — unreproducible on trn1 | queued last | ⚠️ may not finish |
+
+Upload order was chosen so a bandwidth shortfall costs the LEAST unique item:
+the irreplaceable 455 MB adapter went first, the 17 GB full fine-tune last.
+
+## The final answer on context length
+
+**Llama 3.1 8B LoRA trains at up to seq 8192 on a trn2.3xlarge, and 8192 is
+exact — not an interval.**
+
+| seq | outcome | compiler peak host RAM |
+|---|---|---|
+| 8192 | ✅ 8335.8 tok/s, 61.0% MFU | fits |
+| 9216 | ✖ `NotImplementedError: Only support sequence as multiples of 2K` — **invalid length, not a memory result** |
+| 10240 | ✖ | 104 GB |
+| 12288 | ✖ | 114 GB |
+| 16384 | ✖ | OOM-killed by the kernel, twice |
+
+Valid lengths are multiples of 2048, so 10240 is the next legal step and there
+is nothing between it and 8192. **The binding constraint is the compiler's host
+memory, not the chip**: compilation never completes, so no HBM figure is ever
+produced. 63 GiB of swap sat free and unused at the 16384 kill — the kernel
+chose to kill rather than swap, so swap is not a mitigation.
+
+## Numbers audit
+
+**30/30 report figures re-verified against stored JSON** at 09:14Z, spanning
+§15–§27: headline throughput both chips, quality gate both chips, isolation both
+chips, batch ladder, checkpoint timing, efficiency sweeps, FP8 both chips,
+maxutil, residency. Plus the §23 recovery re-verified 14/14 against the
+recovered original-chip files.
+
+## The five things that nearly went missing
+
+1. **13 result files** overwritten by the replacement instance → recovered via
+   S3 versioning (§23).
+2. **Both merged model weights** overwrote each other at a shared path →
+   recovered into box-specific prefixes (§28.1).
+3. **Three OOM-killed lanes** left no artifact because the kernel killed the
+   shell that would have written the receipt → reconstructed from `journalctl`.
+4. **`residency_pair_b`** — an experiment that silently never ran, whose
+   surviving half reported a plausible, hoped-for, wrong answer (§27.4).
+5. **`trn2_weights_verify.json` was 0 bytes** — the provenance check appeared to
+   have run and had not. Re-run: `all_match=True`.
+
+Every one was found by noticing an ABSENCE or an implausible value, never by an
+error message. That is the single most transferable lesson of this run.
+
+## Still open, and honestly so
+
+- Whether seq 12288/16384 would FIT in 96 GiB HBM — unknown, compilation never
+  got that far.
+- Why trn1's compiler instruction count is identical across micro-batches (§22.3).
+- The 5.1% serving difference between trn1- and trn2-trained weights (§28.1) —
+  above the noise floor, no mechanism, not claimed as real.
+- FP8 on trn2 produces NaN; whether a proper quantisation recipe fixes it is
+  untested (§25.3).
