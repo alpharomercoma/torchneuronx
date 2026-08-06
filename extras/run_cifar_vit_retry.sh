@@ -61,7 +61,8 @@ done
 log "waiting for provisioning marker, then running cifar_vit with --optlevel=1"
 CMD=$(aws ssm send-command --region $REGION --instance-ids "$IID" --document-name AWS-RunShellScript \
   --timeout-seconds 7200 --parameters 'commands=[
-    "for i in $(seq 1 60); do [ -f /opt/np/.provisioned ] && break; sleep 30; done",
+    "for i in $(seq 1 60); do [ -f /opt/np/.userdata-trn2-done ] && break; sleep 30; done",
+    "[ -f /opt/np/.userdata-trn2-done ] || echo \"WARNING: provisioning marker absent after 30 min; proceeding anyway\"",
     "cd /opt/np/repo && bash shared/bin/pull_code.sh >/dev/null 2>&1",
     "export NEURON_CC_FLAGS=\"--optlevel=1\"",
     "export BOX=trn2 NP_DEVICE=trn2 NP_REGION=sa-east-1 NP_CACHE_PREFIX=neuron-cache-v3",

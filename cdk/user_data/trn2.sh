@@ -110,3 +110,10 @@ if [ -x "$V/bin/pip" ]; then
     && echo "np: training packages verified" \
     || echo "np: TRAINING PACKAGES BROKEN -- lanes will fail fast at the TP probe"
 fi
+
+# PROVISIONING MARKER. common.sh writes /opt/np/.userdata-done, but that
+# fires before this box-specific script has installed its packages and
+# scratch disk -- so anything waiting on it can start too early. Each box
+# now writes its OWN marker as the last action, which is the only reliable
+# "this box is ready" signal for a launcher polling from outside.
+date -u '+%Y-%m-%dT%H:%M:%SZ' > /opt/np/.userdata-trn2-done

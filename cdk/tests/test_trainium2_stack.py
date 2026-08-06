@@ -357,7 +357,14 @@ def test_unscheduled_mode_does_not_autorun():
     (instance,) = _capacity_block_template().find_resources(
         "AWS::EC2::Instance"
     ).values()
-    assert "np-autorun" not in str(instance["Properties"]["UserData"])
+    # Assert on the INSTALLED ARTEFACT, not on the string "np-autorun"
+    # appearing anywhere. trn2.sh carries a comment explaining why the autorun
+    # unit needs TimeoutStartSec=infinity, and a bare substring check matched
+    # that prose -- failing a stack that was behaving correctly. The unit file
+    # and its executable are what actually make a box self-start.
+    ud = str(instance["Properties"]["UserData"])
+    assert "np-autorun.service" not in ud
+    assert "/usr/local/sbin/np-autorun.sh" not in ud
 
 
 def test_schedule_without_a_reservation_is_refused():
