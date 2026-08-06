@@ -1450,3 +1450,77 @@ the slower chip.
 - **`data_dolly_nopack` reproduces its anomaly on both** (5.4633 / 5.4631),
   confirming §25.5's conclusion that the lane's accounting is broken rather
   than that one chip behaved oddly.
+
+---
+
+## 27. Can one Trainium2 host two training jobs? (Phase 3)
+
+96 GiB of HBM and four logical cores make co-tenancy plausible on Trainium2 in
+a way it never was on Trainium1's 32 GiB and two cores. This is a production
+question rather than a benchmark one — it decides whether a team shares a chip
+or buys two.
+
+**The answer, on this stack, is no.**
+
+### 27.1 What was measured
+
+Two independent 2-core LoRA jobs (TinyLlama, 50 steps, identical), pinned to
+disjoint halves of the chip with `NEURON_RT_VISIBLE_CORES=0,1` and `2,3`, each
+with its own rendezvous port:
+
+| lane | cores | run | tokens/s |
+|---|---|---|---|
+| `residency_solo_a` | 0,1 | alone | 5946.8 |
+| `residency_solo_b` | 2,3 | alone | 6068.2 |
+| `residency_pair_a` | 0,1 | concurrent | 5906.8 |
+| `residency_pair_b` | 2,3 | concurrent | **failed to start** |
+
+```
+ERROR NRT:nrt_allocate_neuron_cores
+  Logical Neuron Core(s) not available - Requested:lnc1-lnc1
+  Available:0 Logical Core size:2 (cores busy, ret=-16)
+```
+
+The second job could not claim its cores while the first held the device.
+
+### 27.2 Why this is a finding and not a misconfiguration
+
+The obvious objection is that the core indices were wrong. They were not:
+**`solo_a` on cores 0,1 and `solo_b` on cores 2,3 each ran successfully** with
+exactly those indices. Both halves are individually addressable and both work.
+What fails is claiming the second half while the first is in use.
+
+The second objection is that this is the earlier port collision again. It is
+not. That bug was real — both jobs defaulted to `torch.distributed` port 29500 —
+and it was fixed; the logs confirm 29511 and 29512. The failure then moved from
+`EADDRINUSE` to this Neuron-runtime error, which is a different and more
+informative wall. **Fixing the first bug is what made the second one visible.**
+
+### 27.3 What it does and does not license
+
+**Supports:** two concurrent training jobs cannot be placed on one
+trn2.3xlarge by partitioning with `NEURON_RT_VISIBLE_CORES` at the LNC=2
+default. A team wanting two isolated training workloads needs two instances.
+
+**Does not support** any claim about inference co-tenancy, which is a different
+runtime path and is how multi-model serving is normally done on Neuron; about
+other partitioning mechanisms we did not try; or about behaviour at LNC=1, where
+the eight physical cores are addressed directly and the allocation arithmetic
+differs. It also says nothing about *performance* under sharing, because sharing
+never began — `pair_a` at 5906.8 tok/s against its 5946.8 solo baseline is a
+0.7% difference measured while it had the chip to itself.
+
+### 27.4 The earlier version of this lane produced a plausible, wrong answer
+
+Worth recording because of how it failed. In the first run both jobs used port
+29500, `pair_a` died instantly, and `pair_b` ran **alone**. Its throughput was
+99.1% of its solo baseline, and the natural reading — "two jobs share one chip
+with 1% interference" — is exactly the answer a reader hopes for. It was
+measuring an idle chip.
+
+Nothing in the result file marked it: `pair_b.json` was complete and
+well-formed. It was caught only by asking why `pair_a.json` was **absent**.
+That is the third lane in this study whose failure showed up as a missing file
+rather than a recorded error, and it is the reason §26 now insists an audit diff
+intended lanes against present artifacts rather than reading what happens to be
+there.
