@@ -1,0 +1,20 @@
+2026-Aug-05 21:12:47.0617 14427:14481 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-05 21:12:47.0619 14427:14481 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-05 21:12:47.0622 14427:14481 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-05 21:12:47.0624 14427:14481 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+# academic  dataset=mnist arch=cnn params=421,642 epochs=5 lr=0.001 wd=0.0 adamw=False batch=128 smoothing=0.0 augment=True seed=0 device=xla
+.
+Compiler status PASS
+2026-08-05 21:12:58.000361:  14427  [INFO]: Compilation Successfully Completed for model.MODULE_13190994557426002193+fad94d7c.hlo_module.pb
+.
+Compiler status PASS
+2026-08-05 21:13:09.000588:  14427  [INFO]: Compilation Successfully Completed for model.MODULE_2530922524450593186+fad94d7c.hlo_module.pb
+.
+Compiler status PASS
+2026-08-05 21:13:18.000781:  14427  [INFO]: Compilation Successfully Completed for model.MODULE_10777364609466204540+fad94d7c.hlo_module.pb
+  epoch   1/5  loss  0.2511  test_acc 97.88%    26.2s
+  epoch   2/5  loss  0.0639  test_acc 98.31%     4.0s
+  epoch   3/5  loss  0.0464  test_acc 98.83%     3.9s
+  epoch   4/5  loss  0.0359  test_acc 98.93%     4.0s
+  epoch   5/5  loss  0.0282  test_acc 99.00%     3.9s
+best test_acc 99.00%  |  steady 2.2 ms/step  |  58018 samples/s  |  compile ~10.9s  ->  /opt/np/repo/trn2/results/academic/mnist_cnn.json

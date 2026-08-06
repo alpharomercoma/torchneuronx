@@ -1,0 +1,2 @@
+[sft_lora] profile=trn2 (trn2.3xlarge) -- re-exec under torchrun (--nproc_per_node=4, one rank per logical NeuronCore)
+[sft_lora] /opt/aws_neuronx_venv_pytorch_2_9/bin/python -m torch.distributed.run --nproc_per_node=4 /opt/np/repo/shared/train/sft_lora.py --tag mb4_seq4096 --device-profile trn2 --nproc-per-node 4 --tensor-parallel-size 4 --out /opt/np/repo/trn2/results/batch_ladder/mb4_seq4096.json --model meta-llama/Llama-3.1-8B-Instruct --seq-len 4096 --micro-batch 4 --grad-accum 2 --max-steps 30

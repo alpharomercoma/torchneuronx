@@ -636,3 +636,52 @@ error message. That is the single most transferable lesson of this run.
   above the noise floor, no mechanism, not claimed as real.
 - FP8 on trn2 produces NaN; whether a proper quantisation recipe fixes it is
   untested (§25.3).
+
+## FINAL SURVIVAL AUDIT — 2026-08-06 10:17Z, everything is off the box
+
+| artifact | objects | size |
+|---|---|---|
+| `results/trn1` | 164 | — |
+| `results/trn2` (incl. 93 JSON) | 223 | — |
+| `results/trn2/original_chip` (recovered from versioning) | 13 | — |
+| `results/inf2` (incl. the trn2 serving grid) | 302 | — |
+| `artifacts/llama31-8b-dolly-merged-trn1` | 11 | 14.97 GB |
+| `artifacts/llama31-8b-dolly-merged-trn2` | 11 | 14.97 GB |
+| **`adapters-trn2/qwen3_32b_lora`** (32B on ONE chip) | 3094 | 0.44 GB |
+| **`adapters-trn2/fullft_qwen3_1_7b`** (trn1 cannot make this) | 4546 | 16.63 GB |
+| `adapters-trn2/fullft_tinyllama` | 2891 | 10.26 GB |
+| `adapters-trn2` (all) | 50567 | 30.95 GB |
+| `neuron-cache-v3` | 702 | 4.88 GB |
+| `code` | 458 | — |
+
+## THE S3 TRANSFER LESSON (and a self-inflicted failure worth recording)
+
+The preserve job was moving ~7 GB/hr and would not have finished the 17 GB
+artifact. The natural assumption was distance: the instance is in **sa-east-1**
+and the bucket in **us-west-2**.
+
+**The assumption was wrong.** The bottleneck was the AWS CLI running at its
+defaults — **10 concurrent requests, 8 MB parts**. Raising them to 30 / 64 MB
+took the SAME cross-region path from **9 MB/s to ~92 MB/s**, a ~10x gain,
+measured by 16.63 GB actually landing in about three minutes.
+
+Options considered, in the order they are worth trying:
+1. **CLI concurrency tuning** — free, no new service, and it was the whole fix.
+2. **Same-region bucket** then async replication — structurally fastest, since
+   the instance's deadline stops mattering once the bytes leave its disk.
+   A sa-east-1 bucket was created to test this and proved unnecessary.
+3. **S3 Transfer Acceleration** — designed for long-haul, but costs per GB and
+   helps most from OUTSIDE AWS.
+4. **s5cmd** — usually several times faster than `aws s3` on many-file trees;
+   not worth installing under a deadline.
+
+**The self-inflicted failure.** The benchmark that "proved" the tuning also set
+`max_bandwidth 0`, which is invalid. Those uploads **failed instantly**, and an
+instant failure was read as 200 MB/s — a 10x speedup that was actually a
+crash. Worse, the invalid setting then broke **every** `aws s3` call on the box,
+including the preserve job and the final-push loop, until the config was
+rewritten.
+
+Same species as the residency lane and the cache-hit ladder: **an implausibly
+good number is a defect until proven otherwise.** The honest 92 MB/s figure came
+only from counting bytes that actually arrived.

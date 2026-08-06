@@ -1,0 +1,13 @@
+{
+  "seq_len": 9216,
+  "box": "trn2",
+  "status": "failed",
+  "failure_class": "invalid_sequence_length",
+  "reason": "NotImplementedError: Only support sequence as multiples of 2K",
+  "not_a_memory_failure": true,
+  "kernel_oom_events": 0,
+  "watchdog_triggered": false,
+  "explanation": "9216 = 4.5 x 2048, so it is not a legal sequence length on this stack. The lane was a bisection attempt between 8192 (compiles and trains) and 10240 (compiler exhausts host memory); it was invalid by construction and says nothing about memory. Recorded because the CONSTRAINT it revealed is itself a finding: seq_len must be a multiple of 2048.",
+  "consequence": "Because valid sequence lengths are multiples of 2048, there is NO legal value between 8192 and 10240. The trainable maximum on trn2.3xlarge is therefore exactly 8192, and the compile-memory cliff sits at the very next legal step.",
+  "captured": "2026-08-06T09:35:10Z"
+}

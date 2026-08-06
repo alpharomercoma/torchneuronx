@@ -1,0 +1,8 @@
+2026-Aug-05 20:33:09.0729 10281:10342 [2] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-05 20:33:09.0732 10281:10342 [2] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-05 20:33:09.0734 10281:10342 [2] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-05 20:33:09.0737 10281:10342 [2] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+.
+Compiler status PASS
+2026-08-05 20:33:11.000109:  10281  [INFO]: Compilation Successfully Completed for model.MODULE_10191211077114682350+fad94d7c.hlo_module.pb
+device: nki=436.3us torch=2.3us ratio=193.312 correct=True -> /opt/np/repo/trn2/results/extras/nki_device.json
