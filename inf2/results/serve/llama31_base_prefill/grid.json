@@ -1,0 +1,20 @@
+{
+ "model_key": "llama31_base",
+ "config": "prefill",
+ "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+ "shapes": [
+  "256:1",
+  "512:1",
+  "1024:1",
+  "1792:1"
+ ],
+ "concurrency": [
+  1,
+  4
+ ],
+ "num_prompts_rule": "min(c*4,128) floor 8 (smoke: 4)",
+ "client": "fallback_client",
+ "reduced": true,
+ "reduction_note": "single-device 32 GB HBM; KV 128 KiB/token bounds resident sequences (~12 @ 9216 ctx, ~48 @ 2048 ctx); higher concurrencies omitted rather than measured-as-queue-depth; host is 4 vCPU (see cpu lane)",
+ "captured": "2026-08-05T13:22:04Z"
+}

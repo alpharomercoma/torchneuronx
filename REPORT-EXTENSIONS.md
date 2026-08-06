@@ -995,3 +995,80 @@ stack, because the toolchain and the HBM both refuse the larger shapes it would
 require. Varying sequence length (§15) stays the only working instrument for
 work-per-step on these chips, and a `neuron-profile` trace remains the way to
 settle it.
+
+---
+
+## 23. Provenance repair: the replacement instance overwrote 13 published files
+
+An audit of every number in §15–§22 against the stored JSON found **no incorrect
+value** — but it did find that six of them were no longer traceable to the file
+they came from. That is a defect in its own right, and this section records it
+rather than quietly fixing it.
+
+### 23.1 What happened
+
+The original Trainium2 instance (`i-00e7b6117eac3a122`) ran the full suite and
+pushed its results to S3. It was later terminated after a host OOM and the ASG
+replaced it with `i-0a3f33482fa319c76`, which started with an empty results
+directory and **re-ran the whole suite, pushing to the same S3 keys**. Thirteen
+result files were overwritten:
+
+```
+compile/llama31_train.json      extras/tp_probe.json
+cpu/cpu.json                    extras/tp_probe_lnc2_tp4.json
+extras/ctx_4096.json            extras/tp_probe.failure.json
+extras/ctx_8192.json            train/llama31_lora.json
+extras/ctx_16384.failure.json   train/qwen3_lora.json
+extras/tp_preflight_8b.json     train/merge_llama31.json
+                                train/smoke_tinyllama.json
+```
+
+So §15 cited 3532.8 tok/s while the file at that path had come to contain
+3618.0 — the *replacement* chip's number. Both are real measurements of a real
+Trainium2. They are simply from **different physical chips**, which is precisely
+the distinction §20 is about.
+
+### 23.2 Recovery
+
+S3 bucket versioning was enabled, so the original chip's versions were still
+retrievable. All thirteen were recovered by version ID and are now stored under
+a path the suite never writes to:
+
+```
+results/trn2/original_chip/...        (S3, and trn2/results/original_chip/ locally)
+```
+
+Every number in §15 was then re-verified against the recovered files:
+
+| cited in §15 | recovered original | match |
+|---|---|---|
+| 3532.8 tok/s | 3532.8 | ✅ |
+| 4637.7 ms median step | 4637.72 | ✅ |
+| 3322.1 s train wall | 3322.13 | ✅ |
+| 3181.0 tok/s end-to-end | 3181.0 | ✅ |
+| 25.9% MFU | 25.851 | ✅ |
+| 1.1489 final loss | 1.1489 | ✅ |
+| Qwen3 1.24× / 2.04× | 1.237 / 2.045 | ✅ |
+| ctx 4096: 6878.4, 50.3% | 6878.4, 50.332 | ✅ |
+| ctx 8192: 8310.5, 60.8% | 8310.5, 60.812 | ✅ |
+
+**No published number changed.** Every one was correct as written; they had
+simply become unverifiable from the current files.
+
+### 23.3 Which chip each section cites
+
+- **§15 and the context ladder** — the ORIGINAL chip, `original_chip/`.
+- **§20 (replication)** — both, deliberately: that section exists to compare
+  them, and its 2.41% timing spread and bit-identical loss are exactly this
+  pair.
+- **§19, §21, §22** (quality gate, isolation, batch ladder) — the REPLACEMENT
+  chip only. Those lanes were built after the original instance was gone, so
+  there is no ambiguity and nothing was overwritten.
+
+### 23.4 The lesson
+
+A results path that a re-run will write to again is not an archive. Publishing a
+number pins it to a file, and any process that can rewrite that file can break
+the citation without changing the claim. Versioning saved this; without it the
+original measurements would have been unrecoverable and §15 would have had to be
+re-derived from a different chip.
