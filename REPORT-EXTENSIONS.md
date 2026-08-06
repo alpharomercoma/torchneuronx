@@ -1072,3 +1072,100 @@ number pins it to a file, and any process that can rewrite that file can break
 the citation without changing the claim. Versioning saved this; without it the
 original measurements would have been unrecoverable and §15 would have had to be
 re-derived from a different chip.
+
+---
+
+## 24. Lanes that ran on both chips but were not yet written up (Phase 3)
+
+A coverage audit found nine lanes with results on disk and no section citing
+them. Every number below comes from the stored JSON.
+
+### 24.1 Checkpoint save time is identical on both chips
+
+TinyLlama, 30 steps, saving every 10:
+
+| chip | save 1 | save 2 | save 3 | training tok/s |
+|---|---|---|---|---|
+| trn1 | 1.02 s | 1.08 s | 0.98 s | 4435.2 |
+| trn2 | 1.05 s | 0.94 s | 0.99 s | 5616.3 |
+
+Roughly **1 second per checkpoint on both**, with no trend across saves. This is
+a useful negative result: checkpointing is not a differentiator between the
+generations, because it is bound by host I/O to the local NVMe rather than by
+anything on the accelerator. Anyone budgeting checkpoint overhead can use the
+same figure for either chip.
+
+### 24.2 Efficiency sweeps: which levers actually move Trainium2
+
+Each lever applied *individually* to the primary lane, never silently folded
+into it:
+
+| lever | tok/s | MFU | vs primary lane (3532.8) |
+|---|---|---|---|
+| baseline (seq 2048, mb 1, recompute on) | 3532.8 | 25.9% | — |
+| **seq 4096** | **7277.4** | **53.3%** | **2.06×** |
+| gradient checkpointing OFF | 5265.5 | 25.7% | 1.49× |
+| micro-batch 2 | `NCC_EXSP001` device HBM | — | fails |
+| micro-batch 4 | `NCC_EXSP001` device HBM | — | fails |
+
+Sequence length is the only lever that produces a large gain, and it more than
+doubles throughput. Disabling activation recomputation gives 1.49× in tokens/s
+but **MFU barely moves** (25.9% → 25.7%) — because switching recompute off also
+removes FLOPs from the numerator, so the chip is doing less work per token, not
+using itself better. That distinction is exactly why MFU and tokens/s are both
+reported.
+
+Micro-batch is unavailable at all: both rungs hit the device HBM ceiling, which
+is the same wall §22 found at seq 4096.
+
+### 24.3 Small models: where these chips are worst
+
+MNIST and CIFAR-10, three architectures each, final test accuracy:
+
+| task | trn1 | trn2 |
+|---|---|---|
+| MNIST MLP | 97.93% | 97.80% |
+| MNIST CNN | 98.94% | 99.00% |
+| MNIST ViT | 97.59% | 97.88% |
+| CIFAR MLP | 52.16% | 52.24% |
+| CIFAR CNN | 78.93% | 78.65% |
+| CIFAR ViT | 80.64% | *not run* |
+
+Accuracies match within 0.3 points everywhere, which is the point: **the chips
+compute the same answers**, and these lanes exist to show the harness is honest
+on workloads where an accelerator this large has no advantage at all. A
+Trainium2 running MNIST is almost entirely idle. Nobody should buy one for this,
+and the accuracy parity is the evidence that a difference elsewhere is a
+performance difference rather than a correctness one.
+
+### 24.4 Non-LLM architectures: NeuronCore-v3 fixes a v2 failure
+
+| model | trn1 (v2) | trn2 (v3) |
+|---|---|---|
+| Whisper | ✅ | ✅ |
+| SigLIP | ✅ | ✅ |
+| **CLIP** | **✖ recorded failure** | **✅ passes** |
+
+CLIP fails to compile on Trainium1 and compiles and runs on Trainium2. This is
+the second case in the study of a recorded Phase-2 failure turning into a pass
+on new silicon (the first being seq 8192), and it is the kind of result that
+only appears if failures are kept as artifacts rather than discarded.
+
+### 24.5 Mixture-of-Experts is not supported for training on Neuron
+
+`Qwen3-30B-A3B` fails immediately with:
+
+```
+ValueError: Model type qwen3_moe is not supported for task text-generation
+in neuron in training mode. Supported types are: ['llama', 'granite', 'qwen3']
+```
+
+This is a **capability limit, not a resource limit** — the architecture is
+rejected by an allowlist before any compilation or memory allocation is
+attempted. For a practitioner evaluating Trainium for MoE fine-tuning, this is
+the single most decisive fact in the study, and it costs nothing to discover.
+
+Note the receipt for this lane originally captured only the torchrun
+`ChildFailedError` banner, which hid the real cause. It was rewritten from the
+log. A receipt that records the wrapper's error rather than the program's error
+is nearly worthless — the same lesson as adding `traceback.format_exc()` in §19.
