@@ -448,3 +448,50 @@ grad_accum=4 control reported **146.7%**; that single impossible number is what
 exposed the entire chain above. Steady-state throughput is NOT comparable across
 `grad_accum` values on this stack — the same micro-batch shape measured
 1147 ms/micro-batch at accum 8 and 714 ms at accum 4.
+
+## THE STALE-COMPILE-LOCK DEADLOCK (2026-08-06 01:02–04:03Z) — 3 hours lost
+
+`ctx_16384` appeared to be running for three hours. It was doing nothing.
+
+**Symptoms:** the lane log advanced continuously with
+`[INFO]: Another process must be compiling MODULE_...`, while
+`pgrep -c neuronx-cc` returned **0** and the host sat at 9 GiB used of 124 with
+swap completely untouched. Every rank was waiting for a compile that no longer
+existed.
+
+**Cause:** ten stale `.lock` files in `/opt/np/cache/neuron-compile-cache`, left
+behind by compiles that were killed when the queue was re-ordered at ~23:20Z.
+**Operator action — mine.** A killed compile does not release its cache lock.
+
+**Why it mattered:** the lane has no internal timeout. Its deadline guard only
+checks whether there is enough time to *start*. It would have spun until EC2
+terminated the instance at 11:00Z, taking the corrected batch ladder and every
+optional pass with it.
+
+**Handling:**
+- Killed the lane; deleted the ten lock files and ten tmp markers.
+- Wrote a receipt with `failure_class: stale_compile_lock_deadlock` that states
+  explicitly what this was NOT: not the host-RAM OOM the original instance hit,
+  and not evidence about whether seq 16384 fits on Trainium2. It names operator
+  action as the cause. Filing it as "16384 failed on trn2" would have put a
+  fabricated hardware limit into the report.
+- Re-ordered so the corrected ladder (a SYMMETRY item) runs before the optional
+  passes, since only ~5 h remained.
+
+**Lessons.**
+- Killing a compile leaves a lock. Any forced shutdown must be followed by
+  clearing `*.lock` in the compile cache, or the next lane inherits a deadlock.
+- "The log is advancing" is not "work is happening". Liveness must be measured
+  against something that only moves when real work moves — here, a live
+  `neuronx-cc` process or rising memory. This is the same class of error as
+  monitor defect #6, one layer down.
+- A lane that can hang needs a TIMEOUT, not just a start-time deadline check.
+
+## ctx_16384 IS UNRESOLVED, AND MUST BE REPORTED AS SUCH
+
+Two attempts, two different non-answers:
+1. original instance — genuine host-RAM OOM during compile (a real result);
+2. replacement instance — my lock deadlock (not a result at all).
+
+Whether seq 16384 fits on one Trainium2 is **unknown**. It must not be reported
+as a limit.
