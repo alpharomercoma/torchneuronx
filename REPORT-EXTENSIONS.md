@@ -1261,25 +1261,59 @@ merely the faster choice for a model this size, it is the only one that fits.
 
 TinyLlama full fine-tuning runs on both: 7209.1 tok/s on trn1, 8811.6 on trn2.
 
-### 25.3 FP8 is accepted on Trainium1 and buys nothing there
+### 25.3 FP8: one chip cannot use it, the other cannot trust it
 
-`--auto-cast-type=fp8_e4m3`, TinyLlama, 20 steps, on trn1:
+`--auto-cast-type=fp8_e4m3`, TinyLlama, 20 steps, on both chips, against the
+BF16 lane of the same model and step count:
 
-| | tokens/s |
-|---|---|
-| FP8 probe | 4420.0 |
-| BF16 equivalent | 4486.0 |
+| | tokens/s | vs BF16 | final loss |
+|---|---|---|---|
+| **trn1** BF16 | 4486.0 | — | 1.3962 |
+| **trn1** FP8 | 4420.0 | **−1.5%** | **1.5041** (finite) |
+| **trn2** BF16 | 5412.7 | — | 1.2899 |
+| **trn2** FP8 | **5699.6** | **+5.3%** | **NaN** |
 
-**−1.5%, inside the noise floor.** The flag compiles, the lane trains, the
-throughput does not move.
+Two different failures, and neither is the one we expected.
 
-That is what the hardware documentation predicts and it is worth stating as a
-confirmed measurement rather than an inference: the Trainium1 architecture page
-lists cFP8 at the **same 190 TFLOP/s as BF16**, so there is no FP8 speedup in
-the silicon to capture. Trainium2 lists 667 BF16 against **1299 FP8**. The trn2
-probe was still running when this section was written; if it shows a real gain,
-§16's claim that the FP8 gap is unmeasurable headroom will need replacing with
-a measurement.
+**Trainium1 computes FP8 correctly and gains nothing.** The loss is finite and
+in the normal range; throughput moves −1.5%, inside the noise floor. This is
+exactly what the hardware documentation predicts, and it is worth having as a
+measurement rather than an inference: the Trainium1 architecture page lists
+cFP8 at the **same 190 TFLOP/s as BF16**, so there is no FP8 throughput to
+capture on that part. The flag is honoured and the silicon has nothing extra to
+give.
+
+**Trainium2 gains ~5% and produces NaN from the very first step.** Not a
+divergence part-way through — every one of the 20 logged steps is NaN. The lane
+"succeeded" in the sense that it ran to completion and wrote a result file, and
+that result file describes the speed of computing nothing usable.
+
+The 5.3% is above the 2.4% noise floor, so it is a real throughput difference.
+It is also **not a benefit**, because no model was trained. Reporting "FP8 is
+5.3% faster on Trainium2" without the loss column would be one of the most
+misleading sentences this study could produce.
+
+It is also nowhere near what the FLOPs table implies. Trainium2 lists 667
+TFLOP/s BF16 against **1299 FP8** — close to 2× — and the measured difference
+on a lane that does not even produce finite numbers is 5%. Whatever the flag is
+doing, it is not putting the FP8 datapath to work.
+
+**What this replaces.** §16 recorded, on the advice of an adversarial reviewer,
+that the FP8 gap is headroom an H100 could exploit and we could not measure. We
+can now say something better and more specific: **on this software stack, at
+this Neuron version, a one-flag FP8 autocast delivers no speedup on Trainium1
+and no usable numerics on Trainium2.** Getting real FP8 training value on
+NeuronCore-v3 evidently requires more than the autocast flag — quantisation
+recipes, loss scaling, or per-layer control that this study did not attempt.
+
+That is a narrower claim than "FP8 is unreachable" and a far more useful one: it
+tells a practitioner the easy path does not work and roughly where the
+difficulty lies, rather than leaving the whole subject unmeasured.
+
+**Caveat.** One model, 20 steps, one flag. A NaN this immediate usually means a
+numerics or scaling problem rather than a hardware defect, and a longer run or a
+different model might behave differently. What is established is that the
+simplest available route to FP8 training does not work on either chip today.
 
 ### 25.4 The v3 compiler needs more host memory than v2 for the same model
 
