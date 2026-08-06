@@ -803,9 +803,18 @@ def torchrun_argv(script_path, argv, nproc_per_node=NPROC_PER_NODE):
     matters on a DLAMI where several Neuron venvs are on the box and PATH order
     decides which `torchrun` you get.
     """
-    return [sys.executable, "-m", "torch.distributed.run",
-            f"--nproc_per_node={nproc_per_node}",
-            os.path.abspath(script_path)] + list(argv)
+    # MASTER_PORT must be overridable. torch.distributed.run defaults to 29500,
+    # so TWO concurrent jobs on one host always collide -- the second dies with
+    # EADDRINUSE before it starts. That silently broke the multi-model residency
+    # lane: one side failed, the survivor ran ALONE, and its "no interference"
+    # result was measuring an empty chip. Any lane that runs two jobs at once
+    # must give them different ports.
+    port = os.environ.get("NP_MASTER_PORT")
+    cmd = [sys.executable, "-m", "torch.distributed.run",
+           f"--nproc_per_node={nproc_per_node}"]
+    if port:
+        cmd.append(f"--master_port={port}")
+    return cmd + [os.path.abspath(script_path)] + list(argv)
 
 
 def apply_neuron_env(env=None, cache_dir=None, profile=None):

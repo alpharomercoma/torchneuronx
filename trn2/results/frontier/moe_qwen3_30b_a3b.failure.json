@@ -1,1 +1,10 @@
-{"tag":"moe_qwen3_30b_a3b","status":"failed","reason":"_22:52:47   host      : ip-172-31-19-29.sa-east-1.compute.internal   rank      : 1 (local_rank: 1)   exitcode  : 1 (pid: 19321)   error_file: <N/A>   traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html ============================================================ ","captured":"2026-08-05T22:52:47Z"}
+{
+  "tag": "moe_qwen3_30b_a3b",
+  "box": "trn2",
+  "status": "failed",
+  "failure_class": "unsupported_architecture",
+  "reason": "ValueError: Model type qwen3_moe is not supported for task text-generation in neuron in training mode. Supported types are: ['llama', 'granite', 'qwen3']",
+  "note": "GENUINE capability limit, not an operator artifact. optimum-neuron training supports a fixed allowlist of architectures and Mixture-of-Experts is not on it. The earlier receipt recorded only the torchrun ChildFailedError banner, which hid the actual cause.",
+  "supported_types_reported": ["llama", "granite", "qwen3"],
+  "captured": "2026-08-06T04:34:00Z"
+}

@@ -189,13 +189,13 @@ lane data_dolly_nopack 60 --no-packing --max-steps 100 || true
 step "C1: multi-model residency (two 2-core jobs, concurrent)"
 if ! have "$OUT/residency_pair_a.json" && [ "$NPROC" -ge 4 ]; then
   if [ "$(seconds_left)" -gt $((70 * 60)) ]; then
-    NEURON_RT_VISIBLE_CORES=0,1 "$PY" "$TELEM" --out "$OUT/residency_pair_a.telemetry.csv" -- \
+    NP_MASTER_PORT=29511 NEURON_RT_VISIBLE_CORES=0,1 "$PY" "$TELEM" --out "$OUT/residency_pair_a.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_pair_a --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
         --out "$OUT/residency_pair_a.json" > "$OUT/residency_pair_a.log" 2>&1 &
     PID_A=$!
-    NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_pair_b.telemetry.csv" -- \
+    NP_MASTER_PORT=29512 NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_pair_b.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_pair_b --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
@@ -206,13 +206,13 @@ if ! have "$OUT/residency_pair_a.json" && [ "$NPROC" -ge 4 ]; then
     # different models, a slowdown cannot be attributed to interference rather
     # than to the models differing. And a solo baseline is needed for BOTH
     # core pairs, not just one, or the b-side number has nothing to compare to.
-    NEURON_RT_VISIBLE_CORES=0,1 "$PY" "$TELEM" --out "$OUT/residency_solo_a.telemetry.csv" -- \
+    NP_MASTER_PORT=29513 NEURON_RT_VISIBLE_CORES=0,1 "$PY" "$TELEM" --out "$OUT/residency_solo_a.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_solo_a --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \
         --out "$OUT/residency_solo_a.json" > "$OUT/residency_solo_a.log" 2>&1 \
       || echo "  residency solo a FAILED"
-    NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_solo_b.telemetry.csv" -- \
+    NP_MASTER_PORT=29514 NEURON_RT_VISIBLE_CORES=2,3 "$PY" "$TELEM" --out "$OUT/residency_solo_b.telemetry.csv" -- \
       "$PY" "$SFT" --tag residency_solo_b --device-profile trn2 \
         --nproc-per-node 2 --tensor-parallel-size 2 \
         --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 \

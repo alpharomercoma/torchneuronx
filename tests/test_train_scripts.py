@@ -272,3 +272,21 @@ def test_plausible_mfu_is_not_flagged():
                                       peak_flops=210e12)
     assert out["mfu_pct"] < 100.0
     assert "mfu_impossible" not in out
+
+
+def test_master_port_is_overridable_for_concurrent_jobs():
+    """Two jobs on one host both defaulting to 29500 is a guaranteed collision.
+
+    It silently broke the residency lane: one side died with EADDRINUSE, the
+    survivor ran alone, and its "no interference" number was measuring an idle
+    chip.
+    """
+    import os
+    os.environ["NP_MASTER_PORT"] = "29599"
+    try:
+        argv = sft_lora.torchrun_argv("/x/sft_lora.py", ["--tag", "t"], nproc_per_node=2)
+        assert "--master_port=29599" in argv
+    finally:
+        del os.environ["NP_MASTER_PORT"]
+    argv = sft_lora.torchrun_argv("/x/sft_lora.py", ["--tag", "t"], nproc_per_node=2)
+    assert not any(a.startswith("--master_port") for a in argv)
