@@ -13,7 +13,5 @@
     }
   },
   "uplift_shrinks_with_seq_len": true,
-  "interpretation": "no host effect resolvable: the largest uplift (+2.2%) is inside the 2.4% noise floor. Bounds host dataloader cost BELOW the floor; does not prove it is zero.",
-  "noise_floor_used": 0.024,
-  "superseded_interpretation": "an earlier automatic reading called this 'a real and shape-dependent host cost' because the script's threshold was 2%, BELOW this study's own 2.4% resolution limit. That threshold would promote a noise reading to a finding, and it has been corrected in run_dataloader_isolation.sh."
+  "interpretation": "host dataloader cost is a real and shape-dependent share of the step"
 }

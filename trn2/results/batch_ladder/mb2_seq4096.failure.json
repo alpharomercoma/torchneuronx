@@ -1,0 +1,1 @@
+{"tag":"mb2_seq4096","box":"trn2","status":"failed","reason":"NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of gen3. Needed more than 68,861,358,848 (64.13GB) vs. available bytes 25,769,","compiler_instructions":null,"captured":"2026-08-06T04:06:29Z"}

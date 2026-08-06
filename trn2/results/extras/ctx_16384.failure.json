@@ -1,8 +1,10 @@
 {
   "seq_len": 16384,
-  "status": "deferred",
-  "reason": "NOT ATTEMPTED IN THIS PASS. On the original trn2 instance this lane exhausted the 124 GiB host during compile; the OOM killer took the suite down and the instance was ultimately replaced. Re-attempting it here, ahead of the quality gate, would risk the one item where the two chips are still asymmetric. It is deferred to a dedicated stage-3 unit that runs only after the quality gate, the dataloader isolation lane and the batch ladder have completed, and only with the 64 GiB swapfile now in place. This receipt exists so the automated ladder skips the rung; it records a scheduling decision and is NOT a measurement.",
-  "prior_recorded_failure": "trn2/results/extras/ctx_16384.failure.json from instance i-00e7b6117eac3a122 -- host RAM OOM during compile, in S3",
-  "mitigation_applied": "64 GiB swapfile added at /scratch/swapfile; trn1 has always had one and its removal from trn2 user-data is implicated in the original OOM",
-  "captured": "2026-08-05T20:29:44Z"
+  "status": "failed",
+  "failure_class": "stale_compile_lock_deadlock",
+  "reason": "Ranks spun for ~3 h on 'Another process must be compiling MODULE_...' with ZERO neuronx-cc processes alive and host memory idle (9 GiB of 124 used, swap untouched). This is a stale lock in the Neuron compile cache, left by compiles that were killed earlier when the queue was re-ordered. It is NOT the host-RAM OOM that this rung hit on the original instance, and it is NOT a statement about whether seq 16384 fits on Trainium2.",
+  "distinct_from": "the original i-00e7b6117eac3a122 failure, which WAS a genuine host-RAM OOM during compile",
+  "host_mem_at_kill": "9 GiB used of 124, swap 0 of 63 -- nothing was working",
+  "caused_by": "operator action (killing lanes to re-order the queue) leaving cache locks behind",
+  "captured": "2026-08-06T04:02:18Z"
 }
