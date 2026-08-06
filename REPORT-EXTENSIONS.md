@@ -1586,6 +1586,25 @@ does:
 The cliff therefore sits between **8192 and 10240**, and the failures are
 ordered the way compilation cost should be: 104 GB at 10240, 114 GB at 12288.
 
+**And there is nothing legal in between.** An attempt to bisect at 9216 failed
+instantly with
+
+```
+NotImplementedError: Only support sequence as multiples of 2K
+```
+
+9216 = 4.5 x 2048, so it is not a valid sequence length on this stack at all —
+the lane was invalid by construction and says nothing about memory (its receipt
+records `kernel_oom_events: 0` and no watchdog trigger). But the constraint it
+exposed settles the question: **valid sequence lengths are multiples of 2048**,
+so 10240 is the very next legal step above 8192.
+
+**The trainable maximum for Llama 3.1 8B LoRA on a trn2.3xlarge is therefore
+exactly 8192**, and it is bounded not by the accelerator but by the compiler's
+host memory at the next legal shape. That is a precise answer rather than an
+interval, and it arrived only because the failing lane's actual error was read
+instead of its exit status.
+
 The 16384 figure is **not** comparable to the other two and must not be read as
 "16384 needs less memory than 10240". Those two were killed by our watchdog at a
 70 GB threshold, so their reported peak is where the watchdog caught them on the
