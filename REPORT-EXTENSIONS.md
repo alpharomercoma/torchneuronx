@@ -1192,3 +1192,144 @@ Note the receipt for this lane originally captured only the torchrun
 `ChildFailedError` banner, which hid the real cause. It was rewritten from the
 log. A receipt that records the wrapper's error rather than the program's error
 is nearly worthless — the same lesson as adding `traceback.format_exc()` in §19.
+
+---
+
+## 25. Maximum utilisation, and four results that came with caveats (Phase 3)
+
+### 25.1 The best configuration is 2.30x faster and finishes no sooner
+
+The maxutil lane takes the best operating point the efficiency sweeps found and
+runs the **full 3 epochs** — not a step-capped probe — so its wall clock is
+directly comparable to the primary lane on the same chip. The selector chose
+seq 8192, micro-batch 1, gradient checkpointing on: one lever changed from the
+published configuration.
+
+| | primary (seq 2048) | maxutil (seq 8192) | ratio |
+|---|---|---|---|
+| steady-state tokens/s | 3618.0 | **8336.6** | **2.30×** |
+| MFU | 26.5% | **61.0%** | 2.30× |
+| tokens processed | 10,567,680 | 10,813,440 | 1.02× |
+| compile | 18.3 s | 42.6 s | 2.33× |
+| **train wall** | **3220.1 s** | **3310.9 s** | **1.03× SLOWER** |
+| **end-to-end tokens/s** | **3281.8** | **3266.0** | **0.995×** |
+
+Reading only the first two rows, seq 8192 looks like a decisive win: 2.30×
+throughput, MFU from 26.5% to 61.0%. Reading the wall clock, it processed 2%
+more tokens in 3% more time and finished **no sooner**.
+
+Both are true, and the reconciliation is in a field this harness records for
+exactly this purpose:
+
+| | steps measured | summed step time | wall | **measured fraction** |
+|---|---|---|---|---|
+| primary | 635 | 2869.5 s | 3220.1 s | **89.1%** |
+| maxutil | 155 | 1212.2 s | 3310.9 s | **36.6%** |
+
+At seq 2048, 89% of the job is inside the timed steps. At seq 8192, only **37%**
+is. The device is genuinely 2.30× faster while it is computing, and it spends
+nearly two thirds of the job not computing. Longer sequences mean far fewer,
+much larger optimizer steps, and everything between them — data preparation,
+packing to 8192, the dataloader, checkpoint and logging boundaries — is
+unchanged in absolute terms while the step count collapses from 635 to 155.
+
+**This is the sharpest illustration in the study of why MFU is a poor
+purchasing signal.** MFU rose 2.3×. Time-to-result did not move. A practitioner
+who tuned on MFU alone would have declared a large win and shipped a job that
+finishes at the same time.
+
+It also bounds §21's null. Host cost was below the 2.4% noise floor at seq 2048
+and 4096; at seq 8192 the non-step fraction is 63%. We did not run the isolation
+lane at 8192 and cannot attribute that gap to the dataloader specifically, but
+it is clearly not negligible at that shape, and the honest statement is that
+§21's bound applies **only to the two shapes it tested**.
+
+### 25.2 Full fine-tuning of a 1.7B model requires Trainium2
+
+Same script, same model, no LoRA:
+
+```
+trn1: NCC_EOOM001 -- peak HBM 19.46 GB exceeds the 16.00 GB limit for Trn1
+                     (14.42 GB of it I/O tensors)
+trn2: 6172.9 tok/s
+```
+
+This is a **capability** difference, not a performance one, and it is the third
+recorded Trainium1 failure that becomes a Trainium2 pass — after seq 8192 and
+CLIP. It also sharpens the case for LoRA on the older part: on trn1, LoRA is not
+merely the faster choice for a model this size, it is the only one that fits.
+
+TinyLlama full fine-tuning runs on both: 7209.1 tok/s on trn1, 8811.6 on trn2.
+
+### 25.3 FP8 is accepted on Trainium1 and buys nothing there
+
+`--auto-cast-type=fp8_e4m3`, TinyLlama, 20 steps, on trn1:
+
+| | tokens/s |
+|---|---|
+| FP8 probe | 4420.0 |
+| BF16 equivalent | 4486.0 |
+
+**−1.5%, inside the noise floor.** The flag compiles, the lane trains, the
+throughput does not move.
+
+That is what the hardware documentation predicts and it is worth stating as a
+confirmed measurement rather than an inference: the Trainium1 architecture page
+lists cFP8 at the **same 190 TFLOP/s as BF16**, so there is no FP8 speedup in
+the silicon to capture. Trainium2 lists 667 BF16 against **1299 FP8**. The trn2
+probe was still running when this section was written; if it shows a real gain,
+§16's claim that the FP8 gap is unmeasurable headroom will need replacing with
+a measurement.
+
+### 25.4 The v3 compiler needs more host memory than v2 for the same model
+
+`cifar_vit` — a small Vision Transformer on CIFAR-10 — compiles and trains on
+Trainium1 and **cannot be compiled on Trainium2**:
+
+```
+trn2: [F137] neuronx-cc was forcibly killed -- This most commonly occurs
+             due to insufficient system memory
+```
+
+| | host RAM | swap | cifar_vit |
+|---|---|---|---|
+| trn1.2xlarge | 30 GiB | 63 GiB | ✅ passes |
+| trn2.3xlarge | 124 GiB | 63 GiB | ✖ compiler killed |
+
+The chip with **four times the host memory fails**, and it failed again after a
+64 GiB swapfile was added. The same source, the same script, the same dataset.
+
+We are not able to prove the mechanism from the outside. The compile targets
+differ, and at the LNC=2 default one logical v3 core spans two physical cores,
+so the graph being compiled is not identical even though the model is. What is
+measured is that the v3 toolchain's host-memory appetite for this model exceeds
+a 124 GiB machine while the v2 toolchain fits in 30 GiB. Anyone sizing a build
+host for Trainium2 should not assume the instance's own RAM is sufficient.
+
+This is also the second host-memory compile failure on trn2, after `ctx_16384`.
+Two independent lanes hitting the same wall makes it a property of the
+toolchain rather than an accident of one graph.
+
+### 25.5 The no-packing lane is NOT comparable, and we are reporting it anyway
+
+| lane | trn1 loss | trn2 loss | trn1 tok/s | trn2 tok/s |
+|---|---|---|---|---|
+| `data_alpaca` (packed) | 1.0088 | 1.0088 | 2834.0 | 3696.4 |
+| `data_dolly_nopack` | **5.4633** | **5.4631** | 2892.5 | 3708.6 |
+
+The alpaca loss is **identical to four decimals on both chips**, which is
+another instance of the determinism established in §20.
+
+The no-packing loss of ~5.46 against ~1.15 packed is far too large to read as
+"packing improves quality", and the throughput figure is worse than useless:
+`tokens_per_optimizer_step` is computed as `seq_len x micro_batch x grad_accum`,
+which assumes every position carries a real token. That holds when packing is
+on. **With packing off, Dolly examples are short and padded out to 2048, so most
+counted positions are padding** — the lane's 2892.5 and 3708.6 tok/s are
+counting padding as throughput, and its loss is computed over a very different
+mix of real tokens per sequence.
+
+So this lane measures neither quality nor throughput in a way that can be set
+beside the packed lanes. It is reported because it ran on both chips and the
+numbers exist; it is flagged here so that nobody plots it. Fixing it would mean
+counting non-padding tokens per batch, which the harness does not currently do.
