@@ -1,0 +1,19 @@
+{
+  "box": "trn2",
+  "shapes": {
+    "2048": {
+      "real_tokens_per_s": 3712.9,
+      "synthetic_tokens_per_s": 3795.6,
+      "uplift": 1.0223
+    },
+    "4096": {
+      "real_tokens_per_s": 7339.8,
+      "synthetic_tokens_per_s": 7317.5,
+      "uplift": 0.997
+    }
+  },
+  "uplift_shrinks_with_seq_len": true,
+  "interpretation": "no host effect resolvable: the largest uplift (+2.2%) is inside the 2.4% noise floor. Bounds host dataloader cost BELOW the floor; does not prove it is zero.",
+  "noise_floor_used": 0.024,
+  "superseded_interpretation": "an earlier automatic reading called this 'a real and shape-dependent host cost' because the script's threshold was 2%, BELOW this study's own 2.4% resolution limit. That threshold would promote a noise reading to a finding, and it has been corrected in run_dataloader_isolation.sh."
+}

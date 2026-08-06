@@ -2,15 +2,15 @@
   "lane": "precompile",
   "model": "meta-llama/Llama-3.1-8B-Instruct",
   "exit_code": 0,
-  "wall_s": 903.26,
+  "wall_s": 213.58,
   "cache_dir": "/opt/np/cache/neuron-compile-cache",
-  "cache_dir_size_mb": 337,
-  "cache_dir_size_mb_before": 169,
-  "neff_files_before": 14,
-  "neff_files_after": 22,
-  "graphs_compiled": 8,
-  "cache_hits_note": "Compiled 8 new NEFFs into the cache (was 14, now 22). wall_s is the compile cost lane 4 no longer has to pay. Push the cache with shared/bin/sync_neuron_cache.sh push so a replaced instance never pays it twice.",
+  "cache_dir_size_mb": 1346,
+  "cache_dir_size_mb_before": 1346,
+  "neff_files_before": 42,
+  "neff_files_after": 42,
+  "graphs_compiled": 0,
+  "cache_hits_note": "No new NEFFs were produced: every graph this model needs was already in the cache, so lane 4 should show a first step close to its median. wall_s here is cache-lookup and graph-tracing time only, not compilation.",
   "numerics_note": "NEURON_EXTRACT_GRAPHS_ONLY=1 -- graphs were traced and compiled but never executed. No loss, gradient or throughput value from this phase is recorded anywhere; the training metrics JSON was written to /tmp/precompile_discard.json and deleted.",
   "max_steps": 10,
-  "captured": "2026-08-05T12:31:40Z"
+  "captured": "2026-08-05T18:11:27Z"
 }

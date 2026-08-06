@@ -1,0 +1,17 @@
+{
+ "mode": "device",
+ "shape": [
+  128,
+  512
+ ],
+ "iters": 200,
+ "warmup": 20,
+ "max_abs_err_vs_numpy": 3.855675458908081e-07,
+ "correct": true,
+ "nki_us_per_call": 436.34,
+ "torch_softmax_us_per_call": 2.26,
+ "nki_vs_torch_ratio": 193.312,
+ "timing_note": "wall-clock around torch_xla.sync'd loops; includes XLA dispatch overhead identically for both sides -- a relative number, honest for comparison, not an absolute kernel latency",
+ "seed": 0,
+ "captured": "2026-08-05T20:33:11Z"
+}

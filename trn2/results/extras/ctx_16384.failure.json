@@ -1,5 +1,8 @@
-python3 -c "import json;d=json.load(open(\"trn2/results/extras/ctx_16384.failure.json\"));print(\"receipt valid:\",d[\"failure_mode\"])"
-systemctl reset-failed np-suite.service 2>/dev/null || true
-systemd-run --unit=np-suite --collect --property=Type=simple --property=TimeoutStartSec=infinity --working-directory=/opt/np/repo /bin/bash extras/run_phase3_trn2.sh
-sleep 12
-systemctl is-active np-suite.service
+{
+  "seq_len": 16384,
+  "status": "deferred",
+  "reason": "NOT ATTEMPTED IN THIS PASS. On the original trn2 instance this lane exhausted the 124 GiB host during compile; the OOM killer took the suite down and the instance was ultimately replaced. Re-attempting it here, ahead of the quality gate, would risk the one item where the two chips are still asymmetric. It is deferred to a dedicated stage-3 unit that runs only after the quality gate, the dataloader isolation lane and the batch ladder have completed, and only with the 64 GiB swapfile now in place. This receipt exists so the automated ladder skips the rung; it records a scheduling decision and is NOT a measurement.",
+  "prior_recorded_failure": "trn2/results/extras/ctx_16384.failure.json from instance i-00e7b6117eac3a122 -- host RAM OOM during compile, in S3",
+  "mitigation_applied": "64 GiB swapfile added at /scratch/swapfile; trn1 has always had one and its removal from trn2 user-data is implicated in the original OOM",
+  "captured": "2026-08-05T20:29:44Z"
+}

@@ -1,0 +1,1 @@
+{"tag":"eff_mb4","micro_batch":4,"status":"failed","reason":"NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of gen3. Needed more than 34,501,358,336 (32.13GB) vs. ava","captured":"2026-08-05T21:12:05Z"}

@@ -24,14 +24,14 @@
   "total_bytes": 16077846769,
   "total_gib": 14.974,
   "timings_s": {
-    "load_s": 0.79,
-    "merge_s": 14.94,
-    "save_s": 5.99
+    "load_s": 0.9,
+    "merge_s": 14.07,
+    "save_s": 6.05
   },
   "upload_dest": "s3://neuron-pipelines-artifacts-600627330911/artifacts/llama31-8b-dolly-merged/",
-  "upload_s": 195.51,
+  "upload_s": 207.08,
   "upload_ok": true,
-  "wall_s": 235.38,
+  "wall_s": 245.66,
   "versions": {
     "python": "3.12.3",
     "torch": "2.9.1",
@@ -42,5 +42,5 @@
     "neuronx-cc": "2.26.6360.0+6f180f47"
   },
   "host_ram_note": "Heaviest host-RAM step in the trn1 suite: base model in bf16 plus the merged state dict during safetensors serialisation, against 32 GiB on trn1.2xlarge. See the module docstring for the local-merge fallback if this OOMs.",
-  "captured": "2026-08-05T14:54:33Z"
+  "captured": "2026-08-05T20:14:14Z"
 }

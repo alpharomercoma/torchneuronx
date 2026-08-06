@@ -159,10 +159,29 @@ u = summary["shapes"]
 if "2048" in u and "4096" in u:
     a, b = u["2048"]["uplift"], u["4096"]["uplift"]
     summary["uplift_shrinks_with_seq_len"] = bool(a > b)
-    summary["interpretation"] = (
-        "host dataloader cost is a real and shape-dependent share of the step"
-        if a > b + 0.02 else
-        "no shape-dependent host effect; the device was the bottleneck at both shapes")
+    # THE THRESHOLD MUST EXCEED THE STUDY'S OWN RESOLUTION. The measured noise
+    # floor is 2.4% -- both across three seeds on one box and across two
+    # physical Trainium2 chips (see REPORT 20). A 2% threshold would declare an
+    # effect smaller than the smallest difference this methodology can resolve,
+    # which is how a noise reading becomes a finding. Anything inside the floor
+    # is reported as inconclusive, not as a null and not as an effect.
+    NOISE = 0.024
+    biggest = max(abs(a - 1.0), abs(b - 1.0))
+    if biggest <= NOISE:
+        summary["interpretation"] = (
+            f"no host effect resolvable: the largest uplift ({biggest:+.1%}) is "
+            f"inside the {NOISE:.1%} noise floor. Bounds host dataloader cost "
+            "BELOW the floor; does not prove it is zero.")
+    elif a > b + NOISE:
+        summary["interpretation"] = (
+            "host dataloader cost is a real and shape-dependent share of the step: "
+            f"uplift {a:.3f}x at 2048 vs {b:.3f}x at 4096, a gap wider than the "
+            f"{NOISE:.1%} noise floor")
+    else:
+        summary["interpretation"] = (
+            f"uplift exceeds the noise floor ({biggest:+.1%}) but does NOT shrink "
+            "with sequence length, so it is not the fixed-host-cost signature")
+    summary["noise_floor_used"] = NOISE
     rows.append(f"  uplift 2048 {a:.3f}x vs 4096 {b:.3f}x -> {summary['interpretation']}")
 (out / "isolation_summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 print("\n".join(rows))

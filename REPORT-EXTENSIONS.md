@@ -703,13 +703,42 @@ Dolly SFT is not designed to move those and evaluator noise would dominate the
 signal — which is why this study does not report them, on the explicit advice
 of every adversarial reviewer consulted.
 
-### 19.4 Status
+### 19.4 Both chips, byte-identical held-out rows
 
-Trainium2 has not yet run this gate; it cannot run concurrently with the main
-suite because both contend for the same chip. The script is
-`extras/run_quality_gate.sh`, is BOX-parameterized, and uses the same split
-seed, so the two chips will be scored on byte-identical rows. **Until it runs,
-the quality claim is asymmetric and this section says so.**
+Trainium2 has now run the same gate, same script, same split seed, so both
+chips were scored on the identical rows:
+
+| lane | chip | before | after | delta | eval wall |
+|---|---|---|---|---|---|
+| Llama 3.1 8B | trn1 | 2.1491 | 1.2510 | **−0.8981** | 843.8 s |
+| Llama 3.1 8B | trn2 | 2.1481 | 1.2652 | **−0.8829** | 610.3 s |
+| TinyLlama | trn1 | 1.7252 | 1.3962 | −0.3290 | 291.7 s |
+| TinyLlama | trn2 | 1.7250 | 1.3924 | −0.3327 | 506.0 s |
+
+Two things worth stating.
+
+**The starting losses agree to four decimal places** (2.1491 vs 2.1481;
+1.7252 vs 1.7250). That is the split seed doing its job — the same untrained
+model scored on the same rows — and it is the check that makes the *after*
+column comparable at all. Had they differed, the deltas would be measuring
+different examples.
+
+**Both chips learn the same amount.** −0.8981 against −0.8829 on the 8B lane, a
+difference of 0.015 nats. Read against §18 — where the training-loss gap grows
+monotonically from accumulation order — this is the expected outcome: a small
+numerical divergence that does not change what the model learned. Trainium2
+reached it in 610 s of evaluation against trn1's 844 s.
+
+The asymmetry this section previously disclosed is now closed. Both chips have
+held-out loss before and after, from the same script, on the same rows.
+
+### 19.5 The `--data-seed` lane failed on both chips
+
+`quality_smoke_dataseed` produced a failure receipt on trn1 *and* trn2. It is
+recorded rather than hidden: the lane was a probe of whether `--data-seed`
+moves a trajectory that `--seed` does not, and it did not survive on either
+chip. It failing identically on both is itself weak evidence that the cause is
+the stack rather than the hardware.
 
 ---
 
@@ -829,13 +858,36 @@ number describes a chip running someone else's problem size. It is 1.92× at
 4096, 2.21× end-to-end on the same job, and it runs seq 8192 at all, which
 trn1 cannot at any speed.
 
-### 21.4 Limits, stated plainly
+### 21.4 Trainium2 ran it too, and the null holds
 
-- This lane has so far run **only on Trainium1**. The queued trn2 run is armed
-  on-box; until it completes, the null is demonstrated on the chip where host
-  cost should matter *least*, since trn1 has the longer step. That is the
-  weaker direction of the test, and the conclusion is correspondingly
-  provisional.
+trn1 was the weaker direction of the test — it has the longer step, so a fixed
+host cost should matter least there. Trainium2 is the chip whose headline the
+hypothesis was invented to explain, so its result is the one that counts:
+
+| shape | real | synthetic | uplift |
+|---|---|---|---|
+| seq 2048 | 3712.9 tok/s | 3795.6 tok/s | **1.022×** |
+| seq 4096 | 7339.8 tok/s | 7317.5 tok/s | **0.997×** |
+
+The uplift at 2048 is **+2.2%**, and it does shrink to nothing at 4096 — which
+is the *direction* the hypothesis predicts. But this study's own resolution
+limit is **2.4%** (§20, measured both across seeds and across two physical
+chips). The effect is smaller than the smallest difference the methodology can
+resolve, so it cannot be reported as an effect.
+
+**A correction worth recording.** The lane's own summary script initially
+declared this "a real and shape-dependent host cost", because its threshold was
+2% — below the study's 2.4% noise floor. That is exactly how a noise reading
+becomes a finding: a threshold chosen without reference to the measurement's
+resolution. The threshold now derives from the noise floor, and the stored
+summary carries both the corrected reading and the superseded one.
+
+The honest conclusion across both chips: host dataloader cost is bounded
+**below 2.4%** of a training step at both shapes. That is not zero, and at
+seq 2048 on trn2 it may be a real ~2%, but it cannot account for a gap between
+1.20× and 1.92×. The occupancy explanation in 21.3 stands.
+
+### 21.5 Limits, stated plainly
 - A null result bounds host cost below the noise floor; it does not prove it is
   exactly zero.
 - The occupancy explanation in 21.3 is consistent with every measurement we

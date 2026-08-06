@@ -2,6 +2,7 @@
   "tag": "ctx_4096",
   "model": "meta-llama/Llama-3.1-8B-Instruct",
   "dataset": "databricks/databricks-dolly-15k",
+  "synthetic_data": null,
   "params_total": 8108654592,
   "params_trainable": 77594624,
   "params_frozen": 8031059968,
@@ -62,30 +63,73 @@
     "neuronx-distributed": "0.19.28492+435aae2b",
     "libneuronxla": "2.2.17544.0+fb9962bf"
   },
+  "provenance": {
+    "git_commit": null,
+    "git_dirty": false,
+    "argv": [
+      "/opt/np/repo/shared/train/sft_lora.py",
+      "--model",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "--tag",
+      "ctx_4096",
+      "--device-profile",
+      "trn2",
+      "--nproc-per-node",
+      "4",
+      "--tensor-parallel-size",
+      "4",
+      "--seq-len",
+      "4096",
+      "--max-steps",
+      "20",
+      "--out",
+      "/opt/np/repo/trn2/results/extras/ctx_4096.json"
+    ],
+    "dataset": "databricks/databricks-dolly-15k",
+    "dataset_fields": null,
+    "holdout_frac": 0.0,
+    "holdout_split_seed": 20260805,
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "seed": 42,
+    "data_seed": null
+  },
+  "holdout": {
+    "enabled": false,
+    "frac": 0.0,
+    "split_seed": 20260805,
+    "loss_before": null,
+    "loss_after": null,
+    "loss_delta": null,
+    "eval_wall_s": 0.0,
+    "method": null,
+    "traceback": null,
+    "error": null,
+    "note": "Held-out in-domain token loss on rows never trained on. Supports 'the fine-tune learned, comparably on both chips'. Does NOT support any claim about instruction quality or downstream benchmarks."
+  },
   "tokens_per_optimizer_step": 32768,
   "steps_recorded": 20,
   "warmup_steps_excluded": 10,
-  "first_step_ms": 755357.61,
+  "first_step_ms": 28228.35,
   "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache (lane 3 precompile) collapses this toward the median; a cold cache leaves tens of minutes in it.",
-  "median_step_ms": 4763.88,
-  "compile_s": 750.59,
+  "median_step_ms": 4408.325,
+  "compile_s": 23.82,
   "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
-  "train_wall_s": 925.76,
-  "tokens_per_s": 6878.4,
-  "tokens_per_s_end_to_end": 707.9,
-  "measured_window_fraction": 0.1029,
+  "train_wall_s": 197.34,
+  "tokens_per_s": 7433.2,
+  "tokens_per_s_end_to_end": 3320.9,
+  "measured_window_fraction": 0.4468,
   "throughput_note": "tokens_per_s is steady-state (median step, warmup excluded); tokens_per_s_end_to_end divides ALL tokens by the full training wall clock. measured_window_fraction is what share of wall time the median-step window actually covers. Compare like with like.",
   "flops_per_token": 48807116800.0,
   "flops_formula": "6*params_trainable + 4*params_frozen",
-  "tflops": 335.716,
-  "mfu_pct": 50.332,
+  "tflops": 362.793,
+  "mfu_pct": 54.392,
   "peak_bf16_flops": 667000000000000.0,
   "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium2: 667 BF16/FP16/TF32 TFLOPS per chip",
-  "mfu_pct_alt": 50.332,
+  "mfu_pct_alt": 54.392,
   "peak_bf16_flops_alt": 667000000000000.0,
   "peak_bf16_flops_alt_source": "same figure; arch and instance-level specs agree for Trainium2",
-  "mfu_pct_end_to_end": 5.18,
-  "peak_host_mem_mib": 12377.1,
+  "mfu_pct_end_to_end": 24.3,
+  "peak_host_mem_mib": 12382.7,
   "peak_device_mem_mib": null,
   "peak_device_mem_note": "Device HBM high-water is not available from torch on XLA. Read it from the matching telemetry CSV (mem_used_mib column, sampled at 1 Hz by neuron-monitor). Deliberately null rather than estimated.",
   "final_loss": 1.4402,
@@ -93,125 +137,125 @@
     {
       "step": 1,
       "loss": 1.8492,
-      "ms": 755357.61,
+      "ms": 28228.35,
       "warmup": true
     },
     {
       "step": 2,
       "loss": 1.7994,
-      "ms": 5016.84,
+      "ms": 4401.61,
       "warmup": true
     },
     {
       "step": 3,
       "loss": 1.7435,
-      "ms": 4733.89,
+      "ms": 4414.25,
       "warmup": true
     },
     {
       "step": 4,
       "loss": 1.5795,
-      "ms": 4723.58,
+      "ms": 4285.65,
       "warmup": true
     },
     {
       "step": 5,
       "loss": 1.6127,
-      "ms": 4716.22,
+      "ms": 4386.51,
       "warmup": true
     },
     {
       "step": 6,
       "loss": 1.6596,
-      "ms": 4841.87,
+      "ms": 4531.85,
       "warmup": true
     },
     {
       "step": 7,
       "loss": 1.4794,
-      "ms": 4779.01,
+      "ms": 4249.93,
       "warmup": true
     },
     {
       "step": 8,
       "loss": 1.53,
-      "ms": 4732.11,
+      "ms": 4338.3,
       "warmup": true
     },
     {
       "step": 9,
       "loss": 1.5769,
-      "ms": 4729.69,
+      "ms": 4373.22,
       "warmup": true
     },
     {
       "step": 10,
       "loss": 1.6243,
-      "ms": 4786.31,
+      "ms": 4509.09,
       "warmup": true
     },
     {
       "step": 11,
       "loss": 1.361,
-      "ms": 4780.5,
+      "ms": 4443.4,
       "warmup": false
     },
     {
       "step": 12,
       "loss": 1.4502,
-      "ms": 4943.91,
+      "ms": 4565.33,
       "warmup": false
     },
     {
       "step": 13,
       "loss": 1.5784,
-      "ms": 4746.62,
+      "ms": 4346.43,
       "warmup": false
     },
     {
       "step": 14,
       "loss": 1.4615,
-      "ms": 4781.98,
+      "ms": 4414.38,
       "warmup": false
     },
     {
       "step": 15,
       "loss": 1.5598,
-      "ms": 5037.84,
+      "ms": 4342.6,
       "warmup": false
     },
     {
       "step": 16,
       "loss": 1.3442,
-      "ms": 4747.26,
+      "ms": 4502.0,
       "warmup": false
     },
     {
       "step": 17,
       "loss": 1.4358,
-      "ms": 4732.41,
+      "ms": 4326.09,
       "warmup": false
     },
     {
       "step": 18,
       "loss": 1.4888,
-      "ms": 4977.0,
+      "ms": 4420.81,
       "warmup": false
     },
     {
       "step": 19,
       "loss": 1.5276,
-      "ms": 4706.05,
+      "ms": 4402.27,
       "warmup": false
     },
     {
       "step": 20,
       "loss": 1.4402,
-      "ms": 4674.78,
+      "ms": 4373.21,
       "warmup": false
     }
   ],
   "checkpoint_saves": [],
   "adapter_out": "/opt/np/models/adapters/ctx_4096",
-  "captured": "2026-08-05T15:14:33Z"
+  "captured": "2026-08-05T20:22:03Z"
 }

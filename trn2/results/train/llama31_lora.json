@@ -62,30 +62,69 @@
     "neuronx-distributed": "0.19.28492+435aae2b",
     "libneuronxla": "2.2.17544.0+fb9962bf"
   },
+  "provenance": {
+    "git_commit": null,
+    "git_dirty": false,
+    "argv": [
+      "/opt/np/repo/shared/train/sft_lora.py",
+      "--device-profile",
+      "trn2",
+      "--nproc-per-node",
+      "4",
+      "--tensor-parallel-size",
+      "4",
+      "--model",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "--tag",
+      "llama31_lora",
+      "--out",
+      "/opt/np/repo/trn2/results/train/llama31_lora.json"
+    ],
+    "dataset": "databricks/databricks-dolly-15k",
+    "dataset_fields": null,
+    "holdout_frac": 0.0,
+    "holdout_split_seed": 20260805,
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "seed": 42,
+    "data_seed": null
+  },
+  "holdout": {
+    "enabled": false,
+    "frac": 0.0,
+    "split_seed": 20260805,
+    "loss_before": null,
+    "loss_after": null,
+    "loss_delta": null,
+    "eval_wall_s": 0.0,
+    "method": null,
+    "traceback": null,
+    "error": null,
+    "note": "Held-out in-domain token loss on rows never trained on. Supports 'the fine-tune learned, comparably on both chips'. Does NOT support any claim about instruction quality or downstream benchmarks."
+  },
   "tokens_per_optimizer_step": 16384,
   "steps_recorded": 645,
   "warmup_steps_excluded": 10,
-  "first_step_ms": 24033.41,
+  "first_step_ms": 22809.75,
   "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache (lane 3 precompile) collapses this toward the median; a cold cache leaves tens of minutes in it.",
-  "median_step_ms": 4637.72,
-  "compile_s": 19.4,
+  "median_step_ms": 4528.51,
+  "compile_s": 18.28,
   "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
-  "train_wall_s": 3322.13,
-  "tokens_per_s": 3532.8,
-  "tokens_per_s_end_to_end": 3181.0,
-  "measured_window_fraction": 0.9004,
+  "train_wall_s": 3220.07,
+  "tokens_per_s": 3618.0,
+  "tokens_per_s_end_to_end": 3281.8,
+  "measured_window_fraction": 0.9071,
   "throughput_note": "tokens_per_s is steady-state (median step, warmup excluded); tokens_per_s_end_to_end divides ALL tokens by the full training wall clock. measured_window_fraction is what share of wall time the median-step window actually covers. Compare like with like.",
   "flops_per_token": 48807116800.0,
   "flops_formula": "6*params_trainable + 4*params_frozen",
-  "tflops": 172.424,
-  "mfu_pct": 25.851,
+  "tflops": 176.583,
+  "mfu_pct": 26.474,
   "peak_bf16_flops": 667000000000000.0,
   "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium2: 667 BF16/FP16/TF32 TFLOPS per chip",
-  "mfu_pct_alt": 25.851,
+  "mfu_pct_alt": 26.474,
   "peak_bf16_flops_alt": 667000000000000.0,
   "peak_bf16_flops_alt_source": "same figure; arch and instance-level specs agree for Trainium2",
-  "mfu_pct_end_to_end": 23.277,
-  "peak_host_mem_mib": 12382.4,
+  "mfu_pct_end_to_end": 24.014,
+  "peak_host_mem_mib": 12382.6,
   "peak_device_mem_mib": null,
   "peak_device_mem_note": "Device HBM high-water is not available from torch on XLA. Read it from the matching telemetry CSV (mem_used_mib column, sampled at 1 Hz by neuron-monitor). Deliberately null rather than estimated.",
   "final_loss": 1.1489,
@@ -93,3875 +132,3875 @@
     {
       "step": 1,
       "loss": 2.1799,
-      "ms": 24033.41,
+      "ms": 22809.75,
       "warmup": true
     },
     {
       "step": 2,
       "loss": 1.9337,
-      "ms": 4674.81,
+      "ms": 4590.22,
       "warmup": true
     },
     {
       "step": 3,
       "loss": 1.5918,
-      "ms": 4620.61,
+      "ms": 4548.14,
       "warmup": true
     },
     {
       "step": 4,
       "loss": 1.853,
-      "ms": 4629.16,
+      "ms": 4549.53,
       "warmup": true
     },
     {
       "step": 5,
       "loss": 1.6663,
-      "ms": 4618.81,
+      "ms": 4650.12,
       "warmup": true
     },
     {
       "step": 6,
       "loss": 1.7931,
-      "ms": 4615.5,
+      "ms": 4580.76,
       "warmup": true
     },
     {
       "step": 7,
       "loss": 1.4891,
-      "ms": 4688.27,
+      "ms": 4493.83,
       "warmup": true
     },
     {
       "step": 8,
       "loss": 1.4631,
-      "ms": 4517.79,
+      "ms": 4449.56,
       "warmup": true
     },
     {
       "step": 9,
       "loss": 1.4393,
-      "ms": 4540.65,
+      "ms": 4558.47,
       "warmup": true
     },
     {
       "step": 10,
       "loss": 1.5763,
-      "ms": 4556.95,
+      "ms": 4518.92,
       "warmup": true
     },
     {
       "step": 11,
       "loss": 1.5733,
-      "ms": 4521.3,
+      "ms": 4664.94,
       "warmup": false
     },
     {
       "step": 12,
       "loss": 1.5683,
-      "ms": 4483.63,
+      "ms": 4620.06,
       "warmup": false
     },
     {
       "step": 13,
       "loss": 1.6422,
-      "ms": 4580.43,
+      "ms": 4612.58,
       "warmup": false
     },
     {
       "step": 14,
       "loss": 1.6072,
-      "ms": 4601.05,
+      "ms": 4560.65,
       "warmup": false
     },
     {
       "step": 15,
       "loss": 1.5377,
-      "ms": 4582.3,
+      "ms": 4613.58,
       "warmup": false
     },
     {
       "step": 16,
       "loss": 1.5324,
-      "ms": 4704.03,
+      "ms": 4643.95,
       "warmup": false
     },
     {
       "step": 17,
       "loss": 1.336,
-      "ms": 4517.15,
+      "ms": 4535.96,
       "warmup": false
     },
     {
       "step": 18,
       "loss": 1.5792,
-      "ms": 4733.09,
+      "ms": 4589.96,
       "warmup": false
     },
     {
       "step": 19,
       "loss": 1.3868,
-      "ms": 4664.6,
+      "ms": 4767.51,
       "warmup": false
     },
     {
       "step": 20,
       "loss": 1.5821,
-      "ms": 4575.28,
+      "ms": 4430.17,
       "warmup": false
     },
     {
       "step": 21,
       "loss": 1.4081,
-      "ms": 4610.09,
+      "ms": 4558.82,
       "warmup": false
     },
     {
       "step": 22,
       "loss": 1.3376,
-      "ms": 4688.55,
+      "ms": 4528.92,
       "warmup": false
     },
     {
       "step": 23,
       "loss": 1.5351,
-      "ms": 4653.51,
+      "ms": 4574.2,
       "warmup": false
     },
     {
       "step": 24,
       "loss": 1.4828,
-      "ms": 4631.61,
+      "ms": 4643.08,
       "warmup": false
     },
     {
       "step": 25,
       "loss": 1.409,
-      "ms": 4614.3,
+      "ms": 4589.12,
       "warmup": false
     },
     {
       "step": 26,
       "loss": 1.2575,
-      "ms": 4766.88,
+      "ms": 4536.23,
       "warmup": false
     },
     {
       "step": 27,
       "loss": 1.3965,
-      "ms": 4637.7,
+      "ms": 4452.16,
       "warmup": false
     },
     {
       "step": 28,
       "loss": 1.3545,
-      "ms": 4626.38,
+      "ms": 4573.63,
       "warmup": false
     },
     {
       "step": 29,
       "loss": 1.4185,
-      "ms": 4619.96,
+      "ms": 4705.4,
       "warmup": false
     },
     {
       "step": 30,
       "loss": 1.2723,
-      "ms": 4627.7,
+      "ms": 4586.03,
       "warmup": false
     },
     {
       "step": 31,
       "loss": 1.6818,
-      "ms": 4543.72,
+      "ms": 4511.3,
       "warmup": false
     },
     {
       "step": 32,
       "loss": 1.2499,
-      "ms": 4474.12,
+      "ms": 4675.99,
       "warmup": false
     },
     {
       "step": 33,
       "loss": 1.2328,
-      "ms": 4572.92,
+      "ms": 4395.47,
       "warmup": false
     },
     {
       "step": 34,
       "loss": 1.3271,
-      "ms": 4607.84,
+      "ms": 4597.49,
       "warmup": false
     },
     {
       "step": 35,
       "loss": 1.2445,
-      "ms": 4532.26,
+      "ms": 4690.75,
       "warmup": false
     },
     {
       "step": 36,
       "loss": 1.238,
-      "ms": 4627.0,
+      "ms": 4581.24,
       "warmup": false
     },
     {
       "step": 37,
       "loss": 1.435,
-      "ms": 4501.99,
+      "ms": 4435.6,
       "warmup": false
     },
     {
       "step": 38,
       "loss": 1.6716,
-      "ms": 4521.37,
+      "ms": 4581.97,
       "warmup": false
     },
     {
       "step": 39,
       "loss": 1.176,
-      "ms": 4710.42,
+      "ms": 4589.55,
       "warmup": false
     },
     {
       "step": 40,
       "loss": 1.0797,
-      "ms": 4631.49,
+      "ms": 4579.5,
       "warmup": false
     },
     {
       "step": 41,
       "loss": 1.5808,
-      "ms": 4513.68,
+      "ms": 4563.69,
       "warmup": false
     },
     {
       "step": 42,
       "loss": 1.1894,
-      "ms": 4580.26,
+      "ms": 4601.45,
       "warmup": false
     },
     {
       "step": 43,
       "loss": 1.1612,
-      "ms": 4727.92,
+      "ms": 4634.94,
       "warmup": false
     },
     {
       "step": 44,
       "loss": 1.2178,
-      "ms": 4724.69,
+      "ms": 4516.78,
       "warmup": false
     },
     {
       "step": 45,
       "loss": 1.3469,
-      "ms": 4725.17,
+      "ms": 4570.35,
       "warmup": false
     },
     {
       "step": 46,
       "loss": 1.2822,
-      "ms": 4628.06,
+      "ms": 4460.36,
       "warmup": false
     },
     {
       "step": 47,
       "loss": 1.166,
-      "ms": 4495.07,
+      "ms": 4508.56,
       "warmup": false
     },
     {
       "step": 48,
       "loss": 1.3029,
-      "ms": 4502.85,
+      "ms": 4464.86,
       "warmup": false
     },
     {
       "step": 49,
       "loss": 1.4249,
-      "ms": 4572.15,
+      "ms": 4499.53,
       "warmup": false
     },
     {
       "step": 50,
       "loss": 1.7456,
-      "ms": 4648.63,
+      "ms": 4723.48,
       "warmup": false
     },
     {
       "step": 51,
       "loss": 1.2572,
-      "ms": 4574.08,
+      "ms": 4580.96,
       "warmup": false
     },
     {
       "step": 52,
       "loss": 1.4569,
-      "ms": 5007.37,
+      "ms": 4730.15,
       "warmup": false
     },
     {
       "step": 53,
       "loss": 1.4925,
-      "ms": 4662.56,
+      "ms": 4564.14,
       "warmup": false
     },
     {
       "step": 54,
       "loss": 1.3074,
-      "ms": 4616.29,
+      "ms": 4557.7,
       "warmup": false
     },
     {
       "step": 55,
       "loss": 1.1772,
-      "ms": 4537.01,
+      "ms": 4517.17,
       "warmup": false
     },
     {
       "step": 56,
       "loss": 1.3323,
-      "ms": 4532.87,
+      "ms": 4497.57,
       "warmup": false
     },
     {
       "step": 57,
       "loss": 1.4418,
-      "ms": 4735.6,
+      "ms": 4568.37,
       "warmup": false
     },
     {
       "step": 58,
       "loss": 1.1307,
-      "ms": 4677.74,
+      "ms": 4296.1,
       "warmup": false
     },
     {
       "step": 59,
       "loss": 1.1628,
-      "ms": 4760.65,
+      "ms": 4430.17,
       "warmup": false
     },
     {
       "step": 60,
       "loss": 1.5357,
-      "ms": 4696.92,
+      "ms": 4539.98,
       "warmup": false
     },
     {
       "step": 61,
       "loss": 1.0901,
-      "ms": 4733.08,
+      "ms": 4565.48,
       "warmup": false
     },
     {
       "step": 62,
       "loss": 1.6373,
-      "ms": 4549.75,
+      "ms": 4402.81,
       "warmup": false
     },
     {
       "step": 63,
       "loss": 1.4026,
-      "ms": 4901.12,
+      "ms": 4569.89,
       "warmup": false
     },
     {
       "step": 64,
       "loss": 1.4356,
-      "ms": 4785.1,
+      "ms": 4590.8,
       "warmup": false
     },
     {
       "step": 65,
       "loss": 1.1003,
-      "ms": 4610.36,
+      "ms": 4464.4,
       "warmup": false
     },
     {
       "step": 66,
       "loss": 1.3303,
-      "ms": 4639.04,
+      "ms": 4553.84,
       "warmup": false
     },
     {
       "step": 67,
       "loss": 1.2764,
-      "ms": 4540.47,
+      "ms": 4487.14,
       "warmup": false
     },
     {
       "step": 68,
       "loss": 1.1408,
-      "ms": 4546.8,
+      "ms": 4406.99,
       "warmup": false
     },
     {
       "step": 69,
       "loss": 1.2449,
-      "ms": 4566.33,
+      "ms": 4563.46,
       "warmup": false
     },
     {
       "step": 70,
       "loss": 1.3349,
-      "ms": 4534.84,
+      "ms": 4438.64,
       "warmup": false
     },
     {
       "step": 71,
       "loss": 1.3102,
-      "ms": 4487.5,
+      "ms": 4540.66,
       "warmup": false
     },
     {
       "step": 72,
       "loss": 1.1832,
-      "ms": 4605.25,
+      "ms": 4541.62,
       "warmup": false
     },
     {
       "step": 73,
       "loss": 1.2127,
-      "ms": 4596.14,
+      "ms": 4621.66,
       "warmup": false
     },
     {
       "step": 74,
       "loss": 1.1729,
-      "ms": 4600.46,
+      "ms": 4618.88,
       "warmup": false
     },
     {
       "step": 75,
       "loss": 1.0639,
-      "ms": 4562.85,
+      "ms": 4530.63,
       "warmup": false
     },
     {
       "step": 76,
       "loss": 1.4552,
-      "ms": 4750.98,
+      "ms": 4564.21,
       "warmup": false
     },
     {
       "step": 77,
       "loss": 1.4735,
-      "ms": 4575.45,
+      "ms": 4598.86,
       "warmup": false
     },
     {
       "step": 78,
       "loss": 1.1793,
-      "ms": 4867.19,
+      "ms": 4550.1,
       "warmup": false
     },
     {
       "step": 79,
       "loss": 1.2648,
-      "ms": 4561.22,
+      "ms": 4500.04,
       "warmup": false
     },
     {
       "step": 80,
       "loss": 1.6939,
-      "ms": 4609.56,
+      "ms": 4466.97,
       "warmup": false
     },
     {
       "step": 81,
       "loss": 1.2295,
-      "ms": 4520.46,
+      "ms": 4403.49,
       "warmup": false
     },
     {
       "step": 82,
       "loss": 1.2282,
-      "ms": 4593.89,
+      "ms": 4545.18,
       "warmup": false
     },
     {
       "step": 83,
       "loss": 1.1968,
-      "ms": 4583.57,
+      "ms": 4458.51,
       "warmup": false
     },
     {
       "step": 84,
       "loss": 1.2704,
-      "ms": 4647.12,
+      "ms": 4459.43,
       "warmup": false
     },
     {
       "step": 85,
       "loss": 1.0753,
-      "ms": 4670.83,
+      "ms": 4553.71,
       "warmup": false
     },
     {
       "step": 86,
       "loss": 1.5042,
-      "ms": 4581.0,
+      "ms": 4649.38,
       "warmup": false
     },
     {
       "step": 87,
       "loss": 1.1076,
-      "ms": 4504.83,
+      "ms": 4626.12,
       "warmup": false
     },
     {
       "step": 88,
       "loss": 1.4528,
-      "ms": 4686.63,
+      "ms": 4543.58,
       "warmup": false
     },
     {
       "step": 89,
       "loss": 1.1899,
-      "ms": 4522.11,
+      "ms": 4625.57,
       "warmup": false
     },
     {
       "step": 90,
       "loss": 1.6389,
-      "ms": 4539.88,
+      "ms": 4457.92,
       "warmup": false
     },
     {
       "step": 91,
       "loss": 1.3684,
-      "ms": 4502.63,
+      "ms": 4532.86,
       "warmup": false
     },
     {
       "step": 92,
       "loss": 1.2759,
-      "ms": 4583.54,
+      "ms": 4503.9,
       "warmup": false
     },
     {
       "step": 93,
       "loss": 1.2658,
-      "ms": 4664.98,
+      "ms": 4551.65,
       "warmup": false
     },
     {
       "step": 94,
       "loss": 1.2501,
-      "ms": 4587.87,
+      "ms": 4683.45,
       "warmup": false
     },
     {
       "step": 95,
       "loss": 1.3629,
-      "ms": 4567.01,
+      "ms": 4496.04,
       "warmup": false
     },
     {
       "step": 96,
       "loss": 1.2606,
-      "ms": 4537.41,
+      "ms": 4437.65,
       "warmup": false
     },
     {
       "step": 97,
       "loss": 1.6937,
-      "ms": 4481.35,
+      "ms": 4489.26,
       "warmup": false
     },
     {
       "step": 98,
       "loss": 1.2829,
-      "ms": 4635.99,
+      "ms": 4485.95,
       "warmup": false
     },
     {
       "step": 99,
       "loss": 1.5592,
-      "ms": 4579.47,
+      "ms": 4601.72,
       "warmup": false
     },
     {
       "step": 100,
       "loss": 1.2465,
-      "ms": 4540.36,
+      "ms": 4454.4,
       "warmup": false
     },
     {
       "step": 101,
       "loss": 1.3379,
-      "ms": 4624.36,
+      "ms": 4496.37,
       "warmup": false
     },
     {
       "step": 102,
       "loss": 1.196,
-      "ms": 4582.0,
+      "ms": 4437.97,
       "warmup": false
     },
     {
       "step": 103,
       "loss": 1.4243,
-      "ms": 4566.33,
+      "ms": 4590.57,
       "warmup": false
     },
     {
       "step": 104,
       "loss": 1.1847,
-      "ms": 4628.87,
+      "ms": 4538.09,
       "warmup": false
     },
     {
       "step": 105,
       "loss": 1.2001,
-      "ms": 4582.41,
+      "ms": 4767.94,
       "warmup": false
     },
     {
       "step": 106,
       "loss": 1.309,
-      "ms": 4582.28,
+      "ms": 4571.72,
       "warmup": false
     },
     {
       "step": 107,
       "loss": 1.4661,
-      "ms": 4617.34,
+      "ms": 4585.59,
       "warmup": false
     },
     {
       "step": 108,
       "loss": 1.2792,
-      "ms": 4786.19,
+      "ms": 4589.0,
       "warmup": false
     },
     {
       "step": 109,
       "loss": 1.2713,
-      "ms": 4964.82,
+      "ms": 4798.82,
       "warmup": false
     },
     {
       "step": 110,
       "loss": 0.8657,
-      "ms": 4718.43,
+      "ms": 4425.39,
       "warmup": false
     },
     {
       "step": 111,
       "loss": 1.6217,
-      "ms": 4611.24,
+      "ms": 4544.39,
       "warmup": false
     },
     {
       "step": 112,
       "loss": 1.2258,
-      "ms": 4643.96,
+      "ms": 4472.3,
       "warmup": false
     },
     {
       "step": 113,
       "loss": 1.1952,
-      "ms": 4593.77,
+      "ms": 4587.61,
       "warmup": false
     },
     {
       "step": 114,
       "loss": 1.1729,
-      "ms": 4559.7,
+      "ms": 4470.49,
       "warmup": false
     },
     {
       "step": 115,
       "loss": 1.3749,
-      "ms": 4597.19,
+      "ms": 4553.17,
       "warmup": false
     },
     {
       "step": 116,
       "loss": 1.2514,
-      "ms": 4530.03,
+      "ms": 4520.27,
       "warmup": false
     },
     {
       "step": 117,
       "loss": 1.2602,
-      "ms": 4591.26,
+      "ms": 4529.52,
       "warmup": false
     },
     {
       "step": 118,
       "loss": 1.2294,
-      "ms": 4669.84,
+      "ms": 4540.27,
       "warmup": false
     },
     {
       "step": 119,
       "loss": 1.2739,
-      "ms": 4639.83,
+      "ms": 4705.45,
       "warmup": false
     },
     {
       "step": 120,
       "loss": 1.3107,
-      "ms": 4573.17,
+      "ms": 4554.48,
       "warmup": false
     },
     {
       "step": 121,
       "loss": 1.3163,
-      "ms": 4596.3,
+      "ms": 4685.13,
       "warmup": false
     },
     {
       "step": 122,
       "loss": 1.4056,
-      "ms": 4660.81,
+      "ms": 4636.01,
       "warmup": false
     },
     {
       "step": 123,
       "loss": 1.1495,
-      "ms": 4720.08,
+      "ms": 4562.32,
       "warmup": false
     },
     {
       "step": 124,
       "loss": 1.2019,
-      "ms": 4660.27,
+      "ms": 4520.39,
       "warmup": false
     },
     {
       "step": 125,
       "loss": 1.3305,
-      "ms": 4628.91,
+      "ms": 4439.36,
       "warmup": false
     },
     {
       "step": 126,
       "loss": 1.4023,
-      "ms": 4624.95,
+      "ms": 4503.6,
       "warmup": false
     },
     {
       "step": 127,
       "loss": 1.276,
-      "ms": 4521.59,
+      "ms": 4483.06,
       "warmup": false
     },
     {
       "step": 128,
       "loss": 1.8687,
-      "ms": 4521.78,
+      "ms": 4582.13,
       "warmup": false
     },
     {
       "step": 129,
       "loss": 1.1453,
-      "ms": 4623.18,
+      "ms": 4664.28,
       "warmup": false
     },
     {
       "step": 130,
       "loss": 1.3689,
-      "ms": 4622.59,
+      "ms": 4626.01,
       "warmup": false
     },
     {
       "step": 131,
       "loss": 1.3319,
-      "ms": 4685.2,
+      "ms": 4612.87,
       "warmup": false
     },
     {
       "step": 132,
       "loss": 1.0612,
-      "ms": 4758.11,
+      "ms": 4526.85,
       "warmup": false
     },
     {
       "step": 133,
       "loss": 1.3041,
-      "ms": 4630.89,
+      "ms": 4590.3,
       "warmup": false
     },
     {
       "step": 134,
       "loss": 1.4512,
-      "ms": 4552.97,
+      "ms": 4501.71,
       "warmup": false
     },
     {
       "step": 135,
       "loss": 1.1701,
-      "ms": 4519.51,
+      "ms": 4543.47,
       "warmup": false
     },
     {
       "step": 136,
       "loss": 1.1419,
-      "ms": 4657.48,
+      "ms": 4514.91,
       "warmup": false
     },
     {
       "step": 137,
       "loss": 1.2864,
-      "ms": 4667.83,
+      "ms": 4552.08,
       "warmup": false
     },
     {
       "step": 138,
       "loss": 1.3054,
-      "ms": 4541.58,
+      "ms": 4567.07,
       "warmup": false
     },
     {
       "step": 139,
       "loss": 1.2329,
-      "ms": 4593.21,
+      "ms": 4567.83,
       "warmup": false
     },
     {
       "step": 140,
       "loss": 1.4167,
-      "ms": 4693.26,
+      "ms": 4570.64,
       "warmup": false
     },
     {
       "step": 141,
       "loss": 1.0625,
-      "ms": 4685.76,
+      "ms": 4601.49,
       "warmup": false
     },
     {
       "step": 142,
       "loss": 1.8271,
-      "ms": 4505.41,
+      "ms": 4519.22,
       "warmup": false
     },
     {
       "step": 143,
       "loss": 1.2515,
-      "ms": 4544.56,
+      "ms": 4482.32,
       "warmup": false
     },
     {
       "step": 144,
       "loss": 1.2778,
-      "ms": 4566.72,
+      "ms": 4521.38,
       "warmup": false
     },
     {
       "step": 145,
       "loss": 1.2857,
-      "ms": 4675.7,
+      "ms": 4620.1,
       "warmup": false
     },
     {
       "step": 146,
       "loss": 1.1722,
-      "ms": 4549.86,
+      "ms": 4615.2,
       "warmup": false
     },
     {
       "step": 147,
       "loss": 1.325,
-      "ms": 4652.13,
+      "ms": 4438.42,
       "warmup": false
     },
     {
       "step": 148,
       "loss": 1.2452,
-      "ms": 4711.6,
+      "ms": 4616.96,
       "warmup": false
     },
     {
       "step": 149,
       "loss": 1.3679,
-      "ms": 4576.58,
+      "ms": 4439.62,
       "warmup": false
     },
     {
       "step": 150,
       "loss": 1.2287,
-      "ms": 4649.43,
+      "ms": 4495.65,
       "warmup": false
     },
     {
       "step": 151,
       "loss": 1.1256,
-      "ms": 4581.17,
+      "ms": 4565.21,
       "warmup": false
     },
     {
       "step": 152,
       "loss": 1.2704,
-      "ms": 4577.12,
+      "ms": 4546.95,
       "warmup": false
     },
     {
       "step": 153,
       "loss": 1.1234,
-      "ms": 4544.44,
+      "ms": 4477.67,
       "warmup": false
     },
     {
       "step": 154,
       "loss": 1.4216,
-      "ms": 4597.39,
+      "ms": 4467.49,
       "warmup": false
     },
     {
       "step": 155,
       "loss": 1.4129,
-      "ms": 4665.72,
+      "ms": 4561.48,
       "warmup": false
     },
     {
       "step": 156,
       "loss": 1.3704,
-      "ms": 4540.54,
+      "ms": 4531.05,
       "warmup": false
     },
     {
       "step": 157,
       "loss": 1.2024,
-      "ms": 4644.53,
+      "ms": 4653.32,
       "warmup": false
     },
     {
       "step": 158,
       "loss": 1.1486,
-      "ms": 4570.55,
+      "ms": 4554.72,
       "warmup": false
     },
     {
       "step": 159,
       "loss": 1.2825,
-      "ms": 4626.98,
+      "ms": 4519.4,
       "warmup": false
     },
     {
       "step": 160,
       "loss": 1.1291,
-      "ms": 4598.15,
+      "ms": 4602.24,
       "warmup": false
     },
     {
       "step": 161,
       "loss": 1.4013,
-      "ms": 4621.44,
+      "ms": 4486.39,
       "warmup": false
     },
     {
       "step": 162,
       "loss": 1.1518,
-      "ms": 4582.48,
+      "ms": 4572.92,
       "warmup": false
     },
     {
       "step": 163,
       "loss": 1.2303,
-      "ms": 4598.9,
+      "ms": 4600.47,
       "warmup": false
     },
     {
       "step": 164,
       "loss": 1.1984,
-      "ms": 4542.2,
+      "ms": 4469.8,
       "warmup": false
     },
     {
       "step": 165,
       "loss": 1.3456,
-      "ms": 4826.76,
+      "ms": 4662.43,
       "warmup": false
     },
     {
       "step": 166,
       "loss": 1.1283,
-      "ms": 4600.89,
+      "ms": 4464.46,
       "warmup": false
     },
     {
       "step": 167,
       "loss": 1.3956,
-      "ms": 4856.79,
+      "ms": 4787.15,
       "warmup": false
     },
     {
       "step": 168,
       "loss": 1.2644,
-      "ms": 4616.72,
+      "ms": 4594.6,
       "warmup": false
     },
     {
       "step": 169,
       "loss": 1.4671,
-      "ms": 4479.3,
+      "ms": 4548.1,
       "warmup": false
     },
     {
       "step": 170,
       "loss": 1.1241,
-      "ms": 4586.97,
+      "ms": 4529.8,
       "warmup": false
     },
     {
       "step": 171,
       "loss": 1.3071,
-      "ms": 4554.53,
+      "ms": 4571.59,
       "warmup": false
     },
     {
       "step": 172,
       "loss": 1.4175,
-      "ms": 4630.48,
+      "ms": 4536.7,
       "warmup": false
     },
     {
       "step": 173,
       "loss": 1.3651,
-      "ms": 4679.61,
+      "ms": 4702.8,
       "warmup": false
     },
     {
       "step": 174,
       "loss": 1.2575,
-      "ms": 4619.4,
+      "ms": 4459.83,
       "warmup": false
     },
     {
       "step": 175,
       "loss": 1.2903,
-      "ms": 4650.09,
+      "ms": 4286.97,
       "warmup": false
     },
     {
       "step": 176,
       "loss": 1.2992,
-      "ms": 4673.55,
+      "ms": 4449.02,
       "warmup": false
     },
     {
       "step": 177,
       "loss": 1.3534,
-      "ms": 4642.96,
+      "ms": 4607.36,
       "warmup": false
     },
     {
       "step": 178,
       "loss": 1.2077,
-      "ms": 4862.84,
+      "ms": 4515.85,
       "warmup": false
     },
     {
       "step": 179,
       "loss": 1.275,
-      "ms": 4637.8,
+      "ms": 4711.93,
       "warmup": false
     },
     {
       "step": 180,
       "loss": 1.3671,
-      "ms": 4548.75,
+      "ms": 4787.28,
       "warmup": false
     },
     {
       "step": 181,
       "loss": 1.2056,
-      "ms": 4535.51,
+      "ms": 4588.89,
       "warmup": false
     },
     {
       "step": 182,
       "loss": 1.4104,
-      "ms": 4738.88,
+      "ms": 4700.57,
       "warmup": false
     },
     {
       "step": 183,
       "loss": 1.3057,
-      "ms": 4556.26,
+      "ms": 4670.77,
       "warmup": false
     },
     {
       "step": 184,
       "loss": 1.1686,
-      "ms": 4598.34,
+      "ms": 4526.85,
       "warmup": false
     },
     {
       "step": 185,
       "loss": 1.2733,
-      "ms": 4475.0,
+      "ms": 4627.41,
       "warmup": false
     },
     {
       "step": 186,
       "loss": 1.1512,
-      "ms": 4638.88,
+      "ms": 4539.0,
       "warmup": false
     },
     {
       "step": 187,
       "loss": 0.9701,
-      "ms": 4589.01,
+      "ms": 4508.99,
       "warmup": false
     },
     {
       "step": 188,
       "loss": 1.2151,
-      "ms": 4617.14,
+      "ms": 4582.53,
       "warmup": false
     },
     {
       "step": 189,
       "loss": 1.2668,
-      "ms": 4557.72,
+      "ms": 4429.22,
       "warmup": false
     },
     {
       "step": 190,
       "loss": 1.2363,
-      "ms": 4521.53,
+      "ms": 4498.39,
       "warmup": false
     },
     {
       "step": 191,
       "loss": 1.3186,
-      "ms": 4589.62,
+      "ms": 4740.28,
       "warmup": false
     },
     {
       "step": 192,
       "loss": 1.374,
-      "ms": 4621.51,
+      "ms": 4465.86,
       "warmup": false
     },
     {
       "step": 193,
       "loss": 1.4042,
-      "ms": 4571.12,
+      "ms": 4556.93,
       "warmup": false
     },
     {
       "step": 194,
       "loss": 1.3528,
-      "ms": 4620.96,
+      "ms": 4431.82,
       "warmup": false
     },
     {
       "step": 195,
       "loss": 1.3741,
-      "ms": 4625.71,
+      "ms": 4502.32,
       "warmup": false
     },
     {
       "step": 196,
       "loss": 1.3416,
-      "ms": 4504.78,
+      "ms": 4586.62,
       "warmup": false
     },
     {
       "step": 197,
       "loss": 1.3452,
-      "ms": 4692.55,
+      "ms": 4557.6,
       "warmup": false
     },
     {
       "step": 198,
       "loss": 1.2248,
-      "ms": 4605.71,
+      "ms": 4573.63,
       "warmup": false
     },
     {
       "step": 199,
       "loss": 1.2019,
-      "ms": 4641.62,
+      "ms": 4512.05,
       "warmup": false
     },
     {
       "step": 200,
       "loss": 1.1286,
-      "ms": 4511.82,
+      "ms": 4613.9,
       "warmup": false
     },
     {
       "step": 201,
       "loss": 1.1768,
-      "ms": 4709.82,
+      "ms": 4545.91,
       "warmup": false
     },
     {
       "step": 202,
       "loss": 1.2054,
-      "ms": 4724.19,
+      "ms": 4485.42,
       "warmup": false
     },
     {
       "step": 203,
       "loss": 1.2324,
-      "ms": 4646.27,
+      "ms": 4552.99,
       "warmup": false
     },
     {
       "step": 204,
       "loss": 1.2543,
-      "ms": 4584.99,
+      "ms": 4646.96,
       "warmup": false
     },
     {
       "step": 205,
       "loss": 1.2207,
-      "ms": 4621.14,
+      "ms": 4640.17,
       "warmup": false
     },
     {
       "step": 206,
       "loss": 1.2651,
-      "ms": 4565.37,
+      "ms": 4534.67,
       "warmup": false
     },
     {
       "step": 207,
       "loss": 0.9838,
-      "ms": 4601.9,
+      "ms": 4573.08,
       "warmup": false
     },
     {
       "step": 208,
       "loss": 1.2479,
-      "ms": 4619.01,
+      "ms": 4528.51,
       "warmup": false
     },
     {
       "step": 209,
       "loss": 1.1268,
-      "ms": 4777.94,
+      "ms": 4557.27,
       "warmup": false
     },
     {
       "step": 210,
       "loss": 1.5589,
-      "ms": 4578.75,
+      "ms": 4480.92,
       "warmup": false
     },
     {
       "step": 211,
       "loss": 1.1559,
-      "ms": 4758.82,
+      "ms": 4423.79,
       "warmup": false
     },
     {
       "step": 212,
       "loss": 1.2621,
-      "ms": 4644.09,
+      "ms": 4482.09,
       "warmup": false
     },
     {
       "step": 213,
       "loss": 1.3451,
-      "ms": 4576.63,
+      "ms": 4608.05,
       "warmup": false
     },
     {
       "step": 214,
       "loss": 1.2676,
-      "ms": 4584.95,
+      "ms": 4589.68,
       "warmup": false
     },
     {
       "step": 215,
       "loss": 1.485,
-      "ms": 2372.98,
+      "ms": 2269.04,
       "warmup": false
     },
     {
       "step": 216,
       "loss": 1.2462,
-      "ms": 4577.19,
+      "ms": 4508.98,
       "warmup": false
     },
     {
       "step": 217,
       "loss": 1.1582,
-      "ms": 4628.46,
+      "ms": 4498.59,
       "warmup": false
     },
     {
       "step": 218,
       "loss": 1.149,
-      "ms": 4638.52,
+      "ms": 4517.94,
       "warmup": false
     },
     {
       "step": 219,
       "loss": 1.2464,
-      "ms": 4559.91,
+      "ms": 4633.26,
       "warmup": false
     },
     {
       "step": 220,
       "loss": 1.2112,
-      "ms": 4701.04,
+      "ms": 4636.48,
       "warmup": false
     },
     {
       "step": 221,
       "loss": 1.0608,
-      "ms": 4638.65,
+      "ms": 4582.07,
       "warmup": false
     },
     {
       "step": 222,
       "loss": 1.2159,
-      "ms": 4642.56,
+      "ms": 4681.51,
       "warmup": false
     },
     {
       "step": 223,
       "loss": 1.4844,
-      "ms": 4704.66,
+      "ms": 4529.14,
       "warmup": false
     },
     {
       "step": 224,
       "loss": 1.0396,
-      "ms": 4672.82,
+      "ms": 4547.19,
       "warmup": false
     },
     {
       "step": 225,
       "loss": 1.1675,
-      "ms": 4643.06,
+      "ms": 4456.5,
       "warmup": false
     },
     {
       "step": 226,
       "loss": 1.1185,
-      "ms": 5014.12,
+      "ms": 5047.7,
       "warmup": false
     },
     {
       "step": 227,
       "loss": 1.227,
-      "ms": 4605.78,
+      "ms": 4536.08,
       "warmup": false
     },
     {
       "step": 228,
       "loss": 1.3544,
-      "ms": 4640.28,
+      "ms": 4596.93,
       "warmup": false
     },
     {
       "step": 229,
       "loss": 1.1431,
-      "ms": 4570.38,
+      "ms": 4578.24,
       "warmup": false
     },
     {
       "step": 230,
       "loss": 1.1069,
-      "ms": 4506.34,
+      "ms": 4602.52,
       "warmup": false
     },
     {
       "step": 231,
       "loss": 1.1078,
-      "ms": 4591.51,
+      "ms": 4573.26,
       "warmup": false
     },
     {
       "step": 232,
       "loss": 1.1868,
-      "ms": 4626.23,
+      "ms": 4623.44,
       "warmup": false
     },
     {
       "step": 233,
       "loss": 1.172,
-      "ms": 4518.36,
+      "ms": 4486.97,
       "warmup": false
     },
     {
       "step": 234,
       "loss": 1.1483,
-      "ms": 4528.38,
+      "ms": 4570.92,
       "warmup": false
     },
     {
       "step": 235,
       "loss": 1.0408,
-      "ms": 4541.99,
+      "ms": 4492.77,
       "warmup": false
     },
     {
       "step": 236,
       "loss": 1.1146,
-      "ms": 4668.82,
+      "ms": 4549.3,
       "warmup": false
     },
     {
       "step": 237,
       "loss": 1.2459,
-      "ms": 4573.21,
+      "ms": 4553.31,
       "warmup": false
     },
     {
       "step": 238,
       "loss": 1.1135,
-      "ms": 4579.05,
+      "ms": 4478.96,
       "warmup": false
     },
     {
       "step": 239,
       "loss": 1.1588,
-      "ms": 4601.98,
+      "ms": 4445.0,
       "warmup": false
     },
     {
       "step": 240,
       "loss": 1.0843,
-      "ms": 4657.32,
+      "ms": 4571.45,
       "warmup": false
     },
     {
       "step": 241,
       "loss": 1.0233,
-      "ms": 4585.83,
+      "ms": 4754.3,
       "warmup": false
     },
     {
       "step": 242,
       "loss": 0.9956,
-      "ms": 4697.99,
+      "ms": 4487.36,
       "warmup": false
     },
     {
       "step": 243,
       "loss": 1.2545,
-      "ms": 4675.32,
+      "ms": 4602.4,
       "warmup": false
     },
     {
       "step": 244,
       "loss": 0.9599,
-      "ms": 4798.29,
+      "ms": 4457.38,
       "warmup": false
     },
     {
       "step": 245,
       "loss": 1.2016,
-      "ms": 4702.92,
+      "ms": 4445.96,
       "warmup": false
     },
     {
       "step": 246,
       "loss": 1.1018,
-      "ms": 4793.82,
+      "ms": 4470.62,
       "warmup": false
     },
     {
       "step": 247,
       "loss": 1.1976,
-      "ms": 4713.03,
+      "ms": 4495.63,
       "warmup": false
     },
     {
       "step": 248,
       "loss": 1.2461,
-      "ms": 4605.47,
+      "ms": 4576.06,
       "warmup": false
     },
     {
       "step": 249,
       "loss": 1.2996,
-      "ms": 4563.08,
+      "ms": 4492.96,
       "warmup": false
     },
     {
       "step": 250,
       "loss": 1.315,
-      "ms": 4620.4,
+      "ms": 4528.26,
       "warmup": false
     },
     {
       "step": 251,
       "loss": 1.1516,
-      "ms": 4676.08,
+      "ms": 4588.94,
       "warmup": false
     },
     {
       "step": 252,
       "loss": 1.1496,
-      "ms": 4506.45,
+      "ms": 4553.88,
       "warmup": false
     },
     {
       "step": 253,
       "loss": 1.3347,
-      "ms": 4700.51,
+      "ms": 4477.46,
       "warmup": false
     },
     {
       "step": 254,
       "loss": 1.5206,
-      "ms": 4471.04,
+      "ms": 4459.63,
       "warmup": false
     },
     {
       "step": 255,
       "loss": 1.153,
-      "ms": 4709.85,
+      "ms": 4483.36,
       "warmup": false
     },
     {
       "step": 256,
       "loss": 0.8937,
-      "ms": 4629.29,
+      "ms": 4583.79,
       "warmup": false
     },
     {
       "step": 257,
       "loss": 1.0295,
-      "ms": 4680.38,
+      "ms": 4593.15,
       "warmup": false
     },
     {
       "step": 258,
       "loss": 1.061,
-      "ms": 4611.54,
+      "ms": 4617.1,
       "warmup": false
     },
     {
       "step": 259,
       "loss": 1.1358,
-      "ms": 4626.73,
+      "ms": 4472.84,
       "warmup": false
     },
     {
       "step": 260,
       "loss": 1.0868,
-      "ms": 4592.85,
+      "ms": 4701.88,
       "warmup": false
     },
     {
       "step": 261,
       "loss": 1.1454,
-      "ms": 4813.62,
+      "ms": 4603.31,
       "warmup": false
     },
     {
       "step": 262,
       "loss": 1.1829,
-      "ms": 4742.71,
+      "ms": 4461.14,
       "warmup": false
     },
     {
       "step": 263,
       "loss": 1.4532,
-      "ms": 4671.62,
+      "ms": 4443.81,
       "warmup": false
     },
     {
       "step": 264,
       "loss": 1.5157,
-      "ms": 4503.6,
+      "ms": 4669.43,
       "warmup": false
     },
     {
       "step": 265,
       "loss": 1.391,
-      "ms": 4691.63,
+      "ms": 4517.82,
       "warmup": false
     },
     {
       "step": 266,
       "loss": 0.9734,
-      "ms": 4636.13,
+      "ms": 4617.04,
       "warmup": false
     },
     {
       "step": 267,
       "loss": 1.3937,
-      "ms": 4597.39,
+      "ms": 4528.58,
       "warmup": false
     },
     {
       "step": 268,
       "loss": 1.2336,
-      "ms": 4637.07,
+      "ms": 4427.67,
       "warmup": false
     },
     {
       "step": 269,
       "loss": 1.3045,
-      "ms": 4724.93,
+      "ms": 4480.45,
       "warmup": false
     },
     {
       "step": 270,
       "loss": 1.0928,
-      "ms": 4924.46,
+      "ms": 4465.21,
       "warmup": false
     },
     {
       "step": 271,
       "loss": 1.1139,
-      "ms": 4746.11,
+      "ms": 4664.24,
       "warmup": false
     },
     {
       "step": 272,
       "loss": 1.1578,
-      "ms": 4648.52,
+      "ms": 4456.91,
       "warmup": false
     },
     {
       "step": 273,
       "loss": 1.1081,
-      "ms": 4891.76,
+      "ms": 4480.51,
       "warmup": false
     },
     {
       "step": 274,
       "loss": 1.1423,
-      "ms": 4825.34,
+      "ms": 4386.91,
       "warmup": false
     },
     {
       "step": 275,
       "loss": 1.0674,
-      "ms": 4792.19,
+      "ms": 4555.66,
       "warmup": false
     },
     {
       "step": 276,
       "loss": 1.0805,
-      "ms": 4701.8,
+      "ms": 4614.74,
       "warmup": false
     },
     {
       "step": 277,
       "loss": 1.1395,
-      "ms": 4609.3,
+      "ms": 4493.07,
       "warmup": false
     },
     {
       "step": 278,
       "loss": 0.9706,
-      "ms": 4548.89,
+      "ms": 4499.61,
       "warmup": false
     },
     {
       "step": 279,
       "loss": 1.0041,
-      "ms": 4702.27,
+      "ms": 4451.27,
       "warmup": false
     },
     {
       "step": 280,
       "loss": 1.1506,
-      "ms": 4652.63,
+      "ms": 4478.26,
       "warmup": false
     },
     {
       "step": 281,
       "loss": 1.1664,
-      "ms": 4597.43,
+      "ms": 4710.51,
       "warmup": false
     },
     {
       "step": 282,
       "loss": 1.2068,
-      "ms": 4608.43,
+      "ms": 4592.02,
       "warmup": false
     },
     {
       "step": 283,
       "loss": 1.3482,
-      "ms": 4666.42,
+      "ms": 4669.59,
       "warmup": false
     },
     {
       "step": 284,
       "loss": 1.1592,
-      "ms": 5178.63,
+      "ms": 4683.15,
       "warmup": false
     },
     {
       "step": 285,
       "loss": 1.411,
-      "ms": 4595.49,
+      "ms": 4569.62,
       "warmup": false
     },
     {
       "step": 286,
       "loss": 1.2941,
-      "ms": 4591.35,
+      "ms": 4688.4,
       "warmup": false
     },
     {
       "step": 287,
       "loss": 1.2373,
-      "ms": 4640.89,
+      "ms": 4500.7,
       "warmup": false
     },
     {
       "step": 288,
       "loss": 1.1058,
-      "ms": 4664.08,
+      "ms": 4613.55,
       "warmup": false
     },
     {
       "step": 289,
       "loss": 1.175,
-      "ms": 4859.73,
+      "ms": 4554.17,
       "warmup": false
     },
     {
       "step": 290,
       "loss": 1.2286,
-      "ms": 4825.14,
+      "ms": 4610.45,
       "warmup": false
     },
     {
       "step": 291,
       "loss": 1.1906,
-      "ms": 4811.44,
+      "ms": 4657.21,
       "warmup": false
     },
     {
       "step": 292,
       "loss": 0.9814,
-      "ms": 4779.34,
+      "ms": 4651.58,
       "warmup": false
     },
     {
       "step": 293,
       "loss": 1.1966,
-      "ms": 4619.06,
+      "ms": 4588.92,
       "warmup": false
     },
     {
       "step": 294,
       "loss": 0.9876,
-      "ms": 4733.8,
+      "ms": 4680.13,
       "warmup": false
     },
     {
       "step": 295,
       "loss": 1.2072,
-      "ms": 4713.18,
+      "ms": 4736.73,
       "warmup": false
     },
     {
       "step": 296,
       "loss": 1.2044,
-      "ms": 4702.85,
+      "ms": 4584.29,
       "warmup": false
     },
     {
       "step": 297,
       "loss": 1.2812,
-      "ms": 4751.19,
+      "ms": 4716.47,
       "warmup": false
     },
     {
       "step": 298,
       "loss": 1.5319,
-      "ms": 4818.89,
+      "ms": 4600.6,
       "warmup": false
     },
     {
       "step": 299,
       "loss": 1.0316,
-      "ms": 4830.12,
+      "ms": 4659.39,
       "warmup": false
     },
     {
       "step": 300,
       "loss": 1.2317,
-      "ms": 4820.19,
+      "ms": 4586.04,
       "warmup": false
     },
     {
       "step": 301,
       "loss": 1.1271,
-      "ms": 4736.41,
+      "ms": 4579.65,
       "warmup": false
     },
     {
       "step": 302,
       "loss": 1.2551,
-      "ms": 4650.98,
+      "ms": 4688.2,
       "warmup": false
     },
     {
       "step": 303,
       "loss": 1.0816,
-      "ms": 4766.39,
+      "ms": 4608.07,
       "warmup": false
     },
     {
       "step": 304,
       "loss": 1.1751,
-      "ms": 4658.88,
+      "ms": 4647.3,
       "warmup": false
     },
     {
       "step": 305,
       "loss": 1.2548,
-      "ms": 4699.34,
+      "ms": 4435.36,
       "warmup": false
     },
     {
       "step": 306,
       "loss": 1.3779,
-      "ms": 4590.21,
+      "ms": 4570.84,
       "warmup": false
     },
     {
       "step": 307,
       "loss": 0.9505,
-      "ms": 4592.5,
+      "ms": 4514.03,
       "warmup": false
     },
     {
       "step": 308,
       "loss": 1.0145,
-      "ms": 4639.69,
+      "ms": 4416.64,
       "warmup": false
     },
     {
       "step": 309,
       "loss": 1.0303,
-      "ms": 4618.58,
+      "ms": 4665.26,
       "warmup": false
     },
     {
       "step": 310,
       "loss": 1.093,
-      "ms": 4685.27,
+      "ms": 4580.03,
       "warmup": false
     },
     {
       "step": 311,
       "loss": 1.1817,
-      "ms": 4625.21,
+      "ms": 4472.28,
       "warmup": false
     },
     {
       "step": 312,
       "loss": 1.0092,
-      "ms": 4546.15,
+      "ms": 4569.54,
       "warmup": false
     },
     {
       "step": 313,
       "loss": 1.086,
-      "ms": 4800.21,
+      "ms": 4582.86,
       "warmup": false
     },
     {
       "step": 314,
       "loss": 1.1507,
-      "ms": 4673.62,
+      "ms": 4543.65,
       "warmup": false
     },
     {
       "step": 315,
       "loss": 1.1018,
-      "ms": 4743.76,
+      "ms": 4409.87,
       "warmup": false
     },
     {
       "step": 316,
       "loss": 1.2026,
-      "ms": 4713.33,
+      "ms": 4486.0,
       "warmup": false
     },
     {
       "step": 317,
       "loss": 1.0275,
-      "ms": 4645.13,
+      "ms": 4578.73,
       "warmup": false
     },
     {
       "step": 318,
       "loss": 1.0981,
-      "ms": 4619.58,
+      "ms": 4452.97,
       "warmup": false
     },
     {
       "step": 319,
       "loss": 1.5454,
-      "ms": 4722.01,
+      "ms": 4458.01,
       "warmup": false
     },
     {
       "step": 320,
       "loss": 1.3078,
-      "ms": 4643.39,
+      "ms": 4552.16,
       "warmup": false
     },
     {
       "step": 321,
       "loss": 1.1732,
-      "ms": 4632.31,
+      "ms": 4626.04,
       "warmup": false
     },
     {
       "step": 322,
       "loss": 1.2105,
-      "ms": 4651.35,
+      "ms": 4569.41,
       "warmup": false
     },
     {
       "step": 323,
       "loss": 1.1331,
-      "ms": 4679.68,
+      "ms": 4484.99,
       "warmup": false
     },
     {
       "step": 324,
       "loss": 0.9222,
-      "ms": 4844.97,
+      "ms": 4473.68,
       "warmup": false
     },
     {
       "step": 325,
       "loss": 1.2014,
-      "ms": 4691.38,
+      "ms": 4548.5,
       "warmup": false
     },
     {
       "step": 326,
       "loss": 0.9464,
-      "ms": 4649.89,
+      "ms": 4420.33,
       "warmup": false
     },
     {
       "step": 327,
       "loss": 0.9962,
-      "ms": 4626.52,
+      "ms": 4538.36,
       "warmup": false
     },
     {
       "step": 328,
       "loss": 1.3704,
-      "ms": 4552.29,
+      "ms": 4608.84,
       "warmup": false
     },
     {
       "step": 329,
       "loss": 1.2092,
-      "ms": 4622.6,
+      "ms": 4479.13,
       "warmup": false
     },
     {
       "step": 330,
       "loss": 0.9844,
-      "ms": 4653.27,
+      "ms": 4458.75,
       "warmup": false
     },
     {
       "step": 331,
       "loss": 0.925,
-      "ms": 4608.64,
+      "ms": 4447.41,
       "warmup": false
     },
     {
       "step": 332,
       "loss": 1.0574,
-      "ms": 4741.76,
+      "ms": 4463.65,
       "warmup": false
     },
     {
       "step": 333,
       "loss": 1.1811,
-      "ms": 4604.53,
+      "ms": 4528.02,
       "warmup": false
     },
     {
       "step": 334,
       "loss": 1.016,
-      "ms": 4792.74,
+      "ms": 4372.01,
       "warmup": false
     },
     {
       "step": 335,
       "loss": 1.3842,
-      "ms": 4605.69,
+      "ms": 4446.03,
       "warmup": false
     },
     {
       "step": 336,
       "loss": 1.2788,
-      "ms": 4600.68,
+      "ms": 4519.24,
       "warmup": false
     },
     {
       "step": 337,
       "loss": 1.0522,
-      "ms": 4556.6,
+      "ms": 4471.7,
       "warmup": false
     },
     {
       "step": 338,
       "loss": 1.3269,
-      "ms": 4712.05,
+      "ms": 4593.72,
       "warmup": false
     },
     {
       "step": 339,
       "loss": 1.1273,
-      "ms": 4625.4,
+      "ms": 4539.32,
       "warmup": false
     },
     {
       "step": 340,
       "loss": 0.9589,
-      "ms": 4527.13,
+      "ms": 4528.65,
       "warmup": false
     },
     {
       "step": 341,
       "loss": 1.0595,
-      "ms": 4594.75,
+      "ms": 4543.08,
       "warmup": false
     },
     {
       "step": 342,
       "loss": 1.0232,
-      "ms": 4624.47,
+      "ms": 4556.51,
       "warmup": false
     },
     {
       "step": 343,
       "loss": 1.1461,
-      "ms": 4690.01,
+      "ms": 4604.67,
       "warmup": false
     },
     {
       "step": 344,
       "loss": 1.2492,
-      "ms": 4960.91,
+      "ms": 5051.24,
       "warmup": false
     },
     {
       "step": 345,
       "loss": 1.1808,
-      "ms": 4519.3,
+      "ms": 4610.15,
       "warmup": false
     },
     {
       "step": 346,
       "loss": 1.2194,
-      "ms": 4554.52,
+      "ms": 4626.44,
       "warmup": false
     },
     {
       "step": 347,
       "loss": 1.1575,
-      "ms": 4595.15,
+      "ms": 4586.15,
       "warmup": false
     },
     {
       "step": 348,
       "loss": 1.0255,
-      "ms": 4496.97,
+      "ms": 4555.04,
       "warmup": false
     },
     {
       "step": 349,
       "loss": 1.108,
-      "ms": 4677.38,
+      "ms": 4473.46,
       "warmup": false
     },
     {
       "step": 350,
       "loss": 1.155,
-      "ms": 4658.52,
+      "ms": 4534.78,
       "warmup": false
     },
     {
       "step": 351,
       "loss": 1.2461,
-      "ms": 4737.08,
+      "ms": 4621.57,
       "warmup": false
     },
     {
       "step": 352,
       "loss": 1.3959,
-      "ms": 4573.66,
+      "ms": 4605.14,
       "warmup": false
     },
     {
       "step": 353,
       "loss": 1.287,
-      "ms": 4756.06,
+      "ms": 4778.31,
       "warmup": false
     },
     {
       "step": 354,
       "loss": 1.0074,
-      "ms": 4601.26,
+      "ms": 4552.86,
       "warmup": false
     },
     {
       "step": 355,
       "loss": 1.2876,
-      "ms": 4586.85,
+      "ms": 4482.4,
       "warmup": false
     },
     {
       "step": 356,
       "loss": 1.1865,
-      "ms": 4641.84,
+      "ms": 4499.02,
       "warmup": false
     },
     {
       "step": 357,
       "loss": 1.14,
-      "ms": 4611.47,
+      "ms": 4574.41,
       "warmup": false
     },
     {
       "step": 358,
       "loss": 1.0773,
-      "ms": 4733.38,
+      "ms": 4548.76,
       "warmup": false
     },
     {
       "step": 359,
       "loss": 1.2273,
-      "ms": 4639.71,
+      "ms": 4541.85,
       "warmup": false
     },
     {
       "step": 360,
       "loss": 1.1534,
-      "ms": 4714.17,
+      "ms": 4555.13,
       "warmup": false
     },
     {
       "step": 361,
       "loss": 1.2113,
-      "ms": 4667.01,
+      "ms": 4547.14,
       "warmup": false
     },
     {
       "step": 362,
       "loss": 1.3547,
-      "ms": 4641.87,
+      "ms": 4422.17,
       "warmup": false
     },
     {
       "step": 363,
       "loss": 1.0014,
-      "ms": 4671.33,
+      "ms": 4499.44,
       "warmup": false
     },
     {
       "step": 364,
       "loss": 1.0341,
-      "ms": 4806.29,
+      "ms": 4638.48,
       "warmup": false
     },
     {
       "step": 365,
       "loss": 1.1511,
-      "ms": 4656.27,
+      "ms": 4472.03,
       "warmup": false
     },
     {
       "step": 366,
       "loss": 1.1115,
-      "ms": 4646.89,
+      "ms": 4494.52,
       "warmup": false
     },
     {
       "step": 367,
       "loss": 1.0028,
-      "ms": 4554.43,
+      "ms": 4538.14,
       "warmup": false
     },
     {
       "step": 368,
       "loss": 1.0043,
-      "ms": 4707.4,
+      "ms": 4519.35,
       "warmup": false
     },
     {
       "step": 369,
       "loss": 1.0671,
-      "ms": 4652.4,
+      "ms": 4454.91,
       "warmup": false
     },
     {
       "step": 370,
       "loss": 1.2092,
-      "ms": 4522.07,
+      "ms": 4606.33,
       "warmup": false
     },
     {
       "step": 371,
       "loss": 0.9607,
-      "ms": 4566.03,
+      "ms": 4408.53,
       "warmup": false
     },
     {
       "step": 372,
       "loss": 1.3225,
-      "ms": 4636.08,
+      "ms": 4406.02,
       "warmup": false
     },
     {
       "step": 373,
       "loss": 1.0335,
-      "ms": 4643.08,
+      "ms": 4394.38,
       "warmup": false
     },
     {
       "step": 374,
       "loss": 1.4764,
-      "ms": 4565.61,
+      "ms": 4482.38,
       "warmup": false
     },
     {
       "step": 375,
       "loss": 0.9934,
-      "ms": 4785.0,
+      "ms": 4581.47,
       "warmup": false
     },
     {
       "step": 376,
       "loss": 1.2242,
-      "ms": 4690.98,
+      "ms": 4611.5,
       "warmup": false
     },
     {
       "step": 377,
       "loss": 1.1335,
-      "ms": 4620.28,
+      "ms": 4513.27,
       "warmup": false
     },
     {
       "step": 378,
       "loss": 1.1781,
-      "ms": 4783.66,
+      "ms": 4456.7,
       "warmup": false
     },
     {
       "step": 379,
       "loss": 1.1963,
-      "ms": 4650.58,
+      "ms": 4585.62,
       "warmup": false
     },
     {
       "step": 380,
       "loss": 1.1048,
-      "ms": 4776.55,
+      "ms": 4690.76,
       "warmup": false
     },
     {
       "step": 381,
       "loss": 1.1108,
-      "ms": 4793.91,
+      "ms": 4517.53,
       "warmup": false
     },
     {
       "step": 382,
       "loss": 1.0922,
-      "ms": 4612.4,
+      "ms": 4519.45,
       "warmup": false
     },
     {
       "step": 383,
       "loss": 1.1633,
-      "ms": 4686.75,
+      "ms": 4512.47,
       "warmup": false
     },
     {
       "step": 384,
       "loss": 1.1112,
-      "ms": 4670.12,
+      "ms": 4472.0,
       "warmup": false
     },
     {
       "step": 385,
       "loss": 1.1818,
-      "ms": 4661.03,
+      "ms": 4469.06,
       "warmup": false
     },
     {
       "step": 386,
       "loss": 1.1489,
-      "ms": 4702.77,
+      "ms": 4677.14,
       "warmup": false
     },
     {
       "step": 387,
       "loss": 1.6318,
-      "ms": 4753.19,
+      "ms": 4437.65,
       "warmup": false
     },
     {
       "step": 388,
       "loss": 1.0875,
-      "ms": 4693.81,
+      "ms": 4500.59,
       "warmup": false
     },
     {
       "step": 389,
       "loss": 1.3455,
-      "ms": 4683.62,
+      "ms": 4480.12,
       "warmup": false
     },
     {
       "step": 390,
       "loss": 1.106,
-      "ms": 4739.28,
+      "ms": 4501.86,
       "warmup": false
     },
     {
       "step": 391,
       "loss": 1.0994,
-      "ms": 4849.96,
+      "ms": 4418.17,
       "warmup": false
     },
     {
       "step": 392,
       "loss": 1.3019,
-      "ms": 4794.22,
+      "ms": 4575.71,
       "warmup": false
     },
     {
       "step": 393,
       "loss": 1.1589,
-      "ms": 4742.83,
+      "ms": 4388.64,
       "warmup": false
     },
     {
       "step": 394,
       "loss": 1.4199,
-      "ms": 4622.05,
+      "ms": 4564.79,
       "warmup": false
     },
     {
       "step": 395,
       "loss": 0.9224,
-      "ms": 4570.42,
+      "ms": 4651.75,
       "warmup": false
     },
     {
       "step": 396,
       "loss": 1.23,
-      "ms": 4724.54,
+      "ms": 4525.72,
       "warmup": false
     },
     {
       "step": 397,
       "loss": 1.2562,
-      "ms": 4676.57,
+      "ms": 4478.12,
       "warmup": false
     },
     {
       "step": 398,
       "loss": 1.1763,
-      "ms": 4736.72,
+      "ms": 4468.12,
       "warmup": false
     },
     {
       "step": 399,
       "loss": 1.0238,
-      "ms": 4777.41,
+      "ms": 4408.98,
       "warmup": false
     },
     {
       "step": 400,
       "loss": 1.1068,
-      "ms": 5265.61,
+      "ms": 4411.59,
       "warmup": false
     },
     {
       "step": 401,
       "loss": 0.9599,
-      "ms": 5310.3,
+      "ms": 4460.19,
       "warmup": false
     },
     {
       "step": 402,
       "loss": 1.119,
-      "ms": 5457.48,
+      "ms": 4732.95,
       "warmup": false
     },
     {
       "step": 403,
       "loss": 1.2529,
-      "ms": 4731.02,
+      "ms": 4439.26,
       "warmup": false
     },
     {
       "step": 404,
       "loss": 1.2276,
-      "ms": 4625.28,
+      "ms": 4569.94,
       "warmup": false
     },
     {
       "step": 405,
       "loss": 1.3619,
-      "ms": 4554.11,
+      "ms": 4488.24,
       "warmup": false
     },
     {
       "step": 406,
       "loss": 1.25,
-      "ms": 4626.02,
+      "ms": 4505.49,
       "warmup": false
     },
     {
       "step": 407,
       "loss": 1.2387,
-      "ms": 4773.35,
+      "ms": 4442.52,
       "warmup": false
     },
     {
       "step": 408,
       "loss": 1.3148,
-      "ms": 4664.75,
+      "ms": 4482.99,
       "warmup": false
     },
     {
       "step": 409,
       "loss": 1.0269,
-      "ms": 4805.51,
+      "ms": 4476.08,
       "warmup": false
     },
     {
       "step": 410,
       "loss": 1.2062,
-      "ms": 4734.42,
+      "ms": 4450.88,
       "warmup": false
     },
     {
       "step": 411,
       "loss": 1.6562,
-      "ms": 4767.74,
+      "ms": 4408.77,
       "warmup": false
     },
     {
       "step": 412,
       "loss": 1.2823,
-      "ms": 4753.74,
+      "ms": 4387.25,
       "warmup": false
     },
     {
       "step": 413,
       "loss": 1.3764,
-      "ms": 4714.14,
+      "ms": 4509.71,
       "warmup": false
     },
     {
       "step": 414,
       "loss": 1.0174,
-      "ms": 4583.42,
+      "ms": 4438.25,
       "warmup": false
     },
     {
       "step": 415,
       "loss": 1.1897,
-      "ms": 4619.3,
+      "ms": 4514.7,
       "warmup": false
     },
     {
       "step": 416,
       "loss": 1.1359,
-      "ms": 4764.99,
+      "ms": 4531.44,
       "warmup": false
     },
     {
       "step": 417,
       "loss": 1.1703,
-      "ms": 4640.9,
+      "ms": 4511.55,
       "warmup": false
     },
     {
       "step": 418,
       "loss": 1.3668,
-      "ms": 4595.36,
+      "ms": 4467.06,
       "warmup": false
     },
     {
       "step": 419,
       "loss": 1.1408,
-      "ms": 4535.38,
+      "ms": 4445.79,
       "warmup": false
     },
     {
       "step": 420,
       "loss": 1.1897,
-      "ms": 4633.9,
+      "ms": 4468.34,
       "warmup": false
     },
     {
       "step": 421,
       "loss": 1.1847,
-      "ms": 4666.75,
+      "ms": 4435.28,
       "warmup": false
     },
     {
       "step": 422,
       "loss": 1.1377,
-      "ms": 4665.24,
+      "ms": 4456.96,
       "warmup": false
     },
     {
       "step": 423,
       "loss": 1.2277,
-      "ms": 4659.83,
+      "ms": 4498.06,
       "warmup": false
     },
     {
       "step": 424,
       "loss": 1.191,
-      "ms": 4703.74,
+      "ms": 4371.76,
       "warmup": false
     },
     {
       "step": 425,
       "loss": 1.125,
-      "ms": 4645.15,
+      "ms": 4537.6,
       "warmup": false
     },
     {
       "step": 426,
       "loss": 1.3687,
-      "ms": 4725.79,
+      "ms": 4543.87,
       "warmup": false
     },
     {
       "step": 427,
       "loss": 1.0594,
-      "ms": 4732.05,
+      "ms": 4540.79,
       "warmup": false
     },
     {
       "step": 428,
       "loss": 1.4993,
-      "ms": 4637.92,
+      "ms": 4575.9,
       "warmup": false
     },
     {
       "step": 429,
       "loss": 1.1914,
-      "ms": 4704.53,
+      "ms": 4680.92,
       "warmup": false
     },
     {
       "step": 430,
       "loss": 1.4118,
-      "ms": 2301.13,
+      "ms": 2397.49,
       "warmup": false
     },
     {
       "step": 431,
       "loss": 0.8225,
-      "ms": 4618.39,
+      "ms": 4558.26,
       "warmup": false
     },
     {
       "step": 432,
       "loss": 0.8787,
-      "ms": 4624.5,
+      "ms": 4514.41,
       "warmup": false
     },
     {
       "step": 433,
       "loss": 1.1668,
-      "ms": 4975.93,
+      "ms": 4438.98,
       "warmup": false
     },
     {
       "step": 434,
       "loss": 0.9051,
-      "ms": 5353.05,
+      "ms": 4542.96,
       "warmup": false
     },
     {
       "step": 435,
       "loss": 0.9512,
-      "ms": 5479.26,
+      "ms": 4647.27,
       "warmup": false
     },
     {
       "step": 436,
       "loss": 1.1464,
-      "ms": 5469.76,
+      "ms": 4521.93,
       "warmup": false
     },
     {
       "step": 437,
       "loss": 1.2014,
-      "ms": 4813.69,
+      "ms": 4409.31,
       "warmup": false
     },
     {
       "step": 438,
       "loss": 1.2296,
-      "ms": 4609.61,
+      "ms": 4628.51,
       "warmup": false
     },
     {
       "step": 439,
       "loss": 1.1247,
-      "ms": 4607.39,
+      "ms": 4720.37,
       "warmup": false
     },
     {
       "step": 440,
       "loss": 0.9878,
-      "ms": 4732.28,
+      "ms": 4497.71,
       "warmup": false
     },
     {
       "step": 441,
       "loss": 1.0401,
-      "ms": 4639.0,
+      "ms": 4556.07,
       "warmup": false
     },
     {
       "step": 442,
       "loss": 0.9012,
-      "ms": 4816.73,
+      "ms": 4552.79,
       "warmup": false
     },
     {
       "step": 443,
       "loss": 0.9592,
-      "ms": 4710.25,
+      "ms": 4641.03,
       "warmup": false
     },
     {
       "step": 444,
       "loss": 1.0791,
-      "ms": 4663.1,
+      "ms": 4555.29,
       "warmup": false
     },
     {
       "step": 445,
       "loss": 1.0496,
-      "ms": 4696.53,
+      "ms": 4518.46,
       "warmup": false
     },
     {
       "step": 446,
       "loss": 1.099,
-      "ms": 4546.52,
+      "ms": 4442.88,
       "warmup": false
     },
     {
       "step": 447,
       "loss": 0.8868,
-      "ms": 4798.39,
+      "ms": 4449.25,
       "warmup": false
     },
     {
       "step": 448,
       "loss": 1.5633,
-      "ms": 4696.2,
+      "ms": 4419.23,
       "warmup": false
     },
     {
       "step": 449,
       "loss": 0.9506,
-      "ms": 4712.75,
+      "ms": 4511.44,
       "warmup": false
     },
     {
       "step": 450,
       "loss": 1.0481,
-      "ms": 4679.93,
+      "ms": 4463.03,
       "warmup": false
     },
     {
       "step": 451,
       "loss": 1.0175,
-      "ms": 4589.41,
+      "ms": 4612.61,
       "warmup": false
     },
     {
       "step": 452,
       "loss": 1.0914,
-      "ms": 4726.64,
+      "ms": 4558.89,
       "warmup": false
     },
     {
       "step": 453,
       "loss": 1.0177,
-      "ms": 4661.54,
+      "ms": 4480.64,
       "warmup": false
     },
     {
       "step": 454,
       "loss": 0.9879,
-      "ms": 4520.27,
+      "ms": 4458.9,
       "warmup": false
     },
     {
       "step": 455,
       "loss": 1.0807,
-      "ms": 4594.12,
+      "ms": 4465.16,
       "warmup": false
     },
     {
       "step": 456,
       "loss": 0.9268,
-      "ms": 4500.58,
+      "ms": 4662.05,
       "warmup": false
     },
     {
       "step": 457,
       "loss": 1.0783,
-      "ms": 4551.77,
+      "ms": 4506.23,
       "warmup": false
     },
     {
       "step": 458,
       "loss": 1.1792,
-      "ms": 4660.34,
+      "ms": 4415.06,
       "warmup": false
     },
     {
       "step": 459,
       "loss": 0.9381,
-      "ms": 4677.05,
+      "ms": 4410.48,
       "warmup": false
     },
     {
       "step": 460,
       "loss": 1.0264,
-      "ms": 4660.0,
+      "ms": 4650.0,
       "warmup": false
     },
     {
       "step": 461,
       "loss": 1.0946,
-      "ms": 4792.9,
+      "ms": 4723.67,
       "warmup": false
     },
     {
       "step": 462,
       "loss": 0.8726,
-      "ms": 4589.69,
+      "ms": 4719.04,
       "warmup": false
     },
     {
       "step": 463,
       "loss": 0.9116,
-      "ms": 4692.6,
+      "ms": 4483.41,
       "warmup": false
     },
     {
       "step": 464,
       "loss": 0.7324,
-      "ms": 4569.24,
+      "ms": 4476.77,
       "warmup": false
     },
     {
       "step": 465,
       "loss": 1.0279,
-      "ms": 4722.2,
+      "ms": 4409.98,
       "warmup": false
     },
     {
       "step": 466,
       "loss": 1.0928,
-      "ms": 4772.09,
+      "ms": 4608.98,
       "warmup": false
     },
     {
       "step": 467,
       "loss": 1.0136,
-      "ms": 4682.14,
+      "ms": 4509.8,
       "warmup": false
     },
     {
       "step": 468,
       "loss": 1.0728,
-      "ms": 4816.41,
+      "ms": 4470.01,
       "warmup": false
     },
     {
       "step": 469,
       "loss": 1.0685,
-      "ms": 4731.78,
+      "ms": 4594.53,
       "warmup": false
     },
     {
       "step": 470,
       "loss": 0.9483,
-      "ms": 4597.67,
+      "ms": 4521.45,
       "warmup": false
     },
     {
       "step": 471,
       "loss": 1.1419,
-      "ms": 4593.51,
+      "ms": 4483.33,
       "warmup": false
     },
     {
       "step": 472,
       "loss": 1.2393,
-      "ms": 4734.28,
+      "ms": 4591.39,
       "warmup": false
     },
     {
       "step": 473,
       "loss": 0.8344,
-      "ms": 4563.39,
+      "ms": 4661.55,
       "warmup": false
     },
     {
       "step": 474,
       "loss": 0.9297,
-      "ms": 4505.22,
+      "ms": 4728.71,
       "warmup": false
     },
     {
       "step": 475,
       "loss": 0.973,
-      "ms": 4645.96,
+      "ms": 4713.39,
       "warmup": false
     },
     {
       "step": 476,
       "loss": 1.0334,
-      "ms": 4664.36,
+      "ms": 4612.97,
       "warmup": false
     },
     {
       "step": 477,
       "loss": 1.0674,
-      "ms": 4554.41,
+      "ms": 4511.7,
       "warmup": false
     },
     {
       "step": 478,
       "loss": 1.1602,
-      "ms": 4558.38,
+      "ms": 4665.63,
       "warmup": false
     },
     {
       "step": 479,
       "loss": 1.034,
-      "ms": 4602.12,
+      "ms": 4627.32,
       "warmup": false
     },
     {
       "step": 480,
       "loss": 1.2864,
-      "ms": 4623.54,
+      "ms": 4611.93,
       "warmup": false
     },
     {
       "step": 481,
       "loss": 1.0857,
-      "ms": 4668.89,
+      "ms": 4572.46,
       "warmup": false
     },
     {
       "step": 482,
       "loss": 0.8724,
-      "ms": 4620.25,
+      "ms": 4544.47,
       "warmup": false
     },
     {
       "step": 483,
       "loss": 0.8405,
-      "ms": 4500.95,
+      "ms": 4568.41,
       "warmup": false
     },
     {
       "step": 484,
       "loss": 0.9957,
-      "ms": 4601.79,
+      "ms": 4545.86,
       "warmup": false
     },
     {
       "step": 485,
       "loss": 1.3172,
-      "ms": 4685.0,
+      "ms": 4459.37,
       "warmup": false
     },
     {
       "step": 486,
       "loss": 1.1014,
-      "ms": 4554.14,
+      "ms": 4504.84,
       "warmup": false
     },
     {
       "step": 487,
       "loss": 0.9581,
-      "ms": 4557.58,
+      "ms": 4533.81,
       "warmup": false
     },
     {
       "step": 488,
       "loss": 1.0664,
-      "ms": 4591.09,
+      "ms": 4521.93,
       "warmup": false
     },
     {
       "step": 489,
       "loss": 1.1377,
-      "ms": 4642.43,
+      "ms": 4537.43,
       "warmup": false
     },
     {
       "step": 490,
       "loss": 0.8862,
-      "ms": 4550.97,
+      "ms": 4604.55,
       "warmup": false
     },
     {
       "step": 491,
       "loss": 1.0015,
-      "ms": 4614.35,
+      "ms": 4546.58,
       "warmup": false
     },
     {
       "step": 492,
       "loss": 0.9747,
-      "ms": 4600.88,
+      "ms": 4590.15,
       "warmup": false
     },
     {
       "step": 493,
       "loss": 0.9967,
-      "ms": 4632.11,
+      "ms": 4551.42,
       "warmup": false
     },
     {
       "step": 494,
       "loss": 1.0309,
-      "ms": 4625.2,
+      "ms": 4617.74,
       "warmup": false
     },
     {
       "step": 495,
       "loss": 1.1168,
-      "ms": 4542.51,
+      "ms": 4535.41,
       "warmup": false
     },
     {
       "step": 496,
       "loss": 1.0139,
-      "ms": 4655.33,
+      "ms": 4498.23,
       "warmup": false
     },
     {
       "step": 497,
       "loss": 1.0448,
-      "ms": 4551.16,
+      "ms": 4472.1,
       "warmup": false
     },
     {
       "step": 498,
       "loss": 0.9135,
-      "ms": 4554.45,
+      "ms": 4679.1,
       "warmup": false
     },
     {
       "step": 499,
       "loss": 0.972,
-      "ms": 4661.97,
+      "ms": 4625.54,
       "warmup": false
     },
     {
       "step": 500,
       "loss": 1.2831,
-      "ms": 4660.57,
+      "ms": 4499.77,
       "warmup": false
     },
     {
       "step": 501,
       "loss": 0.8664,
-      "ms": 4740.5,
+      "ms": 4511.39,
       "warmup": false
     },
     {
       "step": 502,
       "loss": 1.2237,
-      "ms": 4672.1,
+      "ms": 4587.44,
       "warmup": false
     },
     {
       "step": 503,
       "loss": 0.9057,
-      "ms": 4664.72,
+      "ms": 4542.55,
       "warmup": false
     },
     {
       "step": 504,
       "loss": 1.1125,
-      "ms": 4748.26,
+      "ms": 4573.69,
       "warmup": false
     },
     {
       "step": 505,
       "loss": 1.1719,
-      "ms": 4836.28,
+      "ms": 4670.33,
       "warmup": false
     },
     {
       "step": 506,
       "loss": 1.1828,
-      "ms": 4754.04,
+      "ms": 4503.75,
       "warmup": false
     },
     {
       "step": 507,
       "loss": 1.0403,
-      "ms": 4718.14,
+      "ms": 4543.72,
       "warmup": false
     },
     {
       "step": 508,
       "loss": 0.875,
-      "ms": 4780.75,
+      "ms": 4585.5,
       "warmup": false
     },
     {
       "step": 509,
       "loss": 1.0266,
-      "ms": 4649.39,
+      "ms": 4617.66,
       "warmup": false
     },
     {
       "step": 510,
       "loss": 0.994,
-      "ms": 4676.6,
+      "ms": 4506.2,
       "warmup": false
     },
     {
       "step": 511,
       "loss": 0.9495,
-      "ms": 4724.99,
+      "ms": 4494.12,
       "warmup": false
     },
     {
       "step": 512,
       "loss": 0.8974,
-      "ms": 4835.05,
+      "ms": 4748.93,
       "warmup": false
     },
     {
       "step": 513,
       "loss": 0.9845,
-      "ms": 4780.58,
+      "ms": 4628.1,
       "warmup": false
     },
     {
       "step": 514,
       "loss": 1.0613,
-      "ms": 4758.25,
+      "ms": 4626.14,
       "warmup": false
     },
     {
       "step": 515,
       "loss": 1.1131,
-      "ms": 4856.91,
+      "ms": 4644.21,
       "warmup": false
     },
     {
       "step": 516,
       "loss": 1.0792,
-      "ms": 4777.96,
+      "ms": 4554.48,
       "warmup": false
     },
     {
       "step": 517,
       "loss": 1.077,
-      "ms": 4886.66,
+      "ms": 4618.19,
       "warmup": false
     },
     {
       "step": 518,
       "loss": 1.1943,
-      "ms": 4637.72,
+      "ms": 4603.74,
       "warmup": false
     },
     {
       "step": 519,
       "loss": 0.9816,
-      "ms": 4957.74,
+      "ms": 4946.02,
       "warmup": false
     },
     {
       "step": 520,
       "loss": 1.1209,
-      "ms": 4698.18,
+      "ms": 4620.71,
       "warmup": false
     },
     {
       "step": 521,
       "loss": 1.2051,
-      "ms": 4719.53,
+      "ms": 4481.17,
       "warmup": false
     },
     {
       "step": 522,
       "loss": 0.9738,
-      "ms": 4592.39,
+      "ms": 4575.75,
       "warmup": false
     },
     {
       "step": 523,
       "loss": 1.1302,
-      "ms": 4586.98,
+      "ms": 4625.06,
       "warmup": false
     },
     {
       "step": 524,
       "loss": 1.0983,
-      "ms": 4650.82,
+      "ms": 4597.99,
       "warmup": false
     },
     {
       "step": 525,
       "loss": 0.9612,
-      "ms": 4669.7,
+      "ms": 4588.62,
       "warmup": false
     },
     {
       "step": 526,
       "loss": 1.0435,
-      "ms": 4651.34,
+      "ms": 4605.19,
       "warmup": false
     },
     {
       "step": 527,
       "loss": 1.1016,
-      "ms": 4780.34,
+      "ms": 4747.44,
       "warmup": false
     },
     {
       "step": 528,
       "loss": 0.989,
-      "ms": 4640.11,
+      "ms": 4453.45,
       "warmup": false
     },
     {
       "step": 529,
       "loss": 1.1176,
-      "ms": 4631.28,
+      "ms": 4356.99,
       "warmup": false
     },
     {
       "step": 530,
       "loss": 1.0056,
-      "ms": 4818.61,
+      "ms": 4500.51,
       "warmup": false
     },
     {
       "step": 531,
       "loss": 1.0623,
-      "ms": 4691.37,
+      "ms": 4465.0,
       "warmup": false
     },
     {
       "step": 532,
       "loss": 1.0185,
-      "ms": 4798.82,
+      "ms": 4524.49,
       "warmup": false
     },
     {
       "step": 533,
       "loss": 0.9951,
-      "ms": 4760.33,
+      "ms": 4538.24,
       "warmup": false
     },
     {
       "step": 534,
       "loss": 1.0691,
-      "ms": 4806.26,
+      "ms": 4376.37,
       "warmup": false
     },
     {
       "step": 535,
       "loss": 1.0044,
-      "ms": 4778.89,
+      "ms": 4439.52,
       "warmup": false
     },
     {
       "step": 536,
       "loss": 1.1078,
-      "ms": 4711.16,
+      "ms": 4553.97,
       "warmup": false
     },
     {
       "step": 537,
       "loss": 1.0679,
-      "ms": 4640.19,
+      "ms": 4404.72,
       "warmup": false
     },
     {
       "step": 538,
       "loss": 1.2247,
-      "ms": 4575.94,
+      "ms": 4531.05,
       "warmup": false
     },
     {
       "step": 539,
       "loss": 1.0183,
-      "ms": 4659.6,
+      "ms": 4495.96,
       "warmup": false
     },
     {
       "step": 540,
       "loss": 0.8029,
-      "ms": 4681.8,
+      "ms": 4419.31,
       "warmup": false
     },
     {
       "step": 541,
       "loss": 1.3819,
-      "ms": 4755.35,
+      "ms": 4371.0,
       "warmup": false
     },
     {
       "step": 542,
       "loss": 0.8863,
-      "ms": 4635.79,
+      "ms": 4546.59,
       "warmup": false
     },
     {
       "step": 543,
       "loss": 0.9158,
-      "ms": 4785.32,
+      "ms": 4572.25,
       "warmup": false
     },
     {
       "step": 544,
       "loss": 1.2197,
-      "ms": 4793.21,
+      "ms": 4473.36,
       "warmup": false
     },
     {
       "step": 545,
       "loss": 1.0482,
-      "ms": 4768.04,
+      "ms": 4557.1,
       "warmup": false
     },
     {
       "step": 546,
       "loss": 0.9885,
-      "ms": 4613.2,
+      "ms": 4356.06,
       "warmup": false
     },
     {
       "step": 547,
       "loss": 0.8639,
-      "ms": 4930.21,
+      "ms": 4425.16,
       "warmup": false
     },
     {
       "step": 548,
       "loss": 1.0815,
-      "ms": 4714.23,
+      "ms": 4564.06,
       "warmup": false
     },
     {
       "step": 549,
       "loss": 1.3846,
-      "ms": 4603.18,
+      "ms": 4408.87,
       "warmup": false
     },
     {
       "step": 550,
       "loss": 0.9209,
-      "ms": 4590.87,
+      "ms": 4389.0,
       "warmup": false
     },
     {
       "step": 551,
       "loss": 1.0631,
-      "ms": 4665.35,
+      "ms": 4355.94,
       "warmup": false
     },
     {
       "step": 552,
       "loss": 1.1128,
-      "ms": 4589.37,
+      "ms": 4500.72,
       "warmup": false
     },
     {
       "step": 553,
       "loss": 1.0419,
-      "ms": 4576.48,
+      "ms": 4492.94,
       "warmup": false
     },
     {
       "step": 554,
       "loss": 0.9689,
-      "ms": 4667.0,
+      "ms": 4722.55,
       "warmup": false
     },
     {
       "step": 555,
       "loss": 0.9547,
-      "ms": 4695.28,
+      "ms": 4405.58,
       "warmup": false
     },
     {
       "step": 556,
       "loss": 1.1553,
-      "ms": 4676.42,
+      "ms": 4489.19,
       "warmup": false
     },
     {
       "step": 557,
       "loss": 0.948,
-      "ms": 4566.62,
+      "ms": 4350.14,
       "warmup": false
     },
     {
       "step": 558,
       "loss": 1.1124,
-      "ms": 4579.06,
+      "ms": 4477.04,
       "warmup": false
     },
     {
       "step": 559,
       "loss": 0.9797,
-      "ms": 4757.14,
+      "ms": 4340.35,
       "warmup": false
     },
     {
       "step": 560,
       "loss": 1.0121,
-      "ms": 4637.2,
+      "ms": 4454.27,
       "warmup": false
     },
     {
       "step": 561,
       "loss": 1.0073,
-      "ms": 4602.33,
+      "ms": 4555.16,
       "warmup": false
     },
     {
       "step": 562,
       "loss": 1.0292,
-      "ms": 4598.23,
+      "ms": 4428.26,
       "warmup": false
     },
     {
       "step": 563,
       "loss": 1.0736,
-      "ms": 4713.26,
+      "ms": 4376.63,
       "warmup": false
     },
     {
       "step": 564,
       "loss": 1.1993,
-      "ms": 4763.13,
+      "ms": 4444.05,
       "warmup": false
     },
     {
       "step": 565,
       "loss": 1.0186,
-      "ms": 4554.36,
+      "ms": 4391.49,
       "warmup": false
     },
     {
       "step": 566,
       "loss": 1.4889,
-      "ms": 4630.08,
+      "ms": 4438.16,
       "warmup": false
     },
     {
       "step": 567,
       "loss": 0.9178,
-      "ms": 4635.52,
+      "ms": 4383.63,
       "warmup": false
     },
     {
       "step": 568,
       "loss": 1.1143,
-      "ms": 4762.49,
+      "ms": 4520.97,
       "warmup": false
     },
     {
       "step": 569,
       "loss": 1.0131,
-      "ms": 4750.3,
+      "ms": 4407.33,
       "warmup": false
     },
     {
       "step": 570,
       "loss": 1.0863,
-      "ms": 4701.24,
+      "ms": 4418.03,
       "warmup": false
     },
     {
       "step": 571,
       "loss": 1.1281,
-      "ms": 4790.29,
+      "ms": 4416.48,
       "warmup": false
     },
     {
       "step": 572,
       "loss": 0.8917,
-      "ms": 4704.89,
+      "ms": 4380.51,
       "warmup": false
     },
     {
       "step": 573,
       "loss": 0.7439,
-      "ms": 4710.59,
+      "ms": 4507.52,
       "warmup": false
     },
     {
       "step": 574,
       "loss": 1.1675,
-      "ms": 4620.89,
+      "ms": 4567.78,
       "warmup": false
     },
     {
       "step": 575,
       "loss": 1.0143,
-      "ms": 4601.36,
+      "ms": 4423.48,
       "warmup": false
     },
     {
       "step": 576,
       "loss": 1.0162,
-      "ms": 4638.6,
+      "ms": 4292.54,
       "warmup": false
     },
     {
       "step": 577,
       "loss": 1.1728,
-      "ms": 5112.77,
+      "ms": 4614.08,
       "warmup": false
     },
     {
       "step": 578,
       "loss": 1.2674,
-      "ms": 4606.65,
+      "ms": 4412.51,
       "warmup": false
     },
     {
       "step": 579,
       "loss": 1.1439,
-      "ms": 4532.33,
+      "ms": 4413.5,
       "warmup": false
     },
     {
       "step": 580,
       "loss": 0.9771,
-      "ms": 4545.32,
+      "ms": 4274.71,
       "warmup": false
     },
     {
       "step": 581,
       "loss": 0.9513,
-      "ms": 4709.44,
+      "ms": 4455.36,
       "warmup": false
     },
     {
       "step": 582,
       "loss": 0.9952,
-      "ms": 4827.67,
+      "ms": 4442.42,
       "warmup": false
     },
     {
       "step": 583,
       "loss": 1.0679,
-      "ms": 4688.17,
+      "ms": 4525.03,
       "warmup": false
     },
     {
       "step": 584,
       "loss": 0.9976,
-      "ms": 4739.44,
+      "ms": 4349.85,
       "warmup": false
     },
     {
       "step": 585,
       "loss": 0.9154,
-      "ms": 4579.2,
+      "ms": 4300.39,
       "warmup": false
     },
     {
       "step": 586,
       "loss": 1.0936,
-      "ms": 4608.48,
+      "ms": 4358.47,
       "warmup": false
     },
     {
       "step": 587,
       "loss": 1.025,
-      "ms": 4575.37,
+      "ms": 4423.09,
       "warmup": false
     },
     {
       "step": 588,
       "loss": 1.0356,
-      "ms": 4658.55,
+      "ms": 4414.26,
       "warmup": false
     },
     {
       "step": 589,
       "loss": 0.8781,
-      "ms": 4644.72,
+      "ms": 4398.83,
       "warmup": false
     },
     {
       "step": 590,
       "loss": 0.9985,
-      "ms": 4524.44,
+      "ms": 4599.97,
       "warmup": false
     },
     {
       "step": 591,
       "loss": 0.9203,
-      "ms": 4582.95,
+      "ms": 4306.81,
       "warmup": false
     },
     {
       "step": 592,
       "loss": 1.0037,
-      "ms": 4679.83,
+      "ms": 4388.09,
       "warmup": false
     },
     {
       "step": 593,
       "loss": 0.9643,
-      "ms": 4652.68,
+      "ms": 4470.18,
       "warmup": false
     },
     {
       "step": 594,
       "loss": 0.9841,
-      "ms": 4548.74,
+      "ms": 4339.68,
       "warmup": false
     },
     {
       "step": 595,
       "loss": 0.9205,
-      "ms": 4718.58,
+      "ms": 4550.18,
       "warmup": false
     },
     {
       "step": 596,
       "loss": 1.2699,
-      "ms": 4565.36,
+      "ms": 4407.82,
       "warmup": false
     },
     {
       "step": 597,
       "loss": 0.9879,
-      "ms": 4682.88,
+      "ms": 4378.99,
       "warmup": false
     },
     {
       "step": 598,
       "loss": 1.2903,
-      "ms": 4539.67,
+      "ms": 4496.44,
       "warmup": false
     },
     {
       "step": 599,
       "loss": 1.0537,
-      "ms": 4592.47,
+      "ms": 4481.73,
       "warmup": false
     },
     {
       "step": 600,
       "loss": 1.0381,
-      "ms": 4433.26,
+      "ms": 4422.48,
       "warmup": false
     },
     {
       "step": 601,
       "loss": 1.1188,
-      "ms": 4595.31,
+      "ms": 4492.59,
       "warmup": false
     },
     {
       "step": 602,
       "loss": 1.0596,
-      "ms": 4616.75,
+      "ms": 4465.6,
       "warmup": false
     },
     {
       "step": 603,
       "loss": 0.9662,
-      "ms": 4631.86,
+      "ms": 4460.87,
       "warmup": false
     },
     {
       "step": 604,
       "loss": 1.0921,
-      "ms": 4679.57,
+      "ms": 4468.35,
       "warmup": false
     },
     {
       "step": 605,
       "loss": 1.1666,
-      "ms": 4602.85,
+      "ms": 4461.26,
       "warmup": false
     },
     {
       "step": 606,
       "loss": 0.8776,
-      "ms": 4598.79,
+      "ms": 4388.44,
       "warmup": false
     },
     {
       "step": 607,
       "loss": 0.9781,
-      "ms": 4575.7,
+      "ms": 4329.39,
       "warmup": false
     },
     {
       "step": 608,
       "loss": 1.2554,
-      "ms": 4538.18,
+      "ms": 4369.32,
       "warmup": false
     },
     {
       "step": 609,
       "loss": 0.9509,
-      "ms": 4506.84,
+      "ms": 4417.72,
       "warmup": false
     },
     {
       "step": 610,
       "loss": 1.154,
-      "ms": 4569.61,
+      "ms": 4430.13,
       "warmup": false
     },
     {
       "step": 611,
       "loss": 1.2793,
-      "ms": 4564.42,
+      "ms": 4526.83,
       "warmup": false
     },
     {
       "step": 612,
       "loss": 1.1302,
-      "ms": 4712.96,
+      "ms": 4309.44,
       "warmup": false
     },
     {
       "step": 613,
       "loss": 1.0755,
-      "ms": 4542.94,
+      "ms": 4419.61,
       "warmup": false
     },
     {
       "step": 614,
       "loss": 0.9902,
-      "ms": 4625.48,
+      "ms": 4333.5,
       "warmup": false
     },
     {
       "step": 615,
       "loss": 1.0102,
-      "ms": 4671.04,
+      "ms": 4433.67,
       "warmup": false
     },
     {
       "step": 616,
       "loss": 1.0782,
-      "ms": 4529.61,
+      "ms": 4379.1,
       "warmup": false
     },
     {
       "step": 617,
       "loss": 1.0075,
-      "ms": 4636.2,
+      "ms": 4533.01,
       "warmup": false
     },
     {
       "step": 618,
       "loss": 0.9654,
-      "ms": 4647.14,
+      "ms": 4353.75,
       "warmup": false
     },
     {
       "step": 619,
       "loss": 0.8459,
-      "ms": 4523.53,
+      "ms": 4377.07,
       "warmup": false
     },
     {
       "step": 620,
       "loss": 1.1742,
-      "ms": 4570.36,
+      "ms": 4364.22,
       "warmup": false
     },
     {
       "step": 621,
       "loss": 1.211,
-      "ms": 4480.5,
+      "ms": 4394.04,
       "warmup": false
     },
     {
       "step": 622,
       "loss": 0.9786,
-      "ms": 4669.37,
+      "ms": 4428.17,
       "warmup": false
     },
     {
       "step": 623,
       "loss": 1.0939,
-      "ms": 4737.33,
+      "ms": 4433.39,
       "warmup": false
     },
     {
       "step": 624,
       "loss": 0.9765,
-      "ms": 4537.56,
+      "ms": 4436.87,
       "warmup": false
     },
     {
       "step": 625,
       "loss": 1.1647,
-      "ms": 4614.28,
+      "ms": 4441.14,
       "warmup": false
     },
     {
       "step": 626,
       "loss": 1.4232,
-      "ms": 4506.7,
+      "ms": 4466.84,
       "warmup": false
     },
     {
       "step": 627,
       "loss": 1.2569,
-      "ms": 4584.79,
+      "ms": 4490.2,
       "warmup": false
     },
     {
       "step": 628,
       "loss": 0.8575,
-      "ms": 4636.6,
+      "ms": 4388.4,
       "warmup": false
     },
     {
       "step": 629,
       "loss": 1.0022,
-      "ms": 4551.26,
+      "ms": 4463.06,
       "warmup": false
     },
     {
       "step": 630,
       "loss": 0.8626,
-      "ms": 4664.52,
+      "ms": 4427.48,
       "warmup": false
     },
     {
       "step": 631,
       "loss": 1.1157,
-      "ms": 4672.62,
+      "ms": 4539.38,
       "warmup": false
     },
     {
       "step": 632,
       "loss": 1.1644,
-      "ms": 4689.43,
+      "ms": 4364.98,
       "warmup": false
     },
     {
       "step": 633,
       "loss": 1.1678,
-      "ms": 4650.55,
+      "ms": 4442.66,
       "warmup": false
     },
     {
       "step": 634,
       "loss": 1.0004,
-      "ms": 4733.29,
+      "ms": 4284.25,
       "warmup": false
     },
     {
       "step": 635,
       "loss": 1.0208,
-      "ms": 4917.43,
+      "ms": 4655.83,
       "warmup": false
     },
     {
       "step": 636,
       "loss": 1.2989,
-      "ms": 4749.88,
+      "ms": 4501.46,
       "warmup": false
     },
     {
       "step": 637,
       "loss": 0.9943,
-      "ms": 4597.92,
+      "ms": 4460.3,
       "warmup": false
     },
     {
       "step": 638,
       "loss": 0.9443,
-      "ms": 4608.23,
+      "ms": 4367.98,
       "warmup": false
     },
     {
       "step": 639,
       "loss": 1.0474,
-      "ms": 4521.05,
+      "ms": 4438.77,
       "warmup": false
     },
     {
       "step": 640,
       "loss": 1.0216,
-      "ms": 4652.4,
+      "ms": 4434.21,
       "warmup": false
     },
     {
       "step": 641,
       "loss": 0.9598,
-      "ms": 4606.55,
+      "ms": 4312.74,
       "warmup": false
     },
     {
       "step": 642,
       "loss": 1.1182,
-      "ms": 4545.14,
+      "ms": 4430.52,
       "warmup": false
     },
     {
       "step": 643,
       "loss": 1.0492,
-      "ms": 4596.97,
+      "ms": 4419.09,
       "warmup": false
     },
     {
       "step": 644,
       "loss": 1.0476,
-      "ms": 4584.1,
+      "ms": 4349.83,
       "warmup": false
     },
     {
       "step": 645,
       "loss": 1.1489,
-      "ms": 2382.76,
+      "ms": 2225.2,
       "warmup": false
     }
   ],
   "checkpoint_saves": [],
   "adapter_out": "/opt/np/models/adapters/llama31_lora",
-  "captured": "2026-08-05T13:28:11Z"
+  "captured": "2026-08-05T19:06:13Z"
 }
