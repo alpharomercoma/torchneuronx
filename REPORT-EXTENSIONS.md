@@ -1065,7 +1065,30 @@ simply become unverifiable from the current files.
   chip only. Those lanes were built after the original instance was gone, so
   there is no ambiguity and nothing was overwritten.
 
-### 23.4 The lesson
+### 23.4 Derived metrics, and which numbers are not stored anywhere
+
+The same audit found a second, smaller traceability gap: **two frequently
+quoted figures are computed, not stored**, and the report had not said so.
+
+| figure | how it is derived | worked example |
+|---|---|---|
+| trn1 end-to-end **1441 tok/s** (§15) | `steps x tokens_per_optimizer_step / train_wall_s` | 645 x 16,384 / 7333.66 s = 1441.0 |
+| Inferentia2 prefill **2204 -> 4244 tok/s** (§17) | `prompt_tokens / p50_ttft` | 256 / 0.11616 s = 2204; 1792 / 0.422285 s = 4244 |
+
+Both are correct and both are reproducible from stored fields, but neither
+appears as a key in any result JSON. `tokens_per_s_end_to_end` was added to the
+schema partway through Phase 3, so the older trn1 lanes predate it and
+`analysis/make_report.py` backfills the value with `end_to_end_fields()`. The
+Inferentia2 prefill throughput is not a vLLM metric at all — vLLM reports
+*output* throughput, which for a one-token completion is ~2.5 tok/s and says
+nothing about prefill. The prefill rate has to be reconstructed from TTFT, and
+that reconstruction is the whole reason §17 could separate the two phases.
+
+Stating the derivation matters because a reader checking `output_throughput` in
+the prefill JSONs would find 2.51 tok/s and reasonably conclude the report was
+wrong.
+
+### 23.5 The lesson
 
 A results path that a re-run will write to again is not an archive. Publishing a
 number pins it to a file, and any process that can rewrite that file can break
