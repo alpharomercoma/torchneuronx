@@ -36,13 +36,23 @@ for spec in mnist:mlp mnist:cnn mnist:vit cifar:mlp cifar:cnn cifar:vit; do
   ds="${spec%%:*}"; arch="${spec##*:}"
   tag="${ds}_${arch}"
   echo; echo "############ academic: $tag ############"; echo
-  if have "$RESULTS_DIR/$tag.json"; then
-    echo "skip $tag (exists)"; continue
+  if have "$RESULTS_DIR/$tag.json" || have "$RESULTS_DIR/$tag.failure.json"; then
+    echo "skip $tag (recorded)"; continue
   fi
   "$PY" "$TELEM" --out "$RESULTS_DIR/$tag.telemetry.csv" -- \
     "$PY" "$BENCH_DIR/academic/train_academic.py" \
       --dataset "$ds" --arch "$arch" --out "$RESULTS_DIR/$tag.json" \
-    > "$RESULTS_DIR/$tag.log" 2>&1 || echo "  $tag FAILED (see academic/$tag.log)"
+    > "$RESULTS_DIR/$tag.log" 2>&1 || {
+      # A FAILURE MUST LEAVE A RECEIPT. This driver used to only echo, so when
+      # cifar_vit's compiler was OOM-killed on trn2 the study had no record of
+      # it at all -- the lane simply appeared absent, which reads as "not run"
+      # rather than "tried and failed". Every other driver in this repo writes
+      # a receipt; this one now does too.
+      REASON=$(grep -m1 -oE "\[F[0-9]+\][^\"]{0,150}|NCC_[A-Z0-9]+[^\"]{0,140}|ValueError: [^\"]{0,140}" "$RESULTS_DIR/$tag.log" | head -1 | sed "s/\"/'/g")
+      [ -n "$REASON" ] || REASON=$(tail -c 300 "$RESULTS_DIR/$tag.log" | tr '\n' ' ' | sed "s/\"/'/g")
+      printf '{"tag":"%s","box":"%s","status":"failed","reason":"%s","captured":"%s"}\n' \
+        "$tag" "$BOX" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$RESULTS_DIR/$tag.failure.json"
+      echo "  $tag FAILED (receipt written)"; }
 done
 
 echo; echo "############ ACADEMIC TRACK COMPLETE ############"
