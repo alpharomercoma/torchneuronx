@@ -1861,3 +1861,96 @@ and the §20 replication figures all reproduce exactly.
 
 **This section exists because a study that only publishes what survived review
 is not reporting the review.**
+
+---
+
+## 31. Biases this study carries
+
+A second independent model (kimi-k3) was asked what biases a study built this
+way inevitably carries. Four came back. All four apply, three are only partly
+mitigated, and none is fully solved. They are recorded here because a reader
+cannot discount what a study does not disclose.
+
+### 31.1 Survivorship bias in the reruns
+
+**The charge:** failed lanes got extra rolls of the dice until they behaved, so
+the published results are the lucky runs and the true failure rate is buried.
+
+**It applies.** Lanes that were re-run after failing: the batch ladder (three
+times — missing retry flag, misplaced validity check, broken design), the
+quality gate, the dataloader isolation smoke, the residency lane, and
+`ctx_16384` (three attempts). The primary lane itself ran twice, on two
+different chips.
+
+**Partial defence.** Most re-runs corrected a *defect in the harness* rather
+than re-rolling a stochastic outcome — a missing compiler flag, a port
+collision, a stale lock. Those are not extra dice; they are the same
+measurement finally taken correctly, and each is documented with what changed.
+
+**Where the charge lands.** `ctx_16384` genuinely was three attempts at the same
+thing hoping for a different result, and the earlier attempts are recorded as
+receipts. The honest statement is that this study reports **first-attempt
+failure rates poorly**: the report shows which lanes eventually produced a
+number, not how often a lane failed before it did.
+
+### 31.2 Informative censoring — the missing lanes are missing *because* they were troublesome
+
+**The charge:** lanes that never ran are absent precisely because they were slow
+or difficult, which biases every average optimistic.
+
+**It applies, and this is the sharpest one.** The lanes that never ran:
+`cifar_vit` on trn2 (compiler OOM, twice), `ctx_16384` (never resolved),
+`ctx_32768` (gated on 16384), `eff_combined` on trn1, three seed lanes (skipped
+by budget guards), and the entire micro-batch ladder above 1 (both chips).
+
+Every one of those is missing **because it was expensive or it failed** — the
+textbook definition of not-missing-at-random. A reader who averages what is
+present is averaging the workloads that were cheap enough to finish.
+
+**Mitigation:** every absence is a receipt, not a silence. §29 lists all of them
+explicitly. That does not remove the bias; it makes it visible.
+
+### 31.3 The metrics and the report have the same author
+
+**The charge:** one party choosing the yardstick *and* grading the result is
+advocacy, not measurement.
+
+**It applies.** The metric set — MFU, tokens/s, end-to-end throughput, $/token —
+was chosen by the same process that wrote the conclusions.
+
+**Mitigation, and it is real but partial.** Two independent models were given
+the finished study with instructions to attack it. They produced §30 (two
+critical findings, both confirmed: MFU is parameter-only and unusable as
+absolute utilisation; §15's status line was stale) and this section. Several
+claims were downgraded from finding to hypothesis as a direct result.
+
+**Where it still lands.** The reviewers audited what was written; they could not
+audit what was never measured. The choice to report cost-per-token — a metric
+on which Trainium2 wins — while MFU, on which it loses, required an explanatory
+paragraph, is exactly the kind of framing decision an adversarial reader should
+weigh for themselves. Both numbers are published; the emphasis was still ours.
+
+### 31.4 One window is weather, not climate
+
+**The charge:** a single rented 24-hour window confounds every finding with that
+day's instance noise, thermal state and neighbour load.
+
+**It applies, with one genuine and unplanned mitigation.** An instance failure
+forced the ASG to replace the box mid-study, so the primary lane ran on **two
+different physical Trainium2 chips**. Timing differed by 2.41% and the final
+loss was **bit-identical** (§20). That is real replication across hardware, and
+it is why 2.4% is used as the resolution floor throughout.
+
+**Where the charge still lands.** Two chips in one availability zone on one day
+is not a distribution. Nothing here samples across regions, times of day, or
+Neuron releases. The Trainium1 side has no such replication at all beyond three
+bit-identical seeds. **Any single number in this report should be read as one
+day's measurement on one pair of machines, ±2.4%.**
+
+### 31.5 What would actually fix these
+
+Not more analysis of the same data. Repeated windows on independent instances,
+randomised lane order, a pre-registered metric set fixed before any hardware
+lands, and a reviewer who sees the design *before* the results. This study
+pre-registered §15's design and denominators, which is why that section could be
+checked against its own scaffold — but it pre-registered only that section.
