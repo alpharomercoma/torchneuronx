@@ -159,22 +159,32 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
    logical core). Both chips stalling at the same rung would falsify the
    occupancy story.
 
-## TRN2 AUTOMATION CHAIN (no laptop in the critical path)
+## QUEUE TOPOLOGY AS OF 2026-08-06 05:15Z
 
-| unit | script | runs |
-|---|---|---|
-| `np-suite` | `run_phase3_trn2.sh` | main Phase-3 suite |
-| `np-followon` | `run_trn2_followon.sh` | quality gate, then dataloader isolation |
-| `np-followon2` | `run_trn2_followon2.sh` | batch ladder |
-| `np-followon3` | `run_trn2_followon3.sh` | deliberate `ctx_16384` retry, LAST |
+Superseded units (`np-followon`..`np-followon4`, `np-suite`, `np-recover`,
+`np-ladder-last`, `np-optional-last`, `np-tail`) are stopped. The live chain:
 
-Each stage waits for the previous to release the chip and refuses to START
-anything it cannot FINISH before the 10:00Z hard stop — a lane terminated
-mid-run yields no artifact and burns window another lane could have used.
+| box | unit | script | runs |
+|---|---|---|---|
+| trn2 | `np-final` | `run_trn2_final.sh` | frontier -> maxutil -> opportunistic |
+| trn2 | `np-tail2` | `run_trn2_tail.sh` | cifar_vit -> frontier pass 2 (fp8, 32B) -> seed lanes if >=70 min |
+| trn1 | `np-symmetry` | `run_symmetry_trn1.sh` | the lanes trn2 ran that trn1 had not |
 
-**Do NOT edit a script that is currently executing on the box.** bash reads
-lazily by byte offset and will resume at a stale offset. That is why stage 2 is
-a separate file rather than three more lines in stage 1.
+Every stage waits for BOTH the chip and TCP 29500, and clears `*.lock` from the
+compile cache before starting. Those three preconditions are the accumulated
+scar tissue of this session: chip contention, the EADDRINUSE collateral from
+killing lanes, and the three-hour stale-lock deadlock.
+
+The three trn2 seed lanes carry truthful `"status": "deferred"` receipts, which
+`np-tail2` removes if it finds >=70 min left. They are last because `--seed` is
+a no-op here, so they can only re-measure timing noise, which §20 already bounds
+at 2.4% using two physical chips.
+
+Local monitor: `b69ev828c` (both boxes, 10 min). Four monitor defects were fixed
+today and all four were the same species -- **the probe measured its own
+assumption rather than the system**: a stale results path, a hand-listed set of
+driver names, a log that advances without work happening, and an anchored regex
+against indented `systemctl` output. Each initially read as a box failure.
 
 ## NEW RESULTS THIS SESSION (post-compaction)
 
