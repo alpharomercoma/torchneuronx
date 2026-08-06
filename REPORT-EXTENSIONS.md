@@ -928,9 +928,16 @@ its own step count and its own session, against the published 1.92× at seq 4096
 (§15). Two independent measurements 2.2% apart — inside the 2.4% noise floor of
 §20.
 
-### 22.2 The two chips wall in different subsystems
+### 22.2 The two chips wall in different subsystems *at this shape*
 
 This is the substantive finding, and it is not one we went looking for.
+
+> **Correction, added after the trn1 symmetry pass (§26.1).** The statement
+> below is true of the seq-4096 micro-batch ladder and **must not be
+> generalised**. At seq 2048, Trainium1 fails with `NCC_EXSP001` — the same
+> *device memory* code as Trainium2 — not with the compiler-instruction error.
+> Trainium1 is not "the chip that hits compiler limits"; it hits whichever
+> ceiling the shape reaches first, and so does Trainium2.
 
 - **Trainium1 hits a *compiler* ceiling.** `NCC_EXTP003`: 2,064,384 instructions
   generated against a stated limit of 150,000. The silicon is never consulted;
@@ -1367,3 +1374,79 @@ So this lane measures neither quality nor throughput in a way that can be set
 beside the packed lanes. It is reported because it ran on both chips and the
 numbers exist; it is flagged here so that nobody plots it. Fixing it would mean
 counting non-padding tokens per batch, which the harness does not currently do.
+
+---
+
+## 26. What the Trainium1 symmetry pass changed (Phase 3)
+
+Several lanes had run on Trainium2 only. Each was therefore a single-chip
+observation that could not be attributed to the *generation* rather than to the
+workload. trn1 is on credits and idle, so the counterparts were run. Three of
+them changed what the report can claim.
+
+### 26.1 A correction: Trainium1 is not "the compiler-limit chip"
+
+§22 found that at seq 4096 the micro-batch ladder failed with `NCC_EXTP003`
+(compiler instruction count) on trn1 and `NCC_EXSP001` (device HBM) on trn2, and
+described the two chips as walling in different subsystems. The efficiency
+sweeps at **seq 2048** show that framing was too broad:
+
+| lane (trn1, seq 2048) | error | detail |
+|---|---|---|
+| `eff_mb2` | **`NCC_EXSP001`** | needs 94.39 GB vs 17.17 GB available |
+| `eff_mb4` | **`NCC_EXSP001`** | needs 94.41 GB vs 17.17 GB available |
+| `eff_norecompute` | `NCC_EOOM001` | peak 22.19 GB vs 16.00 GB limit |
+
+Trainium1 hits the *device memory* error here — the same class as Trainium2.
+The correct statement is that **each chip hits whichever ceiling the shape
+reaches first**, and which ceiling that is depends on the configuration, not on
+the generation. §22.2 now carries this correction inline.
+
+Note also that trn1's requirement barely moves between micro-batch 2 and 4
+(94.39 → 94.41 GB), the same batch-insensitivity seen in trn2's HBM figures and
+in trn1's instruction counts. Whatever dominates these estimates is not the
+activation memory that scales with batch. We still cannot explain it, and say so.
+
+### 26.2 A fourth capability gap: disabling recompute requires Trainium2
+
+| | result |
+|---|---|
+| trn1 `eff_norecompute` | ✖ `NCC_EOOM001`, 22.19 GB vs 16.00 GB |
+| trn2 `eff_norecompute` | ✅ 5265.5 tok/s |
+
+Turning gradient checkpointing off — the classic trade of memory for speed —
+is simply unavailable on Trainium1 for this model. It is a lever that exists
+only on the newer part.
+
+This is the fourth recorded Trainium1 failure that becomes a Trainium2 pass,
+after seq 8192 (§15), CLIP (§24.4) and full fine-tuning of Qwen3-1.7B (§25.2).
+Taken together they are a more concrete argument for the newer chip than any
+throughput ratio: four things that cannot be done at all on Trainium1.
+
+### 26.3 The one lever that works, on both chips
+
+| lane | trn1 | trn2 | ratio |
+|---|---|---|---|
+| `eff_seq4096` | 3572.3 tok/s, **91.4% MFU** | 7277.4 tok/s, 53.3% MFU | **2.04×** |
+
+Sequence length is the only efficiency lever that both chips accept, and it is
+the one that pays: a clean 2.04×, independently consistent with the 1.92× from
+the context ladder (§15) and the 1.96× from the batch-ladder baseline (§22.1).
+Three separate lanes, three measurements of the same quantity, spread 2.04 /
+1.96 / 1.92 — a range of 6%, against a 2.4% noise floor, which is about as much
+agreement as this methodology can demonstrate.
+
+Note the MFU inversion once more: trn1 is at **91.4%** and trn2 at **53.3%**
+while trn2 does twice the work per second. A reader optimising MFU would prefer
+the slower chip.
+
+### 26.4 What the symmetry pass confirmed rather than changed
+
+- **MoE is rejected identically on both chips** — the `qwen3_moe` allowlist
+  error is byte-identical on v2 and v3, so §24.5's limit is Neuron-wide rather
+  than v3-specific. This is the clearest case of why the pass was worth running.
+- **`data_alpaca` loss is identical to four decimals on both chips** (1.0088),
+  another instance of the determinism in §20.
+- **`data_dolly_nopack` reproduces its anomaly on both** (5.4633 / 5.4631),
+  confirming §25.5's conclusion that the lane's accounting is broken rather
+  than that one chip behaved oddly.
