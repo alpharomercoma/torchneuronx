@@ -685,3 +685,37 @@ rewritten.
 Same species as the residency lane and the cache-hit ladder: **an implausibly
 good number is a defect until proven otherwise.** The honest 92 MB/s figure came
 only from counting bytes that actually arrived.
+
+## PHASE 3 CLOSED — 2026-08-06 10:45Z
+
+**Reconciliation, box against S3** (S3 must be >= box, and is):
+
+| box | JSON on disk | JSON in S3 | |
+|---|---|---|---|
+| trn2 | 73 | 93 | ✅ +20 archived (`original_chip/`, `invalidated/`) |
+| trn1 | 61 | 61 | ✅ exact |
+| inf2 | 113 | 116 | ✅ +3 |
+
+Bucket total: **53,050 objects, 83.0 GB.**
+
+**Instances:** trn1 and inf2 **stopped** (not terminated — the NEFF caches are
+the asset and survive on EBS). trn2 scales to zero at 10:50Z and EC2 terminates
+it from 11:00Z; its disk holds nothing that is not already in S3.
+
+**Report:** REPORT-EXTENSIONS.md §13–§28, 1667 lines. Every cited figure
+verified against stored JSON (30/30 in the final audit, plus 14/14 for the
+recovered original-chip files).
+
+**Repo:** `phase3-trainium2` @ `86c071f`, clean, 58 tests passing.
+
+### The five things still genuinely open
+
+1. Whether seq 12288/16384 would FIT in 96 GiB HBM — unknowable from here,
+   compilation never completed.
+2. Why trn1's compiler instruction count is identical across micro-batches.
+3. The 5.1% serving difference between trn1- and trn2-trained weights — above
+   the noise floor, no mechanism, not claimed as real.
+4. Whether a proper quantisation recipe makes FP8 usable on v3 (the one-flag
+   autocast gives NaN).
+5. Task #1, user-only: rotate the root access keys, the HF token, and the SSH
+   passphrase that transited chat in earlier sessions.
