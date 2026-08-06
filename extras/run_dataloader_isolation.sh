@@ -76,8 +76,11 @@ else
 fi
 
 mkdir -p "$OUT"
-have() { [ "${FORCE:-0}" != "1" ] && [ -s "$1" ]; }
-step() { echo; echo "############ ISOLATION[$BOX]: $* ############"; echo; }
+# Helpers come from ONE place now. `have`, `step`, the receipt writer and the
+# chip/port guards used to be copy-pasted into ~16 drivers, which is how the
+# fleet acquired five different answers to "is this lane already done?".
+NP_TAG="ISOLATION[$BOX]"
+source "$(dirname "${BASH_SOURCE[0]}")/lib/common.sh"
 
 bash shared/bin/hf_login.sh >/dev/null 2>&1 || echo "WARN: hf_login failed"
 
@@ -97,16 +100,12 @@ fi
 
 lane() {   # lane <tag> <args...>
   local tag="$1"; shift
-  { have "$OUT/$tag.json" || have "$OUT/$tag.failure.json"; } && { echo "skip $tag"; return 0; }
-  step "$tag"
+  np_recorded "$OUT/$tag" && { np_log "skip $tag (recorded)"; return 0; }
+  np_step "$tag"
   "$PY" "$TELEM" --out "$OUT/$tag.telemetry.csv" -- \
     "$PY" "$SFT" --tag "$tag" "${EXTRA[@]}" --out "$OUT/$tag.json" "$@" \
     > "$OUT/$tag.log" 2>&1 || {
-      REASON=$(grep -m1 -oE "NCC_[A-Z0-9]+[^\"]{0,120}|KeyError[^\"]{0,80}|ValueError[^\"]{0,80}|TypeError[^\"]{0,80}" "$OUT/$tag.log" | head -1 | sed "s/\"/'/g")
-      [ -n "$REASON" ] || REASON=$(tail -c 300 "$OUT/$tag.log" | tr '\n' ' ' | sed "s/\"/'/g")
-      printf '{"tag":"%s","box":"%s","status":"failed","reason":"%s","captured":"%s"}\n' \
-        "$tag" "$BOX" "$REASON" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$tag.failure.json"
-      echo "  $tag FAILED (receipt)"; return 1; }
+      np_receipt "$OUT/$tag.failure.json" "$tag" "$BOX" "$OUT/$tag.log"; return 1; }
   bash shared/bin/push_results.sh "$BOX" >/dev/null 2>&1 || echo "  push FAILED"
   return 0
 }
@@ -118,7 +117,7 @@ lane() {   # lane <tag> <args...>
 lane synth_smoke --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
   --synthetic-data 80 --max-steps 20 || true
 
-if ! have "$OUT/synth_smoke.json"; then
+if ! np_have "$OUT/synth_smoke.json"; then
   echo "synthetic path does not work on this stack -- receipt stands as the finding"
   bash shared/bin/push_results.sh "$BOX" || true
   exit 0
@@ -187,6 +186,6 @@ if "2048" in u and "4096" in u:
 print("\n".join(rows))
 PYEOF
 
-step "DATALOADER ISOLATION COMPLETE"
+np_step "DATALOADER ISOLATION COMPLETE"
 bash shared/bin/sync_neuron_cache.sh push || echo "cache push FAILED"
 bash shared/bin/push_results.sh "$BOX" || echo "push FAILED"

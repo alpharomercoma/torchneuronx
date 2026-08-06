@@ -125,7 +125,7 @@ scales 1:3.98:7.89). ~124-238x per-token gap between phases.
 
 1. **trn2 quality gate** — the ONE symmetry violation. **ARMED, no longer needs
    a human or a laptop.** systemd unit `np-followon` on trn2 (script
-   `extras/run_trn2_followon.sh`, log `/opt/np/followon_trn2.log`) is waiting
+   `extras/attic/trn2-window/run_trn2_followon.sh`, log `/opt/np/followon_trn2.log`) is waiting
    for `run_phase3_trn2.sh` to exit, then runs the quality gate, then the
    isolation lane. Each checks it has enough window to FINISH before the
    10:00Z hard stop — starting a lane that gets terminated mid-run produces no
@@ -393,7 +393,7 @@ in place, `have()` would treat them as recorded outcomes and never re-run
 either lane, and the window would have ended with a "trn2 quality gate failed"
 receipt that was purely my doing.
 
-**Recovery.** `extras/run_trn2_recover.sh`, unit `np-recover`, replaces stages
+**Recovery.** `extras/attic/trn2-window/run_trn2_recover.sh`, unit `np-recover`, replaces stages
 3 and 4 (which were stopped). It:
 - moves the two EADDRINUSE receipts to `invalidated/` with the reason logged,
   so the lanes actually re-run;
@@ -719,3 +719,31 @@ recovered original-chip files).
    autocast gives NaN).
 5. Task #1, user-only: rotate the root access keys, the HF token, and the SSH
    passphrase that transited chat in earlier sessions.
+
+
+---
+
+## SCRIPT PROVENANCE MAP — added 2026-08-06 after restructuring
+
+The eleven orchestrators that drove the Trainium2 window were moved to
+`extras/attic/trn2-window/` and frozen **verbatim**, with sha256 for each in
+`MANIFEST.json`. Any citation of `extras/run_trn2_*.sh` elsewhere in this
+document or in the report refers to the frozen copy at the same filename.
+
+**Nothing was rewritten.** An independent review made the point that these
+scripts are evidence of what ran, not reusable code, and that refactoring them
+would sever the link between a published number and the code that produced it.
+The systemd `ExecStart` paths recorded in their headers are left exactly as they
+were on the box, because that is the launch record.
+
+Shared helpers now live in `extras/lib/common.sh` — one definition of `have`,
+`log`, `step`, the deadline arithmetic, the chip/port guards and the receipt
+writer, replacing roughly sixteen divergent copies. Two real defects in this
+study traced directly to that drift, and both are documented in the library
+itself so the next person inherits the reason and not just the rule.
+
+**Deliberately NOT done:** the six forked phase-2 drivers were left alone. The
+temptation was to collapse them into one parameterised script, but they may
+encode genuine differences between rounds, the hardware they targeted is
+stopped, and a taxonomy change with no operational payoff is churn that risks
+provenance for tidiness.

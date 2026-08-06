@@ -1,0 +1,103 @@
+{
+  "window": {
+    "capacity_reservation": "cr-08dc8b22d254cd3da",
+    "instance_type": "trn2.3xlarge",
+    "region": "sa-east-1",
+    "ran": "2026-08-05T11:30Z to 2026-08-06T11:00Z",
+    "upfront_fee_usd": 53.64,
+    "status": "EXPIRED \u2014 instance terminated"
+  },
+  "why_frozen": "These orchestrators are EVIDENCE of what ran during a single non-refundable window, not reusable library code. They are kept verbatim with hashes so any report claim can be traced to the exact script that produced it. They are never sourced, never edited, and never depended on by maintained code.",
+  "scripts": [
+    {
+      "name": "run_trn2_followon.sh",
+      "sha256": "bfdcb23fde9b632544e77d5bf4ac6444263eb854f54a0b49edcefad2c70ea53e",
+      "lines": 89,
+      "purpose": "stage 1: quality gate then dataloader isolation",
+      "original_path": "extras/run_trn2_followon.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_followon.sh"
+    },
+    {
+      "name": "run_trn2_followon2.sh",
+      "sha256": "a94b9c9758487b52ea78076515b5c5ea331cca826773ce5f31a1e5dbd52f675f",
+      "lines": 69,
+      "purpose": "stage 2: batch ladder (separate file because stage 1 was mid-execution and bash reads lazily)",
+      "original_path": "extras/run_trn2_followon2.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_followon2.sh"
+    },
+    {
+      "name": "run_trn2_followon3.sh",
+      "sha256": "ddeb6736c3796eb28cd6114da52c148b06321c3a640b6a31539d2a3d0c343741",
+      "lines": 110,
+      "purpose": "stage 3: deliberate ctx_16384 retry, last, with an early hard stop",
+      "original_path": "extras/run_trn2_followon3.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_followon3.sh"
+    },
+    {
+      "name": "run_trn2_followon4.sh",
+      "sha256": "0689da4d6db2949d59f8d45e07a0a6e4ca1dcc57127fb6a79a07455a814fa0ef",
+      "lines": 77,
+      "purpose": "stage 4: optional passes after the symmetry items",
+      "original_path": "extras/run_trn2_followon4.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_followon4.sh"
+    },
+    {
+      "name": "run_trn2_recover.sh",
+      "sha256": "000f779a6940d31e42250986ac6ca3fe0518f76cb89d82c87ec7e92d6623063e",
+      "lines": 130,
+      "purpose": "replaced stages 3-4 after EADDRINUSE collateral; added the port guard",
+      "original_path": "extras/run_trn2_recover.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_recover.sh"
+    },
+    {
+      "name": "run_trn2_tail.sh",
+      "sha256": "43e86294634372b6ad6caf4f122b4bc87a7f424b8ef54c7ce1207c3198638e8b",
+      "lines": 88,
+      "purpose": "cifar_vit, then frontier pass 2, then the deferred seed lanes",
+      "original_path": "extras/run_trn2_tail.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_tail.sh"
+    },
+    {
+      "name": "run_trn2_final.sh",
+      "sha256": "72d66bb12ac35320f28a38dbeb3f80b38ff053b02062fc8937ff7be07f1aeffd",
+      "lines": 68,
+      "purpose": "new-information-first reorder: frontier, maxutil, then seed lanes",
+      "original_path": "extras/run_trn2_final.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_final.sh"
+    },
+    {
+      "name": "run_trn2_lastwindow.sh",
+      "sha256": "b8704e9708457ff743000fe611de037fa999fcdebf8056e10232e42adc3e7ebc",
+      "lines": 85,
+      "purpose": "seq-8192 isolation + ctx_16384 in the last idle window",
+      "original_path": "extras/run_trn2_lastwindow.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_lastwindow.sh"
+    },
+    {
+      "name": "run_trn2_optional_last.sh",
+      "sha256": "e4eb4efdf92423fabfb9e07a9a3a7547b49a11de5a3cdda65bf7850034260467",
+      "lines": 34,
+      "purpose": "optional passes demoted behind the corrected ladder",
+      "original_path": "extras/run_trn2_optional_last.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_optional_last.sh"
+    },
+    {
+      "name": "run_trn2_ladder_last.sh",
+      "sha256": "86ec2b392518dcf21cb8f4517226afad0a194133486b4a408b48d39fff569820",
+      "lines": 34,
+      "purpose": "corrected batch ladder queued behind the recovery queue",
+      "original_path": "extras/run_trn2_ladder_last.sh",
+      "frozen_path": "extras/attic/trn2-window/run_trn2_ladder_last.sh"
+    },
+    {
+      "name": "run_cifar_vit_retry.sh",
+      "sha256": "a157ed35f6ce469ea32c13b292bb5f9eed8b6009478affb57d0c876503e498a9",
+      "lines": 81,
+      "purpose": "on-demand capacity watcher for the one lane that never passed on trn2",
+      "original_path": "extras/run_cifar_vit_retry.sh",
+      "frozen_path": "extras/attic/trn2-window/run_cifar_vit_retry.sh"
+    }
+  ],
+  "frozen_at": "2026-08-06",
+  "total_lines": 865
+}
