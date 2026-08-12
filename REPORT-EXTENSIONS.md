@@ -972,9 +972,8 @@ On Trainium2 the reported memory requirement **changes** across rungs — 64.13,
 64.15, 64.18 GB — so those were genuinely independent compiles.
 
 On Trainium1 the instruction count is **identical** at every failed rung:
-2,064,384 at micro-batch 2, 4 and 8. Graph size must grow with micro-batch, so
-this is not explicable as three measurements of three graphs. Two candidate
-explanations were tested and both failed:
+2,064,384 at micro-batch 2, 4 and 8. Two candidate explanations were tested and
+both failed:
 
 1. **A cached failure.** Ruled out. The re-run used a different compiler-flag
    hash (`+f7f529f3` → `+e30acd3a`) and each rung emitted its own distinct
@@ -986,9 +985,49 @@ explanations were tested and both failed:
    design fixes `grad_accum` at 8, so unrolled work varies 8× across the rungs,
    and the count is **still identical**.
 
-We do not know why. The summary carries a `SUSPECT` flag saying so, and this
-section will not offer a third theory it has not tested. What is measured is
-that at seq 4096 on Trainium1, micro-batch 1 compiles and nothing above it does.
+**Resolved 2026-08-12: the number is not a measurement of the graph.**
+
+An earlier version of this section said "we do not know why" and declined to
+offer a third theory. The third theory is now tested, and it is that the premise
+was wrong — nothing about these graphs needs explaining, because the count never
+described them.
+
+The compiler prints the shape of the operator it rejects. It is a
+flash-attention backward kernel, and its tensor scales exactly as expected:
+
+| rung | rejected kernel `dy_ref` | elements | instructions |
+|---|---|---:|---:|
+| mb2 | (2, 16, 128, 4096) | 16.8M | 2,064,384 |
+| mb4 | (4, 16, 128, 4096) | 33.6M | 2,064,384 |
+| mb8 | (8, 16, 128, 4096) | 67.1M | 2,064,384 |
+| `eff_combined` (mb2, **recompute off**) | (2, 16, 128, 4096) | 16.8M | 2,064,384 |
+
+A 4× range in the volume of the very operator that triggered the error, plus a
+fourth configuration toggling a lever no rung varied, and the figure does not
+move by one instruction. Across the whole study there are **59 occurrences in 10
+lane logs over three independent runs and two compiler-flag hashes, and every
+one reads 2,064,384**. No configuration anywhere produces a different value.
+
+An instruction count cannot be invariant to a 4× change in the operator being
+counted. 2,064,384 is a constant — note its shape, 63 × 2¹⁵, or 2016 × 1024 —
+and it carries no information about the submitted graph.
+
+**What this invalidates.** The ladder previously flagged itself `SUSPECT`
+whenever failed rungs shared a count, on the reasoning that independent compiles
+must differ. That check was unsound and fired on a sound ladder; it has been
+replaced by a module-hash comparison, which is what "compiled independently"
+actually means. Both ladders now record
+`independent_compiles_verified: 3 failed rungs, 3 distinct module-hash sets`.
+The `compiler_instructions` field is retained for provenance and explicitly
+marked `compiler_instructions_is_diagnostic: false`.
+
+**What remains unknown** is what 2,064,384 denotes — a capacity, a sentinel, an
+artifact of the error path. Settling that needs neuronx-cc internals rather than
+another lane, and no claim in this study depends on it.
+
+What is measured is unchanged: at seq 4096 on Trainium1, micro-batch 1 compiles
+and nothing above it does. The wall is real; only the number printed beside it
+was uninformative.
 
 ### 22.4 Three defects in this lane, all found and all disclosed
 
@@ -1695,7 +1734,7 @@ gaps are on the record rather than left for a reader to discover.
 | question | why it is unanswered |
 |---|---|
 | Does seq 12288 / 16384 **fit** in Trainium2's 96 GiB HBM? | Compilation never completed — the compiler exhausted a 124 GiB host first. No HBM figure was ever produced, so the accelerator's capacity at those shapes is untested (§28.2). |
-| Why is trn1's compiler instruction count identical at micro-batch 2, 4 and 8? | Two explanations were tested and both falsified: cached failures (ruled out by distinct module hashes) and the design holding the product constant (ruled out by the corrected ladder). No third explanation was tested (§22.3). |
+| What does trn1's `NCC_EXTP003` instruction count of 2,064,384 denote? | **The question of why it is identical across rungs is closed** — the count is invariant across a 4× change in the rejected operator's tensor volume, across recompute on/off, and across all 59 occurrences in the study, so it does not describe the submitted graph (§22.3). What the constant itself denotes needs neuronx-cc internals, not another lane. No claim depends on it. |
 | Is the 5.1% serving difference between trn1- and trn2-trained weights real? | Above the 2.4% noise floor, consistent in sign, and with no mechanism by which identical-architecture weights would change decode throughput. One paired run, hours apart, different cold compiles. Not claimed (§28.1). |
 | Can FP8 training work on NeuronCore-v3? | The one-flag autocast produces NaN from step 1. Whether a proper quantisation recipe, loss scaling or per-layer control fixes it was not attempted (§25.3). |
 | Is the seq-8192 overhead device-side or framework-side? | The isolation lane ruled out host data preparation at three shapes, which is a bound, not a mechanism. Confirming it needs a `neuron-profile` trace, which no window had room for (§25.1). |

@@ -65,3 +65,42 @@ def test_converted_driver_uses_the_shared_library():
     assert "np_recorded" in src
     for local_def in ("\nhave() {", "\nstep() {"):
         assert local_def not in src, "driver re-declared a shared helper"
+
+
+def test_chip_guard_does_not_match_driver_scripts():
+    """np_wait_for_chip must not treat a DRIVER as a chip holder.
+
+    Every driver is a run_*.sh process, so a guard matching `run_.*\\.sh`
+    matches its own caller. That is not hypothetical: it deadlocked the trn1
+    gapfill driver on its first launch, producing a process tree of
+    `bash(PID)---sleep(PID)` and a lane log that was never created.
+    """
+    # Only CODE counts. The comment above the guard quotes the bad pattern to
+    # explain why it is gone, and a naive substring check flags its own docs.
+    code = "\n".join(
+        line for line in (EXTRAS / "lib" / "common.sh").read_text().splitlines()
+        if not line.lstrip().startswith("#")
+    )
+    assert "run_.*\\.sh" not in code, (
+        "the chip guard matches driver scripts again -- every caller will "
+        "wait forever for itself"
+    )
+
+
+def test_chip_guard_returns_when_only_the_caller_is_running(tmp_path):
+    """Executable proof of the above: a script NAMED like a driver, which
+    sources the library and calls the guard, must reach the other side."""
+    probe = tmp_path / "run_selftest_driver.sh"
+    probe.write_text(
+        "#!/usr/bin/env bash\n"
+        f"source {EXTRAS / 'lib' / 'common.sh'}\n"
+        "np_wait_for_chip\n"
+        "echo REACHED_THE_OTHER_SIDE\n"
+    )
+    r = subprocess.run(
+        ["bash", str(probe)], capture_output=True, timeout=60, text=True
+    )
+    assert "REACHED_THE_OTHER_SIDE" in r.stdout, (
+        f"chip guard blocked its own caller; stdout={r.stdout!r} "
+        f"stderr={r.stderr[:200]!r}"
+    )

@@ -72,9 +72,39 @@ np_fits() {   # np_fits <stop_epoch> <needed_minutes> <label>
 # Every training lane needs the whole chip. Two lanes sharing it do not merely
 # run slow, they corrupt BOTH measurements, since each times a chip it does not
 # exclusively own.
+#
+# THE PATTERN DELIBERATELY DOES NOT MATCH DRIVER SCRIPTS.
+# It used to also match `run_.*\.sh`, and since every driver IS a run_*.sh
+# process, the first driver to call this helper waited forever for ITSELF. The
+# signature is a process tree of exactly `bash(PID)---sleep(PID)` with a driver
+# log that stops after the first banner and a lane log that was never created.
+#
+# Matching the training PROCESS rather than the driver is also more correct: a
+# driver sitting between lanes holds nothing, while a driver running a lane
+# always has an sft_lora.py/train_academic.py child that matches. np_ancestry
+# is kept as a second line of defence for anything that re-broadens the pattern.
+np_ancestry() {   # PIDs of this process and every ancestor, space separated
+  local p="${BASHPID:-$$}" out=""
+  while [ -n "$p" ] && [ "$p" -gt 1 ] 2>/dev/null; do
+    out="$out $p"
+    p=$(ps -o ppid= -p "$p" 2>/dev/null | tr -d '[:space:]')
+  done
+  echo "$out"
+}
+
+np_chip_busy() {   # np_chip_busy "<space-padded PIDs to ignore>" -> true if SOMEONE ELSE has it
+  local mine="${1:- }" pid
+  for pid in $(pgrep -f 'sft_lora.py|train_academic.py' 2>/dev/null); do
+    case "$mine" in *" $pid "*) continue;; esac
+    return 0
+  done
+  return 1
+}
+
 np_wait_for_chip() {   # np_wait_for_chip [stop_epoch]
-  local stop="${1:-0}" waited=0
-  while pgrep -f 'sft_lora.py|train_academic.py|run_.*\.sh' >/dev/null 2>&1; do
+  local stop="${1:-0}" waited=0 mine
+  mine=" $(np_ancestry) "
+  while np_chip_busy "$mine"; do
     sleep 30; waited=$((waited+1))
     [ $((waited % 20)) -eq 0 ] && np_log "waiting for the chip ($((waited/2)) min)"
     [ "$stop" -gt 0 ] && [ "$(date -u +%s)" -ge "$stop" ] && { np_log "hard stop while waiting"; return 1; }
