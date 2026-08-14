@@ -52,9 +52,35 @@ BUCKET_NAME = "neuron-pipelines-artifacts-600627330911"
 USER_DATA_DIR = Path(__file__).resolve().parent.parent / "user_data"
 
 
+def _strip_comments(text: str) -> str:
+    """Drop whole-line comments and blank lines, keeping every shebang.
+
+    EC2 caps user data at 16384 bytes RAW, and hunt mode concatenates four
+    scripts. Adding the boot watchdog took the payload to 16887 and the deploy
+    failed with InvalidUserData.Malformed.
+
+    These files are deliberately comment-heavy -- the reasoning is the point,
+    and several comments encode outages that cost real money. That reasoning
+    belongs in the repo, where people read it; it does not need to be uploaded
+    to a machine that only executes it. Stripping at synth time keeps both.
+
+    Only WHOLE-LINE comments go. Trailing comments are left alone because `#`
+    is legal inside strings, and this runs against shell that must still parse.
+    Shebangs survive: heredocs here write executable scripts whose first line
+    is load-bearing.
+    """
+    kept = [
+        line
+        for line in text.splitlines()
+        if line.startswith("#!") or not line.lstrip().startswith("#")
+        if line.strip()
+    ]
+    return "\n".join(kept)
+
+
 def load_user_data(*scripts: str) -> ec2.UserData:
     """Concatenate user_data/*.sh files (read at synth time) into one script."""
-    parts = [(USER_DATA_DIR / name).read_text() for name in scripts]
+    parts = [_strip_comments((USER_DATA_DIR / name).read_text()) for name in scripts]
     return ec2.UserData.custom("\n".join(parts))
 
 
@@ -130,8 +156,69 @@ class Trainium2Stack(Stack):
                 "subnet-092833ea4d9c0210c)"
             )
 
+        # ---- Capacity hunt: on-demand, unattended, and NOT a reservation -----
+        # Quota is not capacity. On 2026-08-12, with 12 of 12 vCPU free, all
+        # three sa-east-1 AZs returned InsufficientInstanceCapacity for an
+        # on-demand trn2.3xlarge -- the same wall that forced the Capacity Block
+        # a week earlier (108 watcher rounds, ~1.7h, nothing).
+        #
+        # A one-shot AWS::EC2::Instance is the wrong instrument against that: it
+        # fails the stack and rolls back over minutes, so polling it is slow and
+        # leaves wreckage. An Auto Scaling group at desired=1 retries launch
+        # failures on its own, indefinitely, INSIDE AWS -- no laptop, no Lambda,
+        # no poller to babysit -- and spanning every AZ that offers the type lets
+        # it take whichever one opens first.
+        #
+        # Deliberately NOT an on-demand capacity reservation: those bill at the
+        # full hourly rate from creation whether or not anything occupies them.
+        # This mode holds nothing and costs nothing until a box actually starts.
+        #
+        # DO NOT "STOP ON CAPTURE". Stopping releases the physical hardware, and
+        # the restart re-enters exactly the queue that took hours to clear -- so
+        # a stopped trn2 is a lost trn2.
+        #
+        # trn2HuntStopAt IS OPTIONAL, AND OMITTING IT IS THE NORMAL MODE.
+        # The first hunt ran with a 12h ceiling and made 95 launch attempts
+        # across all three AZs, every one InsufficientInstanceCapacity, before
+        # the ceiling disarmed it (2026-08-12/13). A ceiling expires on a date
+        # chosen in advance, which has no relationship to when capacity actually
+        # appears; the only thing it reliably does is switch the hunt off while
+        # you are not looking. Failed launches are free, so an open-ended hunt
+        # costs nothing to keep armed.
+        #
+        # What the ceiling used to bound was SPEND ONCE A BOX EXISTS, and that
+        # bound has been moved onto the box, where it belongs: the gapfill
+        # driver terminates from an EXIT trap, and cdk/user_data/trn2_hunt.sh
+        # installs a 6h boot watchdog that terminates even if the driver never
+        # starts. Set trn2HuntStopAt only when you want the hunt itself to give
+        # up at a known instant.
+        capacity_hunt = str(
+            self.node.try_get_context("trn2CapacityHunt") or ""
+        ).lower() in ("1", "true", "yes")
+        hunt_stop_at = self.node.try_get_context("trn2HuntStopAt")
+
+        if capacity_hunt and capacity_reservation_id:
+            raise ValueError(
+                "trn2CapacityHunt is an on-demand hunt and cannot target a "
+                "Capacity Block. Drop trn2CapacityReservationId, or drop the hunt."
+            )
+        if capacity_hunt and schedule_launch_at:
+            raise ValueError(
+                "trn2CapacityHunt launches as soon as capacity exists; a "
+                "scheduled launch time contradicts it"
+            )
+
         subnet_id = subnet_id or "subnet-0489739583976c545"
         az = az or "sa-east-1a"
+
+        # Every sa-east-1 AZ offers trn2.3xlarge. The hunt spans all three so the
+        # group takes the first one to free up; the block path stays pinned to
+        # the single AZ its reservation lives in.
+        HUNT_SUBNETS = {
+            "sa-east-1a": "subnet-0489739583976c545",
+            "sa-east-1b": "subnet-092833ea4d9c0210c",
+            "sa-east-1c": "subnet-088dd390f7aab1c53",
+        }
 
         # ---- Networking: the account's default sa-east-1 VPC (no NAT cost) ----
         vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
@@ -147,6 +234,12 @@ class Trainium2Stack(Stack):
         subnet = ec2.Subnet.from_subnet_attributes(
             self, "PinnedSubnet", subnet_id=subnet_id, availability_zone=az
         )
+        hunt_subnets = [
+            ec2.Subnet.from_subnet_attributes(
+                self, f"HuntSubnet{zone[-1].upper()}", subnet_id=sid, availability_zone=zone
+            )
+            for zone, sid in sorted(HUNT_SUBNETS.items())
+        ]
 
         # ---- IAM: same scoped shape as BaseStack, but cross-region on S3 ----
         # IAM is global, so the us-west-2 bucket ARN is addressable from here.
@@ -212,6 +305,32 @@ class Trainium2Stack(Stack):
                                 }
                             },
                         ),
+                        # Let a hunt box END ITSELF when its lanes are done.
+                        #
+                        # Without this the box runs for maybe an hour and then
+                        # bills until the scheduled ceiling hours later, which
+                        # for an unattended capture is most of the cost. Plain
+                        # `shutdown` is not enough either: the group would read
+                        # the loss and launch a replacement, restarting the hunt.
+                        # TerminateInstanceInAutoScalingGroup with
+                        # ShouldDecrementDesiredCapacity does both halves in one
+                        # call.
+                        #
+                        # Scoped by NAME PREFIX rather than the group's ARN on
+                        # purpose: the ASG depends on this role, so referencing
+                        # it here would be a circular dependency. The wildcard
+                        # covers only CloudFormation's generated suffix.
+                        iam.PolicyStatement(
+                            sid="TerminateSelfWhenLanesFinish",
+                            actions=[
+                                "autoscaling:TerminateInstanceInAutoScalingGroup"
+                            ],
+                            resources=[
+                                f"arn:aws:autoscaling:{self.region}:{self.account}"
+                                ":autoScalingGroup:*:autoScalingGroupName/"
+                                f"{construct_id}-*"
+                            ],
+                        ),
                     ]
                 )
             },
@@ -226,10 +345,15 @@ class Trainium2Stack(Stack):
         # launch into AWS but leaving the kickoff on a laptop would put the
         # laptop straight back on the critical path, and a Capacity Block pays
         # for idle minutes exactly like busy ones.
+        # trn2_hunt.sh must come BEFORE trn2_autorun.sh: it writes the driver
+        # selector that np-autorun reads. Both ASG modes auto-start, for the
+        # same reason -- a box nobody is watching must not boot into an idle
+        # bill -- but they start different drivers. See trn2_hunt.sh.
         user_data = load_user_data(
             "common.sh",
             "trn2.sh",
-            *(("trn2_autorun.sh",) if schedule_launch_at else ()),
+            *(("trn2_hunt.sh",) if capacity_hunt else ()),
+            *(("trn2_autorun.sh",) if (schedule_launch_at or capacity_hunt) else ()),
         )
 
         block_devices = [
@@ -250,9 +374,13 @@ class Trainium2Stack(Stack):
         # mapping has no Throughput property, so gp3 throughput is only
         # expressible this way (same reason as the trn1 stack).
         #
-        # In scheduled mode the template must ALSO carry the image, instance
-        # type, security group, role and user data -- an Auto Scaling group
-        # launches from the template alone, with no ec2.Instance to supply them.
+        # In any ASG mode -- scheduled block OR on-demand capacity hunt -- the
+        # template must ALSO carry the image, instance type, security group, role
+        # and user data, because an Auto Scaling group launches from the template
+        # alone with no ec2.Instance to supply them. Gating this on
+        # schedule_launch_at alone left the hunt with a bare template and CDK
+        # failed synth with "Setting 'launchTemplate' requires its 'instanceType'
+        # to be set" -- the right error, for the right reason.
         launch_template = ec2.LaunchTemplate(
             self,
             "Trn2LaunchTemplate",
@@ -266,7 +394,7 @@ class Trainium2Stack(Stack):
                     role=role,
                     user_data=user_data,
                 )
-                if schedule_launch_at
+                if (schedule_launch_at or capacity_hunt)
                 else {}
             ),
         )
@@ -297,50 +425,96 @@ class Trainium2Stack(Stack):
         Tags.of(self).add("Stack", "trainium2")
         Tags.of(self).add("Lane", "training")
 
-        if schedule_launch_at:
+        if schedule_launch_at or capacity_hunt:
             # Mixed-instances groups and warm pools are NOT supported with
             # Capacity Blocks, so this stays a plain single-template ASG.
             asg = autoscaling.AutoScalingGroup(
                 self,
                 "Trn2Asg",
                 vpc=vpc,
-                vpc_subnets=ec2.SubnetSelection(subnets=[subnet]),
+                # The hunt spreads across every AZ that offers the type; a block
+                # is pinned to the one AZ its reservation physically lives in.
+                vpc_subnets=ec2.SubnetSelection(
+                    subnets=hunt_subnets if capacity_hunt else [subnet]
+                ),
                 launch_template=launch_template,
                 min_capacity=0,
                 max_capacity=1,
-                desired_capacity=0,
+                # The hunt asks immediately and keeps asking until EC2 says yes.
+                # The block path waits for its scheduled action to open the door.
+                desired_capacity=1 if capacity_hunt else 0,
+                # CDK defaults this to True, which emits
+                # UpdatePolicy.AutoScalingScheduledAction.IgnoreUnmodifiedGroup-
+                # SizeProperties and tells CloudFormation to skip pushing
+                # min/max/desired whenever the TEMPLATE values are unchanged --
+                # regardless of what the live group has drifted to. That is
+                # correct for the Capacity Block path, where scheduled actions
+                # own the sizes and a deploy must not fight them.
+                #
+                # It is actively wrong for the hunt. The live group is at
+                # 0/0/0 because the old hunt-stop action scaled it in, while the
+                # template still says 0/1/1 from the previous deploy -- so
+                # "unchanged template" means CloudFormation pushes nothing, the
+                # deploy reports success, and the hunt never actually arms.
+                # This same interaction produced UPDATE_ROLLBACK_FAILED on
+                # 2026-08-12. With no scheduled actions left in hunt mode there
+                # is nothing to conflict with, so re-asserting the sizes on
+                # every deploy is both safe and the only way `cdk deploy` means
+                # "the hunt is armed".
+                ignore_unmodified_size_properties=not capacity_hunt,
             )
 
-            # One-time actions: CfnScheduledAction with a StartTime and no
-            # Recurrence fires exactly once. min/max are pinned on both so a
-            # scheduled action can never widen the group beyond the single
-            # instance the block actually reserves.
-            autoscaling.CfnScheduledAction(
-                self,
-                "Trn2ScheduleLaunch",
-                auto_scaling_group_name=asg.auto_scaling_group_name,
-                start_time=schedule_launch_at,
-                min_size=0,
-                max_size=1,
-                desired_capacity=1,
-            )
-            autoscaling.CfnScheduledAction(
-                self,
-                "Trn2ScheduleStop",
-                auto_scaling_group_name=asg.auto_scaling_group_name,
-                start_time=schedule_stop_at,
-                min_size=0,
-                max_size=0,
-                desired_capacity=0,
-            )
+            if schedule_launch_at:
+                # One-time actions: CfnScheduledAction with a StartTime and no
+                # Recurrence fires exactly once. min/max are pinned on both so a
+                # scheduled action can never widen the group beyond the single
+                # instance the block actually reserves.
+                autoscaling.CfnScheduledAction(
+                    self,
+                    "Trn2ScheduleLaunch",
+                    auto_scaling_group_name=asg.auto_scaling_group_name,
+                    start_time=schedule_launch_at,
+                    min_size=0,
+                    max_size=1,
+                    desired_capacity=1,
+                )
+                autoscaling.CfnScheduledAction(
+                    self,
+                    "Trn2ScheduleStop",
+                    auto_scaling_group_name=asg.auto_scaling_group_name,
+                    start_time=schedule_stop_at,
+                    min_size=0,
+                    max_size=0,
+                    desired_capacity=0,
+                )
+
+            if hunt_stop_at:
+                # The spend ceiling. An unattended hunt can succeed at 03:00 and
+                # bill until someone notices; this terminates the group at a
+                # fixed instant whether or not anyone is watching. Results must
+                # therefore be pushed to S3 as lanes finish, never held on the
+                # box -- the same discipline the Capacity Block window enforced.
+                autoscaling.CfnScheduledAction(
+                    self,
+                    "Trn2HuntStop",
+                    auto_scaling_group_name=asg.auto_scaling_group_name,
+                    start_time=hunt_stop_at,
+                    min_size=0,
+                    max_size=0,
+                    desired_capacity=0,
+                )
+                CfnOutput(self, "HuntStopAt", value=hunt_stop_at)
 
             # Instances inherit this at launch; phase2_status.sh and the
             # kickoff both find the box by Name tag.
             Tags.of(asg).add("Name", "neuron-pipelines-trn2")
 
             CfnOutput(self, "AutoScalingGroupName", value=asg.auto_scaling_group_name)
-            CfnOutput(self, "ScheduledLaunchAt", value=schedule_launch_at)
-            CfnOutput(self, "ScheduledStopAt", value=schedule_stop_at)
+            CfnOutput(self, "LaunchMode", value="capacity-hunt (on-demand)"
+                      if capacity_hunt else "scheduled capacity block")
+            if schedule_launch_at:
+                CfnOutput(self, "ScheduledLaunchAt", value=schedule_launch_at)
+                CfnOutput(self, "ScheduledStopAt", value=schedule_stop_at)
             CfnOutput(
                 self,
                 "FindInstance",

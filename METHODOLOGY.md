@@ -160,3 +160,26 @@ never headline; they bound the serving numbers' interpretation.
   the parallelism degree is decided by a probe rather than assumed, any result
   that ran on fewer than all four logical cores is labelled as a partial-chip
   configuration wherever it appears.
+- **Phase 4 limits (pretraining and post-training).** The ORPO lanes measure
+  throughput and nothing else: both 30-step runs had their loss *rise*, so no
+  claim is made that preference optimisation improved any model. The ORPO
+  numbers (25.9% MFU at max_length 512, 30.2% at 1024) must not be read against
+  the SFT lane's 68.3% at seq 2048 — the sequence lengths differ, and a
+  preference step forwards two sequences where an SFT step forwards one, so the
+  shapes differ too. The gap between them has **not** been separated into
+  "shorter sequences" and "heavier objective".
+- **Phase 4 non-claim.** The pretraining lane recompiles its XLA graph every
+  step and the cause is not established (two attributions made, both falsified
+  by measurement). That lane is a **hand-written** training loop. Every other
+  training lane in this study runs through optimum-neuron's `NeuronTrainer` and
+  shows no such behaviour, and pretraining *through* that framework path was
+  never tested. Nothing here supports the claim "pretraining from scratch does
+  not work on Trainium1"; what is supported is "a hand-rolled lazy-tensor
+  training loop recompiles per step on this stack."
+- **Phase 4 preference-lane FLOPs.** MFU for preference lanes uses the same
+  `6*trainable + 4*frozen` convention as every other lane, so it stays
+  comparable. For ORPO that is exact — it is reference-free. For DPO it would
+  under-count by roughly `2*frozen` per token (the adapter-disabled reference
+  forward), and the code emits `mfu_pct_with_reference_pass` beside the
+  comparable figure rather than silently choosing one. As everywhere else in
+  this study, the convention omits sequence-dependent attention work.

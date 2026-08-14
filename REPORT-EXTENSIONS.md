@@ -1993,3 +1993,268 @@ randomised lane order, a pre-registered metric set fixed before any hardware
 lands, and a reviewer who sees the design *before* the results. This study
 pre-registered §15's design and denominators, which is why that section could be
 checked against its own scaffold — but it pre-registered only that section.
+
+## 32. Pretraining and post-training on Trainium1 (Phase 4)
+
+The question this phase asked was blunt: **can a Trainium1 chip do the training
+stages that come before and after supervised fine-tuning — pretraining from
+scratch, preference optimisation, and verifiable-reward RL — and if so, how
+fast?**
+
+One of the three now has a number. One is terminal with the cause isolated by a
+controlled comparison. One is architecturally impossible on this path. The
+pretraining lane is unresolved, and this section says so rather than dressing a
+wall as a finding.
+
+Every figure below is read from `trn1/results/phase4/*.json` by
+`analysis/phase4_summary.py`. Nothing here is hand-transcribed.
+
+### 32.1 What ran, and what it cost
+
+| stage | verdict | evidence |
+|---|---|---|
+| SFT | **works** (Phase 1/2) | 2,952 tok/s, 68.3% MFU at seq 2048 |
+| ORPO | **works** | 1,181 tok/s, 30.2% MFU at max_length 1024 |
+| DPO | **terminal** | compiler failure inside the reference forward |
+| GRPO / RLVR | **architecturally blocked** | no `generate()` on the training model class |
+| pretraining from scratch | **unresolved** | per-step XLA recompilation in a hand-written loop |
+
+### 32.2 ORPO works, and here is the number
+
+ORPO was chosen over DPO as the primary preference lane for a reason that
+turned out to be load-bearing: it is **reference-free by construction**. The
+ORPO paper's whole claim is that the odds-ratio penalty removes the need for a
+separate reference model, and on a 16 GiB-per-core device that stops being an
+elegance argument and becomes a feasibility one.
+
+| lane | max_length | tok/s (steady) | TFLOP/s | MFU % | MFU % alt | median step | compile s |
+|---|---|---|---|---|---|---|---|
+| `orpo_llama31_8b` | 512 | 1,012.5 | 49.21 | **25.90** | 23.43 | 8,091 ms | 67.1 |
+| `orpo_llama31_8b_len1024` | 1024 | 1,181.0 | 57.40 | **30.21** | 27.33 | 13,873 ms | 568.8 |
+
+Llama-3.1-8B base, LoRA r16/α32 on all seven projections, `ultrafeedback_binarized:train_prefs`,
+micro-batch 1, grad-accum 8, TP=2, DP=1, gradient checkpointing on, 30 steps,
+seed 42. Whole-model parameter counts (8,082,956,288 total / 52,428,800
+trainable) obtained by `xm.all_reduce` across the TP group, the same way every
+other LoRA lane in this study obtains them.
+
+`tokens_per_optimizer_step` is `max_length × micro_batch × grad_accum × dp_size × 2`.
+The ×2 counts chosen **and** rejected: a preference step forwards both
+sequences. `dp_size`, not world size — tensor parallelism shares one micro-batch
+across ranks and multiplies neither batch nor tokens. §32.6 records what
+happened when that distinction was got wrong.
+
+### 32.3 The number you should not quote against SFT
+
+25.9% and 30.2% sit beside 68.3% for SFT, and the temptation is to say
+preference optimisation costs 38 points of utilisation. **It does not, and the
+comparison as stated is invalid**, for two reasons that pull in the same
+direction.
+
+**Sequence length.** This study has already measured a strong sequence-length
+dependence in exactly this setting: the same SFT lane goes 68.3% at seq 2048 to
+82.7% at seq 4096. The ORPO points are at 512 and 1024 — below the bottom of
+that range. The ORPO ladder itself moves the right way, +4.3 points from 512 to
+1024.
+
+**Shape, not just length.** An ORPO step at max_length 1024 forwards **two**
+1024-token sequences. An SFT step at seq 2048 forwards **one** 2048-token
+sequence. Those are the same token count arranged differently, and attention
+cost is quadratic in the length of a single sequence, so they are not the same
+work even before the objective differs. The 6N convention this study uses does
+not charge attention (§METHODOLOGY), so the denominators do not absorb the
+difference either.
+
+The honest reading is that **preference optimisation on this chip runs at
+roughly half the utilisation of supervised fine-tuning at the sequence lengths
+measured, and the gap has not been separated into "because the sequences are
+shorter" and "because the objective is heavier."**
+
+### 32.4 What the ORPO lanes do NOT show
+
+Both 30-step lanes had their loss **rise**:
+
+| lane | first loss | last loss | last − first | descended? |
+|---|---|---|---|---|
+| `orpo_llama31_8b` | 14.2031 | 14.6875 | +0.4844 | **NO** |
+| `orpo_llama31_8b_len1024` | 13.0977 | 13.7109 | +0.6132 | **NO** |
+
+Thirty steps at lr 5e-6 over 240 sequences is not a training run and was never
+meant to be one; these lanes were sized to measure throughput. But a throughput
+figure from a run whose loss did not descend measures arithmetic, not training,
+and this report will not let the first table imply the second. **These are
+hardware measurements. They are not evidence that ORPO improved the model.**
+
+### 32.5 DPO is terminal, and ORPO is why that statement is worth something
+
+DPO failed three times with the same compiler error:
+
+```
+RunNeuronCCImpl: error condition !(error != 400):
+TypeError: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+```
+
+raised while compiling the graph flushed by the first `.item()` in
+`trl/trainer/dpo_trainer.py:1782`.
+
+A stack trace alone would leave that a mystery. What makes it a result is that
+**ORPO ran to completion through the same script, the same re-based
+`NeuronTrainer`, the same chip, the same dataset, the same fixed-shape collator,
+and the identical per-metric `.item()` pattern DPO dies in.** The two lanes
+differ in exactly one structural way: DPO obtains its reference log-probs by
+entering `peft.disable_adapter()` and running a second forward over the frozen
+base. ORPO has no such pass.
+
+That isolates the adapter-disabled reference forward as the blocker by
+controlled comparison rather than by inference.
+
+Two attributions were made along the way and both were **withdrawn by
+measurement**, recorded in `dpo_smoke.failure.json`:
+
+1. *`disable_adapter()` → `get_nb_trainable_parameters()` → `xm.mark_step()`
+   forces the compile.* Pinned the parameter counts so the bookkeeping call
+   cannot sync. **Rejected** — identical error recurred.
+2. *TRL's eight per-step `gather_for_metrics` calls cut the graph where the two
+   TP ranks disagree.* Evidence was real: the ranks were compiling different
+   module hashes concurrently. Replacing the gather with the identity function
+   (exact at dp=1) fixed the divergence. **Insufficient** — the bare `.item()`
+   at the same line still flushes the step. An independent reviewer predicted
+   this before the run.
+
+An explicit `ref_model` cannot sidestep the blocker at this size: policy and
+reference are ~8.03e9 parameters each, ~4.04e9 per core in bf16, before
+optimizer state, activations, and the ~2× preference batch. The implicit
+reference is the only configuration that fits, which is precisely why the
+failure is terminal rather than a tuning problem.
+
+**Not done, and recorded as not done:** DPO with an explicit `ref_model` at a
+scale where two copies fit — TinyLlama-1.1B — would *demonstrate* the
+attribution instead of isolating it. It was not run.
+
+### 32.6 An accounting bug that cancelled itself
+
+The preference lanes originally computed
+
+```python
+tokens_per_step = max_length * micro_batch * grad_accum * nproc * 2   # WRONG
+```
+
+Under TP=2 the data-parallel size is 1, so multiplying by the world size
+reported **exactly twice** the real token rate. The same code summed this rank's
+parameter shard (4.04e9 of an 8.03e9 model), halving FLOPs/token.
+
+The two errors cancel inside MFU. Reported MFU would have been right; reported
+tok/s would have been double. **Two wrongs cancelling is worse than one wrong,
+because nothing looks broken.**
+
+Both were caught before any preference number was published — independently by
+the author and by an external reviewer, in the same hour. The fix was not to
+correct the arithmetic but to delete it: `phase4_lib` now re-exports
+`sft_lora.tokens_per_optimizer_step` and `sft_lora.count_parameters` **by
+identity**, so the preference lanes and the published SFT lanes cannot diverge.
+`tests/test_phase4.py` asserts the identity and pins the bug.
+
+The proven lane already carried the correct rule, in a docstring:
+
+> TP shards ONE model across the cores, so both NeuronCores are working on the
+> same micro-batch — tensor parallelism multiplies neither the batch nor the
+> token count.
+
+The bug was written by ignoring a helper that existed to prevent it.
+
+### 32.7 GRPO / RLVR: architecturally blocked
+
+`grpo_probe.py` diagnoses in four independent stages so the wall's location is
+recorded rather than guessed:
+
+| stage | result |
+|---|---|
+| A_construct | **OK** — `_NeuronGRPOTrainer -> NeuronTrainer -> object` builds |
+| C_reward | **OK** — 64/64 GSM8K gold answers parsed; verifier returns [0.0, 1.0] on (wrong, right) |
+| B_generate | **FAILS** — `NeuronModelForCausalLM.generate present=False` |
+| D_train | not reached |
+
+The trainer assembles and the verifiable reward works. What does not exist is
+sampling: **optimum-neuron's training model class exposes no `generate()`**, and
+online RL requires rollouts inside the training loop.
+
+This is the most durable finding in the phase because it is an API fact, not a
+memory or compiler fact. It does not change with model size, sequence length, or
+a newer chip. Any online-RL method — GRPO, PPO, RLOO, RLVR — is out of reach on
+this training path until that method exists. Offline preference optimisation
+(§32.2) is the ceiling today.
+
+### 32.8 Pretraining: three measured ceilings and one unresolved defect
+
+A 362M SmolLM2-shaped Llama, trained from random initialisation on 1.1B
+FineWeb-Edu tokens via a **hand-written** XLA loop with DP=2.
+
+Three ceilings were located by walking the grid, not asserted:
+
+| configuration | limit hit |
+|---|---|
+| micro-batch 8 | `NCC_EVRF007` — 37,536,776 instructions vs the 5,000,000 limit |
+| micro-batch 1, grad-accum 4 | `NCC_EXTP004` — 5,919,820 instructions |
+| seq 2048 | `NCC_EOOM001` — 16.20 GB peak vs the 16.00 GB per-core limit |
+
+Two ceilings that pull against each other: gradient checkpointing relieves HBM
+and worsens the instruction count. Only sequence length relieves both. The
+compiler's suggested `--optlevel=1` was **declined**, because a lane compiled at
+a different optimisation level is not comparable to every other lane in this
+study.
+
+The unresolved defect is that the loop **recompiles the XLA graph every step**
+— 3 distinct module hashes in 3 steps. Two attributions were made and both
+falsified on hardware:
+
+| hypothesis | test | result |
+|---|---|---|
+| the linear-warmup/cosine LR schedule writes a new Python float into `param_groups` each step | constant-LR control | **falsified** — still 3 graphs in 2 steps |
+| `AdamW`'s non-capturable bias correction `.item()`s the step counter | `capturable=True` | **falsified** — still 3 graphs, and compiles got 116× slower (step 2: 28,153 ms → 3,259,387 ms) |
+
+An independent reviewer read the loop line by line and found **no third
+candidate**, adding: *dump and compare the HLOs, especially their parameter
+lists and literals; do not invent a third Python-scalar theory.* That is the
+correct instrument — `PT_XLA_DEBUG_LEVEL=2` names the frame that severs the
+graph — and it was **not run**, because by then each cold compile cost up to 54
+minutes of paid instance time.
+
+**What is claimed:** a hand-written XLA training loop on this stack recompiles
+per step, reproducibly, and the cause is not established.
+
+**What is NOT claimed:** that pretraining from scratch is impossible on
+Trainium1. Every other training lane in this study — including the 68.3% MFU SFT
+lane — runs through optimum-neuron's `NeuronTrainer` and shows no such
+behaviour. **Pretraining through the framework path was never tested.** The
+defect demonstrated here is in hand-rolled lazy-tensor code, not in the
+hardware, and the practitioner's lesson is to use the framework's trainer rather
+than to avoid the chip.
+
+### 32.9 Making TRL's trainers run on NeuronTrainer
+
+optimum-neuron ships exactly one alignment trainer, and builds it by stealing
+TRL's methods and reparenting them:
+
+```python
+type("_SFTTrainer", (NeuronTrainer,), SFTTrainer.__dict__.copy())
+```
+
+`posttrain_align.py` generalises that to DPO and ORPO. Eight distinct blockers
+had to be cleared, each found by running rather than reading, and all eight are
+carried by the working ORPO lane:
+
+| blocker | fix |
+|---|---|
+| `TypeError: super(type, obj)` — `__dict__` copying keeps a stale `__class__` closure cell | `_clone_rebound()` rebinds the cell |
+| `NeuronTrainer` is not a `transformers.Trainer` subclass (its base is `object`) and omits attributes TRL reads | `HFTrainerCompat` mixin, gap found by AST-diffing TRL's reads against NeuronTrainer's provides |
+| `NeuronTrainer.log(logs)` vs `Trainer.log(logs, start_time)` — TRL forwards both positionally | signature-inspecting `log` shim |
+| `ValueError: Unexpected keyword arguments: use_cache, output_hidden_states` | `strip_unsupported_forward_kwargs`, with the Liger-loss path asserted off first |
+| accelerate state cleared between startup and trainer construction | `ensure_accelerate_state()` at both points |
+| TRL's preference collators pad per batch; Neuron needs fixed shapes | `FixedShapeCollator` |
+| base models have no chat template | borrow from the matching Instruct model, recorded in the result |
+| 8 per-step out-of-graph host syncs, ranks diverging | `neutralise_out_of_graph_gathers`, exact at dp=1, guarded against dp>1 and `precompute_ref_log_probs` |
+
+The `log` shim is worth singling out. It cost a full lane-run to find because it
+fires **inside optimum-neuron's own logging step-closure — after the model has
+compiled and steps have run.** A two-argument signature mismatch discovered at
+the most expensive possible moment.

@@ -63,21 +63,38 @@ if ! aws s3 cp "s3://$NP_BUCKET/code/shared/bin/pull_code.sh" - | bash; then
 fi
 cd /opt/np/repo || { echo "FATAL: /opt/np/repo missing"; exit 1; }
 
+# WHICH DRIVER. A Capacity Block box runs the full Phase-3 suite. A box caught
+# by the on-demand capacity hunt must NOT: its EBS is fresh from the launch
+# template, so trn2/results/ is empty, every resumability guard misses, and the
+# suite re-runs work already banked in S3 -- which is exactly what the ASG
+# replacement box did on 2026-08-05. The hunt writes this file in its own
+# user-data fragment; anything else falls back to the block behaviour.
+DRIVER="$(cat /opt/np/.autorun-driver 2>/dev/null || echo run_phase3_trn2.sh)"
+case "$DRIVER" in
+  *[!a-zA-Z0-9._-]*|"") echo "FATAL: refusing suspicious driver name '$DRIVER'"; exit 1 ;;
+esac
+echo "np-autorun driver: $DRIVER"
+
 # Verify the code actually arrived before claiming success. A missing driver
 # here used to be silent: the marker was written first, the backgrounded
 # `bash extras/...` failed instantly, and the box sat idle for the whole paid
 # window looking like it had started.
-for f in extras/run_phase3_trn2.sh extras/trn2_deadline_push.sh; do
-  [ -s "$f" ] || { echo "FATAL: $f missing after pull -- not marking done"; exit 1; }
-done
+[ -s "extras/$DRIVER" ] || { echo "FATAL: extras/$DRIVER missing after pull -- not marking done"; exit 1; }
 
 # Marker only AFTER the code is verified present: if the suite then dies we
 # want a record that the kickoff happened, not a reboot loop restarting it.
 date -u '+%Y-%m-%dT%H:%M:%SZ' > /opt/np/.autorun-done
 
-setsid nohup bash extras/run_phase3_trn2.sh >> /opt/np/phase3_trn2.log 2>&1 &
-setsid nohup bash extras/trn2_deadline_push.sh >> /opt/np/deadline_push.log 2>&1 &
-echo "np-autorun kicked off suite + deadline pusher"
+setsid nohup bash "extras/$DRIVER" >> "/opt/np/${DRIVER%.sh}.log" 2>&1 &
+echo "np-autorun kicked off extras/$DRIVER"
+
+# The deadline pusher exists to rescue results from a Capacity Block that EC2
+# reclaims on a fixed clock. The gapfill driver pushes after every lane and
+# again from its EXIT trap, so a second pusher would only add S3 churn.
+if [ -s extras/trn2_deadline_push.sh ] && [ "$DRIVER" = "run_phase3_trn2.sh" ]; then
+  setsid nohup bash extras/trn2_deadline_push.sh >> /opt/np/deadline_push.log 2>&1 &
+  echo "np-autorun kicked off deadline pusher"
+fi
 EOF
 chmod +x /usr/local/sbin/np-autorun.sh
 

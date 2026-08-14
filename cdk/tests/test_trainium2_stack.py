@@ -384,3 +384,140 @@ def test_schedule_without_a_stop_time_is_refused():
 
     with pytest.raises(ValueError, match="requires trn2ScheduleStopAt"):
         make_stacks({**CR_CONTEXT, "trn2ScheduleLaunchAt": "2026-08-05T11:31:00Z"})
+
+
+# ---------------------------------------------------------------------------
+# Capacity hunt: on-demand, open-ended, self-terminating.
+# ---------------------------------------------------------------------------
+# The first hunt made 95 launch attempts in 12h and caught nothing, so the
+# second one runs with NO stop ceiling. That inverts where the spend bound
+# lives, and these tests pin the inversion: the hunt must never disarm itself,
+# and the box must always be able to kill itself.
+
+
+def _hunt_template(extra=None):
+    from aws_cdk.assertions import Template
+
+    from conftest import make_stacks
+
+    return Template.from_stack(
+        make_stacks({"trn2CapacityHunt": "true", **(extra or {})})[3]
+    )
+
+
+def test_unbounded_hunt_never_disarms_itself():
+    """A scheduled action here would switch the hunt off at a wall-clock instant
+    picked before anyone knew when capacity would appear -- which is exactly how
+    the first attempt ended. Failed launches are free; there is nothing to bound
+    until a box exists."""
+    _hunt_template().resource_count_is("AWS::AutoScaling::ScheduledAction", 0)
+
+
+def test_hunt_asks_immediately_and_across_every_availability_zone():
+    """desired=1 from the start is what makes the ASG retry inside AWS. Three
+    subnets because capacity reappears in one AZ at a time."""
+    (asg,) = _hunt_template().find_resources(
+        "AWS::AutoScaling::AutoScalingGroup"
+    ).values()
+    assert asg["Properties"]["DesiredCapacity"] == "1"
+    assert asg["Properties"]["MaxSize"] == "1"
+    assert len(asg["Properties"]["VPCZoneIdentifier"]) == 3
+
+
+def test_hunt_box_carries_its_own_spend_bound():
+    """With no ceiling, a captured box that never starts its driver would bill
+    forever. The boot watchdog is the only thing standing between that box and
+    an open-ended charge, so it must be in the user data."""
+    ud = _launch_template_data(_hunt_template())["UserData"]["Fn::Base64"]
+    blob = str(ud)
+    assert "np-hunt-watchdog.timer" in blob
+    assert "OnBootSec=6h" in blob
+    assert "terminate-instance-in-auto-scaling-group" in blob
+    assert "--should-decrement-desired-capacity" in blob
+
+
+def test_hunt_runs_the_gapfill_driver_not_the_whole_suite():
+    """A hunt box has an empty results tree, so the full suite would re-run work
+    already banked in S3 at >= $6.41/hr."""
+    blob = str(_launch_template_data(_hunt_template())["UserData"]["Fn::Base64"])
+    assert "run_gapfill_trn2.sh" in blob
+    assert "/opt/np/.autorun-driver" in blob
+
+
+def test_hunt_and_capacity_block_are_mutually_exclusive():
+    import pytest
+
+    from conftest import make_stacks
+
+    with pytest.raises(ValueError, match="cannot target a Capacity Block"):
+        make_stacks({**CR_CONTEXT, "trn2CapacityHunt": "true"})
+
+
+def test_hunt_deploy_reasserts_group_size():
+    """`cdk deploy` must actually arm the hunt. With CDK's default
+    IgnoreUnmodifiedGroupSizeProperties, an unchanged template leaves the live
+    group wherever it drifted to -- 0/0/0, after the old stop action scaled it
+    in -- and the deploy succeeds having armed nothing."""
+    (asg,) = _hunt_template().find_resources(
+        "AWS::AutoScaling::AutoScalingGroup"
+    ).values()
+    policy = asg.get("UpdatePolicy", {}).get("AutoScalingScheduledAction", {})
+    assert policy.get("IgnoreUnmodifiedGroupSizeProperties") is not True
+
+
+def test_capacity_block_still_defers_to_its_scheduled_actions():
+    """The inverse: on the block path the scheduled actions own the sizes, and
+    a deploy that re-asserted them would fight the schedule."""
+    (asg,) = _scheduled_template().find_resources(
+        "AWS::AutoScaling::AutoScalingGroup"
+    ).values()
+    policy = asg["UpdatePolicy"]["AutoScalingScheduledAction"]
+    assert policy["IgnoreUnmodifiedGroupSizeProperties"] is True
+
+
+# ---------------------------------------------------------------------------
+# User-data size and comment stripping.
+# ---------------------------------------------------------------------------
+# Adding the boot watchdog took hunt-mode user data to 16887 bytes and EC2
+# rejected the launch template outright: "User data is limited to 16384 bytes".
+# Comments are now stripped at synth time. These pin both halves -- that the
+# payload fits, and that stripping did not eat anything load-bearing.
+
+
+def _decoded_user_data(template):
+    import base64
+
+    ud = _launch_template_data(template)["UserData"]
+    if isinstance(ud, dict) and "Fn::Base64" in ud:
+        inner = ud["Fn::Base64"]
+        if isinstance(inner, str):
+            return inner
+        return str(inner)
+    return str(base64.b64decode(ud), "utf-8")
+
+
+def test_hunt_user_data_fits_in_the_ec2_limit():
+    """EC2 caps user data at 16384 bytes RAW. Hunt mode concatenates four
+    scripts and is the largest payload the stack can produce."""
+    blob = _decoded_user_data(_hunt_template())
+    assert len(blob) < 16384, f"user data is {len(blob)} bytes, EC2 allows 16384"
+
+
+def test_stripping_keeps_every_shebang():
+    """Heredocs write executables. A script whose `#!` was stripped as a comment
+    would be run by whatever shell happened to pick it up."""
+    blob = _decoded_user_data(_hunt_template())
+    for script in ("np-autorun.sh", "np-hunt-watchdog.sh", "np-scratch.sh"):
+        marker = f"cat > /usr/local/sbin/{script} <<'EOF'\n#!/bin/bash"
+        assert marker in blob, f"{script} lost its shebang to comment stripping"
+
+
+def test_stripping_keeps_the_directives_that_cost_money_to_learn():
+    """Two systemd lines in here were each paid for with a wasted paid window:
+    TimeoutStartSec=infinity (0 means terminate immediately, not never), and
+    ordering after network-online rather than cloud-final (which deadlocks,
+    since user-data runs inside cloud-final)."""
+    blob = _decoded_user_data(_hunt_template())
+    assert "TimeoutStartSec=infinity" in blob
+    assert "After=network-online.target np-scratch.service" in blob
+    assert "After=cloud-final.service" not in blob

@@ -98,4 +98,21 @@ make pull-results && make report     # regenerate REPORT.md numbers
 
 ## Status
 
-Complete. Measured results in [REPORT.md](REPORT.md) + [REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from `analysis/comparison.json` via `make report`.
+Complete through Phase 4. Measured results in [REPORT.md](REPORT.md) +
+[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from
+`analysis/comparison.json` via `make report`, and the Phase-4 tables from
+`analysis/phase4_summary.py`.
+
+**Phase 4 — the training stages either side of SFT** (§32):
+
+| stage | on one Trainium1 |
+|---|---|
+| SFT | works — 2,952 tok/s, 68.3% MFU @ seq 2048 |
+| ORPO (preference) | works — 1,181 tok/s, 30.2% MFU @ max_length 1024 |
+| DPO | terminal — the adapter-disabled reference forward fails to compile |
+| GRPO / RLVR | architecturally blocked — no `generate()` on the training model class |
+| pretraining from scratch | unresolved — a hand-written XLA loop recompiles every step |
+
+Read §32.3 and §32.4 before quoting the ORPO figures: they are throughput
+measurements at shorter sequences than the SFT lane, and their loss did not
+descend.

@@ -1,0 +1,87 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026-Aug-14 12:09:41.0320 4689:4711 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to 2026-Aug-14 12:09:41.0320 4690:4716 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+initialize rdma protocol
+2026-Aug-14 12:09:41.0320 4689:4711 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 12:09:41.0322 4690:4716 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 12:09:41.0324 4689:4711 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 12:09:41.0326 4690:4716 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 12:09:41.0328 4689:4711 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-14 12:09:41.0330 4690:4716 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[pretrain] rank 0/2 device=xla:0
+[pretrain] 409.0M parameters, all trainable
+[pretrain] 16384 tok/step, 60 steps planned, cap 1.0h
+...2026-08-14 12:10:47.000123:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13423439418619320702+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+..
+Compiler status PASS
+2026-08-14 12:11:14.000059:  4689  [INFO]: Compilation Successfully Completed for model.MODULE_13423439418619320702+e30acd3a.hlo_module.pb
+  step 1/60 loss 11.0122 90987ms lr 3.00e-05
+2026-08-14 12:11:17.000249:  4690  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13423439418619320702+e30acd3a/model.neff
+....2026-08-14 12:12:30.000140:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+...2026-08-14 12:13:30.000142:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 2.0 minutes
+...2026-08-14 12:14:30.000143:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 3.0 minutes
+...2026-08-14 12:15:30.000145:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 4.0 minutes
+...2026-08-14 12:16:30.000147:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 5.0 minutes
+...2026-08-14 12:17:30.000148:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 6.0 minutes
+...2026-08-14 12:18:30.000150:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 7.0 minutes
+...2026-08-14 12:19:30.000151:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 8.0 minutes
+...2026-08-14 12:20:30.000152:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 9.0 minutes
+...2026-08-14 12:21:30.000154:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 10.0 minutes
+...2026-08-14 12:22:30.000155:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 11.0 minutes
+...2026-08-14 12:23:30.000156:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 12.0 minutes
+...2026-08-14 12:24:30.000158:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 13.0 minutes
+...2026-08-14 12:25:30.000160:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 14.0 minutes
+...2026-08-14 12:26:30.000162:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 15.0 minutes
+...2026-08-14 12:27:30.000163:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 16.0 minutes
+...2026-08-14 12:28:30.000165:  4690  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17259407948515765780+e30acd3a/model.hlo_module.pb, been waiting for: 17.0 minutes
+
+2026-08-14 12:28:33.000261:  4689  [ERROR]: Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/root/neuroncc_compile_workdir/4cb81519-b292-4f6f-bea2-2677fc007784/model.MODULE_17259407948515765780+e30acd3a.hlo_module.pb', '--output', '/tmp/root/neuroncc_compile_workdir/4cb81519-b292-4f6f-bea2-2677fc007784/model.MODULE_17259407948515765780+e30acd3a.neff', '--target=trn1', '--verbose=35']:
+[ERROR] [NCC_EXTP004] Instructions generated by compiler 5919820 exceeds the typical limit of 5000000. Input computation graph is too big due to a large number of operators - Consider using compiler options --optlevel=1, or applying pipeline parallelism. For further troubleshooting visit https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/nxd-training/app_notes/nxd-training-pp-appnote.html.
+[libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/np/repo/shared/train/pretrain_fineweb.py", line 325, in <module>
+[rank0]:     sys.exit(main())
+[rank0]:              ^^^^^^
+[rank0]:   File "/opt/np/repo/shared/train/pretrain_fineweb.py", line 244, in main
+[rank0]:     lv = last.detach().float().item() * args.grad_accum
+[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: RuntimeError: RunNeuronCCImpl: error condition error != 0: [ERROR] [NCC_EXTP004] Instructions generated by compiler 5919820 exceeds the typical limit of 5000000. Input computation graph is too big due to a large number of operators - Consider using compiler options --optlevel=1, or applying pipeline parallelism. For further troubleshooting visit https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/nxd-training/app_notes/nxd-training-pp-appnote.html.
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+W0814 12:28:34.653000 4659 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 4690 closing signal SIGTERM
+E0814 12:28:34.818000 4659 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 4689) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/pretrain_fineweb.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-14_12:28:34
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 4689)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,67 @@
+{
+  "tag": "grpo_rlvr_probe",
+  "stage": "grpo",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "online RL unsupported; first wall at B_generate",
+  "detail": "NeuronModelForCausalLM.generate present=False -- the training model class exposes no generate(); online RL needs sampling inside the loop",
+  "config": {
+    "model": "Qwen/Qwen3-1.7B",
+    "task": "openai/gsm8k:main",
+    "reward": "exact-match on the final integer (RLVR, no reward model)",
+    "num_generations": 4,
+    "max_prompt_length": 256,
+    "max_completion_length": 128,
+    "max_steps": 2,
+    "world_size": 2
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "captured": "2026-08-14T11:55:07Z",
+  "stages": [
+    {
+      "stage": "A_construct",
+      "ok": true,
+      "note": "GRPOTrainer re-based onto NeuronTrainer: _NeuronGRPOTrainer -> NeuronTrainer -> object",
+      "error": ""
+    },
+    {
+      "stage": "C_reward",
+      "ok": true,
+      "note": "64/64 gold answers parsed; verifier on (wrong,right) -> [0.0, 1.0]",
+      "error": ""
+    },
+    {
+      "stage": "B_generate",
+      "ok": false,
+      "note": "NeuronModelForCausalLM.generate present=False -- the training model class exposes no generate(); online RL needs sampling inside the loop",
+      "error": ""
+    },
+    {
+      "stage": "D_train",
+      "ok": false,
+      "note": "",
+      "error": "TypeError: super(type, obj): obj must be an instance or subtype of type\nTraceback (most recent call last):\n  File \"/opt/np/repo/shared/train/grpo_probe.py\", line 246, in main\n    trainer = TrainerCls(model=model, args=conf, train_dataset=ds,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py\", line 408, in __init__\n    super().__init__(\n    ^^^^^^^^^^^^^^^^\nTypeError: super(type, obj): obj must be an instance or subtype of type\n"
+    }
+  ],
+  "stages_passed": [
+    "A_construct",
+    "C_reward"
+  ],
+  "first_wall": "B_generate",
+  "probe_wall_s": 41.4,
+  "interpretation": "Offline preference optimisation (DPO/ORPO) needs only forward/backward over fixed data and is expressible on this stack. Online RL (GRPO, PPO, RLVR) additionally needs autoregressive sampling inside the training loop, which requires a decode graph co-resident with the training graph on the same two NeuronCores. TRL's standard escape hatch is vLLM, which on Neuron is an inference-only stack running on separate hardware."
+}

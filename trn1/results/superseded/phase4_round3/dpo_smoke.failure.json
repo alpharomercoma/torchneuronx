@@ -1,0 +1,43 @@
+{
+  "tag": "dpo_smoke",
+  "stage": "dpo",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "ValueError: output_hidden_states=True was requested, but optimum-neuron's gradient-checkpointed forward cannot accept it. Dropping a truthy output_hidden_states would silently change the computation, so this lane refuses to continue.",
+  "detail": "Traceback (most recent call last):\n  File \"/opt/np/repo/shared/train/posttrain_align.py\", line 503, in main\n    trainer.train()\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1246, in train\n    output = self._train(resume_from_checkpoint=resume_from_checkpoint)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1170, in _train\n    loss_step = self.training_step(self.model, inputs, num_items_in_batch=num_items_in_batch)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1007, in training_step\n    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 1822, in compute_loss\n    loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval=\"train\")\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 1738, in get_batch_loss_metrics\n    model_output = self.concatenated_forward(model, batch)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 1612, in concatenated_forward\n    outputs = model(input_ids, **model_kwargs)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1775, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1786, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/np/repo/shared/train/posttrain_align.py\", line 333, in forward\n    raise ValueError(\nValueError: output_hidden_states=True was requested, but optimum-neuron's gradient-checkpointed forward cannot accept it. Dropping a truthy output_hidden_states would silently change the computation, so this lane refuses to continue.\n",
+  "config": {
+    "algo": "dpo",
+    "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 32,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "gradient_checkpointing": true
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "captured": "2026-08-14T13:08:26Z"
+}

@@ -1,0 +1,258 @@
+{
+  "tag": "orpo_llama31_8b_len1024",
+  "stage": "orpo",
+  "model": "meta-llama/Llama-3.1-8B",
+  "dataset": "HuggingFaceH4/ultrafeedback_binarized:train_prefs",
+  "params_total": 8082956288,
+  "params_trainable": 52428800,
+  "params_frozen": 8030527488,
+  "params_count_method": "xla_all_reduce",
+  "params_local_total": 4041478144,
+  "params_local_trainable": 26214400,
+  "params_note": "Summed across the TP group with xm.all_reduce, so these are whole-model counts rather than this rank's shard. Parameters that are replicated rather than sharded (norms, LoRA A/B on replicated modules) are counted once per rank and so are marginally over-counted -- under 0.01% for an 8B model.",
+  "config": {
+    "algo": "orpo",
+    "base_model": "meta-llama/Llama-3.1-8B",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 320,
+    "max_length": 1024,
+    "max_prompt_length": 512,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "gradient_checkpointing": true,
+    "chat_template_source": "meta-llama/Llama-3.1-8B-Instruct",
+    "reference_model": "none (ORPO is reference-free)",
+    "data_parallel_size": 1,
+    "tokens_per_step_note": "max_length * micro_batch * grad_accum * dp_size * 2. The 2x counts chosen AND rejected: a preference step forwards both sequences, so its token cost is twice an SFT step of equal length. dp_size, NOT the world size: tensor parallelism shares one micro-batch across ranks and multiplies neither batch nor tokens.",
+    "flops_caveat": "ORPO is reference-free: one forward-backward over chosen and rejected, so 6*trainable + 4*frozen applies unmodified and this MFU is directly comparable to the SFT lanes.",
+    "trainer_construction": "TRL trainer re-based onto optimum-neuron NeuronTrainer via type(name,(NeuronTrainer,),Trainer.__dict__.copy()), mirroring how optimum-neuron builds NeuronSFTTrainer"
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "tokens_per_optimizer_step": 16384,
+  "steps_recorded": 30,
+  "warmup_steps_excluded": 10,
+  "first_step_ms": 582696.26,
+  "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache collapses this toward the median; a cold cache leaves tens of minutes in it.",
+  "median_step_ms": 13872.86,
+  "compile_s": 568.8,
+  "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
+  "train_wall_s": 986.68,
+  "final_loss": 13.7109,
+  "loss_trace": [
+    {
+      "step": 1,
+      "loss": 13.0977,
+      "ms": 582696.26,
+      "warmup": true
+    },
+    {
+      "step": 2,
+      "loss": 14.8008,
+      "ms": 15024.07,
+      "warmup": true
+    },
+    {
+      "step": 3,
+      "loss": 13.2266,
+      "ms": 13848.95,
+      "warmup": true
+    },
+    {
+      "step": 4,
+      "loss": 15.8359,
+      "ms": 13865.8,
+      "warmup": true
+    },
+    {
+      "step": 5,
+      "loss": 17.4844,
+      "ms": 13850.18,
+      "warmup": true
+    },
+    {
+      "step": 6,
+      "loss": 13.9453,
+      "ms": 13856.59,
+      "warmup": true
+    },
+    {
+      "step": 7,
+      "loss": 15.1406,
+      "ms": 13875.0,
+      "warmup": true
+    },
+    {
+      "step": 8,
+      "loss": 13.6914,
+      "ms": 13860.42,
+      "warmup": true
+    },
+    {
+      "step": 9,
+      "loss": 13.2773,
+      "ms": 13853.86,
+      "warmup": true
+    },
+    {
+      "step": 10,
+      "loss": 11.9141,
+      "ms": 13852.63,
+      "warmup": true
+    },
+    {
+      "step": 11,
+      "loss": 11.0781,
+      "ms": 13858.65,
+      "warmup": false
+    },
+    {
+      "step": 12,
+      "loss": 15.1758,
+      "ms": 13856.66,
+      "warmup": false
+    },
+    {
+      "step": 13,
+      "loss": 15.8047,
+      "ms": 13870.3,
+      "warmup": false
+    },
+    {
+      "step": 14,
+      "loss": 11.8203,
+      "ms": 13858.54,
+      "warmup": false
+    },
+    {
+      "step": 15,
+      "loss": 17.7656,
+      "ms": 13847.52,
+      "warmup": false
+    },
+    {
+      "step": 16,
+      "loss": 12.8828,
+      "ms": 13856.44,
+      "warmup": false
+    },
+    {
+      "step": 17,
+      "loss": 15.543,
+      "ms": 13848.05,
+      "warmup": false
+    },
+    {
+      "step": 18,
+      "loss": 11.3398,
+      "ms": 13875.43,
+      "warmup": false
+    },
+    {
+      "step": 19,
+      "loss": 14.7539,
+      "ms": 13881.08,
+      "warmup": false
+    },
+    {
+      "step": 20,
+      "loss": 14.4141,
+      "ms": 13856.25,
+      "warmup": false
+    },
+    {
+      "step": 21,
+      "loss": 11.7695,
+      "ms": 13847.37,
+      "warmup": false
+    },
+    {
+      "step": 22,
+      "loss": 15.9453,
+      "ms": 13853.07,
+      "warmup": false
+    },
+    {
+      "step": 23,
+      "loss": 14.4258,
+      "ms": 13935.58,
+      "warmup": false
+    },
+    {
+      "step": 24,
+      "loss": 17.7578,
+      "ms": 13913.62,
+      "warmup": false
+    },
+    {
+      "step": 25,
+      "loss": 17.1328,
+      "ms": 13951.55,
+      "warmup": false
+    },
+    {
+      "step": 26,
+      "loss": 15.2852,
+      "ms": 13996.56,
+      "warmup": false
+    },
+    {
+      "step": 27,
+      "loss": 12.5117,
+      "ms": 14001.36,
+      "warmup": false
+    },
+    {
+      "step": 28,
+      "loss": 13.6641,
+      "ms": 14025.34,
+      "warmup": false
+    },
+    {
+      "step": 29,
+      "loss": 15.7109,
+      "ms": 13994.51,
+      "warmup": false
+    },
+    {
+      "step": 30,
+      "loss": 13.7109,
+      "ms": 13965.43,
+      "warmup": false
+    }
+  ],
+  "tokens_per_s": 1181.0,
+  "flops_per_token": 48602595328.0,
+  "tflops": 57.4,
+  "mfu_pct": 30.211,
+  "gradient_checkpointing": true,
+  "mfu_pct_alt": 27.333,
+  "flops_formula": "6*params_trainable + 4*params_frozen + 2*(trainable+frozen) for recompute",
+  "peak_bf16_flops": 190000000000000.0,
+  "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium: 190 FP16/BF16/cFP8/TF32 TFLOPS per chip",
+  "tokens_per_s_end_to_end": 498.2,
+  "tokens_per_s_note": "tokens_per_s is the steady-state median, excluding the compile-bearing warmup steps -- it describes the chip. tokens_per_s_end_to_end includes compile and is the wall-clock a practitioner actually experiences.",
+  "peak_device_mem_mib": null,
+  "peak_device_mem_note": "Not available from torch on XLA. Read mem_used_mib from the matching telemetry CSV (1 Hz neuron-monitor). Deliberately null rather than estimated."
+}

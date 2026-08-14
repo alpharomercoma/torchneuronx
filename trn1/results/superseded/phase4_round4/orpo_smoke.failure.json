@@ -1,0 +1,43 @@
+{
+  "tag": "orpo_smoke",
+  "stage": "orpo",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "RuntimeError: You must initialize the accelerate state by calling either `PartialState()` or `Accelerator()` before using the logging utility.",
+  "detail": "Traceback (most recent call last):\n  File \"/opt/np/repo/shared/train/posttrain_align.py\", line 527, in main\n    trainer = TrainerCls(**kwargs)\n              ^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/orpo_trainer.py\", line 289, in __init__\n    logger.warning(\n  File \"/usr/lib/python3.12/logging/__init__.py\", line 1930, in warning\n    self.log(WARNING, msg, *args, **kwargs)\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/accelerate/logging.py\", line 52, in log\n    raise RuntimeError(\nRuntimeError: You must initialize the accelerate state by calling either `PartialState()` or `Accelerator()` before using the logging utility.\n",
+  "config": {
+    "algo": "orpo",
+    "base_model": "meta-llama/Llama-3.1-8B",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 32,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "gradient_checkpointing": true
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "captured": "2026-08-14T15:05:56Z"
+}

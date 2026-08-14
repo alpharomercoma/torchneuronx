@@ -1,0 +1,110 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026-Aug-14 18:22:24.0302 13056:13082 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed t2026-Aug-14 18:22:24.0302 13057:13083 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+o initialize rdma protocol
+2026-Aug-14 18:22:24.0302 13056:13082 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 18:22:24.0304 13057:13083 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 18:22:24.0304 13057:13083 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 18:22:24.0306 13056:13082 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 18:22:24.0308 13057:13083 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-14 18:22:24.0368 13056:13082 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[pretrain] rank 0/2 device=xla:0
+[pretrain] 409.0M parameters, all trainable
+[pretrain] 4096 tok/step, 60 steps planned, cap 1.0h
+2026-08-14 18:22:29.000846:  13056  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14269584625111936084+e30acd3a/model.neff
+2026-08-14 18:22:29.000850:  13057  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14269584625111936084+e30acd3a/model.neff
+  step 1/60 loss 10.9527 2270ms lr 3.00e-04
+...2026-08-14 18:23:37.000424:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+...2026-08-14 18:24:37.000426:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 2.0 minutes
+...2026-08-14 18:25:37.000427:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 3.0 minutes
+...2026-08-14 18:26:37.000429:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 4.0 minutes
+...2026-08-14 18:27:37.000431:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 5.0 minutes
+...2026-08-14 18:28:37.000432:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 6.0 minutes
+...2026-08-14 18:29:37.000434:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 7.0 minutes
+...2026-08-14 18:30:37.000435:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 8.0 minutes
+...2026-08-14 18:31:37.000437:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 9.0 minutes
+...2026-08-14 18:32:37.000438:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 10.0 minutes
+...2026-08-14 18:33:37.000440:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 11.0 minutes
+...2026-08-14 18:34:37.000441:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 12.0 minutes
+...2026-08-14 18:35:37.000443:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 13.0 minutes
+...2026-08-14 18:36:37.000445:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 14.0 minutes
+...2026-08-14 18:37:37.000446:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 15.0 minutes
+...2026-08-14 18:38:37.000448:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 16.0 minutes
+...2026-08-14 18:39:37.000450:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 17.0 minutes
+...2026-08-14 18:40:37.000476:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 18.0 minutes
+...2026-08-14 18:41:37.000536:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 19.0 minutes
+...2026-08-14 18:42:37.000539:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 20.0 minutes
+...2026-08-14 18:43:37.000544:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 21.0 minutes
+...2026-08-14 18:44:37.000576:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 22.0 minutes
+...2026-08-14 18:45:37.000586:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 23.0 minutes
+...2026-08-14 18:46:37.000594:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 24.0 minutes
+...2026-08-14 18:47:37.000604:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 25.0 minutes
+...2026-08-14 18:48:37.000609:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 26.0 minutes
+...2026-08-14 18:49:37.000613:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 27.0 minutes
+...2026-08-14 18:50:37.000625:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 28.0 minutes
+...2026-08-14 18:51:37.000627:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 29.0 minutes
+...2026-08-14 18:52:37.000629:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 30.0 minutes
+...2026-08-14 18:53:37.000631:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 31.0 minutes
+...2026-08-14 18:54:37.000634:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 32.0 minutes
+...2026-08-14 18:55:37.000637:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 33.0 minutes
+...2026-08-14 18:56:37.000639:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 34.0 minutes
+...2026-08-14 18:57:37.000641:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 35.0 minutes
+...2026-08-14 18:58:37.000643:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 36.0 minutes
+...2026-08-14 18:59:37.000645:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 37.0 minutes
+...2026-08-14 19:00:37.000647:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 38.0 minutes
+...2026-08-14 19:01:37.000648:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 39.0 minutes
+...2026-08-14 19:02:37.000650:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 40.0 minutes
+...2026-08-14 19:03:37.000652:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 41.0 minutes
+...2026-08-14 19:04:37.000654:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 42.0 minutes
+...2026-08-14 19:05:37.000656:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 43.0 minutes
+...2026-08-14 19:06:37.000657:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 44.0 minutes
+...2026-08-14 19:07:37.000659:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 45.0 minutes
+...2026-08-14 19:08:37.000661:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 46.0 minutes
+...2026-08-14 19:09:37.000663:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 47.0 minutes
+...2026-08-14 19:10:37.000665:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 48.0 minutes
+...2026-08-14 19:11:37.000666:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 49.0 minutes
+...2026-08-14 19:12:37.000668:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 50.0 minutes
+...2026-08-14 19:13:37.000670:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 51.0 minutes
+...2026-08-14 19:14:37.000672:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 52.0 minutes
+...2026-08-14 19:15:37.000673:  13057  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.hlo_module.pb, been waiting for: 53.0 minutes
+...
+Compiler status PASS
+2026-08-14 19:16:18.000860:  13056  [INFO]: Compilation Successfully Completed for model.MODULE_6283841084427540819+e30acd3a.hlo_module.pb
+2026-08-14 19:16:23.000247:  13057  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.neff
+  step 2/60 loss 10.2278 3259387ms lr 3.00e-04
+...2026-08-14 19:18:04.000930:  13056  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+...2026-08-14 19:19:04.000932:  13056  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 2.0 minutes
+..W0814 19:19:30.158000 13026 torch/distributed/elastic/agent/server/api.py:725] Received 15 death signal, shutting down workers
+W0814 19:19:30.221000 13026 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 13056 closing signal SIGTERM
+W0814 19:19:30.224000 13026 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 13057 closing signal SIGTERM
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 284, in launch_agent
+    result = agent.run()
+             ^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 717, in run
+    result = self._invoke_run(role)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 881, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 85, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 13026 got signal: 15

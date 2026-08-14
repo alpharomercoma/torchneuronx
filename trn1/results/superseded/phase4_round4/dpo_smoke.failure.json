@@ -1,0 +1,43 @@
+{
+  "tag": "dpo_smoke",
+  "stage": "dpo",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "ValueError: RunNeuronCCImpl: error condition !(error != 400): <class 'TypeError'>: stat: path should be string, bytes, os.PathLike or integer, not NoneType",
+  "detail": "Traceback (most recent call last):\n  File \"/opt/np/repo/shared/train/posttrain_align.py\", line 548, in main\n    trainer.train()\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1246, in train\n    output = self._train(resume_from_checkpoint=resume_from_checkpoint)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1170, in _train\n    loss_step = self.training_step(self.model, inputs, num_items_in_batch=num_items_in_batch)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py\", line 1007, in training_step\n    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 1822, in compute_loss\n    loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval=\"train\")\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 1745, in get_batch_loss_metrics\n    ref_chosen_logps, ref_rejected_logps = self.compute_ref_log_probs(batch)\n                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 935, in compute_ref_log_probs\n    with self.null_ref_context():\n  File \"/usr/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py\", line 917, in null_ref_context\n    with (\n  File \"/usr/lib/python3.12/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/peft/peft_model.py\", line 929, in disable_adapter\n    model_status = self.get_model_status()\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/peft/peft_model.py\", line 1122, in get_model_status\n    return get_model_status(self)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/peft/peft_model.py\", line 3128, in get_model_status\n    trainable_params, total_params = model.get_nb_trainable_parameters()\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/peft/peft_model.py\", line 460, in get_nb_trainable_parameters\n    return _get_model_param_count(self)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/training_utils.py\", line 156, in _get_model_param_count\n    xm.mark_step()\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/typing_extensions.py\", line 3140, in wrapper\n    return arg(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/core/xla_model.py\", line 1032, in mark_step\n    torch_xla.sync(wait, reset_scope)\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/torch_xla.py\", line 87, in sync\n    torch_xla._XLAC._xla_step_marker(\nValueError: RunNeuronCCImpl: error condition !(error != 400): <class 'TypeError'>: stat: path should be string, bytes, os.PathLike or integer, not NoneType\n",
+  "config": {
+    "algo": "dpo",
+    "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 32,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "gradient_checkpointing": true
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "captured": "2026-08-14T15:02:23Z"
+}

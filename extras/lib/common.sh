@@ -140,9 +140,18 @@ np_clear_compile_locks() {
 # Capture the PROGRAM's error, never the wrapper's banner. A receipt recording
 # torchrun's ChildFailedError hides the ValueError that actually explains the
 # failure — that mistake cost a full re-read of the MoE lane (§24.5).
+#
+# NRT runtime errors were missing from this pattern, and the omission repeated
+# the exact mistake the paragraph above warns about: the trn1 residency_pair_b
+# receipt recorded Python's "RuntimeError: Init: error condition ... NRT_FAILURE
+# status_code=1", a wrapper message that names no cause, while the log's real
+# answer sat a few lines earlier — "Logical Neuron Core(s) not available -
+# Requested:lnc0-lnc0 ... (cores busy, ret=-16)". The ERROR prefix is required:
+# an NRT deprecation WARNING is emitted first, and grep -m1 would otherwise
+# return that instead. Whitespace is squeezed because NRT pads its columns.
 np_receipt() {   # np_receipt <out.failure.json> <tag> <box> <logfile>
   local out="$1" tag="$2" box="$3" log="$4" reason
-  reason=$(grep -m1 -oE "ValueError: [^\"]{0,180}|NotImplementedError: [^\"]{0,160}|NCC_[A-Z0-9]+[^\"]{0,150}|\[F[0-9]+\][^\"]{0,140}|RuntimeError: [^\"]{0,140}" "$log" 2>/dev/null | head -1 | sed "s/\"/'/g")
+  reason=$(grep -m1 -oE "ERROR +NRT:[^\"]{0,190}|ValueError: [^\"]{0,180}|NotImplementedError: [^\"]{0,160}|NCC_[A-Z0-9]+[^\"]{0,150}|\[F[0-9]+\][^\"]{0,140}|RuntimeError: [^\"]{0,140}" "$log" 2>/dev/null | head -1 | tr -s ' ' | sed "s/\"/'/g")
   [ -n "$reason" ] || reason=$(tail -c 300 "$log" 2>/dev/null | tr '\n' ' ' | sed "s/\"/'/g")
   printf '{"tag":"%s","box":"%s","status":"failed","reason":"%s","captured":"%s"}\n' \
     "$tag" "$box" "$reason" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out"
