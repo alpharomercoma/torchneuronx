@@ -2492,3 +2492,196 @@ That non-claim was correct and is now settled in the direction it hedged toward.
 Pretraining from scratch **does** work on Trainium1 — through the framework's
 trainer, on one core for this architecture, at a low MFU that the model's size
 explains.
+
+## 33. The cost math against GPUs
+
+The talk this study backs promises "the cost math versus GPU instances." This
+section is that math, and it is the least flattering section in the report.
+
+### 33.1 Where the GPU numbers come from, and why that limits the claim
+
+No GPU was run for this study. The comparison numbers come from this repo's
+sibling, [MI300X-vs-H200](https://github.com/alpharomercoma/MI300X-vs-H200),
+which measured the same model, the same request shape and the same metric
+schema on single accelerators — that shared lineage is the only reason a
+comparison is possible at all.
+
+Four differences are load-bearing and none of them can be removed by arithmetic:
+
+| | this study | the GPU study |
+|---|---|---|
+| vLLM | 0.16 (AMI-pinned) | **0.26** |
+| PyTorch | 2.9.1 | 2.11.0 |
+| cloud | AWS | DigitalOcean (MI300X), Nebius (H200) |
+| device HBM | 32 GB | 192 GB / 141 GB |
+
+Ten minor versions of vLLM sit between the two serving stacks, and the Neuron
+pin is not a choice — the newer DLAMI cannot boot on NeuronCore-v2. So a slower
+Neuron result is partly a measurement of an older serving stack, and this
+section cannot separate the two.
+
+### 33.2 Serving, at matched concurrency
+
+Llama 3.1 8B Instruct, BF16, 1024 in / 1024 out, one accelerator each.
+Concurrency 32 is where the comparison is honest: it is the top of the
+Inferentia grid, bounded by KV memory (rule 6), and a rung the GPU sweep also
+measured.
+
+| device | $/hr | out tok/s @ c32 | $ per 1M output tokens |
+|---|---|---|---|
+| inf2.xlarge, 1× Inferentia2 | 0.7582 | 415.5 | **0.507** |
+| MI300X, 1 GPU | 2.59 | 3,443 | **0.209** |
+| H200, 1 GPU | 4.50 | 4,486 | **0.279** |
+
+**Inferentia2 costs 2.4× more per output token than an MI300X and 1.8× more
+than an H200 at matched concurrency.** Prices are on-demand list, us-west-2 for
+AWS (pricing API), and the providers' published GPU-hour rates for the other
+two.
+
+At each side's *best* operating point the gap widens, because the GPUs keep
+scaling past the point Inferentia's KV budget stops at:
+
+| device | best measured | at concurrency | $ per 1M output tokens |
+|---|---|---|---|
+| inf2.xlarge | 415.5 | 32 | **0.507** |
+| MI300X | 8,085 | 256 | **0.089** |
+| H200 | 11,337 | 256 | **0.110** |
+
+**5.7× and 4.6× respectively.** A single Inferentia2 is not a cost-competitive
+way to serve an 8B model against a single current-generation GPU.
+
+### 33.3 The TTFT comparison that would have been wrong
+
+The obvious next table — TTFT at concurrency 32, 6,414 ms on Inferentia2
+against 7 ms on an H200 — is not a prefill comparison and must not be presented
+as one. At concurrency 32 the Inferentia figure is dominated by queueing:
+`MAX_NUM_SEQS=32` bounds resident sequences, so requests wait.
+
+§17.1 isolates prefill properly, at concurrency 1: a 1024-token prompt reaches
+first token in **397.5 ms p50**, and prefill throughput rises from 2,204 to
+4,244 tokens/s across the input sweep. That is the number to compare, and this
+study does not have the GPU-side equivalent at concurrency 1 isolated the same
+way. So the honest statement is: **Inferentia2 prefill is roughly two orders of
+magnitude slower than an H200 on a 1024-token prompt, and the 1000× figure a
+naive reading of the sweeps would produce is queueing, not silicon.**
+
+### 33.4 Training is NOT compared, deliberately
+
+The two studies did not train the same thing. This one runs **LoRA r16** on
+Llama 3.1 8B — 26M of 8B parameters updated. The GPU study runs **full BF16
+training** — all 8B updated. Tokens per second across those two objectives are
+different quantities, and dividing one by the other produces a number with no
+meaning.
+
+For the record, both sides, clearly labelled as non-comparable:
+
+| lane | tok/s @ 4096 | what is updated |
+|---|---|---|
+| trn1, LoRA r16 | 3,575 | 26M params |
+| MI300X, full BF16 | 5,603.3 | 8B params |
+| H200, full BF16 | 7,821.6 | 8B params |
+
+Training cost where this study *can* speak: Trainium1 delivers a LoRA
+fine-tune at **$0.104 per 1M training tokens** at sequence 4096 ($0.126 at
+2048). The GPU study published no prices, so there is no counterpart figure and
+none is invented here.
+
+The training economics and the serving economics point in opposite directions,
+and that is the finding: **Trainium is the strong half of this platform, and
+Inferentia at this instance size is the weak half.**
+
+### 33.5 The gap this section cannot close
+
+The comparison a listener actually wants is against **AWS** GPU instances, and
+this study has none. The relevant single-device rentals in us-west-2 are:
+
+| instance | GPU | HBM | $/hr | throughput |
+|---|---|---|---|---|
+| g5.2xlarge | 1× A10G | 24 GB | 1.212 | **not measured** |
+| g6e.xlarge | 1× L40S | 48 GB | 1.861 | **not measured** |
+
+Both are priced in the same band as trn1.2xlarge and inf2.xlarge, which makes
+them the honest comparison and makes their absence the biggest open hole in
+this report. Running the existing serving harness against a g6e.xlarge would
+close it for about two dollars.
+
+## 34. A decision framework: when Neuron silicon fits
+
+Assembled from the measurements above rather than from vendor material. Five
+questions, in the order that kills a bad fit fastest.
+
+### 34.1 Is your architecture on the supported list?
+
+Check this before anything else, because it is a hard gate and it is cheap to
+check. `optimum-neuron`'s exporter supports a fixed, enumerated set of
+architectures. SigLIP is not on it, and the lane failed identically on all
+three boxes with `siglip is not supported yet for transformers`. CLIP needed a
+trace fallback and produced NaN probabilities on Trainium1 while working on
+Trainium2.
+
+A supported architecture is a good day on this platform. An unsupported one is
+not a tuning problem, it is a wall.
+
+### 34.2 Is the objective offline or online?
+
+| objective | status |
+|---|---|
+| SFT, LoRA or full | works |
+| ORPO and other reference-free preference methods | works |
+| DPO | reference forward compiles only outside the training step (§32) |
+| GRPO, PPO, RLOO, RLVR | **architecturally blocked** |
+
+Online RL needs to sample completions inside the training loop. The training
+model class exposes no `generate()` at all; generation lives in a separate
+ahead-of-time-compiled inference class. This is the single hardest boundary in
+the study and no amount of budget moves it.
+
+### 34.3 Are your shapes static?
+
+Every distinct tensor shape is a separate ahead-of-time compilation. The study
+paid 1,498 s for a cold 8B training compile and 1,832 s for a cold serving
+boot. Warm, those collapse. The corollary is a design rule: pad to fixed
+shapes, or pay a compile per shape. Phase 4 needed a `FixedShapeCollator`
+precisely because TRL's preference collators pad per batch.
+
+If your workload has genuinely dynamic shapes, the compile cost is not a
+one-time tax, it is a per-request tax.
+
+### 34.4 Training or serving?
+
+This is where the answer diverges sharply, and it is the framework's most
+useful axis.
+
+**Training — yes.** 82.7% MFU on a Trainium1 at sequence 4096, 61.0% on a
+Trainium2 at 8192, and $0.104 per 1M training tokens. These are strong numbers
+by any standard, and the platform's ahead-of-time model suits training, where
+shapes are fixed and the compile amortises over hours.
+
+**Serving — only if cost is not the deciding factor.** §33 measures 1.8–4.6×
+worse cost per output token than a single GPU. Choose Inferentia for serving
+when something else dominates: capacity availability when GPUs cannot be got,
+data residency, an existing Neuron training pipeline you want to keep on one
+stack, or a throughput SLO you can meet inside the KV-bounded concurrency
+ceiling.
+
+### 34.5 What is your latency SLO, and at what concurrency?
+
+KV cache costs 128 KiB per token, which bounds resident sequences to roughly 48
+at 2048 context and 12 at 9216 on a 32 GB device. Past that the client measures
+queue depth. Prefill is ~397 ms p50 for a 1024-token prompt at concurrency 1.
+
+If your SLO is a low TTFT under load, this instance size will not meet it. If
+your SLO is aggregate throughput at bounded concurrency, it will.
+
+### 34.6 The short version
+
+| your situation | verdict |
+|---|---|
+| LoRA or full SFT, supported architecture, static shapes | **strong fit** — the study's best numbers live here |
+| Pretraining a small model from scratch | works up to ~400M params on one small instance; optimiser state, not compute, is the ceiling |
+| Preference optimisation, reference-free | works |
+| Online RL of any kind | **blocked** — do not plan around it |
+| Cost-optimised 8B serving | **do not** — a single GPU is 1.8–4.6× cheaper per token |
+| Serving where capacity or residency dominates cost | reasonable, inside the concurrency ceiling |
+| Unsupported or fast-moving architecture | **do not** — the exporter list is the gate |
+| Team without slack for toolchain debugging | budget for it: most of this study's walls were toolchain, not silicon |
