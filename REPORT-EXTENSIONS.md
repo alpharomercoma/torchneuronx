@@ -2258,3 +2258,84 @@ The `log` shim is worth singling out. It cost a full lane-run to find because it
 fires **inside optimum-neuron's own logging step-closure — after the model has
 compiled and steps have run.** A two-argument signature mismatch discovered at
 the most expensive possible moment.
+
+### 32.10 Three more measurements, one of which invalidates a training claim
+
+Three lanes ran after §32.2 was written. Each changes something.
+
+**The ORPO throughput figure reproduces to 0.13%.** The same configuration
+measured twice, at 30 steps and at 150:
+
+| lane | steps | tok/s | MFU % | median step |
+|---|---|---|---|---|
+| `orpo_llama31_8b` | 30 | 1,012.5 | 25.90 | 8,091.0 ms |
+| `orpo_llama31_8b_long` | 150 | 1,011.2 | 25.87 | 8,101.2 ms |
+
+**0.13% apart across a 5× longer run.** That is the same order of agreement as
+the Qwen3 SFT pair (57.2% / 57.3%) and it is well inside the 2.4% resolution
+floor this study adopted in §31. The ORPO throughput number is stable.
+
+**And the 150-step run diverged to NaN at step 23.** It was non-finite for 128
+of its 150 steps, and it still reported a completely ordinary-looking 1,011.2
+tok/s — because **NaN costs exactly the same FLOPs as a number.** A throughput
+harness cannot tell the difference, and this one did not, until the loss trace
+was read.
+
+That is worth stating plainly: the reproducibility result above is real, and it
+was produced by a run that was numerically broken for 85% of its length. Both
+facts are true simultaneously. Throughput remained a valid measurement of the
+hardware; it stopped being a measurement of training at step 23.
+
+Two consequences, both now enforced in code rather than in prose:
+
+- `phase4_lib.StepLog.metrics()` emits `loss_numerically_valid`,
+  `loss_first_nonfinite_step`, `loss_nonfinite_steps` and an explicit
+  `loss_validity_note` on every future lane.
+- `analysis/phase4_summary.py` prints a **Numerical divergence** table and
+  computes its loss columns over finite steps only.
+
+The two published ORPO figures (25.9% at 512, 30.2% at 1024) come from 30-step
+runs with **zero** non-finite losses, verified across all lanes. They stand.
+
+**What caused the NaN is not established.** The one variable that distinguishes
+the diverged run from the two clean ones is the data draw — 1,400 preference
+pairs versus 320, same seed, same shapes, same learning rate. A plausible
+mechanism is that a longer draw eventually contains an example whose completion
+is emptied by truncation to `max_prompt_length`, making ORPO's NLL term a mean
+over zero label tokens. **That is a hypothesis and it was not tested.** After
+two falsified attributions in the pretraining lane (§32.8), this section records
+the observation and the distinguishing variable and stops there.
+
+**ORPO at max_length 2048 does not fit.**
+
+```
+RuntimeError: AllocBuffer: error condition NRT_RESOURCE == rt_status:
+Not enough Neuron memory on core 0 for size=262540032
+```
+
+with HBM at 15.596 GB (core 0) and 15.614 GB (core 1) against the 16 GB
+per-core budget when a further 250 MiB was refused.
+
+This is the cleanest practical finding in the phase. **The SFT lane runs this
+same 8B model at seq 2048 on this same chip at 68.3% MFU.** ORPO at 2048 does
+not, because a preference step forwards chosen *and* rejected — a 2048-token
+preference step has the activation footprint of a 4096-token supervised step.
+**Preference training runs out of memory one rung of the sequence ladder earlier
+than supervised fine-tuning on identical hardware.**
+
+Note this is a **runtime** refusal by the Neuron runtime, distinct from the
+pretraining lane's **compile-time** `NCC_EOOM001`. Both are the same 16 GiB
+per-core ceiling, reported by different layers, with different error text.
+
+The completed ORPO ladder:
+
+| max_length | result |
+|---|---|
+| 512 | 1,012.5 tok/s, 25.90% MFU |
+| 1024 | 1,181.0 tok/s, 30.21% MFU |
+| 2048 | does not fit |
+
+Which is also why §32.3's question — how much of the ORPO-versus-SFT gap is
+sequence length and how much is the objective — **cannot be answered on this
+hardware.** The sequence length at which the comparison would be fair is the
+sequence length at which the preference lane runs out of memory.

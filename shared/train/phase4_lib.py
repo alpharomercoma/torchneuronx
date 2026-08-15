@@ -23,6 +23,7 @@ splits, and each lane states its own split explicitly.
 from __future__ import annotations
 
 import json
+import math
 import os
 import statistics
 import sys
@@ -111,9 +112,34 @@ class StepLog:
         first = self.rows[0]["ms"] if self.rows else None
         median = statistics.median(steady) if steady else None
         losses = [r["loss"] for r in self.rows if r["loss"] is not None]
+
+        # Numerical breakdown must be surfaced, not left for a reader to notice.
+        # The 150-step ORPO lane on 2026-08-14 went NaN at step 23 and stayed
+        # NaN for the remaining 128 steps, and still emitted a perfectly
+        # ordinary-looking 1,011.2 tok/s -- because NaN propagates through the
+        # same FLOPs at the same speed. Throughput stays a valid measurement of
+        # the hardware; it stops being a measurement of training. A result that
+        # does not say which of those it is invites the wrong reading.
+        finite = [v for v in losses if math.isfinite(v)]
+        nonfinite_steps = [r["step"] for r in self.rows
+                           if r["loss"] is not None and not math.isfinite(r["loss"])]
+
         return {
             "steps_recorded": len(self.rows),
             "warmup_steps_excluded": min(self.warmup, len(self.rows)),
+            "loss_finite_steps": len(finite),
+            "loss_nonfinite_steps": len(nonfinite_steps),
+            "loss_first_nonfinite_step": nonfinite_steps[0] if nonfinite_steps else None,
+            "loss_numerically_valid": not nonfinite_steps,
+            "loss_validity_note": (
+                None if not nonfinite_steps else
+                f"DIVERGED: the loss became non-finite at step "
+                f"{nonfinite_steps[0]} and was non-finite for "
+                f"{len(nonfinite_steps)} of {len(self.rows)} recorded steps. "
+                f"Throughput and MFU below remain valid measurements of how "
+                f"fast this chip executes this graph -- NaN costs the same "
+                f"FLOPs as a number -- but this run is NOT evidence of "
+                f"training, and its final_loss is meaningless."),
             "first_step_ms": None if first is None else round(first, 2),
             "first_step_note": (
                 "Step 1 traces the XLA graph and then either compiles it or loads "

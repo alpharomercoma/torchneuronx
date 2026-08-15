@@ -563,3 +563,30 @@ def test_log_shim_absorbs_the_start_time_arity_difference():
     assert seen[-1] == ("three", {"loss": 2.0}, 456.0)   # passed through
 
     assert "log" in HFTrainerCompat.COVERS
+
+
+def test_steplog_flags_a_run_that_diverged_to_nan():
+    """A NaN run and a healthy run produce identical throughput. Say which is which.
+
+    The 150-step ORPO lane went non-finite at step 23 and reported 1,011.2
+    tok/s -- within 0.13% of the clean 30-step run -- because NaN costs the same
+    FLOPs as a number. Nothing in a timing harness can notice that, so the
+    result record has to carry it explicitly.
+    """
+    diverged = P4.StepLog(warmup=1)
+    for v in (1.0, 2.0, float("nan"), float("nan")):
+        diverged.tick(v)
+    m = diverged.metrics()
+    assert m["loss_numerically_valid"] is False
+    assert m["loss_first_nonfinite_step"] == 3
+    assert m["loss_nonfinite_steps"] == 2
+    assert m["loss_finite_steps"] == 2
+    assert "DIVERGED" in m["loss_validity_note"]
+
+    clean = P4.StepLog(warmup=1)
+    for v in (1.0, 2.0):
+        clean.tick(v)
+    cm = clean.metrics()
+    assert cm["loss_numerically_valid"] is True
+    assert cm["loss_validity_note"] is None
+    assert cm["loss_first_nonfinite_step"] is None

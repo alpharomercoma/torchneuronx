@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 
@@ -82,10 +83,14 @@ def loss_summary(ok):
     A throughput number from a run whose loss never moved is a measurement of
     arithmetic, not of training.
     """
-    lines = []
+    lines, diverged = [], []
     for name, d in ok:
         trace = d.get("loss_trace") or []
-        losses = [r["loss"] for r in trace if r.get("loss") is not None]
+        raw = [r.get("loss") for r in trace if r.get("loss") is not None]
+        bad = [i + 1 for i, v in enumerate(raw) if not math.isfinite(v)]
+        if bad:
+            diverged.append((name, bad[0], len(bad), len(raw)))
+        losses = [v for v in raw if math.isfinite(v)]
         if len(losses) >= 2:
             # last - first, so the sign reads the way a reader expects: negative
             # means the loss went DOWN. The first version of this table computed
@@ -97,14 +102,28 @@ def loss_summary(ok):
             lines.append(f"| `{name}` | {losses[0]:.4f} | {losses[-1]:.4f} | "
                          f"{delta:+.4f} | {'yes' if delta < 0 else 'NO'} | "
                          f"{len(losses)} |")
+    warn = ""
+    if diverged:
+        rows = "\n".join(
+            f"| `{n}` | {first} | {cnt} of {tot} |" for n, first, cnt, tot in diverged)
+        warn = ("\n### Numerical divergence\n\n"
+                "| lane | first non-finite step | non-finite steps |\n"
+                "|---|---|---|\n" + rows + "\n\n"
+                "_These lanes produced NaN or Inf losses. Their throughput and "
+                "MFU are still valid measurements of how fast the chip executes "
+                "the graph -- NaN costs the same FLOPs as a number -- but they "
+                "are NOT evidence of training, and the loss columns above are "
+                "computed over the finite steps only._\n")
     if not lines:
-        return "_No loss traces recorded._\n"
+        return "_No loss traces recorded._\n" + warn
     return ("| lane | first loss | last loss | last - first | descended? | steps |\n"
             "|---|---|---|---|---|---|\n" + "\n".join(lines) + "\n"
             + "\n_A negative `last - first` means the loss fell. A lane marked "
               "`NO` produced a valid THROUGHPUT measurement and nothing more: "
               "its optimisation did not visibly progress over the recorded "
-              "steps, so it is not evidence that the model learned anything._\n")
+              "steps, so it is not evidence that the model learned anything. "
+              "Counts are FINITE steps; see below if any lane diverged._\n"
+            + warn)
 
 
 def ceiling_series(bad):
