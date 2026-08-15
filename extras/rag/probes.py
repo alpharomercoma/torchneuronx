@@ -83,10 +83,32 @@ def run_probe(probe, args):
         judged = "\n".join(c["content"] for c in j.get("contexts", []))
     else:
         judged = j.get("answer") or ""
+    # SPURIOUS-PASS GUARD.
+    #
+    # probe_pass judges the WHOLE returned string. A small instruct model that
+    # runs past its answer re-emits the prompt and the retrieved passages -- and
+    # those passages are, by construction, the ones containing the expected
+    # figure. So the matcher can score a pass on the model's own echoed context
+    # while the answer proper is wrong. Measured 2026-08-15: Llama-3.2-1B
+    # answered "trn1.2xlarge" (wrong) and passed the inf2.xlarge probe because
+    # the string appeared in echoed context past character 400 -- past the end
+    # of the preview stored below, so the receipt looked self-consistent.
+    #
+    # `pass` keeps the published convention. `pass_answer_only` judges just the
+    # first block, before any echo begins, and `answer_full_chars` exposes the
+    # truncation that hid the problem. Where the two disagree, the pass is echo.
+    answer_full = j.get("answer") or ""
+    answer_proper = answer_full.split("\n\n")[0]
+    p_full = probe_pass(answer_full, probe["expect_any"])
+    p_proper = probe_pass(answer_proper, probe["expect_any"])
     return {
         "q": probe["q"],
         "expect_any": probe["expect_any"],
-        "pass": probe_pass(judged, probe["expect_any"]),
+        "pass": p_full,
+        "pass_answer_only": p_proper,
+        "pass_was_echo": bool(p_full and not p_proper),
+        "answer_full_chars": len(answer_full),
+        "answer_proper": answer_proper[:200] or None,
         "answer": (j.get("answer") or "")[:400] or None,
         "ids": j.get("ids"),
         "reranked": j.get("reranked"),

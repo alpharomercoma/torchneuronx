@@ -1,0 +1,24 @@
+{
+  "lane": "qwen3_generation_numerics",
+  "box": "inf2",
+  "status": "failed",
+  "wall": "generation numerics, at RUNTIME",
+  "models_affected": [
+    "Qwen/Qwen3-8B (tp=2)",
+    "Qwen/Qwen3-1.7B (tp=1)"
+  ],
+  "reason": "Qwen3 causal-LM generation on vLLM 0.16 / NxDI 0.10 does not produce valid text. Qwen3-8B at tp=2 crashes the engine core on the first generation step (REPORT S9). Qwen3-1.7B at tp=1 does NOT crash: it returns HTTP 200 with plausible throughput counters and emits garbage tokens.",
+  "evidence_prompt": "1 2 3 4 5 6 7 8 9",
+  "evidence_completion_repr": "' !\\x08\\ufffd\\x0b\\ufffd\\n\\ufffd\\x0e'",
+  "evidence_chat_repr": "'<think>'",
+  "ruled_out": [
+    "thinking-mode formatting (chat endpoint also degenerate)",
+    "raw-prompt formatting (completions and chat both degenerate)",
+    "model size (8B and 1.7B both fail, differently)",
+    "retrieval (retrieval-only probes are 7/7 on the same box)"
+  ],
+  "NOT_ruled_out": "tp=1 serving itself. Every good serving lane in this study ran tp=2. Rung 3 (Qwen2.5-1.5B at tp=1) is the control that separates architecture from topology.",
+  "why_it_matters": "A silent wrong answer is worse than a crash. The 8B failure is loud and gets a receipt automatically; this one returns 200 OK and would ship.",
+  "SUPERSEDED_BY": "qwen_generation_numerics.failure.json",
+  "correction": "This receipt listed tp=1 serving as a live alternative explanation. The TinyLlama tp=1 control has since exonerated the topology: tp=1 is sound and the Qwen family is the broken variable. Kept for provenance; read the superseding receipt."
+}

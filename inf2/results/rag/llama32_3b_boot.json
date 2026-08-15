@@ -1,0 +1,11 @@
+{
+  "model_key": "llama32_3b",
+  "config": "short",
+  "model_id": "meta-llama/Llama-3.2-3B-Instruct",
+  "boot_wall_s": 1228,
+  "cache_dir_size_mb_before": 2298,
+  "cache_dir_size_mb_after": 2422,
+  "warm": false,
+  "server_pid": 12889,
+  "captured": "2026-08-15T15:45:14Z"
+}

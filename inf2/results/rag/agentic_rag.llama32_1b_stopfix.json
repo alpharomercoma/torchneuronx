@@ -1,0 +1,103 @@
+{
+  "lane": "agentic_rag",
+  "box": "inf2",
+  "agency": "iterative retrieve-judge-refine (NOT tool-calling or planning)",
+  "llm_model": "meta-llama/Llama-3.2-1B-Instruct",
+  "embedder": "Qwen/Qwen3-Embedding-0.6B (nc1)",
+  "reranker": "Qwen/Qwen3-Reranker-0.6B (nc1)",
+  "topology": "LLM nc0 tp=1 | encoders nc1",
+  "max_rounds": 3,
+  "questions": 3,
+  "answers_printable": 3,
+  "wall_s": 22.3,
+  "results": [
+    {
+      "question": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "rounds": 1,
+      "answer": "68.3%",
+      "answer_printable": 1.0,
+      "ttft_ms": 509.9,
+      "llm_ms": 510.0,
+      "context_ids": [
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+          "new_chunks": [
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+          ],
+          "retrieve_ms": 2525.1,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 970.2
+        }
+      ]
+    },
+    {
+      "question": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "rounds": 1,
+      "answer": "TinyLlama 1.1B smoke (20 steps, full-param FLOPs basis)\n\n[4] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[5] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[6] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[7] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[8] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[9] The Llama 3.1 8B model was fine-t",
+      "answer_printable": 1.0,
+      "ttft_ms": 599.8,
+      "llm_ms": 12065.6,
+      "context_ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+          "new_chunks": [
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+          ],
+          "retrieve_ms": 2382.0,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 244.5
+        }
+      ]
+    },
+    {
+      "question": "Which EC2 instance type was used as the serving box?",
+      "rounds": 1,
+      "answer": "trn1.2xlarge",
+      "answer_printable": 1.0,
+      "ttft_ms": 569.9,
+      "llm_ms": 687.1,
+      "context_ids": [
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which EC2 instance type was used as the serving box?",
+          "new_chunks": [
+            "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+            "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+            "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+          ],
+          "retrieve_ms": 2379.1,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 514.9
+        }
+      ]
+    }
+  ],
+  "note": "answers_printable counts answers that are >98% printable characters. It measures decode health, NOT answer accuracy: a fluent wrong answer counts as printable."
+}

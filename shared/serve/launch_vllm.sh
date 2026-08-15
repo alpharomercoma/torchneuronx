@@ -28,8 +28,30 @@ set -uo pipefail
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 MODELS_DIR="${MODELS_DIR:-/opt/np/models}"
 
-PORT=8000
-TP_DEGREE=2                    # inf2.xlarge: 1 Inferentia2 = 2 NeuronCores
+PORT="${PORT_OVERRIDE:-8000}"
+TP_DEGREE="${TP_DEGREE_OVERRIDE:-2}"   # inf2.xlarge: 1 Inferentia2 = 2 NeuronCores
+
+# ------------------------------------------------- NeuronCore partitioning
+# A NeuronCore belongs to exactly one process. The default TP=2 server
+# therefore owns BOTH cores of the inf2.xlarge and nothing else can touch the
+# device -- which is precisely why the Track-F RAG probes died with
+# "The PyTorch Neuron Runtime could not be initialized": the encoders tried to
+# torch.jit.load next to a server that already held every core.
+#
+# NEURON_RT_VISIBLE_CORES is the documented way out (Neuron docs,
+# torch-neuronx/programming-guide/inference/core-placement). Set it to pin this
+# server to a subset, and pin the co-resident process to the complement:
+#
+#   NP_VISIBLE_CORES=0 TP_DEGREE_OVERRIDE=1  launch_vllm.sh ...   # LLM on nc0
+#   NEURON_RT_VISIBLE_CORES=1                python encoders.py   # encoders nc1
+#
+# Only usable when the model fits in one core's share of HBM. An 8B model in
+# bf16 is ~16 GB against a 16 GB per-core budget, so it CANNOT be pinned to one
+# core -- co-residency needs a smaller LM, not a different flag.
+if [ -n "${NP_VISIBLE_CORES:-}" ]; then
+  export NEURON_RT_VISIBLE_CORES="$NP_VISIBLE_CORES"
+  echo "--- pinned to NeuronCore(s) $NEURON_RT_VISIBLE_CORES (tp=$TP_DEGREE) ---"
+fi
 HEALTH_POLL_S=5
 HEALTH_TIMEOUT_S=5400          # 90 min: a cold 8B compile can take most of it
 STOP_GRACE_S=60                # SIGTERM -> SIGKILL escalation window
@@ -162,6 +184,36 @@ case "$MODEL_KEY" in
     # RAG LLM-ladder rung 2: qwen2 arch is a different NxDI path than the
     # qwen3 that crashed at generation -- all-Qwen stays possible via 2.5.
     MODEL_ID="Qwen/Qwen2.5-7B-Instruct" ;;
+  qwen3_1_7b)
+    # RAG co-residency rung: small enough to pin to ONE NeuronCore, which is
+    # the whole point. ~3.4 GB of bf16 weights plus ~114 KiB/token of KV
+    # against a 16 GB per-core budget, leaving the second core free for the
+    # embedder and the reranker. Qwen3-8B cannot do this -- its weights alone
+    # are ~16 GB, so it must span both cores and the appliance cannot exist.
+    MODEL_ID="Qwen/Qwen3-1.7B" ;;
+  qwen3_4b)
+    # Same idea with more headroom used: ~8 GB of weights on one core.
+    MODEL_ID="Qwen/Qwen3-4B" ;;
+  llama32_1b)
+    # The co-residency LM. ~2.5 GB of bf16 weights on one 16 GB core, leaving
+    # nc1 for the Qwen encoders. Weights are already on the box: this is the
+    # model the speculative-decoding lane used as its draft.
+    MODEL_ID="meta-llama/Llama-3.2-1B-Instruct" ;;
+  llama32_3b)
+    MODEL_ID="meta-llama/Llama-3.2-3B-Instruct" ;;
+  qwen3_0_6b)
+    # Smallest rung. Matches the embedder and reranker exactly in size, so an
+    # all-Qwen appliance at 0.6B x 3 is the minimal form of the thing.
+    MODEL_ID="Qwen/Qwen3-0.6B" ;;
+  qwen25_1_5b)
+    # Declared FALLBACK for the co-residency lane. REPORT §9 excludes Qwen3-8B
+    # serving: it boots, passes /health, then crashes the engine core on the
+    # first generation step. That was never separated into "Qwen3 architecture
+    # on NxDI 0.10" versus "8B at TP=2", so the qwen3_1_7b rung above is the
+    # experiment that separates them. If Qwen3 turns out to be architecturally
+    # broken here, qwen2 is a different NxDI code path and keeps the appliance
+    # alive at a size that still fits one core.
+    MODEL_ID="Qwen/Qwen2.5-1.5B-Instruct" ;;
   smoke_tinyllama)
     MODEL_ID="TinyLlama/TinyLlama-1.1B-Chat-v1.0" ;;
   *)

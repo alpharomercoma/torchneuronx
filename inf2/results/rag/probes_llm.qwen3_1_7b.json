@@ -1,0 +1,177 @@
+{
+  "mode": "end_to_end",
+  "llm_model": "Qwen/Qwen3-1.7B",
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "answer": "not in context\n\nThe answer is not in context. The context does not provide specific figures for the MFU (Model-Factorable Units) reached by the Llama 3.1 8B LoRA fine-tune. The context mentions that the MFU calculation uses FLOPs/token and includes trainable and frozen parameters, but it does not provide numerical values for the MFU achieved in the fine-tune scenario. The relevant section in the c",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1773.32,
+        "retrieve_ms": 381.16,
+        "rerank_ms": 1915.09,
+        "ttft_ms": 8404.23,
+        "e2e_ms": 201041.26
+      },
+      "probe_wall_ms": 236906.6
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "answer": "notasas\u0006st\u0002\u0002\u0002\ufffdststston\u0002\ufffdston\ufffd\u0006st\ufffdston\ufffd\u0002\ufffdst tstston\ufffdst tstonststststston\ufffdstststonststonstononstononon tston tonon t soston\ufffdstonstonon t *on&stonon\ufffdon tston tlo\ufffdon\ufffd tst tst\ufffd ton\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdston tst\ufffd\ufffd\ufffdstlo\ufffd ton\ufffdon\ufffd ton\ufffd ton\ufffd\ufffd\ufffdon\ufffd\ufffd ton\ufffd ton tlo\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd t tston\ufffd ton\ufffd\ufffd\ufffd\ufffd ton\ufffd\ufffd\ufffd\ufffd tlo\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdst ton\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd tlost\ufffd tloon\ufffd\ufffd\ufffd\ufffd\ufffd t----on\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd tloon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t---- t----\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t---- tckston",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "07-inference-lanes::lane-5-30-min-sustained-lane-6-quality-l-0000-tail-f-inf2-results-serve-llama31-base-s"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 563.68,
+        "retrieve_ms": 126.59,
+        "rerank_ms": 1837.0,
+        "ttft_ms": 307.07,
+        "e2e_ms": 145047.79
+      },
+      "probe_wall_ms": 151966.8
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": false,
+      "answer": "not m mes\u0002\u0002\ufffdonon\ufffdon\ufffdon\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffdon\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffdon\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd----\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd----\ufffdon\ufffdon\ufffd\ufffd\ufffdon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdon\u2191on.cropon.crop\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd----\ufffd\ufffd\ufffd----\ufffd\ufffd\ufffd\ufffd\ufffd----\ufffd\ufffd\ufffd\ufffdame\u0002\ufffdonhex\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd----\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdonon\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd----",
+      "ids": [
+        "METHODOLOGY::6-kv-cache-arithmetic-drives-the-serving-0000-llama-3-1-8b-32-layers-8-kv-heads-128-he",
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1876.77,
+        "retrieve_ms": 336.89,
+        "rerank_ms": 1904.02,
+        "ttft_ms": 1717.1,
+        "e2e_ms": 155194.73
+      },
+      "probe_wall_ms": 191365.2
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": false,
+      "answer": "notic\ufffd t t t t\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd t",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "01-security-hardening::2-new-keys-new-profile-also-make-it-the-0000-aws-iam-create-access-key-user-name-neur",
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1878.68,
+        "retrieve_ms": 321.77,
+        "rerank_ms": 1896.57,
+        "ttft_ms": 1487.34,
+        "e2e_ms": 152678.84
+      },
+      "probe_wall_ms": 194848.7
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": false,
+      "answer": "notan Clickou\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u0006\ufffd\u001a\ufffd \ufffd \ufffd \ufffd \ufffd \ufffd \ufffd \ufffd\u0004\ufffd\ufffd\ufffd\ufffd\ufffd\u001b\ufffd\ufffd \ufffd\u001b\ufffd\u007f\ufffd\ufffd\u001b\ufffd\u007f\ufffd\u007f\ufffd\ufffd\ufffd\u001b\ufffd\u007f\ufffd\ufffd\u001b\ufffd\u0007\ufffd\ufffd\ufffd\ufffd\ufffd\u0006\ufffd\u0007\ufffd \ufffd\u007f\ufffd\u007f\ufffd\ufffd\u007f\ufffd\ufffd\u001b\ufffd\u0006\ufffd\f\ufffd\t\ufffd\u0007\ufffd\u0007\ufffd\u0007\ufffd\u0007\ufffd\u0007\ufffdm\ufffd\u0007\ufffd\u0007\ufffdd\ufffd\u007f\ufffd\u0007\ufffd\u0007\ufffd\u0007\ufffd\u007f\ufffdd\ufffdh\ufffdh\ufffdp\ufffd\u0007\ufffd\u0007\ufffd\ufffd\u0007\ufffdh\ufffdd\ufffd\u0007\ufffdh\ufffdh\ufffdp\ufffd\u0007\ufffd\ufffdh\ufffdl\ufffdh\ufffd\ufffdd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u001b\ufffd\u0007\ufffd\u0007\ufffd\b\ufffd\u007f\ufffd\u0007\ufffdd\ufffdP\ufffd\u001b\ufffdd\ufffdh\ufffd\ufffdp\ufffd\u0007\ufffdd\ufffdd\ufffd\ufffd\ufffdt\ufffd\ufffd\u001b\ufffd\ufffdh\ufffd\ufffdX\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u001b\ufffdd\ufffdp\ufffd\b\ufffd\u001b\ufffde\ufffd\ufffd\u001b\ufffde\u001b\ufffd\ufffd\ufffd\ufffd\u001b\ufffd\ufffd\u001bt\ufffd\u001bX\ufffd\u001b<\u001b\ufffd\ufffd\u001b\ufffd\ufffd\ufffd\ufffd\u001b",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::caveats-worth-knowing-before-you-read-th-0000-compile-time-is-real-and-reported-rule-3",
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 564.85,
+        "retrieve_ms": 95.55,
+        "rerank_ms": 1837.06,
+        "ttft_ms": 219.82,
+        "e2e_ms": 137469.82
+      },
+      "probe_wall_ms": 144007.5
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": false,
+      "answer": "not c c\ufffdl\ufffdl\ufffdl\ufffdo\ufffdl\ufffdl\ufffdo\ufffdo\ufffdl\ufffdl\ufffd\u001d\ufffd\ufffd\u0013\ufffd\u0016\ufffd\u001d\ufffd\u0015\ufffd\u001d\ufffd\u001d\ufffd\ufffd\u0015\ufffd\ufffd\u001d\ufffd\ufffdg\ufffd\ufffd\ufffd\ufffd\u0013\ufffd\u0018\ufffd\u0019\ufffd\ufffd\ufffd\ufffd\ufffd\u001a\ufffd\ufffd\ufffd\u0019\ufffd\ufffd\ufffdg\ufffd\u001c\ufffd\u001c\ufffd\u001d\ufffd\ufffd\ufffdG\ufffd\u001d\ufffd\ufffd'\ufffd\ufffdG\ufffd'g\ufffd\u001d\ufffd\ufffd\ufffd\u0013\ufffd\u0019\ufffdg\ufffdG\ufffdG\ufffd'GGGGGG\ufffd\ufffdm\ufffd\u0013\ufffd''''''''\ufffd pupils \u0441\u043e\u0432\u0441\ufffd\ufffd\u0013\ufffd\u001d\ufffd \u0441\u043e\u0432\u0441\u0013\ufffd \u0441\u043e\u0432\u0441\ufffd\u0002\ufffd\u0013\ufffd \u0441\u043e\u0432\u0441\ufffd\u0004\ufffd\u0004\ufffdd\ufffdd\ufffdd\ufffd\ufffdd\ufffd\ufffd\ufffdp\ufffdP\ufffd)b\ufffdj\ufffd\u0019\ufffdl\ufffd\u0013\ufffd\u0004\ufffdd\ufffd\ufffdP\ufffd\u0019\ufffdg\ufffd\u0004\ufffddp\ufffdD\ufffdd\ufffd0\ufffdd h\u1ecdp\ufffd\ufffd\u0004\ufffdd h\u1ecdp\u0013\ufffdd\ufffd\u0006\ufffdd\ufffdd\ufffdd\ufffdd\u0142ug\ufffd\u0019\ufffd\u0019\ufffd\ufffd\u0006\ufffd\u0015\ufffdd\ufffd\ufffd\ufffd\u0006\ufffd\u0006\ufffdd\ufffdd\ufffdd\u0142ug\ufffd\u0019\ufffd\ufffd\u0013\ufffdd\ufffdp\ufffdd\ufffd\ufffd\u0006",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met",
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 573.05,
+        "retrieve_ms": 144.7,
+        "rerank_ms": 1855.24,
+        "ttft_ms": 655.8,
+        "e2e_ms": 138060.38
+      },
+      "probe_wall_ms": 144805.6
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "answer": "notenond\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdiasm\ufffd\ufffd\ufffdiasm\u000b\ufffd\ufffd\ufffd/K\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\tmain A\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u000b\ufffd\ufffd\ufffd\u000b\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u000b\u000b\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\tmain l\ufffd(Str;\n\nboB\ufffd(Str\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u000b\ufffd\ufffd\ufffd\ufffd\ufffd\tmainion\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u000b\u000b\ufffd\u000b\u000b\ufffd Interactive\ufffd\u0014\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdnit\ufffd\ufffd\ufffd\u000b\ufffd\u000b\ufffd\ufffd\u000b\ufffdnit\ufffd\u000b\ufffd \u0441\u043b\ufffd\u000b\ufffd \u0441\u043b\u000b\ufffd\u001c\ufffd\ufffd\\\ufffd\ufffd\\\ufffd\ufffd\tmain\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdnit\u000b\ufffd\u000b\u000b\ufffd\\\u000b\ufffd\\\ufffd\\\ufffd\\\ufffd8\ufffd(Str\ufffd\ufffd\ufffd\u000b\ufffd\\\ufffd\\\ufffd\ufffd\ufffd\ufffd\\\ufffd\\{\ufffdh\ufffd\ufffd\ufffd8\ufffd\u000b\ufffd\\W\ufffd(Str\ufffd\u000b8\ufffd\u0017\ufffd\u000b\u0623\u0633\u062a\ufffd\ufffd\\\u0623\u0633\u062a\u000b\u0623\u0633\u062a\ufffd\\\u0623\u0633\u062a\ufffd\\\u0623\u0633\u062a",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 565.56,
+        "retrieve_ms": 103.14,
+        "rerank_ms": 1838.61,
+        "ttft_ms": 515.97,
+        "e2e_ms": 138661.22
+      },
+      "probe_wall_ms": 145329.8
+    }
+  ],
+  "passed": 0,
+  "total": 7,
+  "pass_rate": 0.0,
+  "errored": 0,
+  "captured": "2026-08-15T13:56:00Z"
+}

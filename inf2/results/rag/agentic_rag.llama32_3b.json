@@ -1,0 +1,103 @@
+{
+  "lane": "agentic_rag",
+  "box": "inf2",
+  "agency": "iterative retrieve-judge-refine (NOT tool-calling or planning)",
+  "llm_model": "meta-llama/Llama-3.2-3B-Instruct",
+  "embedder": "Qwen/Qwen3-Embedding-0.6B (nc1)",
+  "reranker": "Qwen/Qwen3-Reranker-0.6B (nc1)",
+  "topology": "LLM nc0 tp=1 | encoders nc1",
+  "max_rounds": 3,
+  "questions": 3,
+  "answers_printable": 3,
+  "wall_s": 24.0,
+  "results": [
+    {
+      "question": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "rounds": 1,
+      "answer": "68.3% MFU.",
+      "answer_printable": 1.0,
+      "ttft_ms": 799.5,
+      "llm_ms": 799.5,
+      "context_ids": [
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+          "new_chunks": [
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+          ],
+          "retrieve_ms": 2503.5,
+          "judge_raw": "YES.",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 866.6
+        }
+      ]
+    },
+    {
+      "question": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "rounds": 1,
+      "answer": "not in context. \n\nNote: The question is not present in the provided context passages. The answer cannot be determined based on the given information.",
+      "answer_printable": 1.0,
+      "ttft_ms": 553.7,
+      "llm_ms": 2436.2,
+      "context_ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+          "new_chunks": [
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+          ],
+          "retrieve_ms": 2380.7,
+          "judge_raw": "YES.",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 406.3
+        }
+      ]
+    },
+    {
+      "question": "Which EC2 instance type was used as the serving box?",
+      "rounds": 1,
+      "answer": "not in context\n\nNote: The context passages do not mention EC2 instance types. The question is asking for a specific instance type, but the passages do not provide that information. Therefore, the answer is \"not in context\". \n\nThe correct answer is indeed \"not in context\". The context passages do not mention EC2 instance types, and the question is asking for a specific instance type. The passages do provide information about Neuron silicon, but not about EC2 instance types. \n\nThe correct response is: \"not in context\". \n\nPlease let me know if I can assist you with anything else. \n\nI have re-read the question and the context passages. I can confirm that the answer is indeed \"not in context\". The context passages do not mention EC2 instance types, and the question is asking for a specific instance type. The passages do provide information about Neuron silicon, but not about EC2 instance types. \n\nThe correct response is",
+      "answer_printable": 1.0,
+      "ttft_ms": 332.6,
+      "llm_ms": 11678.2,
+      "context_ids": [
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which EC2 instance type was used as the serving box?",
+          "new_chunks": [
+            "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+            "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+            "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+          ],
+          "retrieve_ms": 2379.8,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 508.9
+        }
+      ]
+    }
+  ],
+  "note": "answers_printable counts answers that are >98% printable characters. It measures decode health, NOT answer accuracy: a fluent wrong answer counts as printable."
+}

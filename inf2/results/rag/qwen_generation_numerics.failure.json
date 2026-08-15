@@ -1,0 +1,47 @@
+{
+  "lane": "qwen_generation_numerics",
+  "box": "inf2",
+  "status": "failed",
+  "wall": "generation numerics, at RUNTIME -- architecture family, not topology",
+  "supersedes": "qwen3_generation_numerics.failure.json (written before the tp=1 control ran)",
+  "finding": "Qwen-family causal-LM GENERATION is broken on vLLM 0.16 / NxDI 0.10 on Inferentia2. Qwen ENCODERS are unaffected.",
+  "evidence": [
+    {
+      "model": "Qwen/Qwen3-8B",
+      "tp": 2,
+      "outcome": "boots, /health OK, engine core crashes on the first generation step (REPORT S9)"
+    },
+    {
+      "model": "Qwen/Qwen3-1.7B",
+      "tp": 1,
+      "prompt": "1 2 3 4 5 6 7 8 9",
+      "completion_repr": "' !\\x08\\ufffd\\x0b\\ufffd\\n\\ufffd\\x0e'",
+      "outcome": "HTTP 200, garbage from the first token",
+      "probes": "0/7"
+    },
+    {
+      "model": "Qwen/Qwen2.5-1.5B-Instruct",
+      "tp": 1,
+      "prompt": "1 2 3 4 5 6 7 8 9",
+      "completion_repr": "' 10 11 12 3 '",
+      "outcome": "HTTP 200, 3 correct tokens then corruption",
+      "probes": "0/7"
+    }
+  ],
+  "control_that_settles_it": {
+    "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "tp": 1,
+    "same_topology": "NEURON_RT_VISIBLE_CORES=0, tp=1, identical server config",
+    "prompt": "1 2 3 4 5 6 7 8 9",
+    "completion_repr": "' 10 11 12 13'",
+    "printable_fraction_qa": 1.0,
+    "verdict": "clean -- so tp=1 serving is SOUND and the topology is exonerated"
+  },
+  "conclusions": [
+    "tp=1 serving on one visible NeuronCore is sound. Core splitting is a valid technique.",
+    "The broken variable is the Qwen model family, across BOTH Qwen2.5 and Qwen3, at 1.5B/1.7B/8B.",
+    "REPORT S9 excludes only 'Qwen3 8B serving'. That is too narrow twice over: the family is wider than Qwen3 and the sizes are wider than 8B.",
+    "Qwen3 EMBEDDING and RERANKING are unaffected -- retrieval scored 7/7 while co-resident."
+  ],
+  "why_it_matters": "The 8B failure is loud and self-receipting. The smaller ones return HTTP 200 with healthy throughput counters and corrupt text, which would ship."
+}
