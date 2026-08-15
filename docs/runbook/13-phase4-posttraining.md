@@ -23,7 +23,7 @@ an import-and-signature audit tells you what a stack *offers*, not what it
 
 | Stage | Predicted (static audit) | **MEASURED** | Route |
 |---|---|---|---|
-| Pretraining | works, small models only | **unresolved** — a hand-written XLA loop recompiles every step; the framework path was never tested | `neuronx_distributed`, DP=2 |
+| Pretraining | works, small models only | **works via NeuronTrainer** — 4,573 tok/s, 13.9% per-core MFU, single steady graph; the HAND-WRITTEN loop remains unresolved. Confined to ONE core: no DP in 0.4.3, and 15 heads will not shard across TP=2 | `NeuronTrainer`, TP=1, half-chip |
 | SFT | works | **works** — 2,952 tok/s, 68.3% MFU @ seq 2048 | `optimum.neuron.NeuronSFTTrainer` (Phase 1) |
 | DPO | works via re-basing | **terminal** — the adapter-disabled reference forward fails to compile | TRL `DPOTrainer` reparented onto `NeuronTrainer` |
 | ORPO | works via re-basing | **works** — 1,181 tok/s, 30.2% MFU @ max_length 1024 | TRL `ORPOTrainer`, same route |
@@ -37,7 +37,15 @@ repeating this:
   and an explicit `ref_model` does not fit at 8B.
 - **Do not hand-roll the training loop.** The one lane in this phase that used a
   hand-written loop is the one lane still unresolved. Everything that went
-  through `NeuronTrainer` reached a number.
+  through `NeuronTrainer` reached a number -- including pretraining, once it was
+  actually tried there (§32.11).
+- **Check your head count before you plan a topology.** optimum-neuron 0.4.3
+  has no data-parallel dimension, so tensor parallelism is the only way to use
+  more than one NeuronCore, and TP requires `num_attention_heads % tp == 0`.
+  An odd head count (SmolLM2-360M has 15) strands half the chip.
+- **A plain `NeuronTrainer` over a plain causal-LM model needs
+  `model_accepts_loss_kwargs = False`** in 0.4.3, or it dies on
+  `Unexpected keyword arguments: reduction` before step 1.
 
 **`neuronx-distributed-training` is NOT installed** on the trn1 DLAMI, though
 1.7.0 is available from the Neuron pip repo. That package is where AWS's

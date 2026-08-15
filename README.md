@@ -111,8 +111,11 @@ Complete through Phase 4. Measured results in [REPORT.md](REPORT.md) +
 | ORPO (preference) | works — 1,181 tok/s, 30.2% MFU @ max_length 1024 |
 | DPO | terminal — the adapter-disabled reference forward fails to compile |
 | GRPO / RLVR | architecturally blocked — no `generate()` on the training model class |
-| pretraining from scratch | unresolved — a hand-written XLA loop recompiles every step |
+| pretraining from scratch | works — 4,573 tok/s, 13.9% MFU on the one core this architecture can use |
 
 Read §32.3 and §32.4 before quoting the ORPO figures: they are throughput
 measurements at shorter sequences than the SFT lane, and their loss did not
-descend.
+descend. For pretraining read §32.11: it runs on **one of two NeuronCores**
+(optimum-neuron 0.4.3 offers no data parallelism, and SmolLM2-360M's 15
+attention heads cannot shard across TP=2), and its low MFU is the model's size
+rather than the chip's speed — the same chip reaches 68.3% on an 8B fine-tune.

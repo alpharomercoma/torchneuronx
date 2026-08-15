@@ -590,3 +590,69 @@ def test_steplog_flags_a_run_that_diverged_to_nan():
     assert cm["loss_numerically_valid"] is True
     assert cm["loss_validity_note"] is None
     assert cm["loss_first_nonfinite_step"] is None
+
+
+# ---------------------------------------------------------------------------
+# Pretraining through NeuronTrainer: the one-variable contrast with the
+# hand-written loop
+# ---------------------------------------------------------------------------
+def test_neuron_trainer_pretrain_shares_one_architecture_definition():
+    """Two pretraining lanes, one ARCH. A second copy would make them
+    incomparable while still looking like a controlled experiment."""
+    import pretrain_neuron_trainer as PNT
+    import pretrain_fineweb as PF
+
+    assert PNT.ARCH is PF.ARCH
+
+
+def test_packed_tokens_yields_constant_shapes_and_unshifted_labels(tmp_path):
+    """Neuron recompiles on a new shape, so every window must be identical.
+
+    Labels are NOT shifted here: optimum-neuron's Llama shifts internally, as
+    transformers does. Shifting in the dataset too would train the model to
+    predict the token it was just handed.
+    """
+    import numpy as np
+    import pretrain_neuron_trainer as PNT
+
+    pytest.importorskip("torch")
+    p = tmp_path / "toks.bin"
+    np.arange(1000, dtype=np.uint16).tofile(p)
+
+    ds = PNT.PackedTokens(str(p), seq_len=64, seed=42)
+    assert len(ds) > 0
+    shapes = {tuple(ds[i]["input_ids"].shape) for i in range(len(ds))}
+    assert shapes == {(64,)}
+    row = ds[0]
+    assert row["labels"].tolist() == row["input_ids"].tolist()
+    assert row["attention_mask"].sum().item() == 64
+
+    batch = PNT.collate([ds[0], ds[1]])
+    assert tuple(batch["input_ids"].shape) == (2, 64)
+
+
+def test_packed_tokens_window_order_is_seeded_and_reproducible(tmp_path):
+    import numpy as np
+    import pretrain_neuron_trainer as PNT
+
+    pytest.importorskip("torch")
+    p = tmp_path / "toks.bin"
+    np.arange(4000, dtype=np.uint16).tofile(p)
+    a = PNT.PackedTokens(str(p), 64, seed=7).order.tolist()
+    b = PNT.PackedTokens(str(p), 64, seed=7).order.tolist()
+    c = PNT.PackedTokens(str(p), 64, seed=8).order.tolist()
+    assert a == b
+    assert a != c
+
+
+def test_pretrain_lane_is_data_parallel_so_tokens_scale_with_the_world():
+    """The mirror image of the preference-lane bug, and the reason it was a bug.
+
+    Here tp=1 and the world is 2, so dp=2 and tokens DO scale with the world.
+    In the preference lanes tp=2 and dp=1, so they must not. Same helper, and
+    the parallelism decides -- which is why the helper takes dp_size and not
+    a world size.
+    """
+    tps = P4.tokens_per_optimizer_step
+    assert tps(1024, 1, 2, 2) == 4096      # this lane: DP=2
+    assert tps(1024, 1, 2, 1) == 2048      # same shapes under TP=2/DP=1

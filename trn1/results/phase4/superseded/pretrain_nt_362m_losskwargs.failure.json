@@ -1,0 +1,1 @@
+{"tag":"pretrain_nt_362m","box":"trn1","status":"failed","reason":"ValueError: Unexpected keyword arguments: reduction","captured":"2026-08-15T06:47:04Z"}

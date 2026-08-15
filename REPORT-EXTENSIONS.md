@@ -2339,3 +2339,156 @@ Which is also why §32.3's question — how much of the ORPO-versus-SFT gap is
 sequence length and how much is the objective — **cannot be answered on this
 hardware.** The sequence length at which the comparison would be fair is the
 sequence length at which the preference lane runs out of memory.
+
+### 32.11 Pretraining does work — through the framework, on half a chip
+
+§32.8 left the pretraining lane unresolved and made a narrow non-claim: the
+recompile was demonstrated for a **hand-written** XLA loop, and the framework
+path had never been tested. This section tests it.
+
+Same architecture, corpus, sequence length, micro-batch, grad-accum, LR
+schedule and seed. `optimum-neuron`'s `NeuronTrainer` owns the loop instead of
+this repo.
+
+**It trains.**
+
+| lane | micro-batch | tok/s | MFU % (chip) | MFU % (core used) | median step | compile s | loss |
+|---|---|---|---|---|---|---|---|
+| `pretrain_nt_362m` | 1 | 2,750.5 | 4.19 | 8.38 | 744.6 ms | 539.2 | 11.016 → 7.755 |
+| `pretrain_nt_362m_mb8` | 8 | 4,573.2 | 6.97 | 13.93 | 3,582.6 ms | 913.1 | 11.049 → 7.736 |
+
+362M parameters (SmolLM2-360M's exact published shape), random initialisation,
+FineWeb-Edu, seq 1024, constant LR 3e-4, seed 42, ONE NeuronCore. Parameter
+counts by `xm.all_reduce`. All losses finite.
+
+**The loss descends.** 11.02 → 7.76 from random init. This is the only Phase-4
+lane where it did — the ORPO lanes rose over 30 steps and the 150-step one went
+NaN (§32.10). It is still only 122,880 tokens: a throughput probe, not a model.
+
+#### The acceptance criterion was fixed before the result existed
+
+Two independent reviewers were asked what would count as proof that the
+framework path does **not** have the hand loop's defect, *before* the run
+finished, precisely so the log could not be read generously afterwards. They
+converged on the same gate, and one of them explicitly rejected the obvious
+weaker test: "step 2 was fast" is not the criterion, because a per-step
+recompile can hide behind one quick step.
+
+| criterion | required | `mb=1` | `mb=8` |
+|---|---|---|---|
+| new graph hashes, steps 4–10 | zero | **zero** | **zero** |
+| compile events, steps 4–10 | zero | **zero** | **zero** |
+| median step stability | ±20% | **1.7%** | **0.1%** |
+| losses finite | yes | yes | yes |
+
+Every compile in both lanes happens in steps 0–1. The remaining hashes appear
+after the final step, at teardown. Steps 3–59 (`mb=1`) and 3–40 (`mb=8`) run on
+a single steady graph.
+
+Against the hand loop's **3 distinct graphs in 3 steps** and its 54-minute
+compiles, that is not a marginal difference.
+
+#### What this does NOT establish
+
+The hand-written lane ran **DP=2 across both NeuronCores**; this lane is forced
+onto **one**. Loop ownership *and* core count changed, so this result shows the
+framework path trains — it does **not** prove the hand loop caused its own
+recompile. An independent reviewer flagged the confound after the run was
+launched and before its result was read; closing it would need the hand loop
+re-run at `nproc=1`, which was not done. Recorded in the result JSON as
+`confound_vs_hand_written_loop` rather than left to a careful reader.
+
+Separately, and worth keeping straight: the hand loop really did run DP=2 under
+plain `torchrun` + `torch_xla`. The missing data-parallel dimension below is a
+property of `optimum-neuron` 0.4.3's training arguments, **not** of Trainium and
+not of `torch_xla`.
+
+#### Why one core, and why that is the finding
+
+Reaching both NeuronCores turned out to be impossible for this architecture,
+via two constraints that compose:
+
+**No data parallelism.** `NeuronTrainingArguments` builds its world as
+`tp × pp`. With `tensor_parallel_size=1` it logs
+
+```
+> initializing data parallel with size 1
+> initializing world size to 1
+```
+
+while `torchrun` has started two ranks. Rank 1 is then absent from the
+collective bootstrap and the Neuron runtime aborts it. Tensor parallelism is the
+only route to the second core.
+
+**And TP is closed by the head count.** TP shards attention heads, so the head
+count must divide the TP degree:
+
+```
+AssertionError: 15 is not divisible by 2
+```
+
+SmolLM2-360M has 15 attention heads and 5 KV heads. Both odd.
+
+Together: **a real published 360M architecture can use only one of this chip's
+two NeuronCores.** A model's head geometry decides which silicon topologies are
+open to it, and an odd head count closes every multi-core one on this path.
+
+The alternative was to reshape the model — 15 heads → 16 — until it sharded.
+That was declined. The lane exists to measure a published configuration
+(§32.8); reshaping the model to flatter the hardware would have destroyed the
+thing being measured. So it runs on one core and is labelled a half-chip
+configuration wherever it appears, with `mfu_pct` on the whole-chip denominator
+for comparability and `mfu_pct_per_core_used` beside it — never substituted.
+
+#### Reading 4.19%, honestly
+
+That number must not be quoted as "pretraining on Trainium runs at 4% MFU". It
+confounds two causes, and the batch ladder separates them:
+
+- **Micro-batch.** 1 → 8 buys **+66% throughput** (2,750 → 4,573 tok/s) and
+  takes per-core MFU from 8.38% to 13.93%. Real, and roughly what a bigger
+  matmul should buy.
+- **Model size.** Even at `mb=8`, per-core MFU is 13.9% against the 8B SFT
+  lane's 68.3%. A 362M model at seq 1024 simply does not give the tensor engine
+  enough work per operation. **This is the dominant term, and it is a property
+  of the model, not of the chip.**
+
+The practitioner's reading: Trainium1 is poorly matched to small-model
+pretraining not because it is slow but because a 362M model cannot fill it. The
+same chip reaches 68.3% MFU on an 8B fine-tune.
+
+#### One more optimum-neuron 0.4.3 defect, found on the way
+
+A plain `NeuronTrainer` over a plain causal-LM model cannot complete a single
+step:
+
+```
+ValueError: Unexpected keyword arguments: reduction
+```
+
+`trainers/transformers.py:201` decides a model "accepts loss kwargs" by finding
+`**kwargs` in its forward signature. optimum-neuron's own Llama forward *has*
+`**kwargs`, so this is true. `compute_loss` (line 978) then does
+`inputs = dict(**inputs, reduction="sum")` — and that same forward validates its
+kwargs strictly and rejects `reduction`. The heuristic and the validation
+disagree with each other inside one library.
+
+Fix: `trainer.model_accepts_loss_kwargs = False`. Exact rather than lossy here —
+with it on, loss is `sum / num_items_in_batch`; with it off,
+`mean / grad_accum`. Those differ only when micro-batches hold different numbers
+of loss-bearing tokens, and every window in this lane is exactly `seq_len`
+tokens with no padding and no `-100` labels.
+
+The SFT and preference lanes never hit this because TRL's trainers override
+`compute_loss` entirely.
+
+#### §32.8's non-claim, now resolved
+
+> *"Nothing here supports the claim 'pretraining from scratch does not work on
+> Trainium1'; what is supported is 'a hand-rolled lazy-tensor training loop
+> recompiles per step on this stack.'"*
+
+That non-claim was correct and is now settled in the direction it hedged toward.
+Pretraining from scratch **does** work on Trainium1 — through the framework's
+trainer, on one core for this architecture, at a low MFU that the model's size
+explains.

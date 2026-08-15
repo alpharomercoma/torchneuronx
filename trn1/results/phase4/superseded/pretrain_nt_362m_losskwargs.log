@@ -1,0 +1,150 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+2026-Aug-15 06:46:17.0017 1943:1969 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to 2026-Aug-15 06:46:17.0017 1942:1964 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+initialize rdma protocol
+2026-Aug-15 06:46:17.0017 1942:1964 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-15 06:46:17.0019 1943:1969 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-15 06:46:17.0021 1942:1964 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-15 06:46:17.0023 1943:1969 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-15 06:46:17.0025 1942:1964 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-15 06:46:17.0027 1943:1969 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+python: /opt/workspace/KaenaRuntime/enc/replica_groups.cc:76: NRT_STATUS set_my_group(uint32_t, int, int, const std::vector<unsigned int>&, int, int, enc_replica_group_info*): Assertion `it != bootstrap_participants.end()' failed.
+[pretrain-nt] materialised 361.8M-param random init -> /opt/np/models/scratch_init
+[2026-08-15 06:46:21.735: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 1
+[2026-08-15 06:46:21.736: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-15 06:46:21.736: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-15 06:46:21.736: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-15 06:46:21.736: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 1
+.
+Compiler status PASS
+2026-08-15 06:46:25.000237:  1942  [INFO]: Compilation Successfully Completed for model.MODULE_6259561774514687638+e30acd3a.hlo_module.pb
+[2026-08-15 06:46:25.273: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x747fd81ce8e0>, 'Ascending Ring PG Group')>
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0]]
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0]]
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0]]
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0]]
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0]]
+[2026-08-15 06:46:25.274: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file /opt/np/models/scratch_init/model.safetensors
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at /opt/np/models/scratch_init.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+[pretrain-nt] loaded random init through NeuronModelForCausalLM
+[pretrain-nt] 130 windows of 1024 tokens, dp=1
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+***** Running training *****
+  Num examples = 130
+  Num Epochs = 1
+  Data Parallel Size: 1
+  Tensor Parallel Size: 1
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 2
+  Total train batch size (w. parallel, distributed & accumulation) = 2
+  Total optimization steps = 60
+  Num trainable parameters = 361,821,120
+2026-08-15 06:46:30.000688:  1942  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6260965995345663759+e30acd3a/model.neff
+[pretrain-nt] FAILED -> /opt/np/repo/trn1/results/phase4/pretrain_nt_362m.failure.json
+Traceback (most recent call last):
+  File "/opt/np/repo/shared/train/pretrain_neuron_trainer.py", line 261, in main
+    trainer.train()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1246, in train
+    output = self._train(resume_from_checkpoint=resume_from_checkpoint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1170, in _train
+    loss_step = self.training_step(self.model, inputs, num_items_in_batch=num_items_in_batch)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1007, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 985, in compute_loss
+    outputs = model(**inputs)
+              ^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/transformers/utils/generic.py", line 918, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py", line 743, in forward
+    outputs = self.model(
+              ^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/transformers/utils/generic.py", line 918, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py", line 670, in forward
+    hidden_states = checkpoint(
+                    ^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/utils/checkpoint.py", line 298, in checkpoint
+    raise ValueError("Unexpected keyword arguments: " +
+ValueError: Unexpected keyword arguments: reduction
+W0815 06:46:34.378000 1909 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 1943 closing signal SIGTERM
+W0815 06:47:04.379000 1909 torch/distributed/elastic/multiprocessing/api.py:927] Unable to shutdown process 1943 via 15, forcefully exiting via 9
+E0815 06:47:04.419000 1909 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 1942) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/pretrain_neuron_trainer.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-15_06:46:34
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1942)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

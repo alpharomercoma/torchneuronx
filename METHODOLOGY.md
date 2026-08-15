@@ -176,6 +176,16 @@ never headline; they bound the serving numbers' interpretation.
   never tested. Nothing here supports the claim "pretraining from scratch does
   not work on Trainium1"; what is supported is "a hand-rolled lazy-tensor
   training loop recompiles per step on this stack."
+- **Phase 4 update (§32.11): the framework path WAS then tested, and it
+  trains.** 362M from random init through `NeuronTrainer`, single steady graph
+  held for 58 consecutive steps, loss 11.02 -> 7.76. Two caveats travel with
+  that number and must not be dropped. (1) It ran on ONE of two NeuronCores:
+  optimum-neuron 0.4.3 exposes no data-parallel dimension, and SmolLM2-360M's
+  15 attention heads cannot shard across TP=2, so the architecture is confined
+  to a half-chip configuration. (2) It is NOT a clean one-variable comparison
+  against the hand-written lane, which ran DP=2 on both cores -- loop ownership
+  and core count both changed, so this does not prove the hand loop caused its
+  own recompile. Closing that would need the hand loop re-run at nproc=1.
 - **Phase 4 preference-lane FLOPs.** MFU for preference lanes uses the same
   `6*trainable + 4*frozen` convention as every other lane, so it stays
   comparable. For ORPO that is exact — it is reference-free. For DPO it would
