@@ -1,0 +1,260 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026-Aug-15 12:13:28.0649 5682:5695 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-15 12:13:28.0659 5682:5695 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-15 12:13:28.0669 5682:5695 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-15 12:13:28.0677 5682:5695 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-15 12:13:38.0215 5681:5726 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-15 12:13:38.0225 5681:5726 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-15 12:13:38.0236 5681:5726 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-15 12:13:38.0244 5681:5726 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[dpo] accelerate state @startup: initialised -> True[dpo] accelerate state @startup: initialised -> True
+
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+[dpo] re-based trainer MRO: _NeuronDPOTrainer -> _NeuronTrainerShim -> HFTrainerCompat -> NeuronTrainer
+[dpo] 320 preference pairs, columns ['prompt', 'chosen', 'rejected']
+[2026-08-15 12:13:41.669: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-15 12:13:41.670: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-15 12:13:41.670: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-15 12:13:41.670: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-15 12:13:41.670: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+2026-08-15 12:13:41.000681:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15288743754125041587+e30acd3a/model.neff
+2026-08-15 12:13:41.000682:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15288743754125041587+e30acd3a/model.neff
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x746aa8789ee0>, 'Ascending Ring PG Group')>
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-15 12:13:41.708: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+PyTorch: setting up devices
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:31<01:33, 31.07s/it]Loading checkpoint shards:  25%|██▌       | 1/4 [00:31<01:34, 31.50s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:11<01:13, 36.61s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:11<01:13, 36.85s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:05<00:44, 44.44s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:05<00:44, 44.60s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:15<00:00, 30.75s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:15<00:00, 33.80s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+Loading checkpoint shards: 100%|██████████| 4/4 [02:15<00:00, 30.75s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:15<00:00, 33.83s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+[dpo] pinned param counts (26,214,400 trainable / 4,041,478,144 total) so disable_adapter() cannot trigger a mid-step compile
+[dpo] accelerate state @pre-trainer: initialised -> True
+[dpo] accelerate state @pre-trainer: initialised -> True
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+No label_names provided for model class `NeuronPeftModelForCausalLM`. Since `NeuronPeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `NeuronTrainer`. Note that empty label_names list will be used instead.
+[dpo] gather_for_metrics -> identity (dp=1, tp=2): removes the 8 out-of-graph host syncs TRL performs per step
+[dpo] compute_ref_log_probs -> place model + _prepare_inputs(batch): TRL's precompute loader yields host tensors against host weights, and the TP collectives inside a sharded model reject both
+[dpo] collator wrapped -> fixed 512-token shapes
+Pipeline parallelsim: forcing the dataloader to drop the last incomplete batch because it can cause failure if the last batch size is not divisible by the number of microbatches for the pipeline.
+Train dataset reference log probs:   0%|          | 0/320 [00:00<?, ?it/s]/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/data/dataloader.py:668: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  warnings.warn(warn_msg)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/data/dataloader.py:668: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  warnings.warn(warn_msg)
+2026-Aug-15 12:17:15.837578  5681:5730  ERROR  TDRV:dmem_alloc_internal                     Failed to allocate DEVICE memory (1050673152 bytes): memory allocation failed (ret=-12)
+/opt/np/repo/shared/train/posttrain_align.py:548: DeprecationWarning: Use torch_xla.sync instead
+  _xm.mark_step()
+[dpo] model placed on xla:0 before the reference pass: TRL precomputes from get_train_dataloader(), which optimum-neuron calls before setup_training() places weights
+2026-Aug-15 12:17:15.911371  5681:5730  ERROR  TDRV:dml_dump                                Wrote nrt memory alloc debug info to /tmp/nrt_mem_log_device_0_6a8058cb.csv
+2026-Aug-15 12:17:15.922061  5681:5730  ERROR  TDRV:dml_driver_dump                         Wrote driver memory alloc debug info to /tmp/neuron_mem_log_device_0_hbm_0_6a8058cb.csv
+2026-Aug-15 12:17:15.932452  5681:5730  ERROR  TDRV:log_dev_mem                             Failed to allocate 1002.000MB (alignment: none, usage: tensors) on ND 0:NC 0
+2026-Aug-15 12:17:15.940838  5681:5730  ERROR  TDRV:log_dev_mem_utilization                 ND 0:NC 0, current utilization:
+2026-Aug-15 12:17:15.951126  5681:5730  ERROR  TDRV:log_dev_mem_usage_table                 Displaying Current Memory Utilization:
+(NOTE: the lines are LONG, and NEFF id to name mapping is printed after)
+
+              |          |  Model   |  Model   |          |  Shared  |          |          |DMA Rings |DMA Rings | DMA Rings |DMA Rings |           | Profiler |
+              |  TOTAL   |   Code   |Constants | Tensors  |Scratchpad|Scratchpad| Runtime  |    IO    |  Spill   |Collectives| Runtime  |Collectives| Buffers  |
+ND 0 HBM 0    | 14.251GB | 97.686MB |  0.000B  | 14.077GB | 64.000MB | 256.000B |121.070KB | 4.000KB  |128.000KB | 104.000KB | 38.000KB | 16.082MB  | 19.000KB |
+\_NEFF 1001   |349.586KB | 28.562KB |  0.000B  |   n/a    | 8.008KB* |  0.000B  | 95.008KB |  0.000B  |128.000KB | 52.000KB  | 4.000KB  | 42.016KB  |   n/a    |
+\_NEFF 1002   |135.203KB | 21.938KB |  0.000B  |   n/a    | 0.000B*  | 256.000B | 13.000KB | 4.000KB  |  0.000B  | 52.000KB  | 2.000KB  | 42.016KB  |   n/a    |<<TRUNCATED>>
+2026-Aug-15 12:17:15.951796  5681:5730  ERROR  TDRV:log_dev_mem_usage_table                 Also logged memory breakdown to /tmp/neuron_mem_table_device_0_nc_0.log
+2026-Aug-15 12:17:15.960036  5681:5730  ERROR  TDRV:tensor_allocate                         Failed to allocate 1050673152 bytes on DEVICE for tensor UNKNOWN.
+2026-Aug-15 12:17:15.968982  5681:5730  ERROR   NRT:nrt_infodump                            Neuron runtime information - please include in any support request:
+2026-Aug-15 12:17:15.977000  5681:5730  ERROR   NRT:nrt_infodump                            ------------->8------------[ cut here ]------------>8-------------
+2026-Aug-15 12:17:15.985012  5681:5730  ERROR   NRT:nrt_infodump                            NRT version: 2.33.10.0 (3dcef56f04438fb7a53619634a3d86be0f610988)
+2026-Aug-15 12:17:15.994015  5681:5730  ERROR   NRT:nrt_infodump                            Embedded FW version: 1.23.9.0 (67b9c13b69eaf9fa4fb1c0200d175e3b22de1979) loaded from "libnrtucode_extisa.so"
+2026-Aug-15 12:17:16.005567  5681:5730  ERROR   NRT:nrt_infodump                            CCOM version: 2.33.10.0- (compat 92)
+2026-Aug-15 12:17:16.012752  5681:5730  ERROR   NRT:nrt_infodump                            NCFW version: 2.33.5.0 (2b1991dce9f274619aa76144e07f0a9918345423)
+2026-Aug-15 12:17:16.020624  5681:5730  ERROR   NRT:nrt_infodump                            Instance ID: i-0cb9e758143a745d5
+2026-Aug-15 12:17:16.027504  5681:5730  ERROR   NRT:nrt_infodump                            Cluster ID: 11336818747469797058
+2026-Aug-15 12:17:16.034357  5681:5730  ERROR   NRT:nrt_infodump                            Kernel: Linux 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:53:06 UTC 2026
+2026-Aug-15 12:17:16.044489  5681:5730  ERROR   NRT:nrt_infodump                            Nodename: ip-172-31-24-108
+2026-Aug-15 12:17:16.051210  5681:5730  ERROR   NRT:nrt_infodump                            Driver version: 2.29.0.0
+
+2026-Aug-15 12:17:16.059930  5681:5730  ERROR   NRT:nrt_infodump                            Failure: NRT_RESOURCE in nrt_tensor_allocate
+2026-Aug-15 12:17:16.067218  5681:5730  ERROR   NRT:nrt_infodump                            LNC: 0
+2026-Aug-15 12:17:16.073319  5681:5730  ERROR   NRT:nrt_infodump                            Visible cores: 0
+2026-Aug-15 12:17:16.079682  5681:5730  ERROR   NRT:nrt_infodump                            Environment:
+2026-Aug-15 12:17:16.085889  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_RT_STOCHASTIC_ROUNDING_EN=1
+2026-Aug-15 12:17:16.092963  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_CC_FLAGS= --retry_failed_compilation
+2026-Aug-15 12:17:16.100252  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
+2026-Aug-15 12:17:16.108148  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_LIBRARY_PATH=/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/libneuronxla/libneuronpjrt.so
+2026-Aug-15 12:17:16.119479  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_RT_ROOT_COMM_ID=127.0.0.1:62182
+2026-Aug-15 12:17:16.126717  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_PJRT_PROCESS_INDEX=0
+2026-Aug-15 12:17:16.133544  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_PT_MPMD_MODE=1
+2026-Aug-15 12:17:16.140198  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_PJRT_WORLD_SIZE=2
+2026-Aug-15 12:17:16.146956  5681:5730  ERROR   NRT:nrt_infodump                                NEURON_INTERNAL_PJRT_C_API_VERSION=0.75
+2026-Aug-15 12:17:16.154149  5681:5730  ERROR   NRT:nrt_infodump                            -------------8<-----------[ cut to here ]-----------8<------------
+2026-08-15 12:17:16.000514:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_11242024409621035500+e30acd3a/model.neff
+2026-Aug-15 12:17:17.412648  5682:5699  ERROR  TDRV:dmem_alloc_internal                     Failed to allocate DEVICE memory (1050673152 bytes): memory allocation failed (ret=-12)
+/opt/np/repo/shared/train/posttrain_align.py:548: DeprecationWarning: Use torch_xla.sync instead
+  _xm.mark_step()
+2026-Aug-15 12:17:17.482402  5682:5699  ERROR  TDRV:dml_dump                                Wrote nrt memory alloc debug info to /tmp/nrt_mem_log_device_0_6a8058cd.csv
+2026-Aug-15 12:17:17.492757  5682:5699  ERROR  TDRV:dml_driver_dump                         Wrote driver memory alloc debug info to /tmp/neuron_mem_log_device_0_hbm_1_6a8058cd.csv
+2026-Aug-15 12:17:17.503320  5682:5699  ERROR  TDRV:log_dev_mem                             Failed to allocate 1002.000MB (alignment: none, usage: tensors) on ND 0:NC 1
+2026-Aug-15 12:17:17.511994  5682:5699  ERROR  TDRV:log_dev_mem_utilization                 ND 0:NC 1, current utilization:
+2026-Aug-15 12:17:17.523845  5682:5699  ERROR  TDRV:log_dev_mem_usage_table                 Displaying Current Memory Utilization:
+(NOTE: the lines are LONG, and NEFF id to name mapping is printed after)
+
+              |          |  Model   |  Model   |          |  Shared  |          |          |DMA Rings |DMA Rings | DMA Rings |DMA Rings |           | Profiler |
+              |  TOTAL   |   Code   |Constants | Tensors  |Scratchpad|Scratchpad| Runtime  |    IO    |  Spill   |Collectives| Runtime  |Collectives| Buffers  |
+ND 0 HBM 1    | 14.251GB | 97.686MB |  0.000B  | 14.077GB | 64.000MB | 256.000B |121.070KB | 4.000KB  |128.000KB | 104.000KB | 38.000KB | 16.082MB  | 19.000KB |
+\_NEFF 1001   |349.586KB | 28.562KB |  0.000B  |   n/a    | 8.008KB* |  0.000B  | 95.008KB |  0.000B  |128.000KB | 52.000KB  | 4.000KB  | 42.016KB  |   n/a    |
+\_NEFF 1002   |135.203KB | 21.938KB |  0.000B  |   n/a    | 0.000B*  | 256.000B | 13.000KB | 4.000KB  |  0.000B  | 52.000KB  | 2.000KB  | 42.016KB  |   n/a    |<<TRUNCATED>>
+2026-Aug-15 12:17:17.523984  5682:5699  ERROR  TDRV:log_dev_mem_usage_table                 Also logged memory breakdown to /tmp/neuron_mem_table_device_0_nc_1.log
+2026-Aug-15 12:17:17.532373  5682:5699  ERROR  TDRV:tensor_allocate                         Failed to allocate 1050673152 bytes on DEVICE for tensor UNKNOWN.
+2026-Aug-15 12:17:17.540582  5682:5699  ERROR   NRT:nrt_infodump                            Neuron runtime information - please include in any support request:
+2026-Aug-15 12:17:17.548885  5682:5699  ERROR   NRT:nrt_infodump                            ------------->8------------[ cut here ]------------>8-------------
+2026-Aug-15 12:17:17.557071  5682:5699  ERROR   NRT:nrt_infodump                            NRT version: 2.33.10.0 (3dcef56f04438fb7a53619634a3d86be0f610988)
+2026-Aug-15 12:17:17.565250  5682:5699  ERROR   NRT:nrt_infodump                            Embedded FW version: 1.23.9.0 (67b9c13b69eaf9fa4fb1c0200d175e3b22de1979) loaded from "libnrtucode_extisa.so"
+2026-Aug-15 12:17:17.576142  5682:5699  ERROR   NRT:nrt_infodump                            CCOM version: 2.33.10.0- (compat 92)
+2026-Aug-15 12:17:17.583191  5682:5699  ERROR   NRT:nrt_infodump                            NCFW version: 2.33.5.0 (2b1991dce9f274619aa76144e07f0a9918345423)
+2026-Aug-15 12:17:17.591116  5682:5699  ERROR   NRT:nrt_infodump                            Instance ID: i-0cb9e758143a745d5
+2026-Aug-15 12:17:17.598006  5682:5699  ERROR   NRT:nrt_infodump                            Cluster ID: 11336818747469797058
+2026-Aug-15 12:17:17.604943  5682:5699  ERROR   NRT:nrt_infodump                            Kernel: Linux 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:53:06 UTC 2026
+2026-08-15 12:17:17.000674:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_11242024409621035500+e30acd3a/model.neff
+2026-Aug-15 12:17:17.614986  5682:5699  ERROR   NRT:nrt_infodump                            Nodename: ip-172-31-24-108
+2026-Aug-15 12:17:17.680886  5682:5699  ERROR   NRT:nrt_infodump                            Driver version: 2.29.0.0
+
+2026-Aug-15 12:17:17.689646  5682:5699  ERROR   NRT:nrt_infodump                            Failure: NRT_RESOURCE in nrt_tensor_allocate
+2026-Aug-15 12:17:17.697016  5682:5699  ERROR   NRT:nrt_infodump                            LNC: 0
+2026-Aug-15 12:17:17.703117  5682:5699  ERROR   NRT:nrt_infodump                            Visible cores: 1
+2026-Aug-15 12:17:17.709477  5682:5699  ERROR   NRT:nrt_infodump                            Environment:
+2026-Aug-15 12:17:17.715718  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_RT_STOCHASTIC_ROUNDING_EN=1
+2026-Aug-15 12:17:17.722726  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_CC_FLAGS= --retry_failed_compilation
+2026-Aug-15 12:17:17.730078  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
+2026-Aug-15 12:17:17.737927  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_LIBRARY_PATH=/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/libneuronxla/libneuronpjrt.so
+2026-Aug-15 12:17:17.749098  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_RT_ROOT_COMM_ID=127.0.0.1:62182
+2026-Aug-15 12:17:17.756257  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_PJRT_PROCESS_INDEX=1
+2026-Aug-15 12:17:17.763083  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_PT_MPMD_MODE=1
+2026-Aug-15 12:17:17.769744  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_PJRT_WORLD_SIZE=2
+2026-Aug-15 12:17:17.776496  5682:5699  ERROR   NRT:nrt_infodump                                NEURON_INTERNAL_PJRT_C_API_VERSION=0.75
+2026-Aug-15 12:17:17.783735  5682:5699  ERROR   NRT:nrt_infodump                            -------------8<-----------[ cut to here ]-----------8<------------
+2026-Aug-15 12:17:18.707074  5681:5730  ERROR   NRT:nrt_tensor_allocate                     Failed to allocate nrt tensor UNNAMED
+2026-Aug-15 12:17:18.864769  5682:5699  ERROR   NRT:nrt_tensor_allocate                     Failed to allocate nrt tensor UNNAMED
+2026-08-15 12:17:18.000944:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15990061406863718817+e30acd3a/model.neff
+2026-08-15 12:17:19.000102:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-15 12:17:19.000104:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15990061406863718817+e30acd3a/model.neff
+2026-08-15 12:17:19.000256:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+2026-08-15 12:17:19.000262:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-15 12:17:19.000413:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-15 12:17:19.000606:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_18250257211226407562+e30acd3a/model.neff
+2026-08-15 12:17:19.000694:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_18250257211226407562+e30acd3a/model.neff
+2026-08-15 12:17:19.000774:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17068778803740569782+e30acd3a/model.neff
+2026-08-15 12:17:19.000847:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17068778803740569782+e30acd3a/model.neff
+2026-08-15 12:17:19.000926:  5681  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16992347881312787479+e30acd3a/model.neff
+2026-08-15 12:17:20.000024:  5682  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16992347881312787479+e30acd3a/model.neff
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2495488798173140751+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2495488798173140751+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2495488798173140751+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-15 12:18:12.000481:  5681  [INFO]: Compilation Successfully Completed for model.MODULE_2495488798173140751+e30acd3a.hlo_module.pb
+Train dataset reference log probs:   0%|          | 0/320 [01:36<?, ?it/s]
+[dpo] FAILED -> /opt/np/repo/trn1/results/phase4/dpo_llama31_8b_precomputed_ref.failure.json
+Traceback (most recent call last):
+  File "/opt/np/repo/shared/train/posttrain_align.py", line 884, in main
+    trainer.train()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1246, in train
+    output = self._train(resume_from_checkpoint=resume_from_checkpoint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1103, in _train
+    train_dataloader = self.get_train_dataloader()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py", line 840, in get_train_dataloader
+    ref_chosen_logp, ref_rejected_logp = self.compute_ref_log_probs(padded_batch)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/repo/shared/train/posttrain_align.py", line 624, in on_device
+    return tuple(o.cpu() if hasattr(o, "cpu") else o for o in out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/repo/shared/train/posttrain_align.py", line 624, in <genexpr>
+    return tuple(o.cpu() if hasattr(o, "cpu") else o for o in out)
+                 ^^^^^^^
+RuntimeError: BufferMapAdd: error condition !(((buffer) != nullptr)): 
+
+Compiler status PASS
+2026-08-15 12:18:14.000547:  5682  [INFO]: Compilation Successfully Completed for model.MODULE_7207654337931379641+e30acd3a.hlo_module.pb
+E0815 12:18:20.561000 5658 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 4) local_rank: 0 (pid: 5681) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/posttrain_align.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-08-15_12:18:20
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 1 (local_rank: 1)
+  exitcode  : 4 (pid: 5682)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-15_12:18:20
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 4 (pid: 5681)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

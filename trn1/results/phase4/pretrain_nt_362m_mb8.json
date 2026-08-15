@@ -32,7 +32,7 @@
     "gradient_checkpointing": true,
     "loop_owner": "optimum-neuron NeuronTrainer",
     "contrast": "pretrain_probe_capturable ran the SAME architecture, corpus and shapes through a HAND-WRITTEN XLA loop and recompiled every step. The only variable changed here is who owns the training loop.",
-    "tokens_per_step_note": "seq_len * micro_batch * grad_accum * dp_size. dp_size is 2 here because this lane is DATA parallel -- unlike the preference lanes, where tp=2/dp=1 and the multiplier must not be applied."
+    "tokens_per_step_note": "seq_len * micro_batch * grad_accum * dp_size, with dp_size=1. Data parallelism is the ONLY dimension that multiplies tokens: tensor parallelism shards one model across cores working on the SAME micro-batch, so tp=1 multiplies neither the batch nor the token count. optimum-neuron 0.4.3 exposes no data-parallel dimension at all -- NeuronTrainingArguments builds its world as tp x pp -- so dp is 1 in every lane here and the multiplier is 1."
   },
   "versions": {
     "python": "3.12.3",
@@ -323,5 +323,14 @@
   "chip_fraction_used": "1/2 NeuronCores",
   "half_chip_configuration": true,
   "mfu_denominator_note": "mfu_pct uses the WHOLE-CHIP peak, as every lane in this study does, so it stays comparable. When half_chip_configuration is true the lane had only 1 of 2 NeuronCores available to it, so mfu_pct understates the utilisation of the core(s) it actually used by that factor. The per-core figure is reported beside it rather than substituted.",
-  "mfu_pct_per_core_used": 13.934
+  "mfu_pct_per_core_used": 13.934,
+  "corrections": [
+    {
+      "date": "2026-08-15",
+      "field": "config.tokens_per_step_note",
+      "measured_fields_changed": "none",
+      "was": "seq_len * micro_batch * grad_accum * dp_size. dp_size is 2 here because this lane is DATA parallel -- unlike the preference lanes, where tp=2/dp=1 and the multiplier must not be applied.",
+      "why": "The note asserted the lane was data parallel with dp_size 2. The same receipt records world_size 1, tensor_parallel_size 1, data_parallel_size 1, and tokens_per_optimizer_step 16384 = 1024 * 8 * 2 * 1. The arithmetic used dp=1 and is unaffected; only the sentence explaining it was wrong. It survived from the lane's design intent, before optimum-neuron 0.4.3 was found to expose no data-parallel dimension. The generating code was fixed the same day; these two receipts predate that fix."
+    }
+  ]
 }

@@ -496,6 +496,118 @@ def test_metric_gather_neutralisation_survives_a_trainer_without_an_accelerator(
                                            say=lambda *a: None) is False
 
 
+def test_metric_gather_is_still_neutralised_when_precompute_is_on():
+    """This guard was wrong once, in the direction that costs a paid run.
+
+    The earlier version bailed out whenever precompute_ref_log_probs was set,
+    reasoning that Dataset.add_column needs the global column length. That is
+    only true under data parallelism. At dp == 1 every rank iterates the whole
+    dataset, so gathering yields k identical copies and add_column raises on
+    the k-times-too-long column. dp, not the flag, is the correct guard.
+    """
+    from posttrain_align import neutralise_out_of_graph_gathers
+
+    class _Args:
+        precompute_ref_log_probs = True
+
+    t = _FakeTrainer()
+    t.args = _Args()
+    assert neutralise_out_of_graph_gathers(t, "dpo", nproc=2, tp=2,
+                                           say=lambda *a: None) is True
+    assert t.accelerator.gather_for_metrics("x") == "x"
+
+    with_dp = _FakeTrainer()
+    with_dp.args = _Args()
+    assert neutralise_out_of_graph_gathers(with_dp, "dpo", nproc=8, tp=2,
+                                           say=lambda *a: None) is False
+
+
+def test_reference_precompute_batches_are_moved_onto_the_device():
+    """Round 15 died on `Expected XLA tensor. Got: CPUBFloat16Type`.
+
+    TRL's precompute loader hands host tensors straight to a tensor-parallel
+    sharded model. Every other call site goes through _prepare_inputs; this one
+    does not, so it is wrapped. The test asserts the wrapper actually routes
+    through _prepare_inputs and preserves the return value.
+    """
+    from posttrain_align import device_place_reference_precompute
+
+    import posttrain_align as PA
+    monkey = PA.resolve_xla_device
+    marks = []
+    PA.resolve_xla_device = lambda: "xla:0"
+    PA.xla_mark_step = lambda: marks.append(1)
+    seen = {}
+
+    class _T:
+        model = type("_M", (), {"to": lambda self, d: self})()
+
+        def _prepare_inputs(self, batch):
+            seen["prepared"] = batch
+            return {"moved": batch}
+
+        def compute_ref_log_probs(self, batch):
+            seen["got"] = batch
+            return ("chosen", "rejected")
+
+    t = _T()
+    try:
+        assert device_place_reference_precompute(t, "dpo",
+                                                 say=lambda *a: None) is True
+        assert t.compute_ref_log_probs({"input_ids": 1}) == ("chosen", "rejected")
+        assert seen["prepared"] == {"input_ids": 1}
+        assert seen["got"] == {"moved": {"input_ids": 1}}
+    finally:
+        PA.resolve_xla_device = monkey
+
+
+def test_reference_precompute_places_the_model_exactly_once():
+    """Round 16 proved moving the batch is not enough: the weights are on the
+    host too, because TRL precomputes from get_train_dataloader() and
+    optimum-neuron places the model later, in setup_training(). The move must
+    happen, and it must not repeat on all 320 batches."""
+    import posttrain_align as PA
+    from posttrain_align import device_place_reference_precompute
+
+    monkey = PA.resolve_xla_device
+    PA.resolve_xla_device = lambda: "xla:0"
+    PA.xla_mark_step = lambda: None
+    moves = []
+
+    class _M:
+        def to(self, dev):
+            moves.append(dev)
+            return self
+
+    class _T:
+        model = _M()
+
+        def _prepare_inputs(self, batch):
+            return batch
+
+        def compute_ref_log_probs(self, batch):
+            return ("chosen", "rejected")
+
+    t = _T()
+    try:
+        device_place_reference_precompute(t, "dpo", say=lambda *a: None)
+        for _ in range(3):
+            t.compute_ref_log_probs({"input_ids": 1})
+        assert moves == ["xla:0"]
+    finally:
+        PA.resolve_xla_device = monkey
+
+
+def test_reference_precompute_wrapper_is_a_noop_without_the_method():
+    from posttrain_align import device_place_reference_precompute
+
+    class _Bare:
+        pass
+
+    assert device_place_reference_precompute(_Bare(), "orpo",
+                                             say=lambda *a: None) is False
+
+
 # ---------------------------------------------------------------------------
 # The accounting bug the preference lanes shipped with, pinned so it cannot return
 # ---------------------------------------------------------------------------
@@ -656,3 +768,39 @@ def test_pretrain_lane_is_data_parallel_so_tokens_scale_with_the_world():
     tps = P4.tokens_per_optimizer_step
     assert tps(1024, 1, 2, 2) == 4096      # this lane: DP=2
     assert tps(1024, 1, 2, 1) == 2048      # same shapes under TP=2/DP=1
+
+
+def test_resolve_arch_refuses_a_vocab_that_does_not_match_the_corpus():
+    """Pairing a memmap with an architecture built for a different tokenizer
+    still yields a throughput number -- measured on nonsense. Refuse instead."""
+    import pretrain_neuron_trainer as PNT
+
+    class _Cfg:
+        vocab_size = 128256          # Llama-3.2 family
+        hidden_size, num_hidden_layers = 2048, 16
+        num_attention_heads, num_key_value_heads = 32, 8
+        intermediate_size, rms_norm_eps = 8192, 1e-5
+        tie_word_embeddings = True
+
+    transformers = pytest.importorskip(
+        "transformers", reason="resolve_arch reads a published HF config")
+    orig = transformers.AutoConfig.from_pretrained
+    transformers.AutoConfig.from_pretrained = staticmethod(lambda *a, **k: _Cfg())
+    try:
+        with pytest.raises(SystemExit, match="vocab_size"):
+            PNT.resolve_arch("meta-llama/Llama-3.2-1B", 49152, lambda *a: None)
+        arch, src = PNT.resolve_arch("meta-llama/Llama-3.2-1B", 128256,
+                                     lambda *a: None)
+        assert arch["num_attention_heads"] == 32
+        assert src == "meta-llama/Llama-3.2-1B"
+    finally:
+        transformers.AutoConfig.from_pretrained = orig
+
+
+def test_resolve_arch_defaults_to_the_shared_smollm_shape():
+    import pretrain_neuron_trainer as PNT
+    import pretrain_fineweb as PF
+
+    arch, src = PNT.resolve_arch(None, 49152, lambda *a: None)
+    assert arch == PF.ARCH and arch is not PF.ARCH   # copy, not the shared dict
+    assert "ARCH" in src

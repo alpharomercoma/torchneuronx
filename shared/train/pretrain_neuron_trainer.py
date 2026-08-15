@@ -72,6 +72,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import traceback
@@ -103,7 +104,20 @@ def parse_args(argv=None):
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--weight-decay", type=float, default=0.1)
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--scratch", default="/opt/np/models/scratch_init")
+    ap.add_argument("--arch-from", default=None,
+                    help="HF model id whose PUBLISHED config supplies the "
+                         "architecture (weights are NOT loaded -- this lane "
+                         "trains from random init). Its vocab_size must match "
+                         "the tokenizer the memmap was built with. Omit to use "
+                         "the SmolLM2-360M shape in pretrain_fineweb.ARCH.")
+    ap.add_argument("--expect-vocab", type=int, default=49152,
+                    help="vocabulary the token memmap was built with; the "
+                         "architecture is rejected if it disagrees")
+    ap.add_argument("--scratch", default=None,
+                    help="where the random init is written; defaults to a path "
+                         "derived from the architecture, because "
+                         "materialise_random_init reuses an existing config.json "
+                         "and a shared path would silently train the wrong model")
     ap.add_argument("--no-gradient-checkpointing", action="store_true")
     return ap.parse_args(argv)
 
@@ -152,17 +166,59 @@ def collate(features):
     return {k: torch.stack([f[k] for f in features]) for k in features[0]}
 
 
-def materialise_random_init(scratch: str, seed: int, say) -> str:
+def resolve_arch(arch_from, expect_vocab, say):
+    """The architecture under test, from a PUBLISHED config or the default.
+
+    Taking the shape from a real model id rather than a table in this repo is
+    the point: the lane measures published configurations, not shapes invented
+    to suit the hardware. Nothing is downloaded but the config -- training is
+    from random initialisation.
+
+    The vocab check is load-bearing. The FineWeb-Edu memmap holds token IDs from
+    ONE tokenizer. Pairing it with an architecture built for a different
+    vocabulary would still produce a throughput number, and that number would be
+    measured on nonsense: the loss would not descend and nobody would notice
+    until the curve was plotted.
+    """
+    if not arch_from:
+        return dict(ARCH), "pretrain_fineweb.ARCH (SmolLM2-360M shape)"
+    from transformers import AutoConfig
+    c = AutoConfig.from_pretrained(arch_from)
+    arch = dict(
+        vocab_size=c.vocab_size, hidden_size=c.hidden_size,
+        num_hidden_layers=c.num_hidden_layers,
+        num_attention_heads=c.num_attention_heads,
+        num_key_value_heads=c.num_key_value_heads,
+        intermediate_size=c.intermediate_size,
+        rms_norm_eps=getattr(c, "rms_norm_eps", 1e-5),
+        tie_word_embeddings=bool(getattr(c, "tie_word_embeddings", True)),
+    )
+    if arch["vocab_size"] != expect_vocab:
+        raise SystemExit(
+            f"{arch_from} has vocab_size {arch['vocab_size']} but the token "
+            f"memmap was built with {expect_vocab}. Training one on the other "
+            f"would produce a throughput number measured on nonsense. "
+            f"Re-tokenise the corpus or choose an architecture from the same "
+            f"tokenizer family.")
+    say(f"[pretrain-nt] architecture from {arch_from}: "
+        f"{arch['num_hidden_layers']}L hidden {arch['hidden_size']} "
+        f"heads {arch['num_attention_heads']}/{arch['num_key_value_heads']}kv "
+        f"vocab {arch['vocab_size']}")
+    return arch, arch_from
+
+
+def materialise_random_init(scratch: str, seed: int, say, arch=None) -> str:
     """Write a randomly-initialised Llama to disk so from_pretrained can read it."""
     import torch
     from transformers import LlamaConfig, LlamaForCausalLM
 
+    arch = ARCH if arch is None else arch
     p = Path(scratch)
     if (p / "config.json").exists():
         say(f"[pretrain-nt] reusing random init at {p}")
         return str(p)
     torch.manual_seed(seed)
-    cfg = LlamaConfig(**ARCH)
+    cfg = LlamaConfig(**arch)
     model = LlamaForCausalLM(cfg).to(torch.bfloat16)
     n = sum(x.numel() for x in model.parameters())
     p.mkdir(parents=True, exist_ok=True)
@@ -236,17 +292,22 @@ def main(argv=None):
     #   AssertionError: 15 is not divisible by 2
     #
     # measured 2026-08-15. Combined with the missing data-parallel path above,
-    # that leaves exactly one usable topology for this architecture: a single
-    # NeuronCore. Which is a real constraint worth stating plainly -- a
-    # published model's head count decides which AWS silicon topologies are open
-    # to it, and an odd head count closes all the multi-core ones.
+    # that leaves exactly one usable topology for THAT architecture: a single
+    # NeuronCore. A published model's head count decides which AWS silicon
+    # topologies are open to it, and an odd head count closes all the multi-core
+    # ones.
     #
-    # The alternative was to change the architecture until it sharded. This lane
-    # exists to measure a REAL published configuration (see pretrain_fineweb's
-    # docstring); reshaping the model to flatter the hardware would defeat that,
-    # so the lane runs on one core and is labelled a half-chip configuration
-    # wherever it appears, per the rule in METHODOLOGY.
-    heads, kv = ARCH["num_attention_heads"], ARCH["num_key_value_heads"]
+    # The response was NOT to reshape the model until it sharded -- this lane
+    # exists to measure real published configurations. It was to pick a
+    # different published one. SmolLM2-1.7B has 32 heads and 32 KV heads and the
+    # SAME 49,152-token vocabulary, so --arch-from HuggingFaceTB/SmolLM2-1.7B
+    # reaches TP=2 and the whole chip with the existing memmap untouched.
+    arch, arch_source = resolve_arch(args.arch_from, args.expect_vocab, say)
+    if not args.scratch:
+        slug = re.sub(r"[^A-Za-z0-9]+", "_", arch_source).strip("_").lower()[:48]
+        args.scratch = f"/opt/np/models/scratch_init_{slug}"
+        say(f"[pretrain-nt] random init -> {args.scratch}")
+    heads, kv = arch["num_attention_heads"], arch["num_key_value_heads"]
     if tp_size > 1 and (heads % tp_size or kv % tp_size):
         raise SystemExit(
             f"architecture has {heads} attention heads and {kv} KV heads; "
@@ -256,8 +317,9 @@ def main(argv=None):
             f"model to fit the hardware.")
 
     cfg_record = {
-        "architecture": "SmolLM2-360M shape (published config, not tuned here)",
-        **ARCH,
+        "architecture": f"published config of {arch_source}, trained from random init",
+        "architecture_source": arch_source,
+        **arch,
         "seq_len": args.seq_len,
         "micro_batch": args.micro_batch,
         "grad_accum": args.grad_accum,
@@ -299,7 +361,7 @@ def main(argv=None):
         # A marker file needs no collective and no runtime state at all.
         ready = Path(args.scratch) / ".ready"
         if master:
-            materialise_random_init(args.scratch, args.seed, say)
+            materialise_random_init(args.scratch, args.seed, say, arch)
             ready.write_text("ok\n")
         else:
             for _ in range(600):                      # 10 min, generous
@@ -433,26 +495,28 @@ def main(argv=None):
                 config={**cfg_record, "data_parallel_size": dp_size,
                         "tokens_per_step_note": (
                             f"seq_len * micro_batch * grad_accum * dp_size, "
-                            f"with dp_size={dp_size}. The lane was DESIGNED as "
-                            f"DP=2 and could not run that way: "
-                            f"NeuronTrainingArguments has no data-parallel "
-                            f"dimension, and TP=2 is excluded by the "
-                            f"architecture's 15 attention heads. So it ran on "
-                            f"one core, dp=1, and the multiplier is 1 -- the "
-                            f"same arithmetic as the preference lanes, for a "
-                            f"different reason."),
+                            f"with dp_size={dp_size}. Data parallelism is the "
+                            f"ONLY dimension that multiplies tokens: tensor "
+                            f"parallelism shards one model across cores working "
+                            f"on the SAME micro-batch, so tp={tp_size} "
+                            f"multiplies neither the batch nor the token count. "
+                            f"optimum-neuron 0.4.3 exposes no data-parallel "
+                            f"dimension at all -- NeuronTrainingArguments builds "
+                            f"its world as tp x pp -- so dp is 1 in every lane "
+                            f"here and the multiplier is 1."),
                         "confound_vs_hand_written_loop": (
-                            "This lane is NOT a clean one-variable comparison "
-                            "against pretrain_probe_capturable. That lane ran "
-                            "DP=2 on both NeuronCores under a hand-written "
-                            "loop; this one runs on ONE core under "
-                            "NeuronTrainer. Loop ownership AND core count both "
-                            "changed. A successful run here shows the FRAMEWORK "
-                            "path works; it does not by itself prove the "
-                            "hand-written loop was the cause of the per-step "
-                            "recompile. Closing that would need the hand loop "
-                            "re-run at nproc=1. Flagged by an independent "
-                            "reviewer; recorded rather than glossed."),
+                            f"This lane is NOT a clean one-variable comparison "
+                            f"against pretrain_probe_capturable. That lane ran "
+                            f"DP=2 on both NeuronCores under a hand-written "
+                            f"loop; this one runs on {nproc} core(s) at "
+                            f"tp={tp_size} under NeuronTrainer. Loop ownership "
+                            f"AND the parallelism layout both changed. A "
+                            f"successful run here shows the FRAMEWORK path "
+                            f"works; it does not by itself prove the "
+                            f"hand-written loop was the cause of the per-step "
+                            f"recompile. Closing that would need the hand loop "
+                            f"re-run at nproc=1. Flagged by an independent "
+                            f"reviewer; recorded rather than glossed."),
                         "note_plain_torch_xla_does_support_dp2": (
                             "Worth separating: the HAND-WRITTEN lane really did "
                             "run DP=2 across both cores under plain "

@@ -98,6 +98,10 @@ def parse_args(argv=None):
     # and keeps the tokenisation identical to what the preference data assumes.
     # It is recorded in the result rather than applied silently, because the
     # template determines what the model is actually trained on.
+    ap.add_argument("--precompute-ref-logps", action="store_true",
+                    help="DPO only: compute reference log-probs once before "
+                         "training so the reference forward leaves the "
+                         "training-step graph entirely")
     ap.add_argument("--chat-template-from", default="meta-llama/Llama-3.1-8B-Instruct",
                     help="source model for a chat template when the policy lacks one")
     ap.add_argument("--gradient-checkpointing", type=int, default=1)
@@ -500,16 +504,22 @@ def neutralise_out_of_graph_gathers(trainer, algo, nproc, tp, say):
     if acc is None or not hasattr(acc, "gather_for_metrics"):
         say(f"[{algo}] no accelerator.gather_for_metrics to neutralise")
         return False
+    # A NOTE ON THE PRECOMPUTE PATH, WHICH THIS ONCE REFUSED TO TOUCH.
+    #
     # Not every gather in TRL is a metric gather. DPO's precompute_ref_log_probs
     # path calls gather_for_metrics((ref_chosen_logp, ref_rejected_logp)) and
-    # then Dataset.add_column()s the result, which REQUIRES the global length:
-    # with identity it would add a 16-row column to a 32-row dataset and raise.
-    # That option is off in this driver, but the patch must not be silently
-    # wrong if someone turns it on.
-    if getattr(getattr(trainer, "args", None), "precompute_ref_log_probs", False):
-        say(f"[{algo}] precompute_ref_log_probs is on -- leaving "
-            f"gather_for_metrics alone, that path needs the global length")
-        return False
+    # then Dataset.add_column()s the result, which needs one value per ROW OF
+    # THE DATASET. This function used to bail out whenever that flag was set,
+    # on the theory that identity would add a 16-row column to a 32-row dataset.
+    #
+    # That theory silently assumed data parallelism. It is wrong at dp == 1.
+    # The precompute loader (dpo_trainer.py:836) is built over the whole
+    # train_dataset and prepared by an accelerator whose world has no data
+    # dimension, so EVERY rank iterates ALL rows -- local length == global
+    # length. Gathering there concatenates k identical copies of the full
+    # column and add_column raises `Length of values (640) doesn't match length
+    # of dataset (320)`. Identity is not merely safe on this path, it is the
+    # only correct choice, for the same dp == 1 reason as everywhere else.
     if dp != 1:
         say(f"[{algo}] data-parallel size {dp} > 1 -- leaving gather_for_metrics "
             f"alone, its result is not redundant here")
@@ -517,6 +527,107 @@ def neutralise_out_of_graph_gathers(trainer, algo, nproc, tp, say):
     acc.gather_for_metrics = lambda tensor, *a, **k: tensor
     say(f"[{algo}] gather_for_metrics -> identity (dp=1, tp={tp}): removes the "
         f"8 out-of-graph host syncs TRL performs per step")
+    return True
+
+
+def resolve_xla_device():
+    """The one place that answers "which device". Separate so it is swappable
+    in tests that have no torch_xla, and so there is a single definition."""
+    import torch_xla.core.xla_model as _xm
+    try:
+        import torch_xla as _txla
+        return _txla.device() if hasattr(_txla, "device") else _xm.xla_device()
+    except Exception:
+        return _xm.xla_device()
+
+
+def xla_mark_step():
+    """Flush the pending lazy graph. Separate for the same reason as
+    resolve_xla_device: one definition, and swappable where torch_xla is absent."""
+    import torch_xla.core.xla_model as _xm
+    _xm.mark_step()
+
+
+def device_place_reference_precompute(trainer, algo, say):
+    """Move precompute batches onto the XLA device before the reference forward.
+
+    THE TWO FAILURES THIS FIXES
+    ---------------------------
+    Both are the same root cause seen from two ends, and neither reached the
+    compiler -- which matters, because the three earlier DPO attempts died
+    *inside* neuronx-cc. These die before it.
+
+    Round 15 (batch on the host):
+
+        dpo_trainer.py:840   compute_ref_log_probs(padded_batch)
+        neuronx_distributed/parallel_layers/mappings.py:147  reduce_scatter(...)
+        RuntimeError: Expected XLA tensor. Got: CPUBFloat16Type
+
+    Round 16 (MODEL on the host -- `torch.FloatTensor` is the embedding
+    weight, not the input, so moving the batch alone just moved the error one
+    frame earlier):
+
+        neuronx_distributed/parallel_layers/layers.py:349  F.embedding(weight, input, ...)
+        RuntimeError: Expected XLA tensor. Got: torch.FloatTensor
+
+    WHY THE MODEL IS ON THE HOST AT ALL
+    -----------------------------------
+    An ordering mismatch between the two libraries. TRL hangs its precompute
+    pass off `get_train_dataloader()`. optimum-neuron's `_train` calls that at
+    transformers.py:1103 -- and only afterwards calls `setup_training`, whose
+    `self.model = self.accelerator.prepare_model(self.model)` is what puts the
+    weights on the device. So at precompute time the model has never been
+    placed. Nothing in either library is wrong on its own; the hook simply
+    fires one step too early on this stack.
+
+    So the fix has two halves: place the model, then route the batch through
+    the same `_prepare_inputs` the training loop uses. Placing the model early
+    is exactly what optimum-neuron's own error message instructs callers to do
+    ("Make sure ... `model.to(xm.xla_device())` is performed before the
+    optimizer creation"), and `prepare_model` later is idempotent with respect
+    to a model already on the device. No optimizer exists yet, so the
+    model/optimizer device check at transformers.py:211 cannot fire.
+    """
+    fn = getattr(trainer, "compute_ref_log_probs", None)
+    if fn is None:
+        say(f"[{algo}] no compute_ref_log_probs to wrap")
+        return False
+
+    placed = {"done": False}
+
+    def on_device(batch, _inner=fn, _t=trainer):
+        if not placed["done"]:
+            dev = resolve_xla_device()
+            _t.model.to(dev)
+            xla_mark_step()          # settle the parameter transfers on their own
+            placed["done"] = True
+            say(f"[{algo}] model placed on {dev} before the reference pass: "
+                f"TRL precomputes from get_train_dataloader(), which "
+                f"optimum-neuron calls before setup_training() places weights")
+        out = _inner(_t._prepare_inputs(batch))
+        # Materialise here, on our terms, and hand back host tensors.
+        #
+        # Round 17 got the reference forward to COMPILE (two `Compiler status
+        # PASS` lines) and then died on the very next statement:
+        #
+        #   dpo_trainer.py:844  ref_chosen_logps.append(ref_chosen_logp.cpu())
+        #   RuntimeError: BufferMapAdd: error condition !(((buffer) != nullptr))
+        #
+        # TRL calls .cpu() on a lazy tensor whose graph has not been flushed.
+        # Cutting the graph explicitly and doing the transfer ourselves means
+        # TRL's .cpu() lands on a tensor that is already on the host, where it
+        # is a no-op. Everything downstream of it -- torch.cat, .float(),
+        # .numpy(), Dataset.add_column -- is host-side arithmetic that never
+        # wanted an XLA tensor in the first place.
+        xla_mark_step()
+        if isinstance(out, tuple):
+            return tuple(o.cpu() if hasattr(o, "cpu") else o for o in out)
+        return out.cpu() if hasattr(out, "cpu") else out
+
+    trainer.compute_ref_log_probs = on_device
+    say(f"[{algo}] compute_ref_log_probs -> place model + _prepare_inputs(batch): "
+        f"TRL's precompute loader yields host tensors against host weights, and "
+        f"the TP collectives inside a sharded model reject both")
     return True
 
 
@@ -641,6 +752,28 @@ def main(argv=None):
             seed=args.seed,
             tensor_parallel_size=tp,
             disable_tqdm=True,
+            # ----------------------------------------------------------------
+            # The DPO workaround: take the reference forward OUT of the step.
+            # ----------------------------------------------------------------
+            # DPO failed three times compiling the graph flushed at the first
+            # .item() in get_batch_loss_metrics. That graph contains the policy
+            # forward+backward, the optimizer, AND the adapter-disabled
+            # reference forward, all in one lazy trace. ORPO, whose graph has no
+            # reference pass, compiles and runs -- which is what isolated the
+            # reference forward as the blocker.
+            #
+            # precompute_ref_log_probs runs the reference over the whole dataset
+            # ONCE, before training, and stores the log-probs as dataset
+            # columns. The training step then contains no reference forward at
+            # all, so its graph has the same shape as ORPO's -- the shape known
+            # to compile on this stack.
+            #
+            # This does not change the objective. DPO's loss is defined against
+            # a FROZEN reference; recomputing identical numbers every step is an
+            # implementation convenience, not part of the maths. TRL ships this
+            # flag for exactly that reason.
+            **({"precompute_ref_log_probs": True}
+               if (args.algo == "dpo" and args.precompute_ref_logps) else {}),
         )
 
         from optimum.neuron.models.training import NeuronModelForCausalLM
@@ -725,6 +858,9 @@ def main(argv=None):
         trainer = TrainerCls(**kwargs)
 
         neutralise_out_of_graph_gathers(trainer, args.algo, nproc, tp, say)
+
+        if getattr(conf, "precompute_ref_log_probs", False):
+            device_place_reference_precompute(trainer, args.algo, say)
 
         # Fix the shapes AFTER construction: TRL builds its own collator inside
         # __init__, and we want to wrap exactly the one it chose.
