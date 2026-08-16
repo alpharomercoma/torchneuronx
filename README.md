@@ -109,13 +109,31 @@ Complete through Phase 4. Measured results in [REPORT.md](REPORT.md) +
 |---|---|
 | SFT | works — 2,952 tok/s, 68.3% MFU @ seq 2048 |
 | ORPO (preference) | works — 1,181 tok/s, 30.2% MFU @ max_length 1024 |
-| DPO | terminal — the adapter-disabled reference forward fails to compile |
+| DPO | unresolved — the reference forward **compiles**; the lane dies later, in a host transfer |
 | GRPO / RLVR | architecturally blocked — no `generate()` on the training model class |
-| pretraining from scratch | works — 4,573 tok/s, 13.9% MFU on the one core this architecture can use |
+| pretraining from scratch | works — 4,573 tok/s on one core; the whole chip is worth **+7.7%**, measured |
 
 Read §32.3 and §32.4 before quoting the ORPO figures: they are throughput
 measurements at shorter sequences than the SFT lane, and their loss did not
-descend. For pretraining read §32.11: it runs on **one of two NeuronCores**
-(optimum-neuron 0.4.3 offers no data parallelism, and SmolLM2-360M's 15
-attention heads cannot shard across TP=2), and its low MFU is the model's size
-rather than the chip's speed — the same chip reaches 68.3% on an 8B fine-tune.
+descend.
+
+**Pretraining, and what the whole chip is actually worth.** SmolLM2-360M has 15
+attention heads and 5 KV heads; neither divides 2, so that architecture is
+stranded on one of the chip's two NeuronCores (optimum-neuron 0.4.3 offers no
+data-parallel dimension, so tensor parallelism is the only way to use both).
+Running a 16-head/4-KV variant at hidden 1024 — 386M params, and *not*
+SmolLM2-360M — at both widths from the same random init gives the controlled
+answer: **2,463.5 tok/s at TP=1 against 2,652.6 at TP=2, a 7.7% gain for
+doubling the cores.** Tensor parallelism adds a collective on every layer, and
+at this model size the collectives eat almost all of it. Low MFU here is the
+model's size, not the chip's speed — the same chip reaches 68.3% on an 8B
+fine-tune.
+
+**A correction that supersedes earlier text.** This table previously recorded
+DPO as *terminal, the adapter-disabled reference forward fails to compile*.
+That is wrong. Moving the reference pass out of the training step and running
+it once beforehand produces `Compiler status PASS` on that forward: what
+blocked DPO was its **placement inside the training-step graph**, not the
+forward itself. The lane still yields no throughput number — it dies afterwards
+in a host transfer (`.cpu()` on an unflushed lazy tensor, `BufferMapAdd`) — so
+the outcome is unchanged while the stated reason is retracted.

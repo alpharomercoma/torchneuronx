@@ -2001,8 +2001,8 @@ stages that come before and after supervised fine-tuning — pretraining from
 scratch, preference optimisation, and verifiable-reward RL — and if so, how
 fast?**
 
-One of the three now has a number. One is terminal with the cause isolated by a
-controlled comparison. One is architecturally impossible on this path. The
+One of the three now has a number. One is unresolved, with an earlier
+"terminal" verdict retracted in 32.5.1. One is architecturally impossible on this path. The
 pretraining lane is unresolved, and this section says so rather than dressing a
 wall as a finding.
 
@@ -2015,7 +2015,7 @@ Every figure below is read from `trn1/results/phase4/*.json` by
 |---|---|---|
 | SFT | **works** (Phase 1/2) | 2,952 tok/s, 68.3% MFU at seq 2048 |
 | ORPO | **works** | 1,181 tok/s, 30.2% MFU at max_length 1024 |
-| DPO | **terminal** | compiler failure inside the reference forward |
+| DPO | **unresolved** (was "terminal"; see 32.5.1) | the reference forward COMPILES out of the step; the lane dies later in a host transfer |
 | GRPO / RLVR | **architecturally blocked** | no `generate()` on the training model class |
 | pretraining from scratch | **unresolved** | per-step XLA recompilation in a hand-written loop |
 
@@ -2085,7 +2085,12 @@ figure from a run whose loss did not descend measures arithmetic, not training,
 and this report will not let the first table imply the second. **These are
 hardware measurements. They are not evidence that ORPO improved the model.**
 
-### 32.5 DPO is terminal, and ORPO is why that statement is worth something
+### 32.5 DPO fails, and ORPO is why that statement is worth something
+
+> **Retracted in part.** This subsection concluded that the adapter-disabled
+> reference forward *cannot compile*. It can. See 32.5.1. The controlled
+> comparison against ORPO below is still valid and still isolates the reference
+> forward as the blocker — what was wrong is the mechanism assigned to it.
 
 DPO failed three times with the same compiler error:
 
@@ -2130,6 +2135,56 @@ failure is terminal rather than a tuning problem.
 **Not done, and recorded as not done:** DPO with an explicit `ref_model` at a
 scale where two copies fit — TinyLlama-1.1B — would *demonstrate* the
 attribution instead of isolating it. It was not run.
+
+### 32.5.1 Retraction: the forward compiles, and placement was the blocker
+
+32.5 called DPO terminal on the grounds that the adapter-disabled reference
+forward cannot be compiled by neuronx-cc. **That is wrong**, and the correction
+is worth more than the lane.
+
+TRL ships `precompute_ref_log_probs`, which runs the reference over the dataset
+**once, before training**, and stores the log-probs as columns. The objective is
+unchanged — DPO is defined against a *frozen* reference, so recomputing
+identical numbers every step was only ever an implementation convenience. With
+the flag on, the training step contains no reference forward and the compiler
+sees the shape ORPO already proved compiles.
+
+On the fourth attempt neuronx-cc emitted, on the adapter-disabled forward
+itself:
+
+```
+Compiler status PASS
+Compilation Successfully Completed for model.MODULE_13739246366155782745
+```
+
+So the blocker was the forward's **placement inside the training-step graph**,
+not the forward. Three device-placement defects had to be cleared to get there,
+all from one ordering mismatch — TRL hangs precompute off
+`get_train_dataloader()`, which optimum-neuron calls at
+`trainers/transformers.py:1103`, *before* `setup_training()` places the model:
+
+1. the precompute batch stays on the host → `Expected XLA tensor. Got: CPUBFloat16Type`
+2. the *model* is still on the host → `Expected XLA tensor. Got: torch.FloatTensor`
+   (the embedding **weight**, not the input)
+3. a guard of ours was wrong: `neutralise_out_of_graph_gathers` bailed out
+   whenever precompute was set, reasoning that `add_column` needs the global
+   length. That only holds under data parallelism. At dp=1 every rank iterates
+   the whole dataset, so gathering hands `add_column` a 2×-too-long column. dp,
+   not the flag, is the correct guard.
+
+**Still unresolved.** After the compile passes, the lane dies at
+`dpo_trainer.py:844`, `ref_chosen_logps.append(ref_chosen_logp.cpu())`, with
+`RuntimeError: BufferMapAdd: error condition !(((buffer) != nullptr))` — a
+host-transfer failure on a lazy tensor, reproduced twice including once with an
+explicit `mark_step()` flush and a host-side handoff. DPO still has no
+throughput number on this stack.
+
+**Why this is recorded rather than quietly fixed.** The original verdict
+predicted the right *outcome* — DPO does not run — from the wrong *mechanism*.
+That is the hardest class of error to catch, because nothing downstream
+contradicts it. It survived three attempts and an independent review, and was
+only exposed by trying the one configuration that would have been pointless if
+the original claim were true.
 
 ### 32.6 An accounting bug that cancelled itself
 

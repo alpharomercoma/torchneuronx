@@ -23,9 +23,9 @@ an import-and-signature audit tells you what a stack *offers*, not what it
 
 | Stage | Predicted (static audit) | **MEASURED** | Route |
 |---|---|---|---|
-| Pretraining | works, small models only | **works via NeuronTrainer** — 4,573 tok/s, 13.9% per-core MFU, single steady graph; the HAND-WRITTEN loop remains unresolved. Confined to ONE core: no DP in 0.4.3, and 15 heads will not shard across TP=2 | `NeuronTrainer`, TP=1, half-chip |
+| Pretraining | works, small models only | **works via NeuronTrainer** — 4,573 tok/s, 13.9% per-core MFU, single steady graph; the HAND-WRITTEN loop remains unresolved. SmolLM2-360M is confined to ONE core (no DP in 0.4.3, 15 heads will not shard across TP=2), but a TP-divisible architecture uses the whole chip for **+7.7%** | `NeuronTrainer`, TP=1 or TP=2 |
 | SFT | works | **works** — 2,952 tok/s, 68.3% MFU @ seq 2048 | `optimum.neuron.NeuronSFTTrainer` (Phase 1) |
-| DPO | works via re-basing | **terminal** — the adapter-disabled reference forward fails to compile | TRL `DPOTrainer` reparented onto `NeuronTrainer` |
+| DPO | works via re-basing | **unresolved** — the adapter-disabled forward COMPILES once moved out of the training step; the lane then dies in a host transfer | TRL `DPOTrainer` reparented onto `NeuronTrainer` |
 | ORPO | works via re-basing | **works** — 1,181 tok/s, 30.2% MFU @ max_length 1024 | TRL `ORPOTrainer`, same route |
 | GRPO / RLVR | **blocked** | **blocked**, confirmed at stage B_generate | no generation in the training-model class |
 
@@ -35,6 +35,18 @@ repeating this:
 - **Prefer ORPO to DPO on a 16 GiB-per-core device.** ORPO is reference-free by
   construction, so it never needs the second forward pass that blocks DPO here,
   and an explicit `ref_model` does not fit at 8B.
+- **The DPO wall was misattributed for two days, and the correction matters
+  more than the lane.** Three attempts died inside neuronx-cc on the
+  adapter-disabled reference forward, and that was written up as "the forward
+  cannot compile". It compiles. Setting `precompute_ref_log_probs=True` runs it
+  once before training instead of inside every step, and neuronx-cc returns
+  `Compiler status PASS`. The blocker was the forward's **placement in the
+  training-step graph**, not the forward. Three device-placement fixes were
+  needed to get that far — TRL precomputes from `get_train_dataloader()`, which
+  optimum-neuron calls at `transformers.py:1103`, *before* `setup_training()`
+  places the model — and the lane still fails afterwards on `.cpu()` against an
+  unflushed lazy tensor (`BufferMapAdd`). Unresolved, but for a different and
+  much smaller reason than the report claimed.
 - **Do not hand-roll the training loop.** The one lane in this phase that used a
   hand-written loop is the one lane still unresolved. Everything that went
   through `NeuronTrainer` reached a number -- including pretraining, once it was
