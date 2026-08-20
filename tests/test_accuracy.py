@@ -549,3 +549,19 @@ def test_clip_text_mask_is_part_of_the_trace_cache_key():
     src = open(os.path.join(ROOT, "extras", "zeroshot_imagenet_lane.py")).read()
     assert '-m{args.text_attention_mask}"' in src
     assert '"text_attention_mask": args.text_attention_mask}' in src   # trace_meta
+
+
+# ----------------------------------------------------- presentation layer
+def test_summary_flags_both_silent_failure_shapes():
+    # NaN is the loud one. A CONSTANT row is the dangerous one: it scores at
+    # chance rather than at zero, so a dead graph reads as a bad model.
+    src = open(os.path.join(ROOT, "analysis", "accuracy_summary.py")).read()
+    assert "non-finite rows" in src and "constant rows" in src
+    assert "degenerate_rows" in src
+    # and a harness artefact must not be mistaken for a hardware property
+    assert "static-shape" in src
+
+
+def test_summary_reverifies_pairing_at_presentation_time():
+    src = open(os.path.join(ROOT, "analysis", "accuracy_summary.py")).read()
+    assert "import accuracy as A" in src
