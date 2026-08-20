@@ -8,8 +8,35 @@ set -uo pipefail
 
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 RESULTS_DIR="${RESULTS_DIR:-$BENCH_DIR/inf2/results}/extras"
-NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
+# THE VENV BUG, fixed 2026-08-20. This line used to default to the vLLM venv
+# (/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16), which exists to SERVE
+# and ships no optimum-neuron. Result: all three parity lanes below died with
+# "ModuleNotFoundError: No module named 'optimum'" and inf2 was written up as
+# lacking multimodal support it in fact has. The lanes were never run.
+#
+# The banned-install comment further down is still correct and still applies:
+# optimum-neuron must never be installed INTO the vLLM venv (it registers a
+# second vLLM platform plugin and bricks every server boot). The fix is to
+# point the parity lanes at the inference venv that already has optimum, and
+# leave the serve lane on the vLLM venv -- so the two live side by side
+# instead of one shadowing the other.
+NP_VENV="${NP_VENV:-/opt/aws_neuronx_venv_pytorch_2_9}"
+SERVE_VENV="${SERVE_VENV:-/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16}"
 PY="$NP_VENV/bin/python"
+[ -x "$PY" ] || { echo "FATAL: no python at $PY"; exit 3; }
+# Fail LOUDLY on a missing import rather than burning a lane on it. Three
+# separate runs in this study were lost to a package missing from a venv
+# (optimum here, accelerate in the gpt-oss serve lane, datasets in the
+# perplexity lane); each looked like an unsupported model until the receipt
+# was read.
+"$PY" - <<'PREFLIGHT' || { echo "FATAL: $NP_VENV is missing lane dependencies"; exit 3; }
+import importlib, sys
+missing = [m for m in ("torch", "torch_neuronx", "transformers", "optimum.neuron")
+           if not importlib.util.find_spec(m.split(".")[0])]
+if missing:
+    print("missing modules:", missing, file=sys.stderr); sys.exit(1)
+import optimum.neuron  # noqa: F401  -- the import that actually failed before
+PREFLIGHT
 TELEM="$BENCH_DIR/shared/telemetry.py"
 FORCE="${FORCE:-0}"
 # Weights + neuronx-cc caches on the big EBS volume, same as the serve lanes.
@@ -49,7 +76,7 @@ echo; echo "############ extras: mistral7b serve ############"; echo
 if have "$RESULTS_DIR/serve/mistral7b_short/grid.json"; then
   echo "skip mistral7b_short (grid.json exists)"
 else
-  RESULTS_DIR="$RESULTS_DIR" bash "$BENCH_DIR/shared/serve/bench_serve.sh" mistral7b short \
+  RESULTS_DIR="$RESULTS_DIR" NP_VENV="$SERVE_VENV" bash "$BENCH_DIR/shared/serve/bench_serve.sh" mistral7b short \
     || echo "  mistral7b serve FAILED (see serve/mistral7b_short/)"
 fi
 

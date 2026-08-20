@@ -157,3 +157,48 @@ np_receipt() {   # np_receipt <out.failure.json> <tag> <box> <logfile>
     "$tag" "$box" "$reason" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out"
   np_log "$tag FAILED — receipt written"
 }
+
+
+# ---- venv resolution ---------------------------------------------------------
+# THE most repeated defect in this study: a lane hardcodes one venv path and is
+# written up as a hardware limitation when it is a packaging one. It has now
+# cost four runs -- `optimum` missing on inf2 (three multimodal lanes),
+# `accelerate` missing in the gpt-oss serve venv, `datasets` missing in the
+# nxd_inference venv (both perplexity rungs), and this helper's own former
+# copy inside stage_data.sh, which hardcoded an inf2 path and died on trn1.
+#
+# Resolve by CAPABILITY instead. Prints the first venv whose python can import
+# every named module, or returns 1.
+#
+#   V="$(np_pick_venv torch torch_neuronx transformers)" || np_die "no venv"
+np_pick_venv() {
+  local v
+  for v in /opt/np/venvs/optimum-overlay /opt/aws_neuronx_venv_pytorch_2_9            /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16            /opt/aws_neuronx_venv_pytorch_2_9_nxd_inference /opt/np/venvs/*; do
+    [ -x "$v/bin/python" ] || continue
+    # The venv bin MUST be on PATH, not merely used as an interpreter:
+    # torch_neuronx shells out to `libneuronpjrt-path` at import and dies with
+    # a bare FileNotFoundError otherwise. Measured on inf2, 2026-08-20.
+    if PATH="$v/bin:$PATH" "$v/bin/python" -c '
+import importlib, sys
+for m in sys.argv[1:]:
+    importlib.import_module(m)
+' "$@" >/dev/null 2>&1; then echo "$v"; return 0; fi
+  done
+  return 1
+}
+
+# Box identity from the instance type. NOT from lscpu -- an inf2's lscpu says
+# nothing about Inferentia, so a `lscpu | grep inf` test silently classified
+# every box as trn1 and would have written inf2 results into trn1/results/.
+np_box() {
+  local t tok
+  tok="$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+        -H "X-aws-ec2-metadata-token-ttl-seconds: 60" 2>/dev/null)"
+  t="$(curl -s -H "X-aws-ec2-metadata-token: $tok" \
+      http://169.254.169.254/latest/meta-data/instance-type 2>/dev/null)"
+  case "$t" in
+    inf2.*) echo inf2 ;; inf1.*) echo inf1 ;;
+    trn1.*|trn1n.*) echo trn1 ;; trn2.*) echo trn2 ;;
+    *) echo "unknown(${t:-no-imds})" ;;
+  esac
+}
