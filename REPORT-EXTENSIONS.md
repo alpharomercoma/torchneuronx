@@ -85,8 +85,11 @@ fp8 KV-cache A/B at c8, same config as the Phase-1 bf16 point:
 | **fp8 KV** | 120.8 | 64.5 ms |
 
 Throughput parity (+1.3%) — the win is the freed KV memory (larger batch or
-longer contexts), not speed. int8 weights: **declared not-attempted** this
-pass (needs an offline checkpoint-quantization stage; `int8_note.json`).
+longer contexts), not speed. int8 weights were **declared not-attempted** at
+the time of this section (needs an offline checkpoint-quantization stage;
+`int8_note.json`). That is superseded: int8 *was* attempted later, and the
+quantised model shards, loads and warms up — it is the perplexity harness that
+dies. See §36.4.
 
 ### 13.6 Longer-sequence training efficiency (Track B4)
 
