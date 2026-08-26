@@ -1,0 +1,8 @@
+# zeroshot engine=cpu model=openai/clip-vit-base-patch32 n_images=10000 per_class=10 templates=80 seed=1234 auto_cast=none digest=4c4b10b345a824ca
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+`torch_dtype` is deprecated! Use `dtype` instead!
+  classifier 100/1000
+  classifier 200/1000
+  classifier 300/1000
+  classifier 400/1000
+  classifier 500/1000

@@ -1,0 +1,22 @@
+{
+  "model_key": "gpt_oss_20b",
+  "config": "short",
+  "model_id": "openai/gpt-oss-20b",
+  "status": "server_failed_to_start",
+  "looks_like_capacity_failure": false,
+  "supersedes": "../gpt_oss_20b_short/load_failure.json",
+  "why_superseded": "The 2026-08-19 attempt died earlier, at ModuleNotFoundError: No module named 'accelerate', and never reached the question the lane was written to answer. accelerate 1.14.0 was installed into the vLLM venv with --no-deps (341 -> 342 packages; vllm.platform_plugins still ['neuron']) and the lane re-run.",
+  "checkpoint_bytes_on_disk": 13761316904,
+  "checkpoint_note": "13.76 GB, quant_method=mxfp4, hidden_size=2880, 24 layers, 32 experts, 4 active/token",
+  "resolved_question": "The lane pre-registered: does NxDI load MXFP4 as-is (~13.8 GB, fits) or dequantise to bf16 (~42 GB, does not fit)? ANSWER: it dequantises -- 'Using MXFP4 quantized models requires a GPU, we will default to dequantizing the model to bf16'. But the run never reached a memory limit.",
+  "root_cause": "NCC_INKI016 Kernel validation exception: H=2880 must be divisible by 128",
+  "root_cause_source": "nkilib/core/utils/kernel_assert.py:17 -- kernel_assert(dims.H % _pmax == 0, f'H={dims.H} must be divisible by {_pmax}'), _pmax=128 = the NeuronCore partition-dimension maximum (the 128 of the 128x128 systolic array)",
+  "arithmetic": "gpt-oss-20b hidden_size = 2880; 2880 / 128 = 22.5 -- not an integer. 2880 is divisible by 64, not by 128.",
+  "oom_evidence": "NONE. dmesg out-of-memory/oom-kill matches = 0; server log OOM/HBM-exceeded matches = 0; host memory ended with 9 GiB free of 15 GiB.",
+  "secondary_findings": [
+    "blockwise MoE NKI kernels fail to import at startup: No module named 'neuronxcc.nki._private.blockwise_mm' (and _bwd) -- a second packaging gap, distinct from the accelerate one",
+    "SWIGLU is not yet supported in the selected blockwise matmul NKI kernel (warning, blockwise.py:773)"
+  ],
+  "verdict": "gpt-oss-20b is blocked on inf2 by a MoE kernel SHAPE constraint, not by model size and not by host or device memory.",
+  "captured": "2026-08-20T23:00:50Z"
+}

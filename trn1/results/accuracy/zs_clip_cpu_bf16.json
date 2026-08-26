@@ -1,0 +1,51 @@
+{
+ "lane": "zeroshot_imagenet",
+ "engine": "cpu",
+ "model": "openai/clip-vit-base-patch32",
+ "benchmark": "ImageNet-1k zero-shot classification (CLIP protocol)",
+ "dataset": {
+  "repo": "clip-benchmark/wds_imagenet1k",
+  "shards": 7,
+  "per_class": 10,
+  "seed": 1234,
+  "classes": 1000,
+  "templates": 80,
+  "prompt_source": "dataset repo classnames.txt + zeroshot_classification_templates.txt",
+  "text_attention_mask": "off"
+ },
+ "n_samples": 10000,
+ "sample_digest": "4c4b10b345a824ca65ff505e53b7c2b7706600e71caeffcd12d4339222812aaa",
+ "engine_meta": {
+  "dtype": "bfloat16",
+  "framework": "transformers eager",
+  "auto_cast": "none",
+  "threads": 4
+ },
+ "top1": 0.6359,
+ "top5": 0.886,
+ "top1_hits": 6359,
+ "top5_hits": 8860,
+ "nonfinite_rows": 0,
+ "degenerate_rows": 0,
+ "nonfinite_classifier_entries": 0,
+ "tie_fragility": {
+  "median_margin": 0.015213608741760254,
+  "frac_margin_lt_1e-3": 0.0495,
+  "frac_margin_lt_1e-2": 0.372,
+  "why": "images whose top-2 cosine similarities are this close can flip on rounding alone; they bound how much of a top-1 delta is tie-flipping rather than degradation"
+ },
+ "timing": {
+  "text_tower_s": 3794.5,
+  "image_forward_s": 654.84,
+  "total_wall_s": 714.7,
+  "image_tower_images_per_s": 15.27,
+  "end_to_end_images_per_s": 13.99,
+  "end_to_end_excludes": "classifier construction (text tower), counted separately as text_tower_s"
+ },
+ "published_anchor": {
+  "imagenet_zeroshot_top1": 0.632,
+  "source": "CLIP paper / LAION clip_benchmark leaderboard"
+ },
+ "chance_top1": 0.001,
+ "captured": "2026-08-20T13:27:21Z"
+}

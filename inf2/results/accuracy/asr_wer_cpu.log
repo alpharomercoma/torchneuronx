@@ -1,0 +1,26 @@
+# asr_wer engine=cpu model=openai/whisper-small n=500 splits=dev-clean,dev-other seed=1234 max_length=224 digest=e897296e0c5f4027
+`torch_dtype` is deprecated! Use `dtype` instead!
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+decoder prefix actually emitted: ĠHaving Ġreturned Ġto Ġthe ĠRoyal
+  25/500  85.0s decode
+  50/500  164.1s decode
+  75/500  246.5s decode
+  100/500  323.3s decode
+  125/500  405.8s decode
+  150/500  487.9s decode
+  175/500  564.4s decode
+  200/500  643.7s decode
+  225/500  729.8s decode
+  250/500  806.0s decode
+  275/500  884.0s decode
+  300/500  956.4s decode
+  325/500  1034.5s decode
+  350/500  1113.5s decode
+  375/500  1189.6s decode
+  400/500  1274.1s decode
+  425/500  1353.5s decode
+  450/500  1424.9s decode
+  475/500  1500.9s decode
+  500/500  1576.2s decode
+
+WER 5.217%  word_accuracy 94.783%  (509 errors / 9757 ref words, 0 truncated)  ->  /opt/np/repo/inf2/results/accuracy/asr_wer_cpu.json

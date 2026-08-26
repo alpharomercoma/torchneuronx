@@ -1,0 +1,58 @@
+{
+ "lane": "zeroshot_imagenet",
+ "engine": "neuron",
+ "model": "google/siglip-base-patch16-224",
+ "benchmark": "ImageNet-1k zero-shot classification (CLIP protocol)",
+ "dataset": {
+  "repo": "clip-benchmark/wds_imagenet1k",
+  "shards": 7,
+  "per_class": 10,
+  "seed": 1234,
+  "classes": 1000,
+  "templates": 80,
+  "prompt_source": "dataset repo classnames.txt + zeroshot_classification_templates.txt",
+  "text_attention_mask": "off"
+ },
+ "n_samples": 10000,
+ "sample_digest": "4c4b10b345a824ca65ff505e53b7c2b7706600e71caeffcd12d4339222812aaa",
+ "engine_meta": {
+  "dtype": "float32",
+  "framework": "torch_neuronx.trace (two towers)",
+  "auto_cast": "none",
+  "text_attention_mask": "off",
+  "text_batch": 80,
+  "image_batch": 16,
+  "seq_len": 64,
+  "image_px": 224,
+  "compile_s": 181.0,
+  "compiled_from_cache": false,
+  "compiled_dir": "/opt/np/models/neuron-compiled/zs-siglip-base-patch16-224-none-t80-b16-moff"
+ },
+ "top1": 0.7612,
+ "top5": 0.9448,
+ "top1_hits": 7612,
+ "top5_hits": 9448,
+ "nonfinite_rows": 0,
+ "degenerate_rows": 0,
+ "nonfinite_classifier_entries": 0,
+ "tie_fragility": {
+  "median_margin": 0.025585990399122238,
+  "frac_margin_lt_1e-3": 0.0297,
+  "frac_margin_lt_1e-2": 0.2395,
+  "why": "images whose top-2 cosine similarities are this close can flip on rounding alone; they bound how much of a top-1 delta is tie-flipping rather than degradation"
+ },
+ "timing": {
+  "text_tower_s": 71.5,
+  "image_forward_s": 32.1,
+  "total_wall_s": 88.1,
+  "image_tower_images_per_s": 311.48,
+  "end_to_end_images_per_s": 113.47,
+  "end_to_end_excludes": "classifier construction (text tower), counted separately as text_tower_s"
+ },
+ "published_anchor": {
+  "imagenet_zeroshot_top1": 0.76,
+  "source": "SigLIP paper (Zhai et al. 2023)"
+ },
+ "chance_top1": 0.001,
+ "captured": "2026-08-20T12:11:45Z"
+}

@@ -1,0 +1,499 @@
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:27: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.dbrx.modeling_dbrx import NeuronDbrxForCausalLM
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:30: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.mixtral.modeling_mixtral import NeuronMixtralForCausalLM
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from neuronx_distributed_inference.models.qwen3_moe.modeling_qwen3_moe import NeuronQwen3MoeForCausalLM
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/utils/accuracy.py:38: UserWarning: Intel extension for pytorch not found. For faster CPU references install `intel-extension-for-pytorch`.
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/config.py:560: UserWarning: modules_to_not_convert is not provided. Assuming all modules will be quantized.
+  warnings.warn(
+WARNING:root:NeuronConfig init: Unexpected keyword arguments: {'model_type': 'llama', 'task_type': 'causal-lm', 'model_path': '/opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659', 'compiled_model_path': '/opt/np/models/neuron-compiled/q_fp8_weights', 'benchmark': True, 'check_accuracy_mode': <CheckAccuracyMode.SKIP_ACCURACY_CHECK: 'skip-accuracy-check'>, 'divergence_difference_tol': 0.001, 'prompts': ['The quick brown fox'], 'top_k': 1, 'top_p': 1.0, 'temperature': 1.0, 'do_sample': False, 'dynamic': False, 'pad_token_id': 0, 'top_k_kernel_enabled': False, 'on_device_sampling': False, 'k_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'v_quant_method': <QuantizationType.PER_TENSOR_SYMMETRIC: 'per_tensor_symmetric'>, 'kv_quant_dtype': torch.float8_e4m3fn, 'kv_direct_cast': True, 'early_expert_affinity_modulation': False, 'disable_normalize_top_k_affinities': False, 'fused_shared_experts': False, 'moe_tp_degree': 1, 'moe_ep_degree': 1, 'enable_torch_dist': False, 'is_chunked_prefill': False, 'enable_lora': False, 'enable_dynamic_multi_lora': False, 'max_loras': 1, 'max_lora_rank': 16, 'max_cpu_loras': 1, 'benchmark_report_path': '/opt/np/results/quant/fp8_weights.report.json', 'skip_compile': False, 'compile_only': False, 'compile_dry_run': False, 'hlo_debug': False}
+Loading configs...
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:36<01:50, 36.99s/it]Loading checkpoint shards:  50%|█████     | 2/4 [02:31<02:45, 82.66s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [03:44<01:18, 78.07s/it]Loading checkpoint shards: 100%|██████████| 4/4 [04:19<00:00, 61.36s/it]Loading checkpoint shards: 100%|██████████| 4/4 [04:20<00:00, 65.01s/it]
+The module name  (originally ) is not a valid Python identifier. Please rename the original module to avoid import issues.
+INFO:Neuron:Saving quantized state dict as torch pt file to: /opt/np/models/quantized/fp8
+INFO:Neuron:Saving the neuron_config to /opt/np/models/neuron-compiled/q_fp8_weights/
+INFO:Neuron:Generating HLOs for the following models: ['context_encoding_model', 'token_generation_model']
+Will be deleting following keys as its Value is None: []
+
+Compiling and saving model...
+[2026-08-19 19:28:18.123: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-19 19:28:18.240: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-19 19:28:18.241: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-19 19:28:18.241: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-19 19:28:18.241: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+[2026-08-19 19:28:18.320: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x701b4b8af560>, 'Ascending Ring PG Group')>
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-19 19:28:18.421: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+INFO:Neuron:Generating 1 hlos for key: context_encoding_model
+INFO:Neuron:Minimal metadata will be added to HLO
+INFO:Neuron:Started loading module context_encoding_model
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+INFO:Neuron:Finished loading module context_encoding_model in 2.477658271789551 seconds
+INFO:Neuron:generating HLO: context_encoding_model, input example shape = torch.Size([1, 1024])
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/quantization/quantization_layers.py:687: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4416.)
+  tensor=output_parallel, scale=self.scale.T, upcast_dtype=output_parallel.dtype
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=1, shape=torch.Size([1, 1024]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=3, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=4, shape=torch.Size([1, 3]), dtype=torch.float32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=5, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/xla_impl/hlo_conversion.py:470: UserWarning: Received an input tensor that was unused or used in a non-static way when traced so the tensor will be ignored. (index=6, shape=torch.Size([1]), dtype=torch.int32). The non-static usage could happen when the traced function expects the input tensor's shape to change (i.e., using the shape to do index slicing), which is not allowed by inference trace expecting static input shapes.
+  warnings.warn(
+INFO:Neuron:Finished generating HLO for context_encoding_model in 13.021734952926636 seconds, input example shape = torch.Size([1, 1024])
+INFO:Neuron:Generating 1 hlos for key: token_generation_model
+INFO:Neuron:Minimal metadata will be added to HLO
+INFO:Neuron:Started loading module token_generation_model
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+INFO:Neuron:Finished loading module token_generation_model in 0.12908673286437988 seconds
+INFO:Neuron:generating HLO: token_generation_model, input example shape = torch.Size([1, 1])
+INFO:Neuron:Finished generating HLO for token_generation_model in 19.402559995651245 seconds, input example shape = torch.Size([1, 1])
+INFO:Neuron:Generated all HLOs in 56.77671766281128 seconds
+INFO:Neuron:Starting compilation for the priority HLO
+INFO:Neuron:'token_generation_model' is the priority model with bucket rank 0
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:287: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+  warnings.warn(SyntaxWarning(
+......
+Compiler status PASS
+2026-08-19 19:31:07.000162:  4391  [INFO]: Compilation Successfully Completed for model.MODULE_f84d3c33fe9292793ea2+4dfb487c.hlo_module.pb
+INFO:Neuron:Done compilation for the priority HLO in 113.07949209213257 seconds
+2026-08-19 19:31:07.745829: W hilo/hlo_passes/neuron_collective_permute_to_all_gather.cc:30] Platform Version: . Defaulting to 32 cores
+INFO:Neuron:Updating the hlo module with optimized layout
+INFO:Neuron:Done optimizing weight layout for all HLOs in 0.7204501628875732 seconds
+INFO:Neuron:Starting compilation for all HLOs
+INFO:Neuron:Neuron compiler flags: --auto-cast=none --model-type=transformer  --tensorizer-options='--enable-ccop-compute-overlap --cc-pipeline-tiling-factor=2 --vectorize-strided-dma ' --lnc=1 -O1  --internal-hlo2tensorizer-options=' --modular-flow-mac-threshold=10  --experimental-unsafe-fp8e4m3fn-as-fp8e4m3  --verify-hlo=true'  --verbose=35 --logfile=/tmp/nxd_model/context_encoding_model/_tp0_bk0/log-neuron-cc.txt
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/libneuronxla/neuron_cc_wrapper.py:249: SyntaxWarning: str format compiler_flags is discouraged as its handling involves repeated joining and splitting, which can easily make mistakes if something is quoted or escaped. Use list[str] instead. Refer to documentation of the Python subprocess module for details.
+  warnings.warn(SyntaxWarning(
+.
+Compiler status PASS
+2026-08-19 19:31:22.000600:  4391  [INFO]: Compilation Successfully Completed for model.MODULE_6471334786148a44e3af+0acaf4ec.hlo_module.pb
+INFO:Neuron:Finished Compilation for all HLOs in 14.693851709365845 seconds
+.....
+Compiler status PASS
+INFO:Neuron:Done preparing weight layout transformation
+INFO:Neuron:Finished building model in 268.3645646572113 seconds
+INFO:Neuron:SKIPPING pre-sharding the checkpoints. The checkpoints will be sharded during load time.
+INFO:Neuron:Sharding weights on load...
+INFO:Neuron:Sharding weights for ranks: 0...1
+Compiling and tracing time: 270.4498708609999 seconds
+
+Loading model to Neuron...
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x701b4b8af560>, 'Ascending Ring PG Group')>
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-08-19 19:32:45.287: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-19 19:32:45.288: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-19 19:32:45.288: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: embed_tokens.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:651: UserWarning: Found torch.float32 scales, skip converting to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.0.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.0.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.1.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.1.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.2.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.2.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.3.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.3.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.4.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.4.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.5.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.5.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.6.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.6.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.7.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.7.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.8.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.8.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.9.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.9.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.10.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.10.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.11.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.11.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.12.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.12.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.13.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.13.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.14.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.14.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.15.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.15.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.16.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.16.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.17.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.17.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.18.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.18.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.19.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.19.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.20.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.20.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.21.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.21.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.22.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.22.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.23.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.23.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.24.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.24.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.25.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.25.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.26.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.26.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.27.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.27.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.28.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.28.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.29.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.29.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.30.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.30.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.31.input_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: layers.31.post_attention_layernorm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py:655: UserWarning: Found torch.float32 weights in checkpoint: norm.weight. Will convert to torch.bfloat16
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/quantization/quantization_layers.py:414: UserWarning: Cannot find layers.0.self_attn.qkv_proj.q_proj.bias in the state_dict
+  warnings.warn(f"Cannot find {(prefix + 'bias')} in the state_dict")
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/quantization/quantization_layers.py:414: UserWarning: Cannot find layers.0.self_attn.qkv_proj.k_proj.bias in the state_dict
+  warnings.warn(f"Cannot find {(prefix + 'bias')} in the state_dict")
+/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/quantization/quantization_layers.py:414: UserWarning: Cannot find layers.0.self_attn.qkv_proj.v_proj.bias in the state_dict
+  warnings.warn(f"Cannot find {(prefix + 'bias')} in the state_dict")
+Traceback (most recent call last):
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/bin/inference_demo", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py", line 799, in main
+    run_inference(model_cls, args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/inference_demo.py", line 571, in run_inference
+    model.load(args.compiled_model_path)
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 329, in load
+    self.load_weights(
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 406, in load_weights
+    weights = self.get_builder().shard_checkpoint()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/model_builder.py", line 849, in shard_checkpoint
+    preprocess_checkpoint(model, checkpoint)
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py", line 634, in preprocess_checkpoint
+    invoke_preshard_hook(model, checkpoint, "")
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py", line 734, in invoke_preshard_hook
+    invoke_preshard_hook(child, checkpoint, prefix + name + ".")
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py", line 734, in invoke_preshard_hook
+    invoke_preshard_hook(child, checkpoint, prefix + name + ".")
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py", line 734, in invoke_preshard_hook
+    invoke_preshard_hook(child, checkpoint, prefix + name + ".")
+  [Previous line repeated 1 more time]
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed/trace/trace.py", line 727, in invoke_preshard_hook
+    module.preshard_hook(checkpoint, prefix + "weight")
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/torch_neuronx/experimental/profiler/v2_x/custom_op_name.py", line 603, in torch_hierarchy_wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/modules/attention/gqa.py", line 827, in preshard_hook
+    q_proj_weight, q_proj_scale = maybe_pad_tail(
+                                  ^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/modules/attention/gqa.py", line 198, in maybe_pad_tail
+    if should_pad_scale(tensor_scale=tensor_scale, pad_dim=pad_dim):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/modules/attention/gqa.py", line 125, in should_pad_scale
+    and (get_tensor_per_channel_scale_axis(tensor_scale) == pad_dim)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9_nxd_inference/lib/python3.12/site-packages/neuronx_distributed_inference/modules/attention/gqa.py", line 117, in get_tensor_per_channel_scale_axis
+    raise RuntimeError(f"Cannot get channel axis for the scale: {scale}")
+RuntimeError: Cannot get channel axis for the scale: 0.003108724020421505

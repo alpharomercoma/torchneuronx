@@ -1,0 +1,17 @@
+32:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+34:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+36:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+38:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+60:Using MXFP4 quantized models requires a GPU, we will default to dequantizing the model to bf16
+155:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:773: UserWarning: SWIGLU is not yet supported in the selected blockwise matmul NKI kernel
+259:/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/utils/kernel_assert.py:17:5: error: assertion failed: [INTERNAL_ERROR] [NCC_INKI016] Kernel validation exception: H=2880 must be divisible by 128 - Please check the validation message and adjust kernel inputs accordingly
+263:    kernel_assert(dims.H % _pmax == 0, f"H={dims.H} must be divisible by {_pmax}")
+475:ERROR 08-20 23:00:50 [core.py:1006] - [x1] error: assertion failed: [INTERNAL_ERROR] [NCC_INKI016] Kernel validation exception: H=2880 must be divisible by 128 - Please check the validation message and adjust kernel inputs accordingly
+639:- [x1] error: assertion failed: [INTERNAL_ERROR] [NCC_INKI016] Kernel validation exception: H=2880 must be divisible by 128 - Please check the validation message and adjust kernel inputs accordingly
+699:(APIServer pid=2001) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {'EngineCore_DP0': 1}
+===OOM_EVIDENCE===
+0
+0
+===NEURON_MEM_NOW===
++--------+--------+----------+--------+--------------+----------+------+
+

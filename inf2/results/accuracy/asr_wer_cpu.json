@@ -1,0 +1,95 @@
+{
+ "lane": "asr_wer",
+ "engine": "cpu",
+ "model": "openai/whisper-small",
+ "benchmark": "MLPerf Inference v5.1 ASR (LibriSpeech dev-all)",
+ "dataset": {
+  "source": "openslr.org/resources/12",
+  "splits": "dev-clean,dev-other",
+  "n_per_split": 250,
+  "seed": 1234,
+  "audio_s_total": 3448.9
+ },
+ "n_samples": 500,
+ "sample_digest": "e897296e0c5f402764f2b1b98196688bd4cb78285c356ac154501c5336fca0ad",
+ "decode": {
+  "strategy": "greedy",
+  "num_beams": 1,
+  "do_sample": false,
+  "max_length": 224,
+  "forced_decoder": "language=en,task=transcribe",
+  "decoder_prefix": "\u0120Having \u0120returned \u0120to \u0120the \u0120Royal"
+ },
+ "normalize": {
+  "primary": "whisper",
+  "english_normalizer": "OpenAI EnglishTextNormalizer",
+  "english_normalizer_reason": null,
+  "recipes": {
+   "whisper": "EnglishTextNormalizer only -- the protocol the published Whisper WER numbers use, so the only one under which our absolute number is comparable",
+   "mlperf": "MLCommons' three steps, DIGITS KEPT (documented deviation: the literal alphabetic-only filter deletes every normalised number from both sides)",
+   "mlperf_literal": "MLCommons step 1 taken at its word -- shown only to expose what the literal reading costs"
+  }
+ },
+ "wer_by_recipe": {
+  "whisper": {
+   "wer": 0.052167674490109665,
+   "word_accuracy": 0.9478323255098904,
+   "errors": 509,
+   "ref_words": 9757
+  },
+  "mlperf": {
+   "wer": 0.052167674490109665,
+   "word_accuracy": 0.9478323255098904,
+   "errors": 509,
+   "ref_words": 9757
+  },
+  "mlperf_literal": {
+   "wer": 0.051768588223161806,
+   "word_accuracy": 0.9482314117768382,
+   "errors": 502,
+   "ref_words": 9697
+  }
+ },
+ "engine_meta": {
+  "dtype": "float32",
+  "framework": "transformers eager",
+  "threads": 2
+ },
+ "wer": 0.052167674490109665,
+ "word_accuracy": 0.9478323255098904,
+ "counts": {
+  "errors": 509,
+  "sub": 387,
+  "ins": 64,
+  "del": 58,
+  "ref_words": 9757,
+  "hyp_words": 9763
+ },
+ "truncated": 0,
+ "n_unfinished": 0,
+ "timing": {
+  "decode_wall_s": 1576.23,
+  "total_wall_s": 1580.41,
+  "rtf": 0.457,
+  "s_per_utterance": 3.152
+ },
+ "mlperf_reference_context": {
+  "model": "openai/whisper-large-v3",
+  "dataset": "LibriSpeech dev-all (dev-clean + dev-other)",
+  "word_accuracy": 0.979329,
+  "wer": 0.020670999999999995,
+  "numeric_format": "bfloat16",
+  "source": "https://mlcommons.org/2025/09/whisper-inferencev5-1/",
+  "note": "different model size and harness -- context, not a target"
+ },
+ "published_anchor": {
+  "test_clean_wer": 0.034
+ },
+ "captured": "2026-08-20T10:54:13Z",
+ "kv_cache_equivalence_probe": {
+  "n_probed": 8,
+  "identical": true,
+  "mismatches": [],
+  "why": "Neuron Whisper forces use_cache=False; CPU defaults True. This checks the two decode paths agree before the delta attributes any difference to the hardware."
+ }
+}

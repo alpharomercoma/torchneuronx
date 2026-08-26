@@ -1,0 +1,9 @@
+[Wed Aug 19 18:35:16 2026] inference_demo invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0
+[Wed Aug 19 18:35:16 2026] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=snap.amazon-ssm-agent.amazon-ssm-agent.service,mems_allowed=0,global_oom,task_memcg=/system.slice/snap.amazon-ssm-agent.amazon-ssm-agent.service,task=inference_demo,pid=3523,uid=0
+[Wed Aug 19 18:35:16 2026] Out of memory: Killed process 3523 (inference_demo) total-vm:38990256kB, anon-rss:31500060kB, file-rss:3012kB, shmem-rss:0kB, UID:0 pgtables:66116kB oom_score_adj:0
+[Wed Aug 19 18:37:40 2026] inference_demo invoked oom-killer: gfp_mask=0x140dca(GFP_HIGHUSER_MOVABLE|__GFP_ZERO|__GFP_COMP), order=0, oom_score_adj=0
+[Wed Aug 19 18:37:40 2026] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=snap.amazon-ssm-agent.amazon-ssm-agent.service,mems_allowed=0,global_oom,task_memcg=/system.slice/snap.amazon-ssm-agent.amazon-ssm-agent.service,task=inference_demo,pid=3564,uid=0
+[Wed Aug 19 18:37:40 2026] Out of memory: Killed process 3564 (inference_demo) total-vm:38990260kB, anon-rss:31505096kB, file-rss:3080kB, shmem-rss:0kB, UID:0 pgtables:66132kB oom_score_adj:0
+[Wed Aug 19 18:40:06 2026] ssm-agent-worke invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0
+[Wed Aug 19 18:40:06 2026] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=snap.amazon-ssm-agent.amazon-ssm-agent.service,mems_allowed=0,global_oom,task_memcg=/system.slice/snap.amazon-ssm-agent.amazon-ssm-agent.service,task=inference_demo,pid=3658,uid=0
+[Wed Aug 19 18:40:06 2026] Out of memory: Killed process 3658 (inference_demo) total-vm:38990372kB, anon-rss:31504148kB, file-rss:2696kB, shmem-rss:0kB, UID:0 pgtables:66136kB oom_score_adj:0

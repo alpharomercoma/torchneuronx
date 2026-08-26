@@ -1,0 +1,1 @@
+zeroshot FAILED at compare: ValueError: receipts differ in the EXPERIMENT, not just the engine -- refusing to call this a hardware delta: ('engine_meta', 'auto_cast'): 'matmult' vs 'none'

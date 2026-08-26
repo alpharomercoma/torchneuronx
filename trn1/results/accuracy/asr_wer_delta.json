@@ -1,0 +1,104 @@
+{
+ "lane": "asr_wer_delta",
+ "candidate": {
+  "engine": "neuron",
+  "wer": 0.051962693450855794,
+  "word_accuracy": 0.9480373065491442,
+  "truncated": 0,
+  "receipt": "/opt/np/repo/trn1/results/accuracy/asr_wer_neuron.json"
+ },
+ "reference": {
+  "engine": "cpu",
+  "wer": 0.052167674490109665,
+  "word_accuracy": 0.9478323255098904,
+  "truncated": 0,
+  "receipt": "/opt/np/repo/trn1/results/accuracy/asr_wer_cpu.json"
+ },
+ "n_samples": 500,
+ "sample_digest": "e897296e0c5f402764f2b1b98196688bd4cb78285c356ac154501c5336fca0ad",
+ "wer_delta_pp": -0.02049810392538709,
+ "wer_delta_ci95_pp": {
+  "lo": -0.051996672212978365,
+  "hi": 0.0,
+  "point": -0.020498103925386903,
+  "n_boot": 2000,
+  "seed": 1234
+ },
+ "transcript_disagreements": 7,
+ "transcript_disagreement_rate": 0.014,
+ "transcript_disagreement_ids": [
+  "8297-275155-0032",
+  "1255-74899-0019",
+  "3660-172182-0006",
+  "3915-98647-0006",
+  "6123-59150-0027",
+  "6123-59150-0037",
+  "6467-94831-0045"
+ ],
+ "unfinished_utterances": {
+  "candidate": 0,
+  "reference": 0
+ },
+ "wer_by_recipe": {
+  "candidate": {
+   "whisper": {
+    "wer": 0.051962693450855794,
+    "word_accuracy": 0.9480373065491442,
+    "errors": 507,
+    "ref_words": 9757
+   },
+   "mlperf": {
+    "wer": 0.051962693450855794,
+    "word_accuracy": 0.9480373065491442,
+    "errors": 507,
+    "ref_words": 9757
+   },
+   "mlperf_literal": {
+    "wer": 0.051562338867691036,
+    "word_accuracy": 0.948437661132309,
+    "errors": 500,
+    "ref_words": 9697
+   }
+  },
+  "reference": {
+   "whisper": {
+    "wer": 0.052167674490109665,
+    "word_accuracy": 0.9478323255098904,
+    "errors": 509,
+    "ref_words": 9757
+   },
+   "mlperf": {
+    "wer": 0.052167674490109665,
+    "word_accuracy": 0.9478323255098904,
+    "errors": 509,
+    "ref_words": 9757
+   },
+   "mlperf_literal": {
+    "wer": 0.051768588223161806,
+    "word_accuracy": 0.9482314117768382,
+    "errors": 502,
+    "ref_words": 9697
+   }
+  }
+ },
+ "mlperf_gate": {
+  "passed": true,
+  "ratio": 1.0002162629757785,
+  "floor": 0.99,
+  "candidate": 0.9480373065491442,
+  "reference": 0.9478323255098904,
+  "rule": "MLPerf Inference closed division: >=99% of reference accuracy",
+  "relative_error_increase": -0.0039292730844794075,
+  "error_rates": {
+   "candidate": 0.051962693450855794,
+   "reference": 0.052167674490109665
+  }
+ },
+ "interpretation": "wer_delta_pp > 0 means the candidate engine made MORE errors per reference word than the same model on the same samples in float32 on CPU. A CI straddling zero means this run cannot distinguish the two, at this sample size.",
+ "caveats": [
+  "transcript_disagreements == 0 is the strong result: byte-identical transcripts mean the compile changed nothing at all. A nonzero WER delta with ZERO disagreements is impossible and would indicate a harness bug, not a hardware one.",
+  "Both receipts must carry truncated == 0; a truncated utterance is a static-shape artefact of this harness, not a hardware property.",
+  "Absolute WER is not comparable to MLCommons' published figure: different model size (small vs large-v3) and harness."
+ ],
+ "captured": "2026-08-20T10:50:39Z"
+}

@@ -1,0 +1,106 @@
+[19:30:44Z] pulling harness
+[19:30:45Z] gpt_oss_20b key present: 1
+[19:30:45Z] host mem: 15GB  swap: 47GB
+[19:30:45Z] === gpt_oss_20b short: ISL/OSL 1024/1024, conc 1 4 8 16 32 ===
+=== launch_vllm: gpt_oss_20b (short) ===
+    model_id      : openai/gpt-oss-20b
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 32
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/extras/serve/gpt_oss_20b_short/boot.json
+--- server pid 8666; polling /health every 5s (up to 90 min: cold compile is slow) ---
+server process exited before becoming healthy
+SERVER NEVER BECAME HEALTHY: gpt_oss_20b (short) after 106s
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=8739)     model.load_weights(
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 600, in load_weights
+(EngineCore_DP0 pid=8739)     model_name_or_path = self._save_pretrained_model(model_name_or_path)
+(EngineCore_DP0 pid=8739)                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 258, in _save_pretrained_model
+(EngineCore_DP0 pid=8739)     hf_model = AutoModelForCausalLM.from_pretrained(model_name)
+(EngineCore_DP0 pid=8739)                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/models/auto/auto_factory.py", line 604, in from_pretrained
+(EngineCore_DP0 pid=8739)     return model_class.from_pretrained(
+(EngineCore_DP0 pid=8739)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/modeling_utils.py", line 277, in _wrapper
+(EngineCore_DP0 pid=8739)     return func(*args, **kwargs)
+(EngineCore_DP0 pid=8739)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/modeling_utils.py", line 4998, in from_pretrained
+(EngineCore_DP0 pid=8739)     hf_quantizer.preprocess_model(
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/quantizers/base.py", line 224, in preprocess_model
+(EngineCore_DP0 pid=8739)     self._convert_model_for_quantization(model)
+(EngineCore_DP0 pid=8739)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/transformers/quantizers/base.py", line 346, in _convert_model_for_quantization
+(EngineCore_DP0 pid=8739)     from accelerate import init_empty_weights
+(EngineCore_DP0 pid=8739) ModuleNotFoundError: No module named 'accelerate'
+(APIServer pid=8666) Traceback (most recent call last):
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/bin/vllm", line 8, in <module>
+(APIServer pid=8666)     sys.exit(main())
+(APIServer pid=8666)              ^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 73, in main
+(APIServer pid=8666)     args.dispatch_function(args)
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 111, in cmd
+(APIServer pid=8666)     uvloop.run(run_server(args))
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=8666)     return __asyncio.run(
+(APIServer pid=8666)            ^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=8666)     return runner.run(main)
+(APIServer pid=8666)            ^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=8666)     return self._loop.run_until_complete(task)
+(APIServer pid=8666)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=8666)     return await main
+(APIServer pid=8666)            ^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 457, in run_server
+(APIServer pid=8666)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 476, in run_server_worker
+(APIServer pid=8666)     async with build_async_engine_client(
+(APIServer pid=8666)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=8666)     return await anext(self.gen)
+(APIServer pid=8666)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 96, in build_async_engine_client
+(APIServer pid=8666)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=8666)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=8666)     return await anext(self.gen)
+(APIServer pid=8666)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/entrypoints/openai/api_server.py", line 137, in build_async_engine_client_from_engine_args
+(APIServer pid=8666)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=8666)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 222, in from_vllm_config
+(APIServer pid=8666)     return cls(
+(APIServer pid=8666)            ^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 148, in __init__
+(APIServer pid=8666)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=8666)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/platform.py", line 224, in _patched_make_async_mp_client
+(APIServer pid=8666)     client = _original(
+(APIServer pid=8666)              ^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 124, in make_async_mp_client
+(APIServer pid=8666)     return AsyncMPClient(*client_args)
+(APIServer pid=8666)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 835, in __init__
+(APIServer pid=8666)     super().__init__(
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 490, in __init__
+(APIServer pid=8666)     with launch_core_engines(vllm_config, executor_class, log_stats) as (
+(APIServer pid=8666)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=8666)     next(self.gen)
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 925, in launch_core_engines
+(APIServer pid=8666)     wait_for_engine_startup(
+(APIServer pid=8666)   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 984, in wait_for_engine_startup
+(APIServer pid=8666)     raise RuntimeError(
+(APIServer pid=8666) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+failure recorded: /opt/np/repo/inf2/results/extras/serve/gpt_oss_20b_short/load_failure.json
+--- boot failed; load_failure.json recorded in /opt/np/repo/inf2/results/extras/serve/gpt_oss_20b_short ---
+[19:32:31Z]   gpt_oss_20b finished in 106s
+[19:32:31Z] moe evidence -> /opt/np/repo/inf2/results/extras/serve/gpt_oss_20b_short/moe_evidence.txt
+total 76
+drwxr-xr-x 2 root root  4096 Aug 19 19:32 .
+drwxr-xr-x 6 root root  4096 Aug 19 19:30 ..
+-rw-r--r-- 1 root root 27850 Aug 19 19:32 boot.server.log
+-rw-r--r-- 1 root root 27050 Aug 19 19:32 boot.server.tail.log
+-rw-r--r-- 1 root root   336 Aug 19 19:32 load_failure.json
+-rw-r--r-- 1 root root  4374 Aug 19 19:32 moe_evidence.txt
+[19:32:32Z] === gpt-oss MoE lane complete ===

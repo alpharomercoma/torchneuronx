@@ -1,0 +1,19 @@
+{
+ "top1_delta_pp": 0.0,
+ "top1_delta_ci95_pp": {
+  "lo": 0.0,
+  "hi": 0.0,
+  "point": 0.0,
+  "n_boot": 2000,
+  "seed": 1234
+ },
+ "prediction_disagreements": 0,
+ "mlperf_gate": {
+  "passed": true,
+  "ratio": 1.0,
+  "floor": 0.99,
+  "candidate": 0.7612,
+  "reference": 0.7612,
+  "rule": "MLPerf Inference closed division: >=99% of reference accuracy"
+ }
+}
