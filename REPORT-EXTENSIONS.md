@@ -142,7 +142,7 @@ Verdicts written before compute was spent; outcomes after:
 | RAG sized-down (0.6B embed/rerank) | GO with receipts | ✅ retrieval 7/7; reranker + co-residency receipted |
 | Long-ctx bisection | GO | ✅ bracketed both cliffs |
 | fp8 KV | GO | ✅ parity A/B |
-| int8 weights | GO | ⚠ declared prep-stage gap |
+| int8 weights | GO | ⚠ prep-stage gap — the quantised model *loads and warms up*; the eval harness dies (§36.4) |
 | gpt-oss-20b MoE | attempt-only | ❌ resolved — blocked by a MoE kernel *shape* constraint (§36.3), not memory |
 | Spec-decode | GO via fused | ✅ 2.4× fused speedup |
 | Multi-tenant | GO (attempt) | ✅ measured isolation |
@@ -2886,11 +2886,73 @@ costs three more draft tokens and buys **+0.036× (1.4%)**, where k=0 → k=2
 bought +0.408×. E[accepted] at k=10 came in at 7.085 against a naive
 extrapolation of 7.68 — the naive prediction overshoots by 7.6%.
 
-A separate single-prompt lane (`trn1/results/specdec`) reaches **2.890× at k=7**
-(11.231 ms/token against a 32.455 ms/token baseline). It is higher than the
-Spec-Bench figure because one prompt is not 39 prompts across 13 categories;
-the Spec-Bench number is the one to quote. `spec_k1` is a recorded failure:
-`RuntimeError: Error while lowering: aten::cumsum`.
+### 36.2.1 The single-prompt lane, and where the optimum actually is
+
+A separate single-prompt lane (`trn1/results/specdec`) runs the same target and
+draft against one fixed prompt, and pushes k further than Spec-Bench did:
+
+| k | ms/token | speedup | E[accepted] | accept rate |
+|---|---|---|---|---|
+| 2 | 21.918 | 1.481× | 2.054 | 0.642 |
+| 4 | 14.314 | 2.267× | 4.022 | 0.891 |
+| 7 | 11.231 | 2.890× | 6.803 | 0.953 |
+| 8 | 10.931 | 2.969× | 7.564 | 0.956 |
+| **16** | **9.676** | **3.354×** | 13.735 | 0.973 |
+
+against a 32.455 ms/token (30.81 tok/s) baseline, with draft cost **measured**
+at 6.278 ms/token — a draft/target ratio of **0.1934**, independently close to
+the 0.1849 the Spec-Bench cost model fitted from its slope.
+
+Two things about that table are easy to over-read, so they are stated here
+rather than left to the tool's source:
+
+- **The speedup column is decode-only.** `analysis/specdec_summary.py` subtracts
+  prefill from e2e and divides by generated tokens, on both arms. That is the
+  same basis as the 2.890× already published, so the column is internally
+  consistent — but **end-to-end**, k=16 is **3.190×** (2,646.0 ms against
+  8,440.2 ms), not 3.354×. Speculation makes prefill *more* expensive here, by a
+  steady ~28% at every k, and the decode-only figure excludes that penalty.
+- **E[accepted] is derived, not counted.** It is inferred from the fitted
+  iteration cost, `(baseline_per_tok + k × draft_per_tok) / measured_per_tok`,
+  and the acceptance rate is then solved from it numerically. Nothing in this
+  lane counts accepted drafts directly — the probe built to do exactly that is
+  broken (§36.2.2).
+
+**Quote the Spec-Bench numbers, not these.** One prompt is not 39 prompts across
+13 categories, and this lane's acceptance rate reaches 0.973 where Spec-Bench's
+agreement had fallen to 70.9% by k=10 — a single prompt is exactly the
+condition under which a draft model looks best. What the lane does establish is
+that the earlier note ("peak sits at the largest k measured — the optimum may
+lie beyond the sweep") was right: extending to k=16 kept gaining, and the peak
+still sits at the edge of the sweep. Where the true optimum is remains unmeasured,
+and now unmeasurable — the box was terminated on 2026-08-26.
+
+`spec_k1` is a recorded failure: `RuntimeError: Error while lowering:
+aten::cumsum`.
+
+### 36.2.2 An instrument that failed its own self-check
+
+The lane also carries a direct acceptance probe (`accept_k*.json`) that hooks
+`ModelWrapper.forward` and computes E[accepted] as tokens ÷ decode-graph
+invocations. Its own note states the criterion: *"Baseline (k=0) MUST give 1.0 —
+that is the self-check."*
+
+It gives **0.2009**, and reports a *negative* number of accepted drafts for
+every k below 5:
+
+| k | 0 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|
+| E[accepted] | 0.201 | 0.402 | 0.601 | 0.798 | 1.000 | 1.202 | 1.391 |
+| accepted drafts | −0.799 | −0.598 | −0.399 | −0.203 | 0.000 | 0.202 | 0.391 |
+
+The hook counts roughly 5× too many invocations at k=0 (1,274 for 256 tokens),
+so the ratio is scaled by ~1/5 and the whole column is wrong — it happens to
+read 1.000 at k=5 by coincidence, which is precisely the kind of plausible
+middle value that gets published. `analysis/specdec_summary.py` does not use it:
+it derives E[accepted] from the timing reports instead, and the numbers in
+36.2.1 come from that path. The broken probe is kept as a receipt because a
+failed instrument that announces its own failure criterion is worth more than a
+deleted one.
 
 ### 36.3 gpt-oss-20b: a shape wall, not a memory wall
 
@@ -2981,3 +3043,56 @@ pretraining numbers; the schedule axis does not. Both runs are named
 `midtrain_finemath_*` for historical reasons but ran on **FineWeb-Edu**, per
 the `dataset` field in both receipts — the filenames are misleading and the
 receipts are authoritative.
+
+### 36.4 int8 weights: the model loaded, the ruler did not
+
+§13.9 records int8 as a "declared prep-stage gap". The recovered logs
+(`trn1/results/ppl/int8.log`, `bf16.log`) make the boundary precise, and it sits
+later than "prep stage" implies. The int8 checkpoint **shards and loads
+successfully** — 66.2 s sharding, 76.3 s weight load, 77.5 s total, warmup
+completed in 0.81 s — and NxDI reports the expected `Removing redundant keys
+from checkpoint` for the per-projection `.scale` tensors. What failed is the
+*measurement*:
+
+```
+File "/opt/np/ppl_harness.py", line 51, in ppl
+    from datasets import load_dataset
+ModuleNotFoundError: No module named 'datasets'
+```
+
+So there is no int8 perplexity number, and the study does not claim one. But the
+gap is an **evaluation-harness packaging** gap, not an int8 support gap: the
+quantised graph compiled, loaded and ran. That distinction matters to anyone
+deciding whether int8 is viable on this stack — the answer this study can
+support is "it loads and runs; we never scored it", not "it does not work".
+
+## 39. What the S3 teardown nearly cost (Phase 5)
+
+Preparing to delete the artifacts bucket surfaced a harness defect worth more
+than the cleanup. `make pull-results` syncs `results/{trn1,trn2,inf2}/`. The
+bucket held **nineteen** `results/` prefixes: the three canonical ones plus
+per-lane and per-hostname prefixes written by on-box drivers
+(`results/trn1-specdec/`, `results/final-ip-172-31-20-190-specdec/`,
+`results/trn1-ppl/`, and thirteen more).
+
+**736 objects had never been pulled**, and 50 of them existed nowhere else:
+
+| what | why it mattered |
+|---|---|
+| `spec_k8.*`, `spec_k16.*` | extend the speculative ladder from 2.890× to **3.354×** and turn draft cost from withheld into measured (§36.2.1) |
+| `accept_k0..k7.json` | the acceptance probe that fails its own self-check (§36.2.2) |
+| `trn1-ppl/{bf16,int8}.log` | the int8 receipts that relocate the gap from "prep stage" to "eval harness" (§36.4) |
+| `trn1-sft-failed/*` | dependency-failure receipts for the Tulu-3 lane |
+
+Two files in the committed tree were also **zero bytes** — `draft_only.log` and
+`spec_k8.log` — and their real content existed only in S3. A third,
+`inf2/results/extras/spec_decode/baseline.failure.json`, is zero bytes in all
+four copies: a failure receipt that records no failure. That is a defect in the
+receipt writer, and it is left in place rather than deleted, because under this
+study's own rules the presence of a `.failure.json` is the signal and its
+emptiness is the bug to report.
+
+The lesson generalises past this repo: **a sync target that names its prefixes
+is a sync target that will silently miss the ones nobody remembered to add.**
+`make pull-results-all` now mirrors the whole prefix so reconciliation is
+possible at all.

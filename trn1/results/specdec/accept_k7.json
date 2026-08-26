@@ -1,0 +1,15 @@
+{
+ "k": 7,
+ "gen_tokens": 256,
+ "hook": "ModelWrapper.forward",
+ "invocations_by_tag": {
+  "context_encoding_model": 1,
+  "fused_speculation_model": 184
+ },
+ "decode_graph": "fused_speculation_model",
+ "decode_invocations": 184,
+ "expected_accepted_per_iteration": 1.3913,
+ "accepted_drafts_mean": 0.3913,
+ "acceptance_efficiency_vs_k": 0.0559,
+ "note": "E[accepted] = tokens_generated / decode-graph invocations. Baseline (k=0) MUST give 1.0 -- that is the self-check. accepted_drafts_mean is E[accepted]-1 because one committed token per iteration is the target's own, not a draft."
+}
