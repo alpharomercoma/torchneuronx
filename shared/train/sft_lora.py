@@ -371,6 +371,35 @@ def dolly_messages(example, system_prompt=DOLLY_SYSTEM_PROMPT):
     ]
 
 
+def format_messages(example, tokenizer):
+    """Conversational row ({"messages": [{role, content}, ...]}) -> one string.
+
+    WHY THIS EXISTS
+    ---------------
+    format_dolly() expects instruction/context/response columns, and
+    --dataset-fields only RENAMES columns, so it cannot reach a dataset whose
+    unit is a message LIST. Tulu 3, SmolTalk, OpenHermes and every modern SFT
+    mixture ship `messages`; dolly-15k's flat triple is the 2023 shape.
+
+    Rendering goes through the tokenizer's OWN chat template for the same
+    reason format_dolly does: the merged adapter is served on inf2 later and
+    must be prompted with the template that ships with the tokenizer. Training
+    on one template and serving on another is a silent quality loss.
+    """
+    msgs = example["messages"]
+    if hasattr(tokenizer, "chat_template") and tokenizer.chat_template:
+        return tokenizer.apply_chat_template(msgs, tokenize=False)
+    # Same fallback shape as format_dolly's, so the two lanes stay comparable
+    # when a tokenizer ships no template.
+    parts = []
+    for m in msgs:
+        role = m.get("role", "user")
+        head = {"user": "### Instruction", "assistant": "### Answer",
+                "system": "### System"}.get(role, f"### {role.title()}")
+        parts.append(f"{head}\n{m.get('content', '')}")
+    return "\n\n".join(parts)
+
+
 def format_dolly(example, tokenizer, system_prompt=DOLLY_SYSTEM_PROMPT):
     """Dolly row -> one training string, rendered with the MODEL'S OWN template.
 
@@ -1673,7 +1702,14 @@ def build_trainer(NeuronSFTTrainer, sft_config, model, lora_config, tokenizer,
         "model": model,
         "peft_config": lora_config,
         "train_dataset": dataset,
-        "formatting_func": lambda example: format_dolly(example, tokenizer),
+        # Dispatch on the dataset's SHAPE, not a flag: a conversational mixture
+        # carries `messages`, dolly/alpaca carry instruction/response. Detecting
+        # it removes a whole class of "wrong formatter, plausible loss" error.
+        "formatting_func": (
+            (lambda example: format_messages(example, tokenizer))
+            if "messages" in getattr(dataset, "column_names", []) or []
+            else (lambda example: format_dolly(example, tokenizer))
+        ),
         "callbacks": [callback],
     }
     # Synthetic rows arrive ALREADY tokenized (input_ids/attention_mask/labels),

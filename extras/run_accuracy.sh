@@ -158,7 +158,7 @@ case "$lane" in
     # anecdote; if it has been fixed upstream, this is how we find out.
     # CPU bf16 is the CONTROL, without which a bf16 NaN on Neuron cannot be
     # told apart from a bf16 NaN in the model itself.
-    for a in "cpu --cpu-dtype bfloat16" "neuron --auto-cast matmul"; do
+    for a in "cpu --cpu-dtype bfloat16" "neuron --auto-cast matmult"; do
       set -- $a; eng="$1"; shift
       run_lane "$ZS_VENV" "zs_clip_${eng}_bf16" zeroshot_imagenet_lane.py \
         --engine "$eng" "$@" --model openai/clip-vit-base-patch32 \

@@ -18,6 +18,24 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
 import accuracy as A  # noqa: E402
 
 
+KNOWN_BOXES = ("trn1", "trn2", "inf1", "inf2")
+
+
+def box_of(d):
+    """Name the box from any path shape, absolute or relative.
+
+    Taking the first path component gave "opt" for
+    /opt/np/repo/trn1/results/accuracy -- a cosmetic bug, but one that would
+    have put "opt" in a slide column twice and made two boxes' rows
+    indistinguishable.
+    """
+    parts = [x for x in os.path.abspath(d).split(os.sep) if x]
+    for x in reversed(parts):
+        if x in KNOWN_BOXES:
+            return x
+    return parts[-2] if len(parts) > 1 else "?"
+
+
 def load(d):
     out = {}
     for f in sorted(os.listdir(d)):
@@ -35,6 +53,37 @@ def load(d):
 
 def pct(x, nd=2):
     return "—" if x is None else f"{x * 100:.{nd}f}%"
+
+
+def per_split_wer(d, tag):
+    """WER broken out by LibriSpeech split, from the per-utterance records.
+
+    Pooled dev-all is what MLCommons score, but every LibriSpeech number in the
+    literature is reported per split -- and the two differ enough to matter
+    (dev-other is roughly twice dev-clean's error rate). Reporting only the
+    pooled figure would make our number look bad against a test-clean anchor
+    and good against a test-other one, for reasons that are entirely about
+    which corpus was scored.
+
+    Recomputed from the stored counts rather than re-scoring, so it cannot
+    drift from the headline number.
+    """
+    path = os.path.join(d, tag + ".utterances.json")
+    if not os.path.exists(path):
+        return {}
+    recs = json.load(open(path)).get("records", [])
+    agg = {}
+    for r in recs:
+        c = r.get("counts")
+        if not c:
+            continue
+        a = agg.setdefault(r.get("split", "?"), {"err": 0, "ref": 0, "n": 0})
+        a["err"] += c["sub"] + c["ins"] + c["del"]
+        a["ref"] += c["ref_words"]
+        a["n"] += 1
+    return {k: {"wer": v["err"] / v["ref"] if v["ref"] else float("nan"),
+                "utterances": v["n"], "ref_words": v["ref"]}
+            for k, v in sorted(agg.items())}
 
 
 def row_accuracy(box, tag, r):
@@ -106,12 +155,12 @@ def main():
     ap.add_argument("--markdown", action="store_true")
     args = ap.parse_args()
 
-    measured, deltas, problems = [], [], []
+    measured, deltas, problems, splits = [], [], [], []
     for d in args.dirs:
         if not os.path.isdir(d):
             problems.append(f"{d}: not a directory")
             continue
-        box = d.strip("/").split("/")[0]
+        box = box_of(d)
         for tag, r in load(d).items():
             if tag.endswith("_delta"):
                 # Re-verify the pairing AT PRESENTATION TIME. A receipt pair
@@ -121,6 +170,9 @@ def main():
                 continue
             row = row_accuracy(box, tag, r)
             if row:
+                for split, v in per_split_wer(d, tag).items():
+                    splits.append([box, tag, split, pct(v["wer"], 3),
+                                   v["utterances"], v["ref_words"]])
                 measured.append(row)
                 # BOTH silent-failure shapes flag, not just NaN. A graph
                 # emitting a CONSTANT row is just as dead and scores at chance
@@ -146,6 +198,10 @@ def main():
     print("\n## Measured accuracy (each lane, each engine)\n")
     print(table(["box", "lane", "primary", "secondary", "dtype", "note"],
                 measured, args.markdown))
+    if splits:
+        print("\n## ASR, broken out by LibriSpeech split\n")
+        print(table(["box", "lane", "split", "WER", "utterances", "ref words"],
+                    splits, args.markdown))
     print("\n## Paired verdicts (accelerator vs same-box float32 CPU)\n")
     print(table(["box", "comparison", "delta", "95% CI", "disagreements",
                  "MLPerf gate", "rel. error"], deltas, args.markdown))

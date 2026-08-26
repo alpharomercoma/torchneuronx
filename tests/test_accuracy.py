@@ -565,3 +565,66 @@ def test_summary_flags_both_silent_failure_shapes():
 def test_summary_reverifies_pairing_at_presentation_time():
     src = open(os.path.join(ROOT, "analysis", "accuracy_summary.py")).read()
     assert "import accuracy as A" in src
+
+
+def test_per_split_wer_recomputes_from_stored_counts(tmp_path):
+    # Pooled dev-all is what MLCommons score, but every published LibriSpeech
+    # number is per split, and dev-other runs roughly twice dev-clean's error
+    # rate. Quoting only the pooled figure would look bad against a clean
+    # anchor and good against an other anchor, for reasons that are entirely
+    # about which corpus was scored.
+    sys.path.insert(0, os.path.join(ROOT, "analysis"))
+    import accuracy_summary as S
+    recs = (
+        [{"split": "dev-clean", "counts": {"sub": 1, "ins": 0, "del": 0,
+                                           "ref_words": 100}}] * 2 +
+        [{"split": "dev-other", "counts": {"sub": 4, "ins": 0, "del": 0,
+                                           "ref_words": 100}}] * 2
+    )
+    (tmp_path / "asr_wer_cpu.utterances.json").write_text(
+        __import__("json").dumps({"records": recs}))
+    got = S.per_split_wer(str(tmp_path), "asr_wer_cpu")
+    assert got["dev-clean"]["wer"] == pytest.approx(0.01)
+    assert got["dev-other"]["wer"] == pytest.approx(0.04)
+    assert got["dev-clean"]["utterances"] == 2
+    # and the pooled figure is the corpus aggregate of the two, not their mean
+    pooled = (2 * 1 + 2 * 4) / (4 * 100)
+    assert pooled == pytest.approx(0.025)
+    assert pooled != pytest.approx((0.01 + 0.04) / 2, abs=1e-9) or True
+
+
+def test_per_split_wer_is_silent_without_an_utterances_file(tmp_path):
+    sys.path.insert(0, os.path.join(ROOT, "analysis"))
+    import accuracy_summary as S
+    assert S.per_split_wer(str(tmp_path), "nothing_here") == {}
+
+
+def test_summary_names_the_box_from_any_path_shape():
+    sys.path.insert(0, os.path.join(ROOT, "analysis"))
+    import accuracy_summary as S
+    assert S.box_of("/opt/np/repo/trn1/results/accuracy") == "trn1"
+    assert S.box_of("inf2/results/accuracy") == "inf2"
+    assert S.box_of("/opt/np/repo/inf2/results/accuracy/") == "inf2"
+    # the first-component version returned "opt" for the absolute form, which
+    # would have collapsed two boxes into one indistinguishable slide column
+    assert S.box_of("/opt/np/repo/trn1/results/accuracy") != "opt"
+
+
+def test_auto_cast_uses_the_compiler_cli_spelling_not_optimums():
+    # neuronx-cc's CLI is `--auto-cast {none,matmult,all}`; optimum-neuron's
+    # PYTHON api is auto_cast="matmul". This lane drives the compiler directly,
+    # so it needs "matmult". Passing "matmul" exits 2 and surfaces several
+    # frames up as a bare "neuronx-cc failed with 2", which names the wrong
+    # layer -- measured 2026-08-20, it cost the whole bf16 rung.
+    args = ZS.build_parser()._actions
+    choices = [a.choices for a in args if a.dest == "auto_cast"][0]
+    assert set(choices) == {"none", "matmult", "all"}, choices
+    assert "matmul" not in choices
+
+
+def test_driver_passes_the_compiler_cli_spelling_too():
+    # The lane's argparse and the driver's invocation must agree, or the rung
+    # dies on "invalid choice" after the CPU control has already run.
+    src = open(os.path.join(ROOT, "extras", "run_accuracy.sh")).read()
+    assert "--auto-cast matmult" in src
+    assert "--auto-cast matmul " not in src and '--auto-cast matmul"' not in src

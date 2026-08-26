@@ -804,3 +804,79 @@ def test_resolve_arch_defaults_to_the_shared_smollm_shape():
     arch, src = PNT.resolve_arch(None, 49152, lambda *a: None)
     assert arch == PF.ARCH and arch is not PF.ARCH   # copy, not the shared dict
     assert "ARCH" in src
+
+
+# --------------------------------------------------------------------------
+# ORPO numerics guard. Pins the three failure modes measured while diagnosing
+# 32.10's unexplained NaN, so a future refactor cannot silently reopen them.
+# Two of the three are SILENT (no NaN in the loss trace), which is why they are
+# pinned by value rather than by an isfinite() check alone.
+# --------------------------------------------------------------------------
+
+def _orpo_log_odds(c, r):
+    """trl 0.24's odds_ratio_loss, reduced to the expression that fails."""
+    import torch
+    return (c - r) - (torch.log1p(-torch.exp(c)) - torch.log1p(-torch.exp(r)))
+
+
+def test_bf16_exp_saturates_to_one_just_below_the_computed_threshold():
+    """The whole precision argument rests on this number: -0.000977."""
+    torch = pytest.importorskip("torch")
+    # bf16 spacing in [0.5,1) is 2**-9, so exp(x) rounds to exactly 1.0 once
+    # exp(x) >= 1 - 2**-10, i.e. x > log(1 - 2**-10) = -0.000977.
+    safe = torch.tensor([-0.002], dtype=torch.bfloat16)
+    satd = torch.tensor([-0.0009], dtype=torch.bfloat16)
+    assert torch.exp(safe).item() < 1.0, "just below the threshold must NOT saturate"
+    assert torch.exp(satd).item() == 1.0, "just above the threshold MUST saturate"
+
+
+def test_orpo_log_odds_has_three_failure_modes_not_one():
+    """Only the both-saturate case NaNs; the single-sided ones are silent."""
+    torch = pytest.importorskip("torch")
+    bf = lambda v: torch.tensor([v], dtype=torch.bfloat16)  # noqa: E731
+
+    healthy = _orpo_log_odds(bf(-0.5), bf(-1.0))
+    assert torch.isfinite(healthy).all()
+
+    # chosen saturates alone -> +inf log-odds -> logsigmoid 0 -> gradient gone,
+    # and NOTHING in the loss trace shows it.
+    chosen_only = _orpo_log_odds(bf(-0.0001), bf(-1.0))
+    assert torch.isinf(chosen_only).all() and chosen_only.item() > 0
+
+    rejected_only = _orpo_log_odds(bf(-1.0), bf(-0.0001))
+    assert torch.isinf(rejected_only).all() and rejected_only.item() < 0
+
+    both = _orpo_log_odds(bf(-0.0001), bf(-0.0002))
+    assert torch.isnan(both).all(), "both-saturate is the step-23 signature"
+
+
+def test_zero_token_completion_makes_the_mean_logp_nan():
+    """orpo_trainer.py:721 divides by loss_mask.sum(-1); an empty completion is 0/0."""
+    torch = pytest.importorskip("torch")
+    per_token = torch.tensor([[-1.2, -0.8, -2.0]])
+    empty_mask = torch.zeros(1, 3)
+    mean_logp = (per_token * empty_mask).sum(-1) / empty_mask.sum(-1)
+    assert torch.isnan(mean_logp).all()
+
+
+def test_guard_closes_all_three_modes_and_leaves_healthy_pairs_alone():
+    torch = pytest.importorskip("torch")
+    CEIL = -1e-2
+
+    def guarded(c, r):
+        c, r = c.float(), r.float()
+        bad = ~(torch.isfinite(c) & torch.isfinite(r))
+        c = torch.where(bad, torch.full_like(c, CEIL), c)
+        r = torch.where(bad, torch.full_like(r, CEIL), r)
+        return _orpo_log_odds(c.clamp(max=CEIL), r.clamp(max=CEIL))
+
+    nan_in = torch.tensor([float("nan")])
+    for c, r in [(nan_in, torch.tensor([-1.0])),
+                 (torch.tensor([-0.0001]), torch.tensor([-0.0002])),
+                 (torch.tensor([-0.0001]), torch.tensor([-1.0])),
+                 (torch.tensor([-1.0]), torch.tensor([-0.0001]))]:
+        assert torch.isfinite(guarded(c, r)).all()
+
+    # and it must not perturb a pair that was never in danger
+    c, r = torch.tensor([-0.7]), torch.tensor([-1.4])
+    assert torch.allclose(guarded(c, r), _orpo_log_odds(c, r))

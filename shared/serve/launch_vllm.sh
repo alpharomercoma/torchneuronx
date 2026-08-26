@@ -180,6 +180,40 @@ case "$MODEL_KEY" in
     MODEL_ID="Qwen/Qwen3-8B" ;;
   mistral7b)
     MODEL_ID="mistralai/Mistral-7B-Instruct-v0.3" ;;
+  gemma3_12b)
+    # Third modern architecture through the identical vLLM/NxDI path, chosen as
+    # the direct comparable to the Mistral-7B lane (13.2). 24.4 GB of bf16
+    # weights against inf2.xlarge's 32 GB (2 x 16 GB), so TP=2 puts 12.2 GB on
+    # each core -- it fits, with less headroom than Mistral's 14.5 GB total but
+    # more than the 8B ORPO lane that OOM'd at 15.6/16 GB on trn1.
+    #
+    # RISK, RECORDED BEFORE THE RUN: the HF checkpoint is
+    # Gemma3ForConditionalGeneration (multimodal) while NxDI ships
+    # NeuronGemma3ForCausalLM (text tower only). If the loader will not extract
+    # the text config from the multimodal wrapper this lane fails at model
+    # construction, which is a receipt naming a supported-architecture gap
+    # rather than a capacity one. gemma3_4b is the fallback rung.
+    MODEL_ID="google/gemma-3-12b-it" ;;
+  gemma3_4b)
+    MODEL_ID="google/gemma-3-4b-it" ;;
+  gpt_oss_20b)
+    # The MoE rung. 21B total / ~3.6B active -- and TOTAL is what has to fit,
+    # since every expert's weights are resident even though only a few fire per
+    # token. That is the fact that rules out Qwen3-30B-A3B (61 GB) and
+    # Mixtral-8x7B (93 GB) on a 32 GB box regardless of how few experts activate.
+    #
+    # NxDI ships a gpt_oss family and real MoE plumbing (modules/moe_v2.py,
+    # moe_tp_degree / moe_ep_degree), so this is the only modern MoE that is both
+    # SUPPORTED and plausibly SIZED for inf2.xlarge.
+    #
+    # THE OPEN QUESTION, RECORDED BEFORE THE RUN: the checkpoint is 27.5 GB on
+    # disk because it ships natively MXFP4 (4-bit experts + higher-precision
+    # attention). If NxDI loads it as-is that is ~13.8 GB/core under TP=2 and it
+    # fits. If NxDI DEQUANTISES to bf16 it becomes 21B x 2 = ~42 GB, i.e.
+    # ~21 GB/core, and it cannot fit. Which of those happens is exactly what this
+    # lane measures, and an OOM here is a real finding about MXFP4 support rather
+    # than a sizing mistake.
+    MODEL_ID="openai/gpt-oss-20b" ;;
   qwen25_7b)
     # RAG LLM-ladder rung 2: qwen2 arch is a different NxDI path than the
     # qwen3 that crashed at generation -- all-Qwen stays possible via 2.5.

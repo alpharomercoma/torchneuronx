@@ -90,7 +90,7 @@ token cannot influence it, so the padding is inert by construction.
 WHY --auto-cast DEFAULTS TO none
 --------------------------------
 Measured 2026-07-31: with the default matmul->bf16 cast, the traced CLIP
-graph returns NaN logits. `--auto-cast matmul` is kept as a rung precisely so
+graph returns NaN logits. `--auto-cast matmult` is kept as a rung precisely so
 that failure can be reported as a NUMBER (top-1 ~ 0.1%, chance) rather than
 as an anecdote.
 
@@ -149,10 +149,17 @@ def build_parser():
                          "--auto-cast matmul rung: without it, a bf16 NaN on "
                          "Neuron cannot be told apart from a bf16 NaN in the "
                          "model itself.")
-    ap.add_argument("--auto-cast", choices=["none", "matmul", "all"],
+    # "matmult", not "matmul". neuronx-cc's CLI spells it with the trailing t
+    # (`--auto-cast {none,matmult,all}`) while optimum-neuron's PYTHON api takes
+    # auto_cast="matmul". This lane drives the compiler directly through
+    # torch_neuronx.trace(compiler_args=...), so it needs the CLI spelling.
+    # Measured 2026-08-20: the wrong one exits 2 with "invalid choice", which
+    # surfaces as a bare `RuntimeError: neuronx-cc failed with 2` several
+    # frames up -- loud, but it names the wrong layer.
+    ap.add_argument("--auto-cast", choices=["none", "matmult", "all"],
                     default="none",
                     help="Neuron compiler cast. 'none' (fp32) is the honest "
-                         "default; 'matmul' is the rung that reproduces the "
+                         "default; 'matmult' is the rung that reproduces the "
                          "measured bf16 NaN as a scored number.")
     ap.add_argument("--data-dir", default="/opt/np/models/imagenet1k")
     ap.add_argument("--compiled-dir", default=None)
@@ -424,7 +431,7 @@ def load_neuron(args, n_templates):
         return image_traced(pixel_values)
 
     return processor, encode_text, encode_image, {
-        "dtype": {"none": "float32", "matmul": "bf16 matmuls",
+        "dtype": {"none": "float32", "matmult": "bf16 matmuls",
                   "all": "bf16"}[args.auto_cast],
         "framework": "torch_neuronx.trace (two towers)",
         "auto_cast": args.auto_cast, "text_attention_mask": args.text_attention_mask,

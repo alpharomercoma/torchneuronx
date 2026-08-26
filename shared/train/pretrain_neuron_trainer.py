@@ -101,6 +101,19 @@ def parse_args(argv=None):
     ap.add_argument("--grad-accum", type=int, default=2)
     ap.add_argument("--max-steps", type=int, default=60)
     ap.add_argument("--warmup-steps", type=int, default=10)
+    # MID-TRAINING NEEDS A DECAY SCHEDULE.
+    # This lane hardcoded lr_scheduler_type="constant", which is right for a
+    # pretraining THROUGHPUT probe and wrong for the WSD decay phase, whose
+    # defining feature is annealing the LR to a floor while the data mixture
+    # shifts. pretrain_fineweb.py has the cosine schedule but has never
+    # compiled -- every pretrain_probe_* run died on NCC_EXTP004/EVRF007
+    # instruction limits -- so the schedule has to come to the lane that works
+    # rather than the other way round.
+    ap.add_argument("--lr-scheduler-type", default="constant",
+                    choices=["constant", "cosine", "linear",
+                             "constant_with_warmup", "cosine_with_restarts"],
+                    help="constant for pretraining probes; cosine for the "
+                         "WSD decay phase")
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--weight-decay", type=float, default=0.1)
     ap.add_argument("--seed", type=int, default=42)
@@ -325,7 +338,7 @@ def main(argv=None):
         "grad_accum": args.grad_accum,
         "max_steps": args.max_steps,
         "lr": args.lr,
-        "lr_schedule": "constant",
+        "lr_schedule": args.lr_scheduler_type,
         "weight_decay": args.weight_decay,
         "seed": args.seed,
         "world_size": world,
@@ -385,7 +398,7 @@ def main(argv=None):
             # Constant, matching the hand-written lane's control run. A per-step
             # LR was the FIRST withdrawn attribution for that lane's recompile;
             # holding it constant here keeps this a one-variable comparison.
-            lr_scheduler_type="constant",
+            lr_scheduler_type=args.lr_scheduler_type,
             warmup_steps=0,
             bf16=True,
             gradient_checkpointing=not args.no_gradient_checkpointing,

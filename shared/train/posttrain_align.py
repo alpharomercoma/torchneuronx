@@ -65,7 +65,7 @@ import phase4_lib as P4  # noqa: E402
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--algo", choices=["dpo", "orpo"], required=True)
+    ap.add_argument("--algo", choices=["dpo", "orpo", "cpo"], required=True)
     ap.add_argument("--model", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--tag", required=True)
@@ -415,6 +415,129 @@ def strip_unsupported_forward_kwargs(model, drop=("use_cache",),
     return model
 
 
+def guard_orpo_numerics(trainer, algo, say):
+    """Stop ORPO's odds-ratio loss from producing NaN on bf16 hardware.
+
+    MEASURED FAILURE THIS PREVENTS
+    ------------------------------
+    REPORT-EXTENSIONS 32.10: the 150-step ORPO lane "diverged to NaN at step 23"
+    and was "non-finite for 128 of its 150 steps", while still reporting an
+    entirely ordinary 1,011.2 tok/s -- because NaN costs the same FLOPs as a
+    number. 32.10 recorded a HYPOTHESIS (a completion emptied by truncation) and
+    explicitly did not test it. Reading trl 0.24's source resolves it, and the
+    hypothesis was half right: there are TWO NaN paths, both reachable, and both
+    rooted in the same thing -- a pathologically short chosen/rejected
+    completion.
+
+    PATH 1 -- orpo_trainer.py:721, the mean itself
+        return (per_token_logps * loss_mask).sum(-1) / loss_mask.sum(-1)
+    A completion with zero label tokens divides 0/0. This IS 32.10's hypothesis,
+    now confirmed as a real code path rather than a guess.
+
+    PATH 2 -- orpo_trainer.py, odds_ratio_loss
+        log_odds = (chosen_logps - rejected_logps) - (
+            torch.log1p(-torch.exp(chosen_logps)) - torch.log1p(-torch.exp(rejected_logps)))
+    orpo_trainer.py:786 passes average_log_prob=True, so these are MEAN
+    per-token log-probs -- small negatives, and exp() of them lands near 1.0.
+    bf16 spacing in [0.5,1) is 2**-9, so exp(x) rounds to EXACTLY 1.0 once
+    x > -0.000977 (per-token probability > 99.9023%), which then feeds
+    log1p(-1.0) = -inf. Measured, there are THREE degradation modes, not one:
+
+        chosen saturates only    -> loss = +0.000000, gradient vanishes SILENTLY
+        rejected saturates only  -> loss = -inf
+        BOTH saturate            -> -inf - (-inf) = NaN   <- 32.10's step 23
+
+    The single-sided modes are arguably worse than the NaN: they do not show up
+    in a loss trace at all. In fp32 the threshold is -2.98e-08, i.e. unreachable,
+    so every one of these is a PRECISION artifact rather than an algorithm one.
+
+    A one-or-two-token completion that the model finds obvious clears -0.000977
+    easily, which is why the 30-step lanes (320 pairs) stayed finite and the
+    150-step lane (1,400 pairs) did not: same seed, same shapes, different draw.
+
+    WHY BOTH ARE FIXED AND NOT JUST ONE
+    -----------------------------------
+    The filter alone cannot help path 2 -- a 40-token completion can still be
+    predicted at 99.9%. The fp32 recast alone cannot help path 1 -- 0/0 is NaN
+    in every precision. They are independent failures with a shared cause.
+
+    Counts are RECORDED, not hidden: a lane that silently dropped data would
+    reproduce 32.6's "two wrongs cancelling" problem in a new place.
+    """
+    import torch
+
+    if algo not in ("orpo", "cpo"):
+        return {"applied": False, "reason": "guard applies to orpo/cpo only"}
+
+    stats = {"applied": True, "algo": algo,
+             "nonfinite_logps": 0, "nonfinite_batches": 0, "clamped_values": 0,
+             "_clamped_dev": None}
+
+    # PATH 1 applies to BOTH: cpo_trainer.py:839 sets average_log_prob=True for
+    # loss_type in {ipo, simpo}, which reaches the same /loss_mask.sum(-1).
+    # CPO carries no log1p(-exp(...)) at all, so PATH 2 is ORPO-only.
+    _logps = type(trainer).get_batch_logps
+
+    @staticmethod
+    def safe_get_batch_logps(*a, **kw):
+        out = _logps(*a, **kw)
+        if isinstance(out, torch.Tensor):
+            bad = ~torch.isfinite(out)
+            n = int(bad.sum())
+            if n:
+                stats["nonfinite_logps"] += n
+                out = torch.where(bad, torch.full_like(out, -1e-2), out)
+        return out
+
+    type(trainer).get_batch_logps = safe_get_batch_logps
+
+    if algo == "cpo":
+        say(f"[{algo}] logp guard installed (0/0 path only; CPO has no log1p term)")
+        return stats
+
+    inner = type(trainer).odds_ratio_loss
+
+    # bf16 saturation threshold, with a safety factor. Below this, exp() cannot
+    # round to 1.0 even in bf16.
+    LOGP_CEIL = -1e-2
+
+    def safe_odds_ratio_loss(self, policy_chosen_logps, policy_rejected_logps):
+        # fp32 for the whole odds-ratio computation: path 2 is purely a
+        # precision artifact and disappears at fp32's 2**-24 spacing.
+        c = policy_chosen_logps.float()
+        r = policy_rejected_logps.float()
+
+        # Path 1: a zero-token completion arrives here as NaN already (0/0
+        # upstream). Replace with the ceiling so the batch survives; the count
+        # is what gets reported.
+        bad = ~(torch.isfinite(c) & torch.isfinite(r))
+        if bool(bad.any()):
+            stats["nonfinite_batches"] += 1
+            c = torch.where(bad, torch.full_like(c, LOGP_CEIL), c)
+            r = torch.where(bad, torch.full_like(r, LOGP_CEIL), r)
+
+        # Path 2: clamp away from 0 so exp() cannot reach 1.0.
+        #
+        # THE COUNTER MUST NOT SYNC. The first version of this guard wrote
+        #     n_clamp = int((c > LOGP_CEIL).sum() + (r > LOGP_CEIL).sum())
+        # and int() on a lazy tensor forces a device->host transfer EVERY STEP,
+        # severing the XLA graph -- the exact failure neutralise_out_of_graph_
+        # gathers exists to prevent, reintroduced in new code. Measured cost:
+        # 1,181 -> 806 tok/s (-32%), median step 13,873 -> 20,327 ms.
+        # Accumulate on device instead and read once, after training.
+        over = (c > LOGP_CEIL).sum() + (r > LOGP_CEIL).sum()
+        stats["_clamped_dev"] = over if stats["_clamped_dev"] is None else stats["_clamped_dev"] + over
+        c = c.clamp(max=LOGP_CEIL)
+        r = r.clamp(max=LOGP_CEIL)
+
+        return inner(self, c, r)
+
+    type(trainer).odds_ratio_loss = safe_odds_ratio_loss
+    say(f"[{algo}] odds-ratio guard installed: fp32 + logp clamp at {LOGP_CEIL} "
+        f"(bf16 exp() saturates to 1.0 above -0.000977)")
+    return stats
+
+
 def build_neuron_trainer_class(algo: str):
     """Mirror optimum-neuron's re-basing trick for DPO / ORPO, generalised.
 
@@ -426,6 +549,12 @@ def build_neuron_trainer_class(algo: str):
 
     if algo == "dpo":
         from trl import DPOConfig as _Cfg, DPOTrainer as _Trainer
+    elif algo == "cpo":
+        # CPO is reference-free like ORPO, so it needs no second model. Its one
+        # .generate() call sits at cpo_trainer.py:940, inside generate_during_eval
+        # -- the SAME call site as orpo_trainer.py:895, which the proven ORPO lane
+        # never reaches. loss_type="simpo" is reachable from here for free.
+        from trl import CPOConfig as _Cfg, CPOTrainer as _Trainer
     else:
         from trl import ORPOConfig as _Cfg, ORPOTrainer as _Trainer
 
@@ -859,6 +988,8 @@ def main(argv=None):
 
         neutralise_out_of_graph_gathers(trainer, args.algo, nproc, tp, say)
 
+        orpo_guard = guard_orpo_numerics(trainer, args.algo, say)
+
         if getattr(conf, "precompute_ref_log_probs", False):
             device_place_reference_precompute(trainer, args.algo, say)
 
@@ -903,6 +1034,15 @@ def main(argv=None):
         # throughput under TP. The two errors cancelled in MFU and left tok/s
         # 2x too high -- see phase4_lib's note. Safe to sync here: training has
         # already finished, so the all-reduce cannot perturb a measured step.
+        # Safe to sync now: training has finished, so materialising the
+        # guard's device-side counter cannot perturb a measured step.
+        if orpo_guard.get("_clamped_dev") is not None:
+            try:
+                orpo_guard["clamped_values"] = int(orpo_guard.pop("_clamped_dev"))
+            except Exception as exc:
+                orpo_guard["clamped_values"] = f"unreadable: {exc!r}"
+        orpo_guard.pop("_clamped_dev", None)
+
         counts = P4.count_parameters(model, torch, tp)
         trainable, total = counts["trainable"], counts["total"]
 
@@ -928,6 +1068,18 @@ def main(argv=None):
                         "other LoRA lane in this study."),
                 },
                 config={**cfg_record,
+                        "orpo_numerics_guard": orpo_guard,
+                        "orpo_numerics_guard_note": (
+                            "32.10 left the ORPO NaN unexplained. trl 0.24 has two "
+                            "reachable NaN paths, both from a pathologically short "
+                            "completion: orpo_trainer.py:721 divides by "
+                            "loss_mask.sum(-1) (0/0 on an empty completion), and "
+                            "odds_ratio_loss takes log1p(-exp(mean_logp)) where bf16 "
+                            "rounds exp() to exactly 1.0 once mean_logp > -0.000977, "
+                            "giving log1p(-1) = -inf and -inf - -inf = NaN. The guard "
+                            "recasts to fp32 and clamps; counts above are how often "
+                            "each fired. Zero counts mean the run never approached "
+                            "either path, NOT that the guard was inactive."),
                         "reference_model": ("implicit: adapter disabled on the "
                                             "policy (ref_model=None + PEFT)")
                         if args.algo == "dpo" else "none (ORPO is reference-free)",
