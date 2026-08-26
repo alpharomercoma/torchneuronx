@@ -14,11 +14,11 @@ pull-results:   ## fetch raw triplets from all three boxes
 report:         ## regenerate comparison.json + REPORT tables from results/
 	python3 analysis/make_report.py
 
-test:           ## local gate 1: harness + CDK assertions
-	cd tests && python3 -m pytest -q ../tests
+test:           ## local gate 1: harness + CDK assertions (no AWS, no Neuron hardware)
+	uvx --with pytest --with numpy pytest -q tests
 	cd cdk && uv run pytest -q
 
-synth:
-	cd cdk && uv run cdk synth
+synth:          ## synth all 4 stacks; npx avoids needing a global cdk install
+	cd cdk && npx -y aws-cdk@2 synth
 
 .PHONY: push-code pull-results report test synth

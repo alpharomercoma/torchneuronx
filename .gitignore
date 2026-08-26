@@ -13,3 +13,6 @@ node_modules/
 models/
 hf_cache/
 .pytest_cache/
+
+# Root-level cdk.out from an ad-hoc synth; the real one is cdk/cdk.out/.
+cdk.out/
