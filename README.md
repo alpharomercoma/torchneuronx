@@ -15,6 +15,17 @@ Companion repo: [MI300X-vs-H200](https://github.com/alpharomercoma/MI300X-vs-H20
 — same harness lineage, same metrics schema, so numbers are directly
 comparable across repos.
 
+![Architecture: four CloudFormation stacks across two regions, three Neuron instances, SSM-only access, one S3 artifacts bucket](architecture-clean.png)
+
+The study as built: four CDK stacks across two regions, three Neuron instances
+reached only through SSM Session Manager, and a single versioned us-west-2
+bucket that all three boxes read and write cross-region. The instances were
+terminated on 2026-08-26 and the `NeuronPipelinesTrainium`,
+`NeuronPipelinesInferentia` and `Ec2AutoshutdownStack` stacks deleted with them;
+`NeuronPipelinesBase` (the bucket and the budget) and
+`NeuronPipelinesTrainium2` (scale-to-zero, max 1) remain. The diagram is
+therefore the architecture *as measured*, not the account as it stands today.
+
 ## Machines
 
 ```
@@ -98,10 +109,33 @@ make pull-results && make report     # regenerate REPORT.md numbers
 
 ## Status
 
-Complete through Phase 4. Measured results in [REPORT.md](REPORT.md) +
+Complete through Phase 5. Measured results in [REPORT.md](REPORT.md) +
 [REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from
-`analysis/comparison.json` via `make report`, and the Phase-4 tables from
-`analysis/phase4_summary.py`.
+`analysis/comparison.json` via `make report`, the Phase-4 tables from
+`analysis/phase4_summary.py`, and the Phase-5 tables from
+`analysis/accuracy_summary.py` and `analysis/specdec_summary.py`.
+
+**Phase 5 — correctness, acceptance, and replication** (§35-38):
+
+| question | answer |
+|---|---|
+| Do the graphs compute the *right* answer, not just fast? | yes — zero-shot ImageNet is **bit-exact vs CPU on 10,000 images**, both boxes; ASR WER moves −0.02 to −0.03 pp. All six paired lanes PASS the MLPerf gate (§35) |
+| Can a fast graph be silently wrong? | **yes** — the traced CLIP text tower returned NaN for all 1000 classes at 1,165 images/s with `Compiler status PASS` (§35.3) |
+| How far does speculative decoding actually go? | **2.45× at k=7** over Spec-Bench's 39 prompts; cost is linear (R² 0.999993), acceptance is what decays (§36) |
+| Does the 68.3% MFU headline replicate on another corpus? | yes — Tulu-3 lands at **2,964 tok/s vs dolly's 2,952**, 0.4% apart (§37) |
+| Why is gpt-oss-20b blocked on inf2? | a MoE kernel **shape** constraint (`hidden_size` 2880 not divisible by 128), not memory — no OOM evidence at all (§36.3) |
+
+One Phase-5 lane is deliberately **not** published as a result: the midtrain
+learning-rate-schedule comparison failed its own control (bit-identical loss
+traces across two schedules that demonstrably ran). The anomaly is recorded in
+§38 instead of a recommendation.
+
+**The boxes are gone.** All seven EC2 instances backing this study were
+terminated on 2026-08-26; the disks survive as EBS snapshots. Everything needed
+to rebuild them — snapshot IDs, AMI pins, user-data, KMS keys, CloudFormation
+templates — is in
+[docs/preservation/2026-08-26-RECOVERY.md](docs/preservation/2026-08-26-RECOVERY.md).
+Results in this repo regenerate without any AWS access.
 
 **Phase 4 — the training stages either side of SFT** (§32):
 

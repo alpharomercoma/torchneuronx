@@ -143,7 +143,7 @@ Verdicts written before compute was spent; outcomes after:
 | Long-ctx bisection | GO | ✅ bracketed both cliffs |
 | fp8 KV | GO | ✅ parity A/B |
 | int8 weights | GO | ⚠ declared prep-stage gap |
-| gpt-oss-20b MoE | attempt-only | ⏸ driver not built (declared) |
+| gpt-oss-20b MoE | attempt-only | ❌ resolved — blocked by a MoE kernel *shape* constraint (§36.3), not memory |
 | Spec-decode | GO via fused | ✅ 2.4× fused speedup |
 | Multi-tenant | GO (attempt) | ✅ measured isolation |
 | Cold-start | GO | ✅ 47.9 min, infra ≈ 7 min |
@@ -2740,3 +2740,244 @@ your SLO is aggregate throughput at bounded concurrency, it will.
 | Serving where capacity or residency dominates cost | reasonable, inside the concurrency ceiling |
 | Unsupported or fast-moving architecture | **do not** — the exporter list is the gate |
 | Team without slack for toolchain debugging | budget for it: most of this study's walls were toolchain, not silicon |
+
+## 35. Accuracy as a validity check (Phase 5)
+
+Every inference lane up to this point reported **speed**. Speed cannot tell a
+working compile from a broken one. This section is the control that proves it:
+the same graphs, scored for correctness against a same-box float32 CPU
+reference, using MLPerf's ≥99%-of-reference rule.
+
+The reference is deliberately **the CPU run on the same box**, not anyone's
+published number. A published figure differs for dataset, preprocessing and
+prompt-template reasons that have nothing to do with the accelerator; only a
+paired run isolates the silicon. Regenerate with:
+
+```bash
+python3 analysis/accuracy_summary.py trn1/results/accuracy inf2/results/accuracy --markdown
+```
+
+### 35.1 Paired verdicts
+
+| box | comparison | delta | 95% CI | disagreements | MLPerf gate | rel. error |
+|---|---|---|---|---|---|---|
+| trn1 | ASR WER | −0.020 pp | [−0.052, +0.000] | 7/500 differ | **PASS** | −0.4% |
+| trn1 | CLIP zero-shot | +0.00 pp | [+0.000, +0.000] | 0/10000 | **PASS** | — |
+| trn1 | SigLIP zero-shot | +0.00 pp | [+0.000, +0.000] | 0/10000 | **PASS** | — |
+| inf2 | ASR WER | −0.031 pp | [−0.070, +0.000] | 7/500 differ | **PASS** | −0.6% |
+| inf2 | CLIP zero-shot | +0.00 pp | [+0.000, +0.000] | 0/10000 | **PASS** | — |
+| inf2 | SigLIP zero-shot | +0.00 pp | [+0.000, +0.000] | 0/10000 | **PASS** | — |
+
+Both zero-shot lanes are **bit-exact against CPU across 10,000 ImageNet
+validation images** on both boxes — zero label disagreements, zero near-ties.
+ASR moves by hundredths of a point and in the *favourable* direction on both
+boxes, which is bf16 rounding, not a regression.
+
+### 35.2 The measured numbers
+
+| box | lane | top-1 / WER | top-5 / word acc | dtype |
+|---|---|---|---|---|
+| trn1 | CLIP CPU | 63.77% | 88.64% | float32 |
+| trn1 | CLIP Neuron | 63.77% | 88.64% | float32 |
+| trn1 | CLIP CPU bf16 | 63.59% | 88.60% | bfloat16 |
+| trn1 | CLIP Neuron bf16 | 63.64% | 88.58% | bf16 matmuls |
+| trn1 | SigLIP CPU / Neuron | 76.12% | 94.48% | float32 |
+| inf2 | CLIP CPU / Neuron | 63.77% | 88.64% | float32 |
+| inf2 | SigLIP CPU / Neuron | 76.12% | 94.48% | float32 |
+| trn1 | Whisper CPU | 5.217% WER | 94.783% | float32 |
+| trn1 | Whisper Neuron | 5.196% WER | 94.804% | bf16 (auto_cast=all) |
+| inf2 | Whisper Neuron | 5.186% WER | 94.814% | bf16 (auto_cast=all) |
+
+ASR broken out by split (250 utterances each): dev-clean 3.436% CPU vs 3.417%
+Neuron; dev-other 7.357% CPU vs 7.335% (trn1) / 7.312% (inf2). The pooled 5.2%
+is the two splits combined, which is why it sits above the 3.4% test-clean
+figure Whisper is usually quoted at — a different split mix, not a worse model.
+
+### 35.3 Why this lane exists: the CLIP text tower returns NaN
+
+Running ImageNet-1k zero-shot on inf2, the traced CLIP **text** tower returned
+NaN for all 1000 classes — **512,000 non-finite classifier entries** — while
+`neuronx-cc` reported `Compiler status PASS` and the graph ran at 1,165
+images/s. A throughput number would have called that a success.
+
+Bisected to one variable (`extras/clip_nan_bisect.py`, six cells):
+
+```
+cpu    text +mask   CLEAN  0/2048      neuron text +mask   NaN  2048/2048
+cpu    text -mask   CLEAN  0/2048      neuron text -mask   CLEAN   0/2048
+cpu    image        CLEAN  0/2048      neuron image        CLEAN   0/2048
+```
+
+CLIP's text encoder fills a causal mask with `finfo(float32).min` (−3.4e38) and
+then **adds** the padding mask, filled with the same constant. −3.4e38 +
+−3.4e38 overflows to −inf, and `softmax(−inf − −inf)` is NaN. On CPU the
+addition saturates harmlessly. This reproduces on trn1 and inf2
+(NeuronCore-v2) and **not** on trn2 (v3).
+
+`analysis/accuracy_summary.py` therefore flags **two** silent-failure shapes,
+not one. A graph emitting a *constant* logit row is equally dead but scores at
+chance rather than zero, so it reads as a mediocre model instead of a broken
+compile. Both shapes are checked at table-render time, because a slide is where
+an unpaired or dead comparison would do the most damage — nobody re-derives a
+table during a talk.
+
+### 35.4 Declared failures in this lane
+
+| receipt | what happened |
+|---|---|
+| `trn1/results/accuracy/zs_clip_neuron_bf16.failure.json` | `RuntimeError: neuronx-cc failed with 2` |
+| `trn1/results/accuracy/zs_clip_bf16_delta.failure.json` | refused to pair — `receipts differ in the EXPERIMENT, not just the engine`. The comparator declines to compute a delta across two different experiments rather than emit a meaningless one. |
+
+`extras/clip_lane.py` is **deliberately not fixed**. Its trn2 figure (188.48
+images/s, correct probabilities) was measured *with* the attention mask;
+silently changing the traced signature now would leave three boxes reporting a
+"CLIP parity" number derived from two different graphs.
+
+## 36. Speculative decoding, measured properly (Phase 5)
+
+§13.11 reported a single fused-speculation point from `inference_demo`. This
+section replaces it with a full acceptance ladder over **Spec-Bench** — 39
+prompts across 13 categories — on trn1.2xlarge: Llama-3.1-8B-Instruct target +
+Llama-3.2-1B-Instruct draft, NxDI fused speculation, TP=2, batch 1, seq_len
+1280, greedy, EOS active.
+
+```bash
+python3 analysis/specdec_summary.py trn1/results/specdec
+```
+
+### 36.1 The correction that had to come first
+
+`sb_k0.json` capped every prompt at exactly 128 generated tokens (39×128 =
+4,992 tokens, one distinct length) while every k≥2 arm ran uncapped to
+`max_length=1280` (~1,120 tokens/prompt). Prefill was therefore amortised
+**~8.7× less** in the baseline, inflating every speedup in the table.
+
+`sb_k0_matched.json` re-ran k=0 with an invocation byte-identical to the k≥2
+arms except the speculation flags. Baseline moved **30.85 → 31.61 tok/s**, and
+output-length distributions now match ([439, 1270] on both arms). Every number
+below uses the corrected baseline.
+
+### 36.2 The ladder
+
+| k | tok/s | speedup | agreement | E[accepted] | ms/call |
+|---|---|---|---|---|---|
+| 0 | 31.61 | 1.000× | — | 1.001 | 31.66 |
+| 2 | 44.51 | 1.408× | 96.6% | 1.932 | 43.40 |
+| 3 | 56.41 | 1.784× | 92.8% | 2.783 | 49.35 |
+| 4 | 64.30 | 2.034× | 88.8% | 3.551 | 55.22 |
+| 5 | 70.37 | 2.226× | 85.9% | 4.294 | 61.02 |
+| 6 | 73.86 | 2.336× | 82.4% | 4.945 | 66.96 |
+| 7 | 77.34 | **2.447×** | 80.4% | 5.628 | 72.77 |
+| 10 | 78.47 | **2.482×** | 70.9% | 7.085 | 90.29 |
+
+**Speedup saturates, and the reason is acceptance, not cost.** The cost side is
+almost perfectly linear —
+
+```
+t_call(k) = 31.711 ms + 5.864 ms × k      R² = 0.999993
+```
+
+— fitted over 8 points, with k=0 excluded from the fit and landing on the
+intercept to within 0.05 ms. The implied draft/target cost ratio is **0.1849**,
+measured from the slope rather than assumed from weight bytes.
+
+What decays is agreement: 96.6% at k=2 down to 70.9% at k=10. Going k=7 → k=10
+costs three more draft tokens and buys **+0.036× (1.4%)**, where k=0 → k=2
+bought +0.408×. E[accepted] at k=10 came in at 7.085 against a naive
+extrapolation of 7.68 — the naive prediction overshoots by 7.6%.
+
+A separate single-prompt lane (`trn1/results/specdec`) reaches **2.890× at k=7**
+(11.231 ms/token against a 32.455 ms/token baseline). It is higher than the
+Spec-Bench figure because one prompt is not 39 prompts across 13 categories;
+the Spec-Bench number is the one to quote. `spec_k1` is a recorded failure:
+`RuntimeError: Error while lowering: aten::cumsum`.
+
+### 36.3 gpt-oss-20b: a shape wall, not a memory wall
+
+The lane pre-registered a question: does NxDI load MXFP4 as-is (~13.8 GB, fits)
+or dequantise to bf16 (~42 GB, does not fit)? **It dequantises** — *"Using MXFP4
+quantized models requires a GPU, we will default to dequantizing the model to
+bf16"*. But the run never reached a memory limit. It died on:
+
+```
+[NCC_INKI016] Kernel validation exception:
+H=2880 must be divisible by 128
+```
+
+`nkilib/core/utils/kernel_assert.py:17` asserts `dims.H % _pmax == 0` with
+`_pmax = 128` — the NeuronCore partition-dimension maximum, the 128 of the
+128×128 systolic array. gpt-oss-20b's `hidden_size` is 2880, and 2880 / 128 =
+22.5. It is divisible by 64, not by 128.
+
+**There is no OOM evidence at all**: `dmesg` out-of-memory matches = 0, server
+log HBM-exceeded matches = 0, host memory ended with 9 GiB free of 15 GiB. The
+verdict is that gpt-oss-20b is blocked on inf2 by a **MoE kernel shape
+constraint**, not by model size and not by memory. Two secondary packaging gaps
+surfaced on the way: the blockwise MoE NKI kernels fail to import
+(`No module named 'neuronxcc.nki._private.blockwise_mm'`), and SWIGLU is not yet
+supported in the selected blockwise matmul kernel.
+
+This supersedes the earlier `gpt_oss_20b_short` receipt, which died sooner at
+`ModuleNotFoundError: accelerate` and never reached the question the lane was
+written to answer. §13.9 previously recorded this as "driver not built
+(declared)"; that is retracted. Receipt:
+`inf2/results/extras/serve/gpt_oss_20b_short_retry/load_failure.json`.
+
+## 37. A second SFT dataset: does the headline replicate? (Phase 5)
+
+The 68.3% MFU headline came from one dataset (dolly-15k). Running the identical
+recipe on **allenai/tulu-3-sft-mixture** — same model, same LoRA r16/α32, same
+seq 2048, micro-batch 1, grad-accum 8, 645 steps, seed 42 — tests whether the
+number is a property of the chip or of the corpus.
+
+| | dolly-15k | Tulu-3 SFT mixture |
+|---|---|---|
+| median step | 5,550 ms | 5,527.68 ms |
+| **tok/s** | **2,952** | **2,964.0** |
+| MFU (210 TFLOP/s denom) | 68.3% | 68.60% |
+| MFU (190 TFLOP/s denom) | — | 75.82% |
+| final loss | 1.21 | 1.067 |
+
+**+0.4% apart.** The throughput headline is a property of the chip and the
+shapes, not of the corpus — which is what a throughput claim is supposed to
+mean. Receipt: `trn1/results/sft/sft_llama31_8b_tulu3.json`.
+
+Two accounting notes carried from that receipt, both of which keep the number
+honest: end-to-end throughput is **1,425.9 tok/s**, not 2,964 — the median-step
+window covers only 48.11% of wall time, and `measured_window_fraction` is
+recorded precisely so the steady-state figure cannot be mistaken for the
+wall-clock one. And `peak_device_mem_mib` is null rather than estimated,
+because torch on XLA does not expose an HBM high-water mark; read
+`mem_used_mib` from the matching telemetry CSV instead.
+
+## 38. A comparison that did not survive its own control (Phase 5)
+
+The midtrain lane was meant to compare learning-rate schedules on the 362M
+from-scratch model: constant vs linear-warmup-then-cosine, 60 steps each,
+FineWeb-Edu `sample-10BT`, everything else held fixed. **It is not published as
+a comparison, because it failed its own control.**
+
+The two runs differ in exactly one config key, `lr_schedule`. The scheduler
+demonstrably ran — the logs show a constant `0.0001` on one arm and a varying
+`0.0 → 1.09e-06 → 1.11e-05 → 1.85e-05 …` on the other — and the cosine arm paid
+**215.4 s of compile against 12.6 s**, a 17× difference consistent with a
+changing LR scalar being retraced into the graph.
+
+And yet **all 60 logged loss values are bit-identical across the two runs**,
+first to last, 10.994 → 6.4584, in the logs as well as in the JSON. Throughput
+matches too (4,379.1 vs 4,374.4 tok/s).
+
+A schedule that visibly changes the LR, visibly changes compile behaviour, and
+changes *nothing at all* about the loss trajectory is not a result. Either the
+LR the graph executes is not the LR the trainer logs, or the two arms are not
+as independent as their configs claim. The study cannot distinguish those from
+here: both boxes were terminated on 2026-08-26 and only EBS snapshots remain
+(`docs/preservation/2026-08-26-RECOVERY.md`).
+
+What is recorded, therefore, is the anomaly and not a schedule recommendation.
+The lane's throughput and MFU figures (4,379 tok/s, 6.67% whole-chip / 13.34%
+per-core-used) stand on their own as a second confirmation of the §32.11
+pretraining numbers; the schedule axis does not. Both runs are named
+`midtrain_finemath_*` for historical reasons but ran on **FineWeb-Edu**, per
+the `dataset` field in both receipts — the filenames are misleading and the
+receipts are authoritative.
