@@ -1,4 +1,4 @@
-neuron-pipelines comparison  (generated 2026-08-26T16:05:36Z)
+neuron-pipelines comparison  (generated 2026-08-26T16:11:44Z)
 ================================================================
 
 [trn1] lanes: ['compile_llama31_train', 'cpu_cpu', 'train_llama31_lora', 'train_merge_llama31', 'train_qwen3_lora', 'train_smoke_tinyllama']
