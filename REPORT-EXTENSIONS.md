@@ -2954,19 +2954,28 @@ in the row is scaled by ~1/5. That is also why the column reads exactly 1.000 at
 k=5 — the point where invocations happen to equal generated tokens — which is
 precisely the plausible-looking middle value that would have survived review.
 
-Because the distortion is constant, the probe's own self-check calibrates it.
-Dividing through by 4.977 recovers E[accepted], and it lands on the
-timing-derived column from §36.2.1 — a completely independent path, built from
-latency and a fitted draft cost rather than from counting anything:
+Because the distortion is constant, it cancels in a ratio. The probe's k=0 arm
+*is* the control, so E[accepted] at any k is simply its invocation count
+measured against the control's:
 
-| k | normalised probe | timing-derived | difference |
-|---|---|---|---|
-| 2 | 2.000 | 2.054 | −2.6% |
-| 3 | 2.991 | 3.052 | −2.0% |
-| 4 | 3.969 | 4.022 | −1.3% |
-| 5 | 4.977 | 4.928 | +1.0% |
-| 6 | 5.981 | 5.899 | +1.4% |
-| 7 | 6.924 | 6.803 | +1.8% |
+```
+E[accepted](k) = invocations(k=0) / invocations(k)
+```
+
+No calibration constant is needed — the 4.977 is a symptom to notice, not a step
+to apply, and dividing through by it is the same arithmetic taken the long way
+round. What comes out lands on the timing-derived column from §36.2.1, a
+completely independent path built from latency and a fitted draft cost rather
+than from counting anything:
+
+| k | invocations | probe, vs k=0 control | timing-derived | difference |
+|---|---|---|---|---|
+| 2 | 637 | 2.000 | 2.054 | −2.6% |
+| 3 | 426 | 2.991 | 3.052 | −2.0% |
+| 4 | 321 | 3.969 | 4.022 | −1.3% |
+| 5 | 256 | 4.977 | 4.928 | +1.0% |
+| 6 | 213 | 5.981 | 5.899 | +1.4% |
+| 7 | 184 | 6.924 | 6.803 | +1.8% |
 
 **Two unrelated methods agree to within 2.6% across the ladder.** Counting
 invocations and modelling latency have no shared failure mode, so the agreement
