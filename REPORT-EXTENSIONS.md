@@ -2930,7 +2930,7 @@ and now unmeasurable — the box was terminated on 2026-08-26.
 `spec_k1` is a recorded failure: `RuntimeError: Error while lowering:
 aten::cumsum`.
 
-### 36.2.2 An instrument that failed its own self-check
+### 36.2.2 An instrument that failed its own self-check — and what it was worth anyway
 
 The lane also carries a direct acceptance probe (`accept_k*.json`) that hooks
 `ModelWrapper.forward` and computes E[accepted] as tokens ÷ decode-graph
@@ -2942,17 +2942,41 @@ every k below 5:
 
 | k | 0 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
-| E[accepted] | 0.201 | 0.402 | 0.601 | 0.798 | 1.000 | 1.202 | 1.391 |
+| raw E[accepted] | 0.201 | 0.402 | 0.601 | 0.798 | 1.000 | 1.202 | 1.391 |
 | accepted drafts | −0.799 | −0.598 | −0.399 | −0.203 | 0.000 | 0.202 | 0.391 |
 
-The hook counts roughly 5× too many invocations at k=0 (1,274 for 256 tokens),
-so the ratio is scaled by ~1/5 and the whole column is wrong — it happens to
-read 1.000 at k=5 by coincidence, which is precisely the kind of plausible
-middle value that gets published. `analysis/specdec_summary.py` does not use it:
-it derives E[accepted] from the timing reports instead, and the numbers in
-36.2.1 come from that path. The broken probe is kept as a receipt because a
-failed instrument that announces its own failure criterion is worth more than a
-deleted one.
+The failure is a **constant factor, not noise**. At k=0 the hook logs 1,274
+invocations for 256 tokens: it fires **4.977× per decode step**, so every entry
+in the row is scaled by ~1/5. That is also why the column reads exactly 1.000 at
+k=5 — the point where invocations happen to equal generated tokens — which is
+precisely the plausible-looking middle value that would have survived review.
+
+Because the distortion is constant, the probe's own self-check calibrates it.
+Dividing through by 4.977 recovers E[accepted], and it lands on the
+timing-derived column from §36.2.1 — a completely independent path, built from
+latency and a fitted draft cost rather than from counting anything:
+
+| k | normalised probe | timing-derived | difference |
+|---|---|---|---|
+| 2 | 2.000 | 2.054 | −2.6% |
+| 3 | 2.991 | 3.052 | −2.0% |
+| 4 | 3.969 | 4.022 | −1.3% |
+| 5 | 4.977 | 4.928 | +1.0% |
+| 6 | 5.981 | 5.899 | +1.4% |
+| 7 | 6.924 | 6.803 | +1.8% |
+
+**Two unrelated methods agree to within 2.6% across the ladder.** Counting
+invocations and modelling latency have no shared failure mode, so the agreement
+is real corroboration of the acceptance figures rather than a consistency check
+of one method against itself.
+
+`analysis/specdec_summary.py` still does not consume the probe, and the numbers
+in §36.2.1 remain the timing-derived ones — a normalisation derived after the
+fact from a broken instrument is not something to publish as a primary
+measurement. But the instrument was salvageable precisely because it declared
+the invariant that exposed it. An instrument that states what it must return on
+a control, and is kept when it violates it, is worth more than one that quietly
+returns something plausible.
 
 ### 36.3 gpt-oss-20b: a shape wall, not a memory wall
 
