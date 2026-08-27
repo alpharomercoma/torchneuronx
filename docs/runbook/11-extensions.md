@@ -52,4 +52,15 @@ after any interruption.
 3. **Export `HF_HOME=/opt/np/models/hf` and run `shared/bin/hf_login.sh`**
    in any shell that touches gated models — bare SSM shells have neither.
 
+## What came after
+
+Phase 2 is where the extension lanes start, not where they end. The later
+phases have their own pages:
+
+| phase | page | what it added |
+|---|---|---|
+| 3 | [12-trainium2.md](12-trainium2.md) | the trn2.3xlarge lane in sa-east-1 and the one-chip-each generational comparison |
+| 4 | [13-phase4-posttraining.md](13-phase4-posttraining.md) | ORPO, DPO and GRPO — one works, one is terminal, one is architecturally blocked |
+| 5 | REPORT-EXTENSIONS §35-39 | accuracy-as-validity, Spec-Bench, the Tulu-3 replication, and the S3 near-miss |
+
 Findings and numbers: [REPORT-EXTENSIONS.md](../../REPORT-EXTENSIONS.md).

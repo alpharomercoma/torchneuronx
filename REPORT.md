@@ -4,6 +4,13 @@ Status: **complete.** Every number below is regenerated from
 `analysis/comparison.json` (`make report`); nothing is hand-computed.
 Read [METHODOLOGY.md](METHODOLOGY.md) before quoting anything.
 
+This page is the core pipeline — Phases 1 and 2. Phases 2 through 5 (parity
+models, quantization, speculative decoding, RAG, MoE, the Trainium2
+comparison, post-training, and accuracy-as-validity) continue in
+**[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md)**. The instances were terminated
+on 2026-08-26; every table here regenerates from the committed results with no
+AWS account.
+
 ## 1. Summary
 
 The claim under test held, with receipts on both halves:
@@ -160,6 +167,19 @@ $1.34/hr, inf2.xlarge $0.76/hr, us-west-2 on-demand, July 2026.
 
 ---
 
-Phase 2 (mlx-parity models, Mistral, open-loop goodput, context-cliff
-bisections, quantization, multi-tenancy, cold-start, NKI, RAG appliance)
-continues in **[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md)**.
+## Where the rest is
+
+| phase | what it covers | where |
+|---|---|---|
+The section numbering is continuous: this page is §1-12, and
+[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md) picks up at §13.
+
+| phase | what it covers | sections |
+|---|---|---|
+| 2 | mlx-parity models, Mistral, open-loop goodput, context-cliff bisections, quantization, multi-tenancy, cold-start, NKI, the RAG appliance | §13-14 |
+| 3 | Trainium2 in sa-east-1; one chip against one chip on the identical lane list | §15-28 |
+| 4 | pretraining and post-training: ORPO lands, DPO is terminal on the reference forward, GRPO is architecturally blocked | §32 |
+| 5 | accuracy as a validity gate, Spec-Bench to 3.35×, the Tulu-3 replication, the midtrain anomaly, and the S3 near-miss | §35-39 |
+| cross-cutting | what the study did not accomplish, adversarial review, biases, cost math, and a decision framework | §29-31, §33-34 |
+
+Reproduction: [docs/runbook/](docs/runbook/README.md), in execution order.

@@ -47,14 +47,18 @@ trn2.3xlarge  (sa-east-1)                  <- Phase 3, generational comparison
   Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04), no AMI pin needed
 ```
 
-sa-east-1 is not a preference: it is the only region on earth offering the
-small Trainium2 SKU. The artifacts bucket stays in us-west-2 and all three
+sa-east-1 is not a preference: it is the only region offering the small
+Trainium2 SKU **on demand**. (Capacity Blocks also list `trn2.3xlarge` in
+ap-southeast-4; §16 correction 4 records how that was established and why
+`describe-instance-type-offerings` alone said otherwise.) The artifacts bucket stays in us-west-2 and all three
 boxes report into one comparison; v3 NEFFs use a separate S3 cache prefix
 because a NEFF is compiled for a specific NeuronCore version.
 
-Both boxes are provisioned by the CDK app in [cdk/](cdk/), accessed only via
-SSM Session Manager (no SSH, zero ingress rules), and stopped — not
-terminated — between sessions so the Neuron compile cache on EBS survives.
+All three boxes were provisioned by the CDK app in [cdk/](cdk/), accessed only
+via SSM Session Manager (no SSH, zero ingress rules), and stopped — not
+terminated — between sessions so the Neuron compile cache on EBS survived. The
+one exception was the trn2, which ran inside a Capacity Block: AWS terminates
+those on schedule whether you stop them or not.
 
 ## Models
 
@@ -86,7 +90,8 @@ analysis/       make_report.py -> comparison.json -> every table in the reports
 trn1/ trn2/     per-box: PROVISIONING docs, 4-line run wrapper, raw results
 inf2/
 demo/           live TTFT streamer + headline tables against a warm endpoint
-docs/runbook/   00..13, in execution order -- every command with expected output
+docs/runbook/   00..13, in execution order -- every command with expected
+                output; start at docs/runbook/README.md
 docs/diagrams/  architecture PNGs (README embeds architecture-clean.png)
 tests/          local gate: fixtures, no AWS or Neuron hardware needed
 ops/            capacity hunting, preservation, teardown, frozen one-offs --
@@ -104,7 +109,7 @@ the analysis re-runs with no AWS account at all.
 ## Reproducing
 
 ```bash
-# 0. read docs/runbook/00-prerequisites.md (HF license, token, quotas)
+# 0. read docs/runbook/README.md, then 00-prerequisites.md (HF license, quotas)
 make test                            # local gate: harness + infra, no hardware
 (cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium)
 # ... then follow docs/runbook/04..07 lane by lane; each box runs:
@@ -175,9 +180,11 @@ traces across two schedules that demonstrably ran). The anomaly is recorded in
 §38 instead of a recommendation.
 
 **The boxes are gone.** All seven EC2 instances backing this study were
-terminated on 2026-08-26; the disks survive as EBS snapshots. Everything needed
-to rebuild them — snapshot IDs, AMI pins, user-data, KMS keys, CloudFormation
-templates — is in
+terminated on 2026-08-26. Six of the seven disks survive as EBS snapshots; the
+**trn2 was never snapshotted** — it expired with its Capacity Block, and its
+results existed only in S3 until they were archived to Glacier Deep Archive and
+committed here (§39). Everything needed to rebuild the rest — snapshot IDs, AMI
+pins, user-data, KMS keys, CloudFormation templates — is in
 [ops/preservation/2026-08-26-RECOVERY.md](ops/preservation/2026-08-26-RECOVERY.md).
 Results in this repo regenerate without any AWS access.
 

@@ -1,15 +1,34 @@
-# Report — Phase 2 extensions
+# Report — extensions (Phases 2-5)
 
-Continuation of [REPORT.md](REPORT.md). Same contract: every number below
-comes from a result triplet (JSON + log + telemetry CSV) under
-`inf2/results/` or `trn1/results/`, failures are recorded results, and
-anything excluded is excluded out loud. Phase-2 lanes were **validity-checked
-before spending compute** (the table in §13.9 was written first; the
-predicted-vs-observed column is the meta-experiment).
+Continuation of [REPORT.md](REPORT.md), and the numbering continues with it:
+that page is §1-12, this one starts at §13.
 
-Boxes: the same trn1.2xlarge (`i-0cb9e758143a745d5`) and a **fresh**
-inf2.xlarge (`i-0936ae7615727251e`) — the original inf2 was deliberately
-destroyed and redeployed as the §13.7 cold-start experiment.
+Same contract: every number below comes from a result triplet (JSON + log +
+telemetry CSV) under `trn1/results/`, `trn2/results/` or `inf2/results/`,
+failures are recorded results, and anything excluded is excluded out loud.
+Phase-2 lanes were **validity-checked before spending compute** (the table in
+§13.9 was written first; the predicted-vs-observed column is the
+meta-experiment).
+
+| phase | sections | what it adds |
+|---|---|---|
+| 2 | §13-14 | parity models, Mistral, open-loop goodput, context cliffs, quantization, multi-tenancy, cold start, NKI, the RAG appliance — and what Phase 2 got wrong |
+| 3 | §15-28 | Trainium2 in sa-east-1: one chip against one chip on an identical lane list, prefill/decode split, the quality gate, and serving the trn2 fine-tune |
+| 4 | §32 | pretraining and post-training — ORPO lands, DPO is terminal on the reference forward, GRPO is architecturally blocked |
+| 5 | §35-39 | accuracy as a validity gate, speculative decoding measured properly, a second SFT corpus, a comparison that failed its own control, and what the S3 teardown nearly cost |
+| cross-cutting | §29-31, §33-34 | what the study did *not* accomplish, what an adversarial reviewer broke, the biases it carries, the cost math against GPUs, and when Neuron silicon fits |
+
+> Two numbering irregularities, left as they are because renumbering would
+> break every citation already made against this document: §36.4 appears after
+> §38 (it was written later, as part of resolving §36's open failures), and the
+> phase groupings above are not contiguous.
+
+Boxes: the same trn1.2xlarge (`i-0cb9e758143a745d5`), a **fresh** inf2.xlarge
+(`i-0936ae7615727251e`) — the original inf2 was deliberately destroyed and
+redeployed as the §13.7 cold-start experiment — and, from Phase 3, a
+trn2.3xlarge in sa-east-1 held through a paid Capacity Block. All of them were
+terminated on 2026-08-26 (`ops/preservation/2026-08-26-RECOVERY.md`); the
+results in this repo are the surviving evidence.
 
 ## 13. Phase-2 results
 

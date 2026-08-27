@@ -31,3 +31,10 @@ aws iam delete-access-key --access-key-id AKIA...
 
 Done when: `aws iam list-access-keys` under root shows none, and every
 later runbook command works with the default (IAM-user) profile.
+
+> **Status on this account, 2026-08-27: NOT done.**
+> `aws sts get-caller-identity` still returns
+> `arn:aws:iam::600627330911:root`. Every measurement in this study was taken
+> with root credentials. That is recorded here rather than quietly omitted;
+> it is the one runbook step the automation deliberately never performs, and
+> it is still open.

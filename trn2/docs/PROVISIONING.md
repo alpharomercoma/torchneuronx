@@ -1,5 +1,16 @@
 # trn2.3xlarge provisioning notes (sa-east-1)
 
+> **This box no longer exists, and it was never snapshotted.** The trn2 ran
+> inside a paid, non-refundable Capacity Block window and was gone when the
+> window closed. Its results survived only in S3 and are now archived to
+> Glacier Deep Archive — 51,280 objects, 54.55 GB — and committed to this repo
+> under `trn2/results/`. That near-miss is written up in REPORT-EXTENSIONS §39.
+>
+> The `NeuronPipelinesTrainium2` stack still exists, and its ASG is **armed at
+> `DesiredCapacity=1` with 0 running instances** — it is still hunting. It will
+> launch and bill the moment sa-east-1 has trn2 capacity. Set desired capacity
+> to 0 if that is not what you want.
+
 Companion to `trn1/docs/PROVISIONING.md`. What is different about the Trainium2
 box, and what bit us getting there.
 
@@ -7,7 +18,7 @@ box, and what bit us getting there.
 
 | | value | source |
 |---|---|---|
-| Instance type | `trn2.3xlarge` | the only small Trainium2 SKU; sa-east-1 only |
+| Instance type | `trn2.3xlarge` | the only small Trainium2 SKU; sa-east-1 only **on demand** (Capacity Blocks also list ap-southeast-4 — §16 correction 4) |
 | vCPU / host RAM | 12 / 128 GiB | `describe-instance-types` |
 | Local NVMe | 470 GB, encryption required | `describe-instance-types` |
 | Accelerator | 1× Trainium2 | |

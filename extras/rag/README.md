@@ -54,8 +54,8 @@ possible"), and the receipt is the arithmetic itself:
   1. `qwen3_base` — Qwen3-8B via NxDI (known Phase-1 §9 outcome: boots,
      crashes on first generated token; re-running merely re-receipts it),
   2. Qwen2.5-7B via vLLM (qwen2 is a different Tier-1 path than the crashed
-     qwen3; needs a `qwen25_7b` catalogue entry in
-     `shared/serve/launch_vllm.sh` before it can run — TODO-VERIFY),
+     qwen3; the `qwen25_7b` catalogue entry it needs now exists at
+     `shared/serve/launch_vllm.sh:217`, alongside `qwen25_1_5b` at :242),
   3. `llama31_base` — Llama-3.1-8B-Instruct, the proven fallback and the
      driver default (`RAG_LLM_KEY=llama31_base`).
 
@@ -76,18 +76,25 @@ pgvector `'[f1,f2,...]'` literals) into a TEMP staging table, merged with
 `INSERT ... ON CONFLICT (id) DO UPDATE` — the source repo's upsert without
 its driver dependency.
 
-## Latency table (placeholders — filled from `inf2/results/rag/` when measured)
+## Latency table (measured; every cell traces to a receipt in `inf2/results/rag/`)
 
-| Stage | p50 | Notes |
+| Stage | p50 | Source |
 |---|---|---|
-| embed (query, batch-1 graph call) | TBD ms | `probes_*.json` -> `timings.embed_ms` |
-| pgvector retrieve (top-12, HNSW) | TBD ms | `timings.retrieve_ms` |
-| rerank (12 -> 3, batch 4 x 3 calls) | TBD ms | `timings.rerank_ms`; null in no-rerank mode |
-| LLM TTFT (3 contexts + question) | TBD ms | `timings.ttft_ms` |
-| end-to-end query | TBD ms | `timings.e2e_ms` (includes per-process model load, broken out) |
-| ingest | TBD chunks/s | `ingest.json` |
-| embeddings/s batch 1 / batch 8 | TBD / TBD | `embed_lane.json` |
-| probes passed | TBD/7 end-to-end, TBD/7 retrieval-only | `probes_llm.json` / `probes_nollm.json` |
+| embed (query, batch-1 graph call) | **737.1 ms** retrieval-only · **597.0 ms** with the 3B LLM resident | `probes_nollm.json`, `probes_llm.llama32_3b.json` → `timings.embed_ms` |
+| pgvector retrieve (top-12, HNSW) | **316.5 ms** · 227.1 ms in the 3B run | `timings.retrieve_ms` |
+| rerank (12 → 3, batch 4 × 3 calls) | **1,870.2 ms** | `probes_nollm_rerank.json` → `timings.rerank_ms`; null in no-rerank mode |
+| LLM TTFT (3 contexts + question) | **1,528.1 ms** (Llama-3.2-3B) | `probes_llm.llama32_3b.json` → `timings.ttft_ms` |
+| end-to-end query | **101.3 s** retrieval-only · **126.0 s** with the 3B | `timings.e2e_ms` — **dominated by per-process model load**, not by the query. Each probe process loads its models from cold; the stage rows above are the query cost |
+| ingest | **1.49 chunks/s** (14 docs → 72 chunks, 48.2 s wall, embed p50 513.0 ms) | `ingest.json` |
+| embeddings/s batch 1 / batch 8 | **1.96 / 15.65** | `embed_lane.json` — same 511 ms graph call either way, so batch 8 is a straight 8× on a static-shape graph; batch 1 pads 7 slots away |
+| embedder load | **56.5 s** | `embed_lane.json` → `load_s`, Qwen3-Embedding-0.6B, 1024-dim, seq 512, compiled batch 8 |
+| probes passed | **7/7 retrieval-only**, 4/7 with rerank, **0/7 end-to-end on Llama-3.1-8B**, 1/7 on Llama-3.2-3B | `probes_nollm.json`, `probes_nollm_rerank.json`, `probes_llm.json`, `probes_llm.llama32_3b.json` |
+
+Read the last row honestly: **retrieval works and generation does not.** The
+vector stage answers all seven probes; the generative stage on top of it
+answers at most one. Reranking makes retrieval *worse* on this corpus (7/7 →
+4/7). Those are the results, and they are why the RAG lane is reported as an
+appliance that retrieves rather than one that answers.
 
 ## Local gate
 
