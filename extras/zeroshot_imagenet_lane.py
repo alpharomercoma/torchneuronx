@@ -211,11 +211,14 @@ def ensure_dataset(data_dir, keep_tars):
                 if not m.isfile():
                     continue
                 key, ext = os.path.splitext(m.name)
-                # `key` becomes a filename below; a member named "../x" would
-                # write outside img_root. Webdataset keys are flat, so anything
-                # with a separator in it is malformed, not merely unusual.
-                if os.sep in key or (os.altsep and os.altsep in key) \
-                        or key in ("", ".", "..") or os.path.isabs(key):
+                # `key` and `ext` both become filename components below, and the
+                # class directory comes from the .cls file's contents. Rather
+                # than blacklist characters -- which misses `ext`, misses the
+                # class segment, and misses "\\" entirely because os.altsep is
+                # None on POSIX -- check the one thing that matters: every path
+                # this loop writes must resolve inside img_root. Webdataset keys
+                # are flat, so a separator in one is malformed, not merely odd.
+                if not key or os.path.isabs(key) or os.path.isabs(ext):
                     raise RuntimeError(f"unsafe tar member name: {m.name!r}")
                 data = tf.extractfile(m).read()
                 if ext == ".cls":
@@ -226,8 +229,13 @@ def ensure_dataset(data_dir, keep_tars):
                 rec = pending.get(key, {})
                 if "cls" in rec and "img" in rec:
                     d = os.path.join(img_root, f"{rec['cls']:04d}")
+                    dest = os.path.abspath(os.path.join(d, key + rec["ext"]))
+                    root = os.path.abspath(img_root)
+                    if not dest.startswith(root + os.sep):
+                        raise RuntimeError(
+                            f"tar member would write outside img_root: {m.name!r}")
                     os.makedirs(d, exist_ok=True)
-                    with open(os.path.join(d, key + rec["ext"]), "wb") as fh:
+                    with open(dest, "wb") as fh:
                         fh.write(rec["img"])
                     pending.pop(key)
         if not keep_tars:
