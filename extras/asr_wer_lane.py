@@ -144,9 +144,12 @@ def ensure_split(data_dir, split):
         # OpenSLR is trusted and HTTPS, but an archive member is still untrusted
         # input: refuse anything that would land outside data_dir. `filter=`
         # arrived in 3.12; the explicit check keeps older interpreters safe too.
-        base = os.path.abspath(data_dir)
+        # realpath, not abspath: a symlink already sitting under data_dir
+        # would otherwise let a member named "link/x" resolve inside the root
+        # on paper and land outside it on disk.
+        base = os.path.realpath(data_dir)
         for m in tf.getmembers():
-            dest = os.path.abspath(os.path.join(base, m.name))
+            dest = os.path.realpath(os.path.join(base, m.name))
             if dest != base and not dest.startswith(base + os.sep):
                 raise RuntimeError(f"unsafe tar member escapes data_dir: {m.name!r}")
             if m.issym() or m.islnk():

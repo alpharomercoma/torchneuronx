@@ -229,8 +229,10 @@ def ensure_dataset(data_dir, keep_tars):
                 rec = pending.get(key, {})
                 if "cls" in rec and "img" in rec:
                     d = os.path.join(img_root, f"{rec['cls']:04d}")
-                    dest = os.path.abspath(os.path.join(d, key + rec["ext"]))
-                    root = os.path.abspath(img_root)
+                    # realpath so a pre-existing symlink under img_root cannot
+                    # make an escaping path look contained.
+                    dest = os.path.realpath(os.path.join(d, key + rec["ext"]))
+                    root = os.path.realpath(img_root)
                     if not dest.startswith(root + os.sep):
                         raise RuntimeError(
                             f"tar member would write outside img_root: {m.name!r}")
