@@ -1,0 +1,2 @@
+# fallback_client  model=/opt/np/models/llama31-8b-dolly-merged-trn2  mode=closed  prompts=16  conc=4  isl=1024  osl=1024  seed=42
+out_tok/s=61.92  ttft_p50=1000.04ms  p99=1593.758ms  tpot_p50=63.684ms  completed=16/16  duration=264.598s -> /opt/np/repo/inf2/results/serve/llama31_dolly_trn2_short/isl1024_osl1024_c4.json

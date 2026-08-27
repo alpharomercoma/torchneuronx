@@ -1,0 +1,23 @@
+2026-Aug-06 06:16:11.0543 37855:37907 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-06 06:16:11.0545 37855:37907 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-06 06:16:11.0548 37855:37907 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-06 06:16:11.0550 37855:37907 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+# academic  dataset=cifar arch=vit params=811,146 epochs=40 lr=0.0006 wd=0.05 adamw=True batch=128 smoothing=0.1 augment=True seed=0 device=xla
+2026-08-06 06:16:13.000587:  37855  [ERROR]: Got a cached failed neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1863034611885297986+fad94d7c/model.neff. Will skip compilation, please set --retry_failed_compilation for recompilation: 
+ Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/root/neuroncc_compile_workdir/3ee9c08a-3f50-433c-8d97-5e01d34eb4c7/model.MODULE_1863034611885297986+fad94d7c.hlo_module.pb', '--output', '/tmp/root/neuroncc_compile_workdir/3ee9c08a-3f50-433c-8d97-5e01d34eb4c7/model.MODULE_1863034611885297986+fad94d7c.neff', '--target=trn2', '--verbose=35']:
+2026-08-05T22:11:21Z [F137] neuronx-cc was forcibly killed - This most commonly occurs due to insufficient system memory. Using a smaller data type, dimensions, batch size, or a larger instance type may help.
+[libneuronxla 2.2.17544.0+fb9962bf].
+Traceback (most recent call last):
+  File "/opt/np/repo/academic/train_academic.py", line 243, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/np/repo/academic/train_academic.py", line 179, in main
+    sync()
+  File "/opt/np/repo/academic/train_academic.py", line 106, in sync
+    torch_xla.sync()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+    torch_xla._XLAC._xla_step_marker(
+ValueError: RunNeuronCCImpl: error condition error != 0: Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/root/neuroncc_compile_workdir/3ee9c08a-3f50-433c-8d97-5e01d34eb4c7/model.MODULE_1863034611885297986+fad94d7c.hlo_module.pb', '--output', '/tmp/root/neuroncc_compile_workdir/3ee9c08a-3f50-433c-8d97-5e01d34eb4c7/model.MODULE_1863034611885297986+fad94d7c.neff', '--target=trn2', '--verbose=35']:
+2026-08-05T22:11:21Z [F137] neuronx-cc was forcibly killed - This most commonly occurs due to insufficient system memory. Using a smaller data type, dimensions, batch size, or a larger instance type may help.
+[libneuronxla 2.2.17544.0+fb9962bf]
+[libneuronxla 2.2.17544.0+fb9962bf]

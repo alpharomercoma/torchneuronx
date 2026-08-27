@@ -18,3 +18,10 @@ fi
 swapon "$SWAPFILE" 2>/dev/null || true
 grep -q "$SWAPFILE" /etc/fstab || echo "$SWAPFILE none swap sw 0 0" >> /etc/fstab
 echo "inf2 user-data done: $(free -h | grep -i swap)"
+
+# PROVISIONING MARKER. common.sh writes /opt/np/.userdata-done, but that
+# fires before this box-specific script has installed its packages and
+# scratch disk -- so anything waiting on it can start too early. Each box
+# now writes its OWN marker as the last action, which is the only reliable
+# "this box is ready" signal for a launcher polling from outside.
+date -u '+%Y-%m-%dT%H:%M:%SZ' > /opt/np/.userdata-inf2-done

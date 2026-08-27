@@ -37,5 +37,37 @@
       }
     ]
   },
-  "ami:account=600627330911:filters.image-type.0=machine:filters.name.0=Deep Learning AMI Neuron PyTorch Inference vLLM*Ubuntu 24.04*:filters.state.0=available:owners.0=amazon:region=us-west-2": "ami-08cb42b2830513a38"
+  "ami:account=600627330911:filters.image-type.0=machine:filters.name.0=Deep Learning AMI Neuron PyTorch Inference vLLM*Ubuntu 24.04*:filters.state.0=available:owners.0=amazon:region=us-west-2": "ami-08cb42b2830513a38",
+  "vpc-provider:account=600627330911:filter.isDefault=true:region=sa-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-092a684a0ac423ae7",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "ownerAccountId": "600627330911",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0489739583976c545",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "sa-east-1a",
+            "routeTableId": "rtb-09c6affdb4571780f"
+          },
+          {
+            "subnetId": "subnet-092833ea4d9c0210c",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "sa-east-1b",
+            "routeTableId": "rtb-09c6affdb4571780f"
+          },
+          {
+            "subnetId": "subnet-088dd390f7aab1c53",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "sa-east-1c",
+            "routeTableId": "rtb-09c6affdb4571780f"
+          }
+        ]
+      }
+    ]
+  }
 }

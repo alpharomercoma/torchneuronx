@@ -1,0 +1,740 @@
+{
+  "tag": "eff_norecompute",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "dataset": "databricks/databricks-dolly-15k",
+  "synthetic_data": null,
+  "params_total": 8108654592,
+  "params_trainable": 77594624,
+  "params_frozen": 8031059968,
+  "params_local_shard_total": 2027163648,
+  "params_local_shard_trainable": 19398656,
+  "params_method": "xla_all_reduce",
+  "params_note": "Summed across the TP group with xm.all_reduce, so these are whole-model counts rather than this rank's shard. Parameters that are replicated rather than sharded (norms, LoRA A/B on replicated modules) are counted once per rank and so are marginally over-counted -- under 0.01% for an 8B model.",
+  "config": {
+    "seq_len": 2048,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "gradient_checkpointing": false,
+    "epochs": 3,
+    "max_steps": 100,
+    "lr": 0.0001,
+    "warmup_steps": 5,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "lora_target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "packing": true,
+    "attn_implementation": "flash_attention_2",
+    "dtype": "bfloat16",
+    "world_size": 4,
+    "tensor_parallel_size": 4,
+    "pipeline_parallel_size": 1,
+    "data_parallel_size": 1,
+    "neuron_compile_cache_url": "/opt/np/cache/neuron-compile-cache",
+    "neuron_cc_flags": "--model-type transformer --retry_failed_compilation",
+    "device_profile": "trn2",
+    "instance_type": "trn2.3xlarge",
+    "nproc_per_node": 4,
+    "logical_nc_config": "2",
+    "hbm_gib_per_core": 24,
+    "device_note": "trn2.3xlarge: 1x Trainium2, 8x NeuronCore-v3 grouped into 4 logical cores at LNC=2 (the Neuron default), 96 GiB HBM (24 GiB per logical core) at 2.9 TB/s. 667 TFLOP/s BF16 per chip; 1299 FP8 and 2563 sparse are NOT used here."
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "provenance": {
+    "git_commit": null,
+    "git_dirty": false,
+    "argv": [
+      "/opt/np/repo/shared/train/sft_lora.py",
+      "--model",
+      "meta-llama/Llama-3.1-8B-Instruct",
+      "--tag",
+      "eff_norecompute",
+      "--device-profile",
+      "trn2",
+      "--nproc-per-node",
+      "4",
+      "--tensor-parallel-size",
+      "4",
+      "--max-steps",
+      "100",
+      "--no-gradient-checkpointing",
+      "--out",
+      "/opt/np/repo/trn2/results/extras/eff_norecompute.json"
+    ],
+    "dataset": "databricks/databricks-dolly-15k",
+    "dataset_fields": null,
+    "holdout_frac": 0.0,
+    "holdout_split_seed": 20260805,
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "seed": 42,
+    "data_seed": null
+  },
+  "holdout": {
+    "enabled": false,
+    "frac": 0.0,
+    "split_seed": 20260805,
+    "loss_before": null,
+    "loss_after": null,
+    "loss_delta": null,
+    "eval_wall_s": 0.0,
+    "method": null,
+    "traceback": null,
+    "error": null,
+    "note": "Held-out in-domain token loss on rows never trained on. Supports 'the fine-tune learned, comparably on both chips'. Does NOT support any claim about instruction quality or downstream benchmarks."
+  },
+  "tokens_per_optimizer_step": 16384,
+  "steps_recorded": 100,
+  "warmup_steps_excluded": 10,
+  "first_step_ms": 283110.43,
+  "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache (lane 3 precompile) collapses this toward the median; a cold cache leaves tens of minutes in it.",
+  "median_step_ms": 3111.58,
+  "compile_s": 280.0,
+  "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
+  "train_wall_s": 631.42,
+  "tokens_per_s": 5265.5,
+  "tokens_per_s_end_to_end": 2594.8,
+  "measured_window_fraction": 0.4928,
+  "throughput_note": "tokens_per_s is steady-state (median step, warmup excluded); tokens_per_s_end_to_end divides ALL tokens by the full training wall clock. measured_window_fraction is what share of wall time the median-step window actually covers. Compare like with like.",
+  "flops_per_token": 32589807616.0,
+  "flops_formula": "6*params_trainable + 4*params_frozen",
+  "tflops": 171.601,
+  "mfu_pct": 25.727,
+  "peak_bf16_flops": 667000000000000.0,
+  "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium2: 667 BF16/FP16/TF32 TFLOPS per chip",
+  "mfu_pct_alt": 25.727,
+  "peak_bf16_flops_alt": 667000000000000.0,
+  "peak_bf16_flops_alt_source": "same figure; arch and instance-level specs agree for Trainium2",
+  "mfu_pct_end_to_end": 12.678,
+  "peak_host_mem_mib": 12386.9,
+  "peak_device_mem_mib": null,
+  "peak_device_mem_note": "Device HBM high-water is not available from torch on XLA. Read it from the matching telemetry CSV (mem_used_mib column, sampled at 1 Hz by neuron-monitor). Deliberately null rather than estimated.",
+  "final_loss": 1.2456,
+  "loss_trace": [
+    {
+      "step": 1,
+      "loss": 2.1794,
+      "ms": 283110.43,
+      "warmup": true
+    },
+    {
+      "step": 2,
+      "loss": 1.9364,
+      "ms": 3337.9,
+      "warmup": true
+    },
+    {
+      "step": 3,
+      "loss": 1.5924,
+      "ms": 3125.93,
+      "warmup": true
+    },
+    {
+      "step": 4,
+      "loss": 1.8548,
+      "ms": 3138.91,
+      "warmup": true
+    },
+    {
+      "step": 5,
+      "loss": 1.6674,
+      "ms": 3052.25,
+      "warmup": true
+    },
+    {
+      "step": 6,
+      "loss": 1.7932,
+      "ms": 3071.16,
+      "warmup": true
+    },
+    {
+      "step": 7,
+      "loss": 1.4893,
+      "ms": 2969.21,
+      "warmup": true
+    },
+    {
+      "step": 8,
+      "loss": 1.4623,
+      "ms": 3030.17,
+      "warmup": true
+    },
+    {
+      "step": 9,
+      "loss": 1.4377,
+      "ms": 3117.26,
+      "warmup": true
+    },
+    {
+      "step": 10,
+      "loss": 1.5743,
+      "ms": 3008.87,
+      "warmup": true
+    },
+    {
+      "step": 11,
+      "loss": 1.5729,
+      "ms": 3154.55,
+      "warmup": false
+    },
+    {
+      "step": 12,
+      "loss": 1.5679,
+      "ms": 3039.92,
+      "warmup": false
+    },
+    {
+      "step": 13,
+      "loss": 1.6418,
+      "ms": 3085.14,
+      "warmup": false
+    },
+    {
+      "step": 14,
+      "loss": 1.6084,
+      "ms": 3125.82,
+      "warmup": false
+    },
+    {
+      "step": 15,
+      "loss": 1.5393,
+      "ms": 3044.92,
+      "warmup": false
+    },
+    {
+      "step": 16,
+      "loss": 1.5329,
+      "ms": 3129.35,
+      "warmup": false
+    },
+    {
+      "step": 17,
+      "loss": 1.3371,
+      "ms": 3190.38,
+      "warmup": false
+    },
+    {
+      "step": 18,
+      "loss": 1.5799,
+      "ms": 3018.13,
+      "warmup": false
+    },
+    {
+      "step": 19,
+      "loss": 1.3882,
+      "ms": 3408.9,
+      "warmup": false
+    },
+    {
+      "step": 20,
+      "loss": 1.5853,
+      "ms": 3154.75,
+      "warmup": false
+    },
+    {
+      "step": 21,
+      "loss": 1.4097,
+      "ms": 3077.7,
+      "warmup": false
+    },
+    {
+      "step": 22,
+      "loss": 1.3394,
+      "ms": 3064.69,
+      "warmup": false
+    },
+    {
+      "step": 23,
+      "loss": 1.5383,
+      "ms": 3098.66,
+      "warmup": false
+    },
+    {
+      "step": 24,
+      "loss": 1.4857,
+      "ms": 3054.83,
+      "warmup": false
+    },
+    {
+      "step": 25,
+      "loss": 1.4109,
+      "ms": 3135.19,
+      "warmup": false
+    },
+    {
+      "step": 26,
+      "loss": 1.2612,
+      "ms": 3149.66,
+      "warmup": false
+    },
+    {
+      "step": 27,
+      "loss": 1.4,
+      "ms": 3085.14,
+      "warmup": false
+    },
+    {
+      "step": 28,
+      "loss": 1.3579,
+      "ms": 3104.91,
+      "warmup": false
+    },
+    {
+      "step": 29,
+      "loss": 1.4215,
+      "ms": 3192.04,
+      "warmup": false
+    },
+    {
+      "step": 30,
+      "loss": 1.2732,
+      "ms": 3054.46,
+      "warmup": false
+    },
+    {
+      "step": 31,
+      "loss": 1.6831,
+      "ms": 3051.11,
+      "warmup": false
+    },
+    {
+      "step": 32,
+      "loss": 1.2518,
+      "ms": 3111.39,
+      "warmup": false
+    },
+    {
+      "step": 33,
+      "loss": 1.2358,
+      "ms": 2963.56,
+      "warmup": false
+    },
+    {
+      "step": 34,
+      "loss": 1.3316,
+      "ms": 3119.99,
+      "warmup": false
+    },
+    {
+      "step": 35,
+      "loss": 1.2518,
+      "ms": 3171.0,
+      "warmup": false
+    },
+    {
+      "step": 36,
+      "loss": 1.2422,
+      "ms": 3066.66,
+      "warmup": false
+    },
+    {
+      "step": 37,
+      "loss": 1.4379,
+      "ms": 3108.05,
+      "warmup": false
+    },
+    {
+      "step": 38,
+      "loss": 1.6232,
+      "ms": 3135.21,
+      "warmup": false
+    },
+    {
+      "step": 39,
+      "loss": 1.1814,
+      "ms": 3026.71,
+      "warmup": false
+    },
+    {
+      "step": 40,
+      "loss": 1.0782,
+      "ms": 3146.15,
+      "warmup": false
+    },
+    {
+      "step": 41,
+      "loss": 1.5773,
+      "ms": 3401.01,
+      "warmup": false
+    },
+    {
+      "step": 42,
+      "loss": 1.1837,
+      "ms": 3142.68,
+      "warmup": false
+    },
+    {
+      "step": 43,
+      "loss": 1.1587,
+      "ms": 3092.72,
+      "warmup": false
+    },
+    {
+      "step": 44,
+      "loss": 1.2171,
+      "ms": 3111.77,
+      "warmup": false
+    },
+    {
+      "step": 45,
+      "loss": 1.3461,
+      "ms": 3192.06,
+      "warmup": false
+    },
+    {
+      "step": 46,
+      "loss": 1.2803,
+      "ms": 3142.1,
+      "warmup": false
+    },
+    {
+      "step": 47,
+      "loss": 1.1661,
+      "ms": 3071.23,
+      "warmup": false
+    },
+    {
+      "step": 48,
+      "loss": 1.3011,
+      "ms": 3123.39,
+      "warmup": false
+    },
+    {
+      "step": 49,
+      "loss": 1.4236,
+      "ms": 3093.81,
+      "warmup": false
+    },
+    {
+      "step": 50,
+      "loss": 1.8074,
+      "ms": 3117.11,
+      "warmup": false
+    },
+    {
+      "step": 51,
+      "loss": 1.2559,
+      "ms": 3116.94,
+      "warmup": false
+    },
+    {
+      "step": 52,
+      "loss": 1.4502,
+      "ms": 3094.09,
+      "warmup": false
+    },
+    {
+      "step": 53,
+      "loss": 1.4917,
+      "ms": 3306.92,
+      "warmup": false
+    },
+    {
+      "step": 54,
+      "loss": 1.3072,
+      "ms": 3243.92,
+      "warmup": false
+    },
+    {
+      "step": 55,
+      "loss": 1.1768,
+      "ms": 3162.87,
+      "warmup": false
+    },
+    {
+      "step": 56,
+      "loss": 1.3315,
+      "ms": 3096.02,
+      "warmup": false
+    },
+    {
+      "step": 57,
+      "loss": 1.4413,
+      "ms": 3188.07,
+      "warmup": false
+    },
+    {
+      "step": 58,
+      "loss": 1.1306,
+      "ms": 3143.19,
+      "warmup": false
+    },
+    {
+      "step": 59,
+      "loss": 1.1626,
+      "ms": 3294.19,
+      "warmup": false
+    },
+    {
+      "step": 60,
+      "loss": 1.5345,
+      "ms": 3049.02,
+      "warmup": false
+    },
+    {
+      "step": 61,
+      "loss": 1.0887,
+      "ms": 3126.59,
+      "warmup": false
+    },
+    {
+      "step": 62,
+      "loss": 1.5696,
+      "ms": 3108.7,
+      "warmup": false
+    },
+    {
+      "step": 63,
+      "loss": 1.4022,
+      "ms": 3428.07,
+      "warmup": false
+    },
+    {
+      "step": 64,
+      "loss": 1.4363,
+      "ms": 3005.69,
+      "warmup": false
+    },
+    {
+      "step": 65,
+      "loss": 1.0991,
+      "ms": 3108.65,
+      "warmup": false
+    },
+    {
+      "step": 66,
+      "loss": 1.3285,
+      "ms": 3119.58,
+      "warmup": false
+    },
+    {
+      "step": 67,
+      "loss": 1.2745,
+      "ms": 3104.37,
+      "warmup": false
+    },
+    {
+      "step": 68,
+      "loss": 1.1403,
+      "ms": 3201.16,
+      "warmup": false
+    },
+    {
+      "step": 69,
+      "loss": 1.2442,
+      "ms": 3060.13,
+      "warmup": false
+    },
+    {
+      "step": 70,
+      "loss": 1.3338,
+      "ms": 3133.92,
+      "warmup": false
+    },
+    {
+      "step": 71,
+      "loss": 1.3087,
+      "ms": 3169.73,
+      "warmup": false
+    },
+    {
+      "step": 72,
+      "loss": 1.1824,
+      "ms": 3127.12,
+      "warmup": false
+    },
+    {
+      "step": 73,
+      "loss": 1.2113,
+      "ms": 3068.21,
+      "warmup": false
+    },
+    {
+      "step": 74,
+      "loss": 1.1714,
+      "ms": 3108.98,
+      "warmup": false
+    },
+    {
+      "step": 75,
+      "loss": 1.0608,
+      "ms": 3153.55,
+      "warmup": false
+    },
+    {
+      "step": 76,
+      "loss": 1.4546,
+      "ms": 3064.29,
+      "warmup": false
+    },
+    {
+      "step": 77,
+      "loss": 1.4721,
+      "ms": 3144.66,
+      "warmup": false
+    },
+    {
+      "step": 78,
+      "loss": 1.1793,
+      "ms": 3094.77,
+      "warmup": false
+    },
+    {
+      "step": 79,
+      "loss": 1.2616,
+      "ms": 3165.43,
+      "warmup": false
+    },
+    {
+      "step": 80,
+      "loss": 1.6218,
+      "ms": 3082.38,
+      "warmup": false
+    },
+    {
+      "step": 81,
+      "loss": 1.2272,
+      "ms": 3017.34,
+      "warmup": false
+    },
+    {
+      "step": 82,
+      "loss": 1.2267,
+      "ms": 3023.53,
+      "warmup": false
+    },
+    {
+      "step": 83,
+      "loss": 1.1955,
+      "ms": 3183.95,
+      "warmup": false
+    },
+    {
+      "step": 84,
+      "loss": 1.2687,
+      "ms": 3124.69,
+      "warmup": false
+    },
+    {
+      "step": 85,
+      "loss": 1.0723,
+      "ms": 3057.19,
+      "warmup": false
+    },
+    {
+      "step": 86,
+      "loss": 1.502,
+      "ms": 3349.17,
+      "warmup": false
+    },
+    {
+      "step": 87,
+      "loss": 1.1071,
+      "ms": 3051.15,
+      "warmup": false
+    },
+    {
+      "step": 88,
+      "loss": 1.4509,
+      "ms": 3223.44,
+      "warmup": false
+    },
+    {
+      "step": 89,
+      "loss": 1.189,
+      "ms": 3207.41,
+      "warmup": false
+    },
+    {
+      "step": 90,
+      "loss": 1.6385,
+      "ms": 3022.55,
+      "warmup": false
+    },
+    {
+      "step": 91,
+      "loss": 1.3662,
+      "ms": 3200.75,
+      "warmup": false
+    },
+    {
+      "step": 92,
+      "loss": 1.2747,
+      "ms": 3028.81,
+      "warmup": false
+    },
+    {
+      "step": 93,
+      "loss": 1.2646,
+      "ms": 3058.78,
+      "warmup": false
+    },
+    {
+      "step": 94,
+      "loss": 1.2505,
+      "ms": 3096.92,
+      "warmup": false
+    },
+    {
+      "step": 95,
+      "loss": 1.3605,
+      "ms": 3087.79,
+      "warmup": false
+    },
+    {
+      "step": 96,
+      "loss": 1.2589,
+      "ms": 3193.46,
+      "warmup": false
+    },
+    {
+      "step": 97,
+      "loss": 1.6564,
+      "ms": 3075.8,
+      "warmup": false
+    },
+    {
+      "step": 98,
+      "loss": 1.2811,
+      "ms": 3102.73,
+      "warmup": false
+    },
+    {
+      "step": 99,
+      "loss": 1.5579,
+      "ms": 3202.67,
+      "warmup": false
+    },
+    {
+      "step": 100,
+      "loss": 1.2456,
+      "ms": 2991.63,
+      "warmup": false
+    }
+  ],
+  "checkpoint_saves": [],
+  "adapter_out": "/opt/np/models/adapters/eff_norecompute",
+  "captured": "2026-08-05T21:08:08Z"
+}

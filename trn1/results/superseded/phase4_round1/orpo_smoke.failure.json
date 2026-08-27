@@ -1,0 +1,1 @@
+{"tag":"orpo_smoke","box":"trn1","status":"failed","reason":"RuntimeError: You must initialize the accelerate state by calling either `PartialState()` or `Accelerator()` before using the logging utility.","captured":"2026-08-14T12:07:37Z"}

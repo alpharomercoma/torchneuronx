@@ -1,0 +1,258 @@
+[sft_lora] profile=trn1 (trn1.2xlarge) -- re-exec under torchrun (--nproc_per_node=2, one rank per logical NeuronCore)
+[sft_lora] /opt/aws_neuronx_venv_pytorch_2_9/bin/python -m torch.distributed.run --nproc_per_node=2 /opt/np/repo/shared/train/sft_lora.py --tag fullft_qwen3_1_7b --out /opt/np/repo/trn1/results/frontier/fullft_qwen3_1_7b.json --model Qwen/Qwen3-1.7B --no-lora --max-steps 50
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+2026-Aug-06 05:17:29.928249 14677:14677  WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Aug-06 05:17:29.928532 14678:14678  WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Aug-06 05:17:36.0432 14677:14699 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-06 05:17:36.0434 14678:14706 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-06 05:17:36.0434 14677:14699 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-06 05:17:36.0436 14678:14706 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-06 05:17:36.0438 14677:14699 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-06 05:17:36.0440 14678:14706 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-06 05:17:36.0442 14677:14699 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-06 05:17:36.0444 14678:14706 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[2026-08-06 05:17:36.509: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-06 05:17:36.509: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-06 05:17:36.509: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-06 05:17:36.509: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-06 05:17:36.509: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+2026-08-06 05:17:36.000519:  14678  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+e30acd3a/model.neff
+2026-08-06 05:17:36.000520:  14677  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+e30acd3a/model.neff
+PyTorch: setting up devices
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x702d1aaffe20>, 'Ascending Ring PG Group')>
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-06 05:17:36.546: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/model.safetensors.index.json
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--Qwen--Qwen3-1.7B/snapshots/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/model.safetensors.index.json
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:22<00:22, 22.38s/it]Fetching 2 files: 100%|██████████| 2/2 [00:22<00:00, 11.19s/it]
+Fetching 2 files:  50%|█████     | 1/2 [00:22<00:22, 22.44s/it]Fetching 2 files: 100%|██████████| 2/2 [00:22<00:00, 11.22s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.15s/it]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.16s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.33it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.23it/s]
+All model checkpoint weights were used when initializing Qwen3ForCausalLM.
+
+All the weights of Qwen3ForCausalLM were initialized from the model checkpoint at Qwen/Qwen3-1.7B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use Qwen3ForCausalLM for predictions without further training.
+Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.33it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.23it/s]
+All model checkpoint weights were used when initializing Qwen3ForCausalLM.
+
+All the weights of Qwen3ForCausalLM were initialized from the model checkpoint at Qwen/Qwen3-1.7B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use Qwen3ForCausalLM for predictions without further training.
+/opt/np/repo/shared/train/sft_lora.py:1524: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:1524: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:1526: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+/opt/np/repo/shared/train/sft_lora.py:1526: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+2026-08-06 05:18:11.000539:  14677  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+e30acd3a/model.neff
+2026-08-06 05:18:11.000539:  14678  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+e30acd3a/model.neff
+2026-08-06 05:18:11.000564:  14678  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+e30acd3a/model.neff
+2026-08-06 05:18:11.000564:  14677  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+e30acd3a/model.neff
+2026-08-06 05:18:11.000573:  14678  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+e30acd3a/model.neff
+2026-08-06 05:18:11.000573:  14677  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+e30acd3a/model.neff
+PyTorch: setting up devices
+Applying formatting function to train dataset:   0%|          | 0/15011 [00:00<?, ? examples/s]Applying formatting function to train dataset:   3%|▎         | 521/15011 [00:00<00:02, 5167.61 examples/s]Applying formatting function to train dataset:   9%|▉         | 1340/15011 [00:00<00:02, 5356.34 examples/s]Applying formatting function to train dataset:  13%|█▎        | 1980/15011 [00:00<00:02, 5761.89 examples/s]Applying formatting function to train dataset:  19%|█▉        | 2862/15011 [00:00<00:02, 5810.25 examples/s]Applying formatting function to train dataset:  25%|██▍       | 3749/15011 [00:00<00:01, 5846.73 examples/s]Applying formatting function to train dataset:  31%|███       | 4641/15011 [00:00<00:01, 5866.02 examples/s]Applying formatting function to train dataset:  37%|███▋      | 5526/15011 [00:00<00:01, 5876.23 examples/s]Applying formatting function to train dataset:  43%|████▎     | 6414/15011 [00:01<00:01, 5886.73 examples/s]Applying formatting function to train dataset:  49%|████▊     | 7312/15011 [00:01<00:01, 5886.46 examples/s]Applying formatting function to train dataset:  53%|█████▎    | 7952/15011 [00:01<00:01, 6002.98 examples/s]Applying formatting function to train dataset:  59%|█████▉    | 8827/15011 [00:01<00:01, 5941.24 examples/s]Applying formatting function to train dataset:  65%|██████▍   | 9708/15011 [00:01<00:00, 5914.72 examples/s]Applying formatting function to train dataset:  69%|██████▊   | 10314/15011 [00:01<00:00, 5865.78 examples/s]Applying formatting function to train dataset:  73%|███████▎  | 10949/15011 [00:01<00:00, 5984.00 examples/s]Applying formatting function to train dataset:  79%|███████▉  | 11834/15011 [00:02<00:00, 5952.02 examples/s]Applying formatting function to train dataset:  85%|████████▍ | 12722/15011 [00:02<00:00, 5932.01 examples/s]Applying formatting function to train dataset:  91%|█████████ | 13618/15011 [00:02<00:00, 5897.41 examples/s]Applying formatting function to train dataset:  97%|█████████▋| 14505/15011 [00:02<00:00, 5900.56 examples/s]Applying formatting function to train dataset: 100%|██████████| 15011/15011 [00:02<00:00, 5734.60 examples/s]
+Adding EOS to train dataset:   0%|          | 0/15011 [00:00<?, ? examples/s]Adding EOS to train dataset:  14%|█▎        | 2028/15011 [00:00<00:00, 20152.74 examples/s]Adding EOS to train dataset:  27%|██▋       | 4100/15011 [00:00<00:00, 20479.07 examples/s]Adding EOS to train dataset:  41%|████      | 6164/15011 [00:00<00:00, 20546.35 examples/s]Adding EOS to train dataset:  55%|█████▍    | 8238/15011 [00:00<00:00, 20616.61 examples/s]Adding EOS to train dataset:  69%|██████▊   | 10304/15011 [00:00<00:00, 20628.66 examples/s]Adding EOS to train dataset:  89%|████████▉ | 13379/15011 [00:00<00:00, 20567.99 examples/s]Adding EOS to train dataset: 100%|██████████| 15011/15011 [00:00<00:00, 20064.92 examples/s]
+Tokenizing train dataset:   0%|          | 0/15011 [00:00<?, ? examples/s]Tokenizing train dataset:   1%|          | 154/15011 [00:00<00:09, 1518.95 examples/s]Tokenizing train dataset:   2%|▏         | 341/15011 [00:00<00:08, 1720.46 examples/s]Tokenizing train dataset:   3%|▎         | 525/15011 [00:00<00:08, 1768.00 examples/s]Tokenizing train dataset:   5%|▌         | 784/15011 [00:00<00:08, 1744.77 examples/s]Tokenizing train dataset:   7%|▋         | 1000/15011 [00:00<00:09, 1449.49 examples/s]Tokenizing train dataset:   8%|▊         | 1175/15011 [00:00<00:09, 1526.23 examples/s]Tokenizing train dataset:   9%|▉         | 1359/15011 [00:00<00:08, 1603.80 examples/s]Tokenizing train dataset:  10%|█         | 1543/15011 [00:00<00:08, 1660.55 examples/s]Tokenizing train dataset:  12%|█▏        | 1791/15011 [00:01<00:08, 1651.90 examples/s]Tokenizing train dataset:  13%|█▎        | 2000/15011 [00:01<00:08, 1500.70 examples/s]Tokenizing train dataset:  14%|█▍        | 2163/15011 [00:01<00:08, 1528.46 examples/s]Tokenizing train dataset:  16%|█▌        | 2335/15011 [00:01<00:08, 1576.14 examples/s]Tokenizing train dataset:  17%|█▋        | 2512/15011 [00:01<00:07, 1625.51 examples/s]Tokenizing train dataset:  18%|█▊        | 2701/15011 [00:01<00:07, 1694.82 examples/s]Tokenizing train dataset:  20%|█▉        | 2944/15011 [00:01<00:07, 1660.12 examples/s]Tokenizing train dataset:  21%|██        | 3179/15011 [00:01<00:07, 1616.41 examples/s]Tokenizing train dataset:  22%|██▏       | 3371/15011 [00:02<00:06, 1689.13 examples/s]Tokenizing train dataset:  24%|██▍       | 3567/15011 [00:02<00:06, 1755.71 examples/s]Tokenizing train dataset:  25%|██▍       | 3748/15011 [00:02<00:06, 1766.53 examples/s]Tokenizing train dataset:  26%|██▋       | 3943/15011 [00:02<00:06, 1815.67 examples/s]Tokenizing train dataset:  28%|██▊       | 4179/15011 [00:02<00:06, 1689.27 examples/s]Tokenizing train dataset:  29%|██▉       | 4354/15011 [00:02<00:06, 1701.54 examples/s]Tokenizing train dataset:  30%|███       | 4536/15011 [00:02<00:06, 1722.39 examples/s]Tokenizing train dataset:  32%|███▏      | 4786/15011 [00:02<00:06, 1701.60 examples/s]Tokenizing train dataset:  33%|███▎      | 5003/15011 [00:03<00:06, 1610.07 examples/s]Tokenizing train dataset:  35%|███▍      | 5197/15011 [00:03<00:05, 1685.03 examples/s]Tokenizing train dataset:  36%|███▌      | 5373/15011 [00:03<00:05, 1699.11 examples/s]Tokenizing train dataset:  37%|███▋      | 5547/15011 [00:03<00:05, 1701.96 examples/s]Tokenizing train dataset:  38%|███▊      | 5723/15011 [00:03<00:05, 1714.51 examples/s]Tokenizing train dataset:  39%|███▉      | 5910/15011 [00:03<00:05, 1757.97 examples/s]Tokenizing train dataset:  41%|████      | 6093/15011 [00:03<00:05, 1672.77 examples/s]Tokenizing train dataset:  42%|████▏     | 6290/15011 [00:03<00:04, 1751.38 examples/s]Tokenizing train dataset:  44%|████▎     | 6558/15011 [00:03<00:04, 1760.49 examples/s]Tokenizing train dataset:  45%|████▍     | 6740/15011 [00:04<00:04, 1773.55 examples/s]Tokenizing train dataset:  47%|████▋     | 7000/15011 [00:04<00:04, 1673.77 examples/s]Tokenizing train dataset:  48%|████▊     | 7172/15011 [00:04<00:04, 1682.68 examples/s]Tokenizing train dataset:  49%|████▉     | 7361/15011 [00:04<00:04, 1734.47 examples/s]Tokenizing train dataset:  50%|█████     | 7543/15011 [00:04<00:04, 1753.65 examples/s]Tokenizing train dataset:  51%|█████▏    | 7727/15011 [00:04<00:04, 1773.69 examples/s]Tokenizing train dataset:  53%|█████▎    | 7988/15011 [00:04<00:03, 1757.09 examples/s]Tokenizing train dataset:  55%|█████▍    | 8225/15011 [00:04<00:04, 1694.98 examples/s]Tokenizing train dataset:  56%|█████▌    | 8403/15011 [00:04<00:03, 1714.90 examples/s]Tokenizing train dataset:  57%|█████▋    | 8597/15011 [00:05<00:03, 1772.30 examples/s]Tokenizing train dataset:  59%|█████▉    | 8849/15011 [00:05<00:03, 1729.93 examples/s]Tokenizing train dataset:  60%|██████    | 9079/15011 [00:05<00:03, 1619.46 examples/s]Tokenizing train dataset:  62%|██████▏   | 9336/15011 [00:05<00:03, 1643.80 examples/s]Tokenizing train dataset:  63%|██████▎   | 9510/15011 [00:05<00:03, 1663.18 examples/s]Tokenizing train dataset:  65%|██████▍   | 9683/15011 [00:05<00:03, 1678.46 examples/s]Tokenizing train dataset:  66%|██████▋   | 9947/15011 [00:05<00:02, 1703.22 examples/s]Tokenizing train dataset:  68%|██████▊   | 10182/15011 [00:06<00:02, 1637.46 examples/s]Tokenizing train dataset:  69%|██████▉   | 10424/15011 [00:06<00:02, 1627.06 examples/s]Tokenizing train dataset:  71%|███████   | 10612/15011 [00:06<00:02, 1682.90 examples/s]Tokenizing train dataset:  72%|███████▏  | 10783/15011 [00:06<00:02, 1689.26 examples/s]Tokenizing train dataset:  73%|███████▎  | 11000/15011 [00:06<00:02, 1547.65 examples/s]Tokenizing train dataset:  74%|███████▍  | 11181/15011 [00:06<00:02, 1607.63 examples/s]Tokenizing train dataset:  76%|███████▌  | 11423/15011 [00:06<00:02, 1600.55 examples/s]Tokenizing train dataset:  77%|███████▋  | 11602/15011 [00:06<00:02, 1642.68 examples/s]Tokenizing train dataset:  78%|███████▊  | 11778/15011 [00:07<00:01, 1670.53 examples/s]Tokenizing train dataset:  80%|███████▉  | 11968/15011 [00:07<00:01, 1729.69 examples/s]Tokenizing train dataset:  81%|████████  | 12173/15011 [00:07<00:01, 1596.29 examples/s]Tokenizing train dataset:  82%|████████▏ | 12337/15011 [00:07<00:01, 1605.46 examples/s]Tokenizing train dataset:  83%|████████▎ | 12508/15011 [00:07<00:01, 1631.32 examples/s]Tokenizing train dataset:  84%|████████▍ | 12679/15011 [00:07<00:01, 1649.11 examples/s]Tokenizing train dataset:  86%|████████▌ | 12924/15011 [00:07<00:01, 1635.68 examples/s]Tokenizing train dataset:  88%|████████▊ | 13181/15011 [00:07<00:01, 1598.85 examples/s]Tokenizing train dataset:  89%|████████▉ | 13366/15011 [00:08<00:00, 1656.93 examples/s]Tokenizing train dataset:  90%|█████████ | 13544/15011 [00:08<00:00, 1685.01 examples/s]Tokenizing train dataset:  92%|█████████▏| 13778/15011 [00:08<00:00, 1639.10 examples/s]Tokenizing train dataset:  93%|█████████▎| 13956/15011 [00:08<00:00, 1672.13 examples/s]Tokenizing train dataset:  94%|█████████▍| 14167/15011 [00:08<00:00, 1566.05 examples/s]Tokenizing train dataset:  96%|█████████▌| 14426/15011 [00:08<00:00, 1616.67 examples/s]Tokenizing train dataset:  97%|█████████▋| 14621/15011 [00:08<00:00, 1695.56 examples/s]Tokenizing train dataset:  99%|█████████▊| 14805/15011 [00:08<00:00, 1730.83 examples/s]Tokenizing train dataset: 100%|█████████▉| 14989/15011 [00:08<00:00, 1756.93 examples/s]Tokenizing train dataset: 100%|██████████| 15011/15011 [00:09<00:00, 1653.82 examples/s]
+Packing train dataset:   0%|          | 0/15011 [00:00<?, ? examples/s]Packing train dataset:  60%|█████▉    | 9000/15011 [00:00<00:00, 78445.78 examples/s]Packing train dataset: 100%|██████████| 15011/15011 [00:00<00:00, 77293.93 examples/s]
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+  full fine-tune     : LoRA disabled, every weight trains (dense 6N accounting)
+  grad ckpt shim     : module globals ['modeling_utils', 'modeling_llama', 'modeling_granite']; 0 bound funcs wrapped
+  WARNING: post-PEFT recount looks degenerate (trainable=1,720,698,880/1,720,698,880); MFU will be reported as null rather than from a bad count
+
+==============================================================================
+  LoRA SFT on Trainium            tag=fullft_qwen3_1_7b
+==============================================================================
+  model              : Qwen/Qwen3-1.7B
+  params total       : 1,720,698,880  (rank-local shard 860,349,440; via xla_all_reduce)
+  params trainable   : unknown (degenerate recount; MFU nulled)
+  grad checkpointing : True
+  parallelism        : world=2 tp=2 dp=1 pp=1
+  lora               : r=16 alpha=32 dropout=0.05
+  lora targets       : q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
+  seq_len            : 2048  (packing=True, attn=flash_attention_2)
+  batch              : micro=1 grad_accum=8 -> 16,384 tok/optimizer step
+  schedule           : epochs=3 max_steps=50 lr=0.0001
+  seed               : 42
+  dataset            : databricks/databricks-dolly-15k
+  neuron cache       : /opt/np/cache/neuron-compile-cache
+  adapter out        : /opt/np/models/adapters/fullft_qwen3_1_7b
+  versions           : torch=2.9.1 optimum-neuron=0.4.3 neuronx-cc=2.26.6360.0+6f180f47
+==============================================================================
+
+Pipeline parallelsim: forcing the dataloader to drop the last incomplete batch because it can cause failure if the last batch size is not divisible by the number of microbatches for the pipeline.
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+***** Running training *****
+  Num examples = 1,662
+  Num Epochs = 1
+  Data Parallel Size: 1
+  Tensor Parallel Size: 2
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Total optimization steps = 50
+  Num trainable parameters = 1,720,574,976
+2026-08-06 05:18:33.000817:  14677  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), k = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), v = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/qwen3/modeling_qwen3.py:133: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/qwen3/modeling_qwen3.py:133: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+2026-08-06 05:18:33.000849:  14678  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), k = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), v = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/qwen3/modeling_qwen3.py:133: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/qwen3/modeling_qwen3.py:133: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), k_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), v_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), o_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), dy_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), lse_ref = Tensor(shape: (1, 8, 128, 16), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)
+Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), k_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), v_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), o_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), dy_ref = Tensor(shape: (1, 8, 128, 2048), dtype: bfloat16), lse_ref = Tensor(shape: (1, 8, 128, 16), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17156371167015422252+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17156371167015422252+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17156371167015422252+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+................
+Compiler status PASS
+2026-08-06 05:21:06.000641:  14677  [INFO]: Compilation Successfully Completed for model.MODULE_17156371167015422252+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+
+Compiler status PASS
+2026-08-06 05:21:14.000569:  14678  [INFO]: Compilation Successfully Completed for model.MODULE_12635830079400775705+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14089114400210783061+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14089114400210783061+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14089114400210783061+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+./opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+...............
+Compiler status PASS
+2026-08-06 05:23:48.000736:  14677  [INFO]: Compilation Successfully Completed for model.MODULE_14089114400210783061+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+
+Compiler status PASS
+2026-08-06 05:23:54.000703:  14678  [INFO]: Compilation Successfully Completed for model.MODULE_4866816404290991566+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8796010787251246204+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8796010787251246204+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8796010787251246204+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+....2026-08-06 05:25:03.000566:  14678  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_8796010787251246204+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+..
+2026-08-06 05:25:55.000166:  14677  [ERROR]: Failed compilation with ['neuronx-cc', 'compile', '--framework=XLA', '/tmp/root/neuroncc_compile_workdir/6d4efacf-27c2-4029-94b3-fb90e5dd6a39/model.MODULE_8796010787251246204+e30acd3a.hlo_module.pb', '--output', '/tmp/root/neuroncc_compile_workdir/6d4efacf-27c2-4029-94b3-fb90e5dd6a39/model.MODULE_8796010787251246204+e30acd3a.neff', '--target=trn1', '--verbose=35']:
+[ERROR] [NCC_EOOM001] Maximum peak HBM usage of 19.46GB (at instruction I-67488-1) exceeds HBM limit of 16.00GB for Trn1. This consists of 14.42GB I/O tensors, 0B intermediate tensors, and 5.04GB internal (scratchpad) allocations (of which 5.04GB is anticipated spills from SBUF) - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+2026-08-06T05:25:55Z Non-signal exit. Backend exited with code 1 and stderr: [ERROR] [NCC_EOOM001] Maximum peak HBM usage of 19.46GB (at instruction I-67488-1) exceeds HBM limit of 16.00GB for Trn1. This consists of 14.42GB I/O tensors, 0B intermediate tensors, and 5.04GB internal (scratchpad) allocations (of which 5.04GB is anticipated spills from SBUF) - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 1684, in <module>
+[rank0]:     sys.exit(main())
+[rank0]:              ^^^^^^
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 867, in main
+[rank0]:     return run(args, cache_dir, profile)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/np/repo/shared/train/sft_lora.py", line 1272, in run
+[rank0]:     trainer.train()
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/sft_trainer.py", line 385, in train
+[rank0]:     return NeuronTrainer.train(self, resume_from_checkpoint=resume_from_checkpoint)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1246, in train
+[rank0]:     output = self._train(resume_from_checkpoint=resume_from_checkpoint)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1197, in _train
+[rank0]:     xm.mark_step()
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/typing_extensions.py", line 3140, in wrapper
+[rank0]:     return arg(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/core/xla_model.py", line 1032, in mark_step
+[rank0]:     torch_xla.sync(wait, reset_scope)
+[rank0]:   File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+[rank0]:     torch_xla._XLAC._xla_step_marker(
+[rank0]: ValueError: RunNeuronCCImpl: error condition error != 0: [ERROR] [NCC_EOOM001] Maximum peak HBM usage of 19.46GB (at instruction I-67488-1) exceeds HBM limit of 16.00GB for Trn1. This consists of 14.42GB I/O tensors, 0B intermediate tensors, and 5.04GB internal (scratchpad) allocations (of which 5.04GB is anticipated spills from SBUF) - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[rank0]: 2026-08-06T05:25:55Z Non-signal exit. Backend exited with code 1 and stderr: [ERROR] [NCC_EOOM001] Maximum peak HBM usage of 19.46GB (at instruction I-67488-1) exceeds HBM limit of 16.00GB for Trn1. This consists of 14.42GB I/O tensors, 0B intermediate tensors, and 5.04GB internal (scratchpad) allocations (of which 5.04GB is anticipated spills from SBUF) - Check the target architecture flag to ensure you are compiling for correct target, or consider using smaller batches or applying model/tensor parallelism.
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+[rank0]: [libneuronxla 2.2.17544.0+fb9962bf]
+W0806 05:25:56.559000 14655 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 14678 closing signal SIGTERM
+E0806 05:25:56.773000 14655 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 14677) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/sft_lora.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-06_05:25:56
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 14677)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

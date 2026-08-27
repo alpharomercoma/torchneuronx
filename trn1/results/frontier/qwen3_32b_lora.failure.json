@@ -1,0 +1,14 @@
+{
+  "tag": "qwen3_32b_lora",
+  "box": "trn1",
+  "status": "failed",
+  "failure_class": "host_ram_oom_during_compile",
+  "reason": "The Linux OOM killer terminated the lane during compilation. systemd recorded: 'np-symmetry.service: A process of this unit has been killed by the OOM killer' followed by \"Failed with result 'oom-kill'\". The lane log ends with SignalException signal 15 as torchrun tore down its workers.",
+  "host_ram_gib": 30,
+  "swap_gib": 63,
+  "note": "This receipt was written by hand from the systemd journal and the lane log. The driver could not write it itself: the OOM killer killed the whole unit including the shell, so the '||' failure handler never ran. A lane that dies this way leaves NO artifact unless someone notices the absence.",
+  "device_vs_host": "This is a HOST memory failure, not a device HBM failure. Trainium1 never got far enough to report an HBM figure.",
+  "contrast": "trn2 trained the same model successfully on one chip",
+  "evidence": "journalctl -u np-symmetry (oom-kill), trn1/results/frontier/qwen3_32b_lora.log (SignalException: signal 15)",
+  "captured": "2026-08-06T07:32:03Z"
+}

@@ -1,0 +1,10 @@
+{
+  "baseline": {"artifact_kb": 39568, "files": 6, "wall_s": 1043},
+  "spec_k1": {"artifact_kb": 24, "files": 1, "wall_s": 26},
+  "spec_k2": {"artifact_kb": 54484, "files": 6, "wall_s": 668},
+  "spec_k3": {"artifact_kb": 58500, "files": 6, "wall_s": 703},
+  "spec_k4": {"artifact_kb": 62080, "files": 6, "wall_s": 738},
+  "spec_k5": {"artifact_kb": 65864, "files": 6, "wall_s": 783},
+  "spec_k6": {"artifact_kb": 69584, "files": 6, "wall_s": 842},
+  "spec_k7": {"artifact_kb": 24, "files": 1, "wall_s": null}
+}

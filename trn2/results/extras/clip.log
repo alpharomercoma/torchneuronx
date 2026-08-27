@@ -1,0 +1,105 @@
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+--- compiling openai/clip-vit-base-patch32 -> /opt/np/models/neuron-compiled/clip-vit-base-patch32 (one-time, minutes) ---
+neuronxcc-2.26.6360.0+6f180f47/MODULE_d5257f8dbfaa33ceea7b not found in aws-neuron/optimum-neuron-cache: 404 Client Error. (Request ID: Root=1-6a739ef5-20fb2cc41374519e3eb6fb7f;d384623b-e73b-4bb3-8c56-e124a66cdd1e)
+
+Entry Not Found for url: https://huggingface.co/api/models/aws-neuron/optimum-neuron-cache/tree/main/neuronxcc-2.26.6360.0%2B6f180f47%2FMODULE_d5257f8dbfaa33ceea7b?recursive=True&expand=False.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_d5257f8dbfaa33ceea7b does not exist on "main" 
+The model will be recompiled.
+`torch_dtype` is deprecated! Use `dtype` instead!
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/transformers/models/clip/feature_extraction_clip.py:30: FutureWarning: The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers. Please use CLIPImageProcessor instead.
+  warnings.warn(
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+***** Compiling clip-vit-base-patch32 *****
+Using Neuron: --auto-cast matmul
+Using Neuron: --auto-cast-type bf16
+Using Neuron: --optlevel 2
+2026-Aug-05 20:37:32.0978 10973:11076 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-05 20:37:32.0981 10973:11076 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-05 20:37:32.0983 10973:11076 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-05 20:37:32.0985 10973:11076 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+....
+Compiler status PASS
+optimum export failed (:Dictionary inputs to traced functions must have consistent type. Found Tensor and Dict[str, Tensor]); falling back to raw torch_neuronx.trace
+....
+Compiler status PASS
+downloading demo image -> /opt/np/models/neuron-compiled/data/cats.jpg
+# clip  model=openai/clip-vit-base-patch32 text_batch=5 image_batch=1 seq=77 px=224 auto_cast=matmul/bf16 cached=False compiled_dir=/opt/np/models/neuron-compiled/clip-vit-base-patch32 image=cats.jpg (640x480)
+
+zero-shot probabilities (softmax over labels, sum to 1):
+  100.0%  #############################  two cats lying on a couch <-- best
+    0.0%                                 a plate of food on a table
+    0.0%                                 a person riding a bicycle
+    0.0%                                 a car driving on a road
+    0.0%                                 a dog playing in a park
+
+top 'two cats lying on a couch' (100.0%)  |  188.5 images/s @ b1 (100 iters)  |  compile 176.2s  load 7.1s  ->  /opt/np/repo/trn2/results/extras/clip.json

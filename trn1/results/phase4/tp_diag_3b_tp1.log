@@ -1,0 +1,171 @@
+2026-Aug-19 14:48:49.0558 162736:162762 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-19 14:48:49.0569 162736:162762 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-19 14:48:49.0579 162736:162762 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-19 14:48:49.0588 162736:162762 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[orpo] accelerate state @startup: initialised -> True
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+[orpo] re-based trainer MRO: _NeuronORPOTrainer -> _NeuronTrainerShim -> HFTrainerCompat -> NeuronTrainer
+[orpo] meta-llama/Llama-3.2-3B has no chat template; borrowed one from meta-llama/Llama-3.1-8B-Instruct (recorded in the result)
+[orpo] 200 preference pairs, columns ['prompt', 'chosen', 'rejected']
+[2026-08-19 14:48:55.871: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 1
+[2026-08-19 14:48:55.871: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-19 14:48:55.871: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-19 14:48:55.871: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-19 14:48:55.871: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 1
+2026-08-19 14:48:55.000887:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17120541919588390765+e30acd3a/model.neff
+[2026-08-19 14:48:55.895: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x76667c146f20>, 'Ascending Ring PG Group')>
+[2026-08-19 14:48:55.895: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0]]
+[2026-08-19 14:48:55.895: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0]]
+[2026-08-19 14:48:55.896: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0]]
+[2026-08-19 14:48:55.896: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0]]
+[2026-08-19 14:48:55.896: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0]]
+[2026-08-19 14:48:55.896: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.2-3B/snapshots/13afe5124825b4f3751f836b40dafda64c1ed062/model.safetensors.index.json
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:29<00:29, 29.08s/it]Fetching 2 files: 100%|██████████| 2/2 [00:29<00:00, 14.55s/it]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.65s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.82s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:03<00:00,  1.79s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.2-3B.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+[orpo] pinned param counts (22,937,600 trainable / 3,235,687,424 total) so disable_adapter() cannot trigger a mid-step compile
+[orpo] accelerate state @pre-trainer: initialised -> True
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/orpo_trainer.py:150: UserWarning: This trainer will soon be moved to trl.experimental and is a candidate for removal. If you rely on it and want it to remain, please share your comments here: https://github.com/huggingface/trl/issues/4223. Silence this warning by setting environment variable TRL_EXPERIMENTAL_SILENCE=1.
+  warnings.warn(
+WARNING:trl.trainer.orpo_trainer:When using DPODataCollatorWithPadding, you should set `remove_unused_columns=False` in your TrainingArguments we have set it for you, but you should do it yourself in the future.
+Map:   0%|          | 0/200 [00:00<?, ? examples/s]Map:  11%|█         | 22/200 [00:00<00:00, 212.37 examples/s]Map:  24%|██▍       | 48/200 [00:00<00:00, 238.18 examples/s]Map:  42%|████▎     | 85/200 [00:00<00:00, 292.11 examples/s]Map:  62%|██████▏   | 124/200 [00:00<00:00, 328.98 examples/s]Map:  86%|████████▌ | 171/200 [00:00<00:00, 375.86 examples/s]Map: 100%|██████████| 200/200 [00:00<00:00, 343.12 examples/s]
+Map:   0%|          | 0/200 [00:00<?, ? examples/s]Map: 100%|██████████| 200/200 [00:00<00:00, 2225.28 examples/s]
+Map:   0%|          | 0/200 [00:00<?, ? examples/s]Map:  22%|██▏       | 43/200 [00:00<00:00, 411.29 examples/s]Map:  52%|█████▎    | 105/200 [00:00<00:00, 403.65 examples/s]Map:  74%|███████▎  | 147/200 [00:00<00:00, 402.63 examples/s]Map: 100%|██████████| 200/200 [00:00<00:00, 279.62 examples/s]Map: 100%|██████████| 200/200 [00:00<00:00, 313.73 examples/s]
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+No label_names provided for model class `NeuronPeftModelForCausalLM`. Since `NeuronPeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `NeuronTrainer`. Note that empty label_names list will be used instead.
+[orpo] gather_for_metrics -> identity (dp=1, tp=1): removes the 8 out-of-graph host syncs TRL performs per step
+[orpo] odds-ratio guard installed: fp32 + logp clamp at -0.01 (bf16 exp() saturates to 1.0 above -0.000977)
+[orpo] collator wrapped -> fixed 512-token shapes
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+***** Running training *****
+  Num examples = 200
+  Num Epochs = 1
+  Data Parallel Size: 1
+  Tensor Parallel Size: 1
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Total optimization steps = 10
+  Num trainable parameters = 22,937,600
+2026-08-19 14:49:46.000203:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_8022930691723292232+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4053935226927999391+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4053935226927999391+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4053935226927999391+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...
+Compiler status PASS
+2026-08-19 14:50:36.000048:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_4053935226927999391+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2076170264200963406+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2076170264200963406+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_2076170264200963406+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...
+Compiler status PASS
+2026-08-19 14:51:24.000893:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_2076170264200963406+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12049620127455658273+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12049620127455658273+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12049620127455658273+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...
+Compiler status PASS
+2026-08-19 14:52:13.000710:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_12049620127455658273+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8339264563795392438+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8339264563795392438+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_8339264563795392438+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+....
+Compiler status PASS
+2026-08-19 14:53:26.000056:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_8339264563795392438+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4420773895796011711+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4420773895796011711+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_4420773895796011711+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+.....
+Compiler status PASS
+2026-08-19 14:55:06.000937:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_4420773895796011711+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6980022690908964849+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6980022690908964849+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6980022690908964849+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+.....
+Compiler status PASS
+2026-08-19 14:56:48.000180:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_6980022690908964849+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11952977100995557140+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11952977100995557140+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11952977100995557140+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..................
+Compiler status PASS
+2026-08-19 15:02:52.000669:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_11952977100995557140+e30acd3a.hlo_module.pb
+2026-08-19 15:02:53.000417:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10766981334430809964+e30acd3a/model.neff
+{'loss': 23.8842, 'learning_rate': 4.5e-06, 'grad_norm': 16.28131103515625, 'train/step_time': 786.9884964430021, 'train/efficiency': 0.26, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 0.24, 'train/optimizer_time_percent': 0.02, 'train/overhead_time_percent': 99.74, 'rewards/chosen': -0.23579101264476776, 'rewards/rejected': -0.20976564288139343, 'rewards/accuracies': 0.5, 'rewards/margins': -0.02602538652718067, 'logps/rejected': -2.09765625, 'logps/chosen': -2.35791015625, 'logits/rejected': -1.62451171875, 'logits/chosen': -1.43017578125, 'nll_loss': 2.859375, 'log_odds_ratio': -1.2614415884017944, 'log_odds_chosen': -0.21708805859088898, 'epoch': 0.04}
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3808325340404483063+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3808325340404483063+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3808325340404483063+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...................................
+Compiler status PASS
+2026-08-19 15:14:35.000105:  162736  [INFO]: Compilation Successfully Completed for model.MODULE_3808325340404483063+e30acd3a.hlo_module.pb
+{'loss': 21.7562, 'learning_rate': 4.000000000000001e-06, 'grad_norm': 15.73013973236084, 'train/step_time': 702.5519489399958, 'train/efficiency': 0.27, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 0.25, 'train/optimizer_time_percent': 0.02, 'train/overhead_time_percent': 99.73, 'rewards/chosen': -0.16635742783546448, 'rewards/rejected': -0.13002929091453552, 'rewards/accuracies': 0.375, 'rewards/margins': -0.03632812947034836, 'logps/rejected': -1.30029296875, 'logps/chosen': -1.66357421875, 'logits/rejected': -1.51123046875, 'logits/chosen': -1.63525390625, 'nll_loss': 2.6171875, 'log_odds_ratio': -1.0233867168426514, 'log_odds_chosen': -0.36650383472442627, 'epoch': 0.08}
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+{'loss': 23.4681, 'learning_rate': 3.5e-06, 'grad_norm': 18.401966094970703, 'train/step_time': 9.840002525997988, 'train/efficiency': 18.8, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.07, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.2, 'rewards/chosen': -0.15742187201976776, 'rewards/rejected': -0.1861816644668579, 'rewards/accuracies': 0.625, 'rewards/margins': 0.028759770095348358, 'logps/rejected': -1.86181640625, 'logps/chosen': -1.57421875, 'logits/rejected': -1.794921875, 'logits/chosen': -1.8310546875, 'nll_loss': 2.8583984375, 'log_odds_ratio': -0.7511292099952698, 'log_odds_chosen': 0.3688845932483673, 'epoch': 0.12}
+{'loss': 21.5556, 'learning_rate': 3e-06, 'grad_norm': 14.517817497253418, 'train/step_time': 9.830464022998058, 'train/efficiency': 18.82, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.09, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.18, 'rewards/chosen': -0.2557128965854645, 'rewards/rejected': -0.2691406011581421, 'rewards/accuracies': 0.75, 'rewards/margins': 0.013427733443677425, 'logps/rejected': -2.69140625, 'logps/chosen': -2.55712890625, 'logits/rejected': -1.625, 'logits/chosen': -1.7685546875, 'nll_loss': 2.6279296875, 'log_odds_ratio': -0.665184497833252, 'log_odds_chosen': 0.1488426923751831, 'epoch': 0.16}
+{'loss': 19.5806, 'learning_rate': 2.5e-06, 'grad_norm': 10.641023635864258, 'train/step_time': 9.859817855998699, 'train/efficiency': 18.86, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.11, 'train/optimizer_time_percent': 0.75, 'train/overhead_time_percent': 81.14, 'rewards/chosen': -0.14145508408546448, 'rewards/rejected': -0.15571290254592896, 'rewards/accuracies': 0.75, 'rewards/margins': 0.01425781287252903, 'logps/rejected': -1.55712890625, 'logps/chosen': -1.41455078125, 'logits/rejected': -1.41015625, 'logits/chosen': -1.35430908203125, 'nll_loss': 2.3837890625, 'log_odds_ratio': -0.637863039970398, 'log_odds_chosen': 0.18337875604629517, 'epoch': 0.2}
+{'loss': 19.4097, 'learning_rate': 2.0000000000000003e-06, 'grad_norm': 9.954435348510742, 'train/step_time': 9.818538101004378, 'train/efficiency': 18.74, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.01, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.26, 'rewards/chosen': -0.17856445908546448, 'rewards/rejected': -0.12626953423023224, 'rewards/accuracies': 0.5, 'rewards/margins': -0.05229491740465164, 'logps/rejected': -1.2626953125, 'logps/chosen': -1.78564453125, 'logits/rejected': -1.619140625, 'logits/chosen': -1.46630859375, 'nll_loss': 2.306640625, 'log_odds_ratio': -1.1956926584243774, 'log_odds_chosen': -0.5670215487480164, 'epoch': 0.24}
+{'loss': 15.7892, 'learning_rate': 1.5e-06, 'grad_norm': 6.618208885192871, 'train/step_time': 9.811235872999532, 'train/efficiency': 18.72, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 17.99, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.28, 'rewards/chosen': -0.13212890923023224, 'rewards/rejected': -0.16074217855930328, 'rewards/accuracies': 0.625, 'rewards/margins': 0.02861328236758709, 'logps/rejected': -1.607421875, 'logps/chosen': -1.3212890625, 'logits/rejected': -1.184326171875, 'logits/chosen': -1.2138671875, 'nll_loss': 1.91796875, 'log_odds_ratio': -0.556872546672821, 'log_odds_chosen': 0.42108282446861267, 'epoch': 0.28}
+{'loss': 21.7756, 'learning_rate': 1.0000000000000002e-06, 'grad_norm': 15.31494140625, 'train/step_time': 9.814853684001719, 'train/efficiency': 18.77, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.04, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.23, 'rewards/chosen': -0.17514649033546448, 'rewards/rejected': -0.2701660394668579, 'rewards/accuracies': 0.875, 'rewards/margins': 0.09501953423023224, 'logps/rejected': -2.70166015625, 'logps/chosen': -1.75146484375, 'logits/rejected': -1.6435546875, 'logits/chosen': -1.41552734375, 'nll_loss': 2.6796875, 'log_odds_ratio': -0.42257165908813477, 'log_odds_chosen': 1.0451300144195557, 'epoch': 0.32}
+{'loss': 20.3444, 'learning_rate': 5.000000000000001e-07, 'grad_norm': 10.621259689331055, 'train/step_time': 9.806810035996023, 'train/efficiency': 18.72, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 17.98, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.28, 'rewards/chosen': -0.24428710341453552, 'rewards/rejected': -0.16118165850639343, 'rewards/accuracies': 0.25, 'rewards/margins': -0.08310545980930328, 'logps/rejected': -1.61181640625, 'logps/chosen': -2.44287109375, 'logits/rejected': -1.48046875, 'logits/chosen': -1.453125, 'nll_loss': 2.37890625, 'log_odds_ratio': -1.641466736793518, 'log_odds_chosen': -0.9226765036582947, 'epoch': 0.36}
+{'loss': 19.4038, 'learning_rate': 0.0, 'grad_norm': 11.111119270324707, 'train/step_time': 9.817764494997391, 'train/efficiency': 18.77, 'train/forward_time_percent': 0.0, 'train/backward_time_percent': 18.03, 'train/optimizer_time_percent': 0.73, 'train/overhead_time_percent': 81.23, 'rewards/chosen': -0.16538086533546448, 'rewards/rejected': -0.14453125, 'rewards/accuracies': 0.375, 'rewards/margins': -0.02084961161017418, 'logps/rejected': -1.4453125, 'logps/chosen': -1.65380859375, 'logits/rejected': -1.36083984375, 'logits/chosen': -1.372802734375, 'nll_loss': 2.3408203125, 'log_odds_ratio': -0.8464919328689575, 'log_odds_chosen': -0.20644041895866394, 'epoch': 0.4}
+================================================================================
+TRAINING SUMMARY METRICS
+================================================================================
+summary/tokens_per_sec_avg: 0.00
+summary/total_steps: 10
+summary/total_tokens_processed: 0
+summary/efficiency_avg: 15.07%
+summary/forward_time_percent_avg: 0.0000s
+summary/backward_time_percent_avg: 14.4800s
+summary/optimizer_time_percent_avg: 0.5900s
+summary/overhead_time_percent_avg: 84.9300s
+================================================================================
+Summary metrics saved to: /tmp/np-tp_diag_3b_tp1/training_summary_metrics.json
+================================================================================
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+2026-08-19 15:15:56.000846:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16607020156114453544+e30acd3a/model.neff
+2026-08-19 15:15:56.000856:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14192612369438944089+e30acd3a/model.neff
+2026-08-19 15:15:56.000865:  162736  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15006413081744094985+e30acd3a/model.neff
+[orpo] done: None tok/s MFU None%

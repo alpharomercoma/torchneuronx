@@ -1,0 +1,8 @@
+{
+ "lane": "zeroshot_imagenet",
+ "status": "lane_failed",
+ "stage": "run",
+ "reason": "RuntimeError: neuronx-cc failed with 2",
+ "traceback": "Traceback (most recent call last):\n  File \"/opt/np/repo/extras/zeroshot_imagenet_lane.py\", line 676, in main\n    return run_engine(args)\n           ^^^^^^^^^^^^^^^^\n  File \"/opt/np/repo/extras/zeroshot_imagenet_lane.py\", line 453, in run_engine\n    else load_neuron(args, len(templates)))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/np/repo/extras/zeroshot_imagenet_lane.py\", line 382, in load_neuron\n    torch.jit.save(torch_neuronx.trace(TextTower(base), t_dummy,\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_neuronx/xla_impl/trace.py\", line 603, in trace\n    neff_filename, metaneff, flattener, packer, weights = _trace(\n                                                          ^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_neuronx/xla_impl/trace.py\", line 683, in _trace\n    neff_artifacts = generate_neff(\n                     ^^^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_neuronx/xla_impl/trace.py\", line 518, in generate_neff\n    neff_filename = hlo_compile(\n                    ^^^^^^^^^^^^\n  File \"/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_neuronx/xla_impl/trace.py\", line 341, in hlo_compile\n    raise RuntimeError(f\"neuronx-cc failed with {status}\")\nRuntimeError: neuronx-cc failed with 2\n",
+ "captured": "2026-08-20T13:27:32Z"
+}

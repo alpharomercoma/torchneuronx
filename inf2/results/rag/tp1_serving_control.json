@@ -1,0 +1,12 @@
+{
+  "lane": "tp1_serving_control",
+  "box": "inf2",
+  "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "topology": "tp=1, NEURON_RT_VISIBLE_CORES=0",
+  "baseline_at_tp2": "118.9 out tok/s, passed the Phase-1 greedy-determinism lane",
+  "counting_prompt": "1 2 3 4 5 6 7 8 9",
+  "counting_completion_repr": "' 10 11 12 13'",
+  "qa_completion_repr": "' It reached 68.3% MFU.'",
+  "printable_fraction_qa": 1.0,
+  "verdict": "TP=1 SOUND -- the Qwen models are the broken variable"
+}

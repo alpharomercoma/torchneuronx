@@ -1,0 +1,56 @@
+{
+ "lane": "zeroshot_imagenet_delta",
+ "candidate": {
+  "engine": "neuron",
+  "top1": 0.7612,
+  "top5": 0.9448,
+  "nonfinite_rows": 0,
+  "auto_cast": "none",
+  "receipt": "/opt/np/repo/trn1/results/accuracy/zs_siglip_neuron.json"
+ },
+ "reference": {
+  "engine": "cpu",
+  "top1": 0.7612,
+  "top5": 0.9448,
+  "nonfinite_rows": 0,
+  "receipt": "/opt/np/repo/trn1/results/accuracy/zs_siglip_cpu.json"
+ },
+ "n_samples": 10000,
+ "sample_digest": "4c4b10b345a824ca65ff505e53b7c2b7706600e71caeffcd12d4339222812aaa",
+ "top1_delta_pp": 0.0,
+ "top1_delta_ci95_pp": {
+  "lo": 0.0,
+  "hi": 0.0,
+  "point": 0.0,
+  "n_boot": 2000,
+  "seed": 1234
+ },
+ "prediction_disagreements": 0,
+ "prediction_disagreement_rate": 0.0,
+ "disagreements_on_near_ties": 0,
+ "disagreements_decisive": 0,
+ "tie_fragility": {
+  "candidate": {
+   "median_margin": 0.025585990399122238,
+   "frac_margin_lt_1e-3": 0.0297,
+   "frac_margin_lt_1e-2": 0.2395,
+   "why": "images whose top-2 cosine similarities are this close can flip on rounding alone; they bound how much of a top-1 delta is tie-flipping rather than degradation"
+  },
+  "reference": {
+   "median_margin": 0.025586064904928207,
+   "frac_margin_lt_1e-3": 0.0297,
+   "frac_margin_lt_1e-2": 0.2395,
+   "why": "images whose top-2 cosine similarities are this close can flip on rounding alone; they bound how much of a top-1 delta is tie-flipping rather than degradation"
+  }
+ },
+ "mlperf_gate": {
+  "passed": true,
+  "ratio": 1.0,
+  "floor": 0.99,
+  "candidate": 0.7612,
+  "reference": 0.7612,
+  "rule": "MLPerf Inference closed division: >=99% of reference accuracy"
+ },
+ "interpretation": "top1_delta_pp < 0 means the candidate engine classified FEWER of the same images correctly. prediction_disagreements counts images where the two engines picked different classes at all -- it moves even when accuracy happens to cancel out, so it is the more sensitive detector of a numerically drifting graph.",
+ "captured": "2026-08-20T12:11:55Z"
+}

@@ -1,0 +1,1 @@
+{"tag":"spec_k1","status":"failed","wall_s":26,"reason":"  warnings.warn(f'Warning: {error}') RuntimeError: Error while lowering: [] aten::cumsum, location=__call__@_ops.py:841, xla_shape=pred[1,0]{1,0}, dynamic_dims: (), dim=1 XLA builder error: INVALID_ARGUMENT: Window goo.gle/debugproto    ","captured":"2026-08-19T13:39:54Z"}

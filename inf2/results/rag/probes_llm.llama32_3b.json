@@ -1,0 +1,177 @@
+{
+  "mode": "end_to_end",
+  "llm_model": "meta-llama/Llama-3.2-3B-Instruct",
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "answer": "not in context",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1905.44,
+        "retrieve_ms": 396.92,
+        "rerank_ms": 1919.75,
+        "ttft_ms": 8599.03,
+        "e2e_ms": 164736.94
+      },
+      "probe_wall_ms": 200114.2
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "answer": "not in context.",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "07-inference-lanes::lane-5-30-min-sustained-lane-6-quality-l-0000-tail-f-inf2-results-serve-llama31-base-s"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 562.06,
+        "retrieve_ms": 96.35,
+        "rerank_ms": 1836.9,
+        "ttft_ms": 729.06,
+        "e2e_ms": 108062.94
+      },
+      "probe_wall_ms": 114866.9
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": false,
+      "answer": "not in context. \n\nNote: The context passages are quite long and contain many technical details. I'll try to extract the relevant information for the question. \n\nPlease let me know if I made any mistakes or if you'd like me to clarify any of the extracted information. \n\nHere's my attempt at answering the question based on the context passages:\n\nThe context passage that mentions the compiler error c",
+      "ids": [
+        "METHODOLOGY::6-kv-cache-arithmetic-drives-the-serving-0000-llama-3-1-8b-32-layers-8-kv-heads-128-he",
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1850.5,
+        "retrieve_ms": 245.67,
+        "rerank_ms": 1901.09,
+        "ttft_ms": 2599.17,
+        "e2e_ms": 139130.34
+      },
+      "probe_wall_ms": 174068.8
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": false,
+      "answer": "not in context.",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "01-security-hardening::2-new-keys-new-profile-also-make-it-the-0000-aws-iam-create-access-key-user-name-neur",
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 597.03,
+        "retrieve_ms": 227.07,
+        "rerank_ms": 1855.72,
+        "ttft_ms": 2296.86,
+        "e2e_ms": 103724.39
+      },
+      "probe_wall_ms": 111602.7
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": true,
+      "answer": "**100.4%** (from [3]) not in context. (Note: the answer is actually in context, but the context passage does not explicitly state the answer. The answer is in the 4th sentence of the passage, which is quoted verbatim above.) \n\nThe answer is 100.4%. The context passage [3] explicitly states that the retention was 100.4% over 30 minutes of sustained serving load. The passage states: \"retention 100.4",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::caveats-worth-knowing-before-you-read-th-0000-compile-time-is-real-and-reported-rule-3",
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 573.62,
+        "retrieve_ms": 113.54,
+        "rerank_ms": 1838.82,
+        "ttft_ms": 1108.18,
+        "e2e_ms": 123575.08
+      },
+      "probe_wall_ms": 130477.1
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": false,
+      "answer": "not in context. \n\nNote: The question is not about the dataset, but about the fine-tuning process. The fine-tuned model is mentioned in the context passages, but the dataset is not explicitly mentioned. \n\nHowever, I can answer the question about the fine-tuning process if you'd like. The fine-tuned model was fine-tuned on the same graphs as the original model, but with different weights. The fine-t",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met",
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 602.86,
+        "retrieve_ms": 282.03,
+        "rerank_ms": 1854.17,
+        "ttft_ms": 1528.11,
+        "e2e_ms": 127123.41
+      },
+      "probe_wall_ms": 134009.7
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "answer": "not in context. \n\nNote: The context passages are quite long, but I'll provide them in their entirety if needed. \n\nPlease provide the answer in the format: \"The answer is [answer].\" \n\nIf the answer is not in the context, I'll let you know, and you can respond accordingly. \n\nLet me know when you're ready to provide the answer. \n\n(Note: I'll be using the context passages to answer the question, and I",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 573.52,
+        "retrieve_ms": 122.66,
+        "rerank_ms": 1855.12,
+        "ttft_ms": 836.15,
+        "e2e_ms": 125989.89
+      },
+      "probe_wall_ms": 132749.5
+    }
+  ],
+  "passed": 1,
+  "total": 7,
+  "pass_rate": 0.143,
+  "errored": 0,
+  "captured": "2026-08-15T16:01:52Z"
+}

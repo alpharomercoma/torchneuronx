@@ -28,15 +28,26 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "shared"))
 import summarize  # noqa: E402  (load_telemetry + busy-window rule)
 
+# The trn2 list is a copy of trn1's, not a subset: the Trainium1-vs-Trainium2
+# comparison is only meaningful if both chips completed the identical lanes, so
+# a partial trn2 suite must fail the completeness check like any other gap.
+_TRAINING_LANES = ["train/smoke_tinyllama.json", "compile/llama31_train.json",
+                   "train/llama31_lora.json", "train/qwen3_lora.json",
+                   "train/merge_llama31.json", "cpu/cpu.json"]
+
 EXPECTED = {
-    "trn1": ["train/smoke_tinyllama.json", "compile/llama31_train.json",
-             "train/llama31_lora.json", "train/qwen3_lora.json",
-             "train/merge_llama31.json", "cpu/cpu.json"],
+    "trn1": list(_TRAINING_LANES),
+    "trn2": list(_TRAINING_LANES),
     "inf2": ["serve/llama31_base_short/grid.json",
              "serve/llama31_base_long/grid.json",
              "serve/llama31_dolly_short/grid.json",
              "sustained/sustained.json", "cpu/cpu.json"],
 }
+
+# Iteration order for every per-box loop. A box with no results/ directory is
+# skipped rather than reported missing, so this file stays runnable while the
+# trn2 lane is still in flight.
+BOXES = ("trn1", "trn2", "inf2")
 
 
 def load_json(path):
@@ -122,14 +133,29 @@ def collect_box(box):
         out["quality"] = {f[:-5]: load_json(os.path.join(quality_root, f))
                           for f in sorted(os.listdir(quality_root))
                           if f.endswith(".json")}
+
+    # The isolation lane lives in its own directory because its loss is
+    # deliberately meaningless (random tokens) and must never be swept into the
+    # training lanes, where something would eventually plot it. Collecting it
+    # here anyway matters: a result that never reaches comparison.json cannot be
+    # cited under the "every reported number is traceable" rule, so it would
+    # have to be hand-copied out of raw JSON -- exactly the transcription step
+    # that rule exists to forbid.
+    iso_root = os.path.join(res_root, "isolation")
+    if os.path.isdir(iso_root):
+        out["isolation"] = {f[:-5]: load_json(os.path.join(iso_root, f))
+                            for f in sorted(os.listdir(iso_root))
+                            if f.endswith(".json")}
     return out, dropped
 
 
 def render(cmp):
     lines = ["neuron-pipelines comparison  (generated %s)" % cmp["captured"],
              "=" * 64]
-    for box in ("trn1", "inf2"):
-        b = cmp[box]
+    for box in BOXES:
+        b = cmp.get(box)
+        if b is None:
+            continue
         lines.append(f"\n[{box}] lanes: {sorted(b['lanes'])}")
         for run, d in sorted(b.get("serve", {}).items()):
             n = len(d["points"])
@@ -145,9 +171,156 @@ def render(cmp):
                     f" util={row['telemetry']['gpu_util_pct']['mean']}%")
         for run, f in sorted(b.get("failures", {}).items()):
             lines.append(f"  serve/{run}: RECORDED FAILURE ({f.get('status')})")
+
+        for tag, d in sorted((b.get("quality") or {}).items()):
+            h = (d or {}).get("holdout") or {}
+            if h.get("loss_before") is not None and h.get("loss_after") is not None:
+                lines.append(f"  quality/{tag}: held-out {h['loss_before']:.4f}"
+                             f" -> {h['loss_after']:.4f}"
+                             f" (delta {h['loss_after'] - h['loss_before']:+.4f})")
+            elif (d or {}).get("status") == "failed":
+                lines.append(f"  quality/{tag}: RECORDED FAILURE")
+
+        # The isolation lane's whole point is the PAIRED ratio, so render the
+        # pairs rather than four loose throughput numbers. A reader comparing
+        # them by hand is a reader who will eventually compare the wrong two.
+        iso = b.get("isolation") or {}
+        for seq in (2048, 4096):
+            real = (iso.get(f"real_ctl_{seq}") or {}).get("tokens_per_s")
+            synth = (iso.get(f"synth_{seq}") or {}).get("tokens_per_s")
+            if real and synth:
+                lines.append(f"  isolation/seq{seq}: real {real} -> synthetic "
+                             f"{synth} tok/s, uplift {synth / real:.3f}x")
     lines.append(f"\ndropped_no_telemetry: {cmp['dropped_no_telemetry']}")
     lines.append(f"missing_expected: {cmp['missing_expected']}")
     return "\n".join(lines) + "\n"
+
+
+# $/hr. trn1 is the published on-demand rate. trn2 has NO on-demand rate --
+# the pricing API carries no record -- so this is derived from what we actually
+# paid: $53.64 for a 24 h Capacity Block.
+HOURLY_RATE = {"trn1": 1.34, "trn2": 2.235, "inf2": 0.7582}
+
+
+def cost_metrics(box, d):
+    """Cost per million model tokens, both ways, never blended.
+
+    TWO NUMBERS, because they answer different questions and mixing them is
+    marketing arithmetic:
+
+      occupied  -- rate x wall clock of THIS job. What the job cost to run.
+      allocated -- the whole non-refundable Capacity Block divided by this
+                   job's tokens. What it cost if the block ran nothing else.
+
+    On the primary lane the occupied figures are $0.2583/M (trn1) vs $0.1952/M
+    (trn2): Trainium2 is 24.4% CHEAPER per token despite costing 1.67x more per
+    hour, because the 2.21x wall-clock win more than pays for the rate. The
+    allocated figure for a single job on trn2 is $5.0759/M -- twenty times
+    worse -- which is why utilisation of a pre-paid block matters more than the
+    hourly rate.
+
+    "Model tokens" are fixed-shape packed sequence tokens, not raw corpus
+    tokens; packing efficiency is not measured here.
+    """
+    rate = HOURLY_RATE.get(box)
+    wall, steps = d.get("train_wall_s"), d.get("steps_recorded")
+    tok_step = d.get("tokens_per_optimizer_step")
+    if not (rate and wall and steps and tok_step):
+        return None
+    mtok = steps * tok_step / 1e6
+    occupied = rate / 3600.0 * wall
+    out = {
+        "hourly_rate_usd": rate,
+        "model_tokens_m": round(mtok, 4),
+        "job_cost_usd_occupied": round(occupied, 4),
+        "usd_per_m_tokens_occupied": round(occupied / mtok, 4),
+        "token_basis": "packed fixed-shape sequence tokens, not raw corpus tokens",
+    }
+    if box == "trn2":
+        out["block_cost_usd"] = 53.64
+        out["usd_per_m_tokens_block_allocated"] = round(53.64 / mtok, 4)
+        out["allocation_note"] = ("the block is non-refundable and cannot be "
+                                  "cancelled, so a single job carries its whole "
+                                  "cost. Report both; never blend them.")
+    return out
+
+
+def end_to_end_fields(d):
+    """Return (tokens/s, MFU%, source) end-to-end, deriving when not recorded.
+
+    sft_lora.py only began emitting these on 2026-08-05T10:30Z. Every published
+    Phase-1/2 result predates that, and so does the trn1 rerun (its box pulled
+    at 08:42Z); trn2 launched afterwards and records them natively. Without a
+    derivation the report would show the column filled for one generation and
+    blank for the other -- the asymmetry that makes a comparison unusable. The
+    three inputs exist in every result JSON this project has ever written.
+    """
+    tps = d.get("tokens_per_s_end_to_end")
+    mfu = d.get("mfu_pct_end_to_end")
+    recorded = tps is not None
+    steps, tok = d.get("steps_recorded"), d.get("tokens_per_optimizer_step")
+    wall, fpt = d.get("train_wall_s"), d.get("flops_per_token")
+    peak = d.get("peak_bf16_flops")
+    if tps is None and steps and tok and wall:
+        tps = steps * tok / wall
+    if mfu is None and tps and fpt and peak:
+        mfu = 100.0 * fpt * tps / peak
+    return (round(tps, 1) if tps else None,
+            round(mfu, 3) if mfu else None,
+            "recorded" if recorded else "derived")
+
+
+def collect_trn1_reruns():
+    """The same-silicon, same-software control runs.
+
+    Not part of EXPECTED: these are a CONTROL, not a lane of the study, and a
+    box that never ran them is not incomplete. But leaving them uncollected
+    meant no claim about run-to-run variance or version confounding could be
+    regenerated from comparison.json, which is the file the report is supposed
+    to be reproducible from.
+
+    NOTE ON COMPARABILITY: seed 42 reproduces the published configuration, but
+    its mfu_pct is NOT comparable to the published one -- the denominator moved
+    from 210e12 to 190e12 on 2026-08-05. Compare tokens_per_s or tflops, which
+    are denominator-free. Both denominators are carried here so the ratio can be
+    recomputed either way.
+    """
+    root = os.path.join(ROOT, "trn1", "results", "rerun")
+    if not os.path.isdir(root):
+        return None
+    out = {"note": ("same trn1 box, same software (version_delta identical), "
+                    "warm v2 NEFF cache. Compare tokens_per_s / tflops, NOT "
+                    "mfu_pct: the peak denominator changed after publication."),
+           "lanes": {}, "dropped_no_telemetry": []}
+    for name in ("rerun_seed42", "rerun_seed43", "rerun_seed44"):
+        d = load_json(os.path.join(root, name + ".json"))
+        if d is None:
+            continue
+        tel = summarize.load_telemetry(os.path.join(root, name + ".telemetry.csv"))
+        if tel is None:
+            out["dropped_no_telemetry"].append(name)   # invariant 1
+            continue
+        e2e_tps, e2e_mfu, e2e_src = end_to_end_fields(d)
+        cost = cost_metrics("trn1", d)
+        out["lanes"][name] = {
+            "tokens_per_s": d.get("tokens_per_s"),
+            "tflops": d.get("tflops"),
+            "median_step_ms": d.get("median_step_ms"),
+            "train_wall_s": d.get("train_wall_s"),
+            "mfu_pct": d.get("mfu_pct"),
+            "peak_bf16_flops": d.get("peak_bf16_flops"),
+            "mfu_pct_alt": d.get("mfu_pct_alt"),
+            "peak_bf16_flops_alt": d.get("peak_bf16_flops_alt"),
+            "tokens_per_s_end_to_end": e2e_tps,
+            "mfu_pct_end_to_end": e2e_mfu,
+            "end_to_end_source": e2e_src,
+            "cost": cost,
+            "telemetry": tel,
+        }
+    version_delta = load_json(os.path.join(root, "version_delta.json"))
+    if version_delta is not None:
+        out["version_delta"] = version_delta
+    return out or None
 
 
 def main():
@@ -159,17 +332,39 @@ def main():
     cmp, dropped = {"captured": datetime.now(timezone.utc)
                     .strftime("%Y-%m-%dT%H:%M:%SZ")}, 0
     missing = []
-    for box in ("trn1", "inf2"):
+    recorded_failures = []
+    for box in BOXES:
+        # A box whose results/ has never been populated is not yet part of the
+        # study; reporting six "missing" lanes for it would bury real gaps.
+        if not os.path.isdir(os.path.join(ROOT, box, "results")):
+            continue
         cmp[box], drp = collect_box(box)
         dropped += drp
         for rel in EXPECTED[box]:
-            if not os.path.exists(os.path.join(ROOT, box, "results", rel)) \
-               and not os.path.exists(os.path.join(
-                   ROOT, box, "results", os.path.dirname(rel),
-                   "load_failure.json")):
+            base = os.path.join(ROOT, box, "results")
+            # A lane is ACCOUNTED FOR if it produced a result, a per-lane
+            # failure receipt, or (for serving sweeps) a directory-level
+            # load_failure. Only the per-lane receipt was missing here, so a
+            # recorded failure such as compile/llama31_train.failure.json was
+            # reported as a MISSING lane -- making `make report` exit nonzero
+            # against a suite the report calls complete. A recorded failure is
+            # an outcome, not a gap; that is the whole point of receipts.
+            candidates = [
+                os.path.join(base, rel),
+                os.path.join(base, rel[:-5] + ".failure.json"),
+                os.path.join(base, os.path.dirname(rel), "load_failure.json"),
+            ]
+            if not any(os.path.exists(c) for c in candidates):
                 missing.append(f"{box}/{rel}")
+            elif not os.path.exists(candidates[0]):
+                recorded_failures.append(f"{box}/{rel}")
     cmp["dropped_no_telemetry"] = dropped
     cmp["missing_expected"] = missing
+    # Distinct from missing: the lane ran and its failure was captured.
+    cmp["recorded_failures"] = recorded_failures
+    reruns = collect_trn1_reruns()
+    if reruns:
+        cmp["trn1_reruns"] = reruns
 
     os.makedirs(HERE, exist_ok=True)
     with open(os.path.join(HERE, "comparison.json"), "w") as fh:

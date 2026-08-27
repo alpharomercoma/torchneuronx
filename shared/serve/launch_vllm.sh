@@ -28,8 +28,30 @@ set -uo pipefail
 BENCH_DIR="${BENCH_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 MODELS_DIR="${MODELS_DIR:-/opt/np/models}"
 
-PORT=8000
-TP_DEGREE=2                    # inf2.xlarge: 1 Inferentia2 = 2 NeuronCores
+PORT="${PORT_OVERRIDE:-8000}"
+TP_DEGREE="${TP_DEGREE_OVERRIDE:-2}"   # inf2.xlarge: 1 Inferentia2 = 2 NeuronCores
+
+# ------------------------------------------------- NeuronCore partitioning
+# A NeuronCore belongs to exactly one process. The default TP=2 server
+# therefore owns BOTH cores of the inf2.xlarge and nothing else can touch the
+# device -- which is precisely why the Track-F RAG probes died with
+# "The PyTorch Neuron Runtime could not be initialized": the encoders tried to
+# torch.jit.load next to a server that already held every core.
+#
+# NEURON_RT_VISIBLE_CORES is the documented way out (Neuron docs,
+# torch-neuronx/programming-guide/inference/core-placement). Set it to pin this
+# server to a subset, and pin the co-resident process to the complement:
+#
+#   NP_VISIBLE_CORES=0 TP_DEGREE_OVERRIDE=1  launch_vllm.sh ...   # LLM on nc0
+#   NEURON_RT_VISIBLE_CORES=1                python encoders.py   # encoders nc1
+#
+# Only usable when the model fits in one core's share of HBM. An 8B model in
+# bf16 is ~16 GB against a 16 GB per-core budget, so it CANNOT be pinned to one
+# core -- co-residency needs a smaller LM, not a different flag.
+if [ -n "${NP_VISIBLE_CORES:-}" ]; then
+  export NEURON_RT_VISIBLE_CORES="$NP_VISIBLE_CORES"
+  echo "--- pinned to NeuronCore(s) $NEURON_RT_VISIBLE_CORES (tp=$TP_DEGREE) ---"
+fi
 HEALTH_POLL_S=5
 HEALTH_TIMEOUT_S=5400          # 90 min: a cold 8B compile can take most of it
 STOP_GRACE_S=60                # SIGTERM -> SIGKILL escalation window
@@ -120,15 +142,37 @@ trap save_log_tail EXIT
 case "$MODEL_KEY" in
   llama31_base)
     MODEL_ID="meta-llama/Llama-3.1-8B-Instruct" ;;
-  llama31_dolly)
-    # The trn1-trained fine-tune: merged on the Trainium box, pushed to S3,
-    # pulled here on first use so a re-provisioned inf2 self-heals.
-    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged"
+  llama31_dolly|llama31_dolly_trn1)
+    # The TRAINIUM1-trained fine-tune.
+    #
+    # This used to pull from artifacts/llama31-8b-dolly-merged/, which BOTH
+    # training boxes wrote to. When Trainium2 ran the same lane it overwrote
+    # trn1's weights at that path, so a later pull would have served trn2's
+    # model under trn1's name -- and `verify_models.sh` would have failed
+    # against the sha256 digests Phase 2 recorded. The two merges genuinely
+    # differ (4 of 6 files), as they must: different final loss.
+    #
+    # Both versions were recovered from S3 versioning into explicit,
+    # box-specific prefixes. Neither key is ambiguous now.
+    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged-trn1"
     if [ ! -d "$MODEL_ID" ] || [ -z "$(ls -A "$MODEL_ID" 2>/dev/null)" ]; then
-      echo "--- $MODEL_ID absent; pulling merged fine-tune from S3 ---"
+      echo "--- $MODEL_ID absent; pulling the trn1 merged fine-tune from S3 ---"
       mkdir -p "$MODEL_ID"
-      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged/" "$MODEL_ID/"; then
-        echo "S3 pull of llama31-8b-dolly-merged failed" >&2
+      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged-trn1/" "$MODEL_ID/"; then
+        echo "S3 pull of llama31-8b-dolly-merged-trn1 failed" >&2
+        exit 1
+      fi
+    fi ;;
+  llama31_dolly_trn2)
+    # The TRAINIUM2-trained fine-tune. Closes the train-then-serve loop for the
+    # newer chip: Phase 2 closed it for Trainium1 only, so every serving number
+    # in this study so far describes weights trained on trn1.
+    MODEL_ID="$MODELS_DIR/llama31-8b-dolly-merged-trn2"
+    if [ ! -d "$MODEL_ID" ] || [ -z "$(ls -A "$MODEL_ID" 2>/dev/null)" ]; then
+      echo "--- $MODEL_ID absent; pulling the trn2 merged fine-tune from S3 ---"
+      mkdir -p "$MODEL_ID"
+      if ! aws s3 sync "$S3_ARTIFACTS/llama31-8b-dolly-merged-trn2/" "$MODEL_ID/"; then
+        echo "S3 pull of llama31-8b-dolly-merged-trn2 failed" >&2
         exit 1
       fi
     fi ;;
@@ -136,10 +180,74 @@ case "$MODEL_KEY" in
     MODEL_ID="Qwen/Qwen3-8B" ;;
   mistral7b)
     MODEL_ID="mistralai/Mistral-7B-Instruct-v0.3" ;;
+  gemma3_12b)
+    # Third modern architecture through the identical vLLM/NxDI path, chosen as
+    # the direct comparable to the Mistral-7B lane (13.2). 24.4 GB of bf16
+    # weights against inf2.xlarge's 32 GB (2 x 16 GB), so TP=2 puts 12.2 GB on
+    # each core -- it fits, with less headroom than Mistral's 14.5 GB total but
+    # more than the 8B ORPO lane that OOM'd at 15.6/16 GB on trn1.
+    #
+    # RISK, RECORDED BEFORE THE RUN: the HF checkpoint is
+    # Gemma3ForConditionalGeneration (multimodal) while NxDI ships
+    # NeuronGemma3ForCausalLM (text tower only). If the loader will not extract
+    # the text config from the multimodal wrapper this lane fails at model
+    # construction, which is a receipt naming a supported-architecture gap
+    # rather than a capacity one. gemma3_4b is the fallback rung.
+    MODEL_ID="google/gemma-3-12b-it" ;;
+  gemma3_4b)
+    MODEL_ID="google/gemma-3-4b-it" ;;
+  gpt_oss_20b)
+    # The MoE rung. 21B total / ~3.6B active -- and TOTAL is what has to fit,
+    # since every expert's weights are resident even though only a few fire per
+    # token. That is the fact that rules out Qwen3-30B-A3B (61 GB) and
+    # Mixtral-8x7B (93 GB) on a 32 GB box regardless of how few experts activate.
+    #
+    # NxDI ships a gpt_oss family and real MoE plumbing (modules/moe_v2.py,
+    # moe_tp_degree / moe_ep_degree), so this is the only modern MoE that is both
+    # SUPPORTED and plausibly SIZED for inf2.xlarge.
+    #
+    # THE OPEN QUESTION, RECORDED BEFORE THE RUN: the checkpoint is 27.5 GB on
+    # disk because it ships natively MXFP4 (4-bit experts + higher-precision
+    # attention). If NxDI loads it as-is that is ~13.8 GB/core under TP=2 and it
+    # fits. If NxDI DEQUANTISES to bf16 it becomes 21B x 2 = ~42 GB, i.e.
+    # ~21 GB/core, and it cannot fit. Which of those happens is exactly what this
+    # lane measures, and an OOM here is a real finding about MXFP4 support rather
+    # than a sizing mistake.
+    MODEL_ID="openai/gpt-oss-20b" ;;
   qwen25_7b)
     # RAG LLM-ladder rung 2: qwen2 arch is a different NxDI path than the
     # qwen3 that crashed at generation -- all-Qwen stays possible via 2.5.
     MODEL_ID="Qwen/Qwen2.5-7B-Instruct" ;;
+  qwen3_1_7b)
+    # RAG co-residency rung: small enough to pin to ONE NeuronCore, which is
+    # the whole point. ~3.4 GB of bf16 weights plus ~114 KiB/token of KV
+    # against a 16 GB per-core budget, leaving the second core free for the
+    # embedder and the reranker. Qwen3-8B cannot do this -- its weights alone
+    # are ~16 GB, so it must span both cores and the appliance cannot exist.
+    MODEL_ID="Qwen/Qwen3-1.7B" ;;
+  qwen3_4b)
+    # Same idea with more headroom used: ~8 GB of weights on one core.
+    MODEL_ID="Qwen/Qwen3-4B" ;;
+  llama32_1b)
+    # The co-residency LM. ~2.5 GB of bf16 weights on one 16 GB core, leaving
+    # nc1 for the Qwen encoders. Weights are already on the box: this is the
+    # model the speculative-decoding lane used as its draft.
+    MODEL_ID="meta-llama/Llama-3.2-1B-Instruct" ;;
+  llama32_3b)
+    MODEL_ID="meta-llama/Llama-3.2-3B-Instruct" ;;
+  qwen3_0_6b)
+    # Smallest rung. Matches the embedder and reranker exactly in size, so an
+    # all-Qwen appliance at 0.6B x 3 is the minimal form of the thing.
+    MODEL_ID="Qwen/Qwen3-0.6B" ;;
+  qwen25_1_5b)
+    # Declared FALLBACK for the co-residency lane. REPORT §9 excludes Qwen3-8B
+    # serving: it boots, passes /health, then crashes the engine core on the
+    # first generation step. That was never separated into "Qwen3 architecture
+    # on NxDI 0.10" versus "8B at TP=2", so the qwen3_1_7b rung above is the
+    # experiment that separates them. If Qwen3 turns out to be architecturally
+    # broken here, qwen2 is a different NxDI code path and keeps the appliance
+    # alive at a size that still fits one core.
+    MODEL_ID="Qwen/Qwen2.5-1.5B-Instruct" ;;
   smoke_tinyllama)
     MODEL_ID="TinyLlama/TinyLlama-1.1B-Chat-v1.0" ;;
   *)
@@ -154,7 +262,20 @@ case "$CONFIG" in
   short) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=32 ;;
   long)  MAX_MODEL_LEN=9216;  MAX_NUM_SEQS=8  ;;  # exactly 1024+8192; 10240 died in NCC_INLA001 (internal compiler bound-check, 2026-07-29)
   smoke) MAX_MODEL_LEN=2048;  MAX_NUM_SEQS=4  ;;
-  *) echo "unknown config: $CONFIG (want short|long|smoke)" >&2; exit 2 ;;
+  # Phase-split grids deliberately REUSE the `long` server geometry rather than
+  # introducing new ones. NxDI preallocates KV for max-model-len x max-num-seqs
+  # at COMPILE time, so a new geometry means a cold recompile -- and worse, a
+  # different server, which would confound the phase split with a server change.
+  #
+  # Both grids fit inside 9216: prefill tops out at 8192+1, decode at 128+2048.
+  # So these run on the SAME compiled graph as the published long lane, at zero
+  # compile cost, and any difference is attributable to the request shape alone.
+  # Concurrency in both grids stays <= 8 to respect MAX_NUM_SEQS.
+  # SHORT geometry (2048/32), not long (9216): the long lane never booted --
+  # it is a recorded failure, and its cache entry is a poisoned NEFF from
+  # 2026-07-29. Both phase grids are sized to fit 2048.
+  prefill|decode) MAX_MODEL_LEN=2048; MAX_NUM_SEQS=32 ;;
+  *) echo "unknown config: $CONFIG (want short|long|smoke|prefill|decode)" >&2; exit 2 ;;
 esac
 # Probe overrides (Track B bisection): env wins over the config case so a
 # probe lane can walk max-model-len without inventing new named configs.

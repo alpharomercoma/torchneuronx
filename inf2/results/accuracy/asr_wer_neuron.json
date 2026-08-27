@@ -1,0 +1,93 @@
+{
+ "lane": "asr_wer",
+ "engine": "neuron",
+ "model": "openai/whisper-small",
+ "benchmark": "MLPerf Inference v5.1 ASR (LibriSpeech dev-all)",
+ "dataset": {
+  "source": "openslr.org/resources/12",
+  "splits": "dev-clean,dev-other",
+  "n_per_split": 250,
+  "seed": 1234,
+  "audio_s_total": 3448.9
+ },
+ "n_samples": 500,
+ "sample_digest": "e897296e0c5f402764f2b1b98196688bd4cb78285c356ac154501c5336fca0ad",
+ "decode": {
+  "strategy": "greedy",
+  "num_beams": 1,
+  "do_sample": false,
+  "max_length": 224,
+  "forced_decoder": "language=en,task=transcribe",
+  "decoder_prefix": "\u0120Having \u0120returned \u0120to \u0120the \u0120Royal"
+ },
+ "normalize": {
+  "primary": "whisper",
+  "english_normalizer": "OpenAI EnglishTextNormalizer",
+  "english_normalizer_reason": null,
+  "recipes": {
+   "whisper": "EnglishTextNormalizer only -- the protocol the published Whisper WER numbers use, so the only one under which our absolute number is comparable",
+   "mlperf": "MLCommons' three steps, DIGITS KEPT (documented deviation: the literal alphabetic-only filter deletes every normalised number from both sides)",
+   "mlperf_literal": "MLCommons step 1 taken at its word -- shown only to expose what the literal reading costs"
+  }
+ },
+ "wer_by_recipe": {
+  "whisper": {
+   "wer": 0.05186020293122886,
+   "word_accuracy": 0.9481397970687712,
+   "errors": 506,
+   "ref_words": 9757
+  },
+  "mlperf": {
+   "wer": 0.05186020293122886,
+   "word_accuracy": 0.9481397970687712,
+   "errors": 506,
+   "ref_words": 9757
+  },
+  "mlperf_literal": {
+   "wer": 0.05145921418995566,
+   "word_accuracy": 0.9485407858100443,
+   "errors": 499,
+   "ref_words": 9697
+  }
+ },
+ "engine_meta": {
+  "dtype": "bfloat16 (auto_cast=all)",
+  "framework": "optimum-neuron",
+  "static_decoder_seq_len": 224,
+  "use_cache": false,
+  "compile_s": 0.0,
+  "compiled_from_cache": true,
+  "compiled_dir": "/opt/np/models/neuron-compiled/whisper-wer-whisper-small-L224"
+ },
+ "wer": 0.05186020293122886,
+ "word_accuracy": 0.9481397970687712,
+ "counts": {
+  "errors": 506,
+  "sub": 384,
+  "ins": 64,
+  "del": 58,
+  "ref_words": 9757,
+  "hyp_words": 9763
+ },
+ "truncated": 0,
+ "n_unfinished": 0,
+ "timing": {
+  "decode_wall_s": 446.03,
+  "total_wall_s": 449.3,
+  "rtf": 0.1293,
+  "s_per_utterance": 0.892
+ },
+ "mlperf_reference_context": {
+  "model": "openai/whisper-large-v3",
+  "dataset": "LibriSpeech dev-all (dev-clean + dev-other)",
+  "word_accuracy": 0.979329,
+  "wer": 0.020670999999999995,
+  "numeric_format": "bfloat16",
+  "source": "https://mlcommons.org/2025/09/whisper-inferencev5-1/",
+  "note": "different model size and harness -- context, not a target"
+ },
+ "published_anchor": {
+  "test_clean_wer": 0.034
+ },
+ "captured": "2026-08-20T11:03:33Z"
+}

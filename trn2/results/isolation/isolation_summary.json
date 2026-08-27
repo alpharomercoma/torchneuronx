@@ -1,0 +1,17 @@
+{
+  "box": "trn2",
+  "shapes": {
+    "2048": {
+      "real_tokens_per_s": 3712.9,
+      "synthetic_tokens_per_s": 3795.6,
+      "uplift": 1.0223
+    },
+    "4096": {
+      "real_tokens_per_s": 7339.8,
+      "synthetic_tokens_per_s": 7317.5,
+      "uplift": 0.997
+    }
+  },
+  "uplift_shrinks_with_seq_len": true,
+  "interpretation": "host dataloader cost is a real and shape-dependent share of the step"
+}

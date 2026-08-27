@@ -1,0 +1,164 @@
+[
+  {
+    "id": "i-03c4f1a28c22b14a8",
+    "name": "neuron-pipelines-trn1-specdec",
+    "type": "trn1.2xlarge",
+    "ami": "ami-0d169aea1c31aa5ec",
+    "az": "us-west-2b",
+    "subnet": "subnet-0004804fe13fb126e",
+    "vpc": "vpc-0f665b20beca92415",
+    "sgs": [
+      "sg-0621220136996c36a"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/NeuronPipelinesTrainium-Trn1InstanceInstanceProfile8B2BDF24-2yWZ0KleBY5O",
+    "key": null,
+    "enis": [
+      "eni-0e45a084b6171279c"
+    ],
+    "tags": {
+      "Name": "neuron-pipelines-trn1-specdec",
+      "Ephemeral": "true",
+      "Purpose": "speculative-decoding-k-sweep"
+    }
+  },
+  {
+    "id": "i-0529392e4a8f75d17",
+    "name": "Ec2AutoshutdownStack/AutoshutdownInstance",
+    "type": "t4g.large",
+    "ami": "ami-054240677cb44ffac",
+    "az": "ap-southeast-1a",
+    "subnet": "subnet-0bb025b5fc02120f0",
+    "vpc": "vpc-09f94045bf373e71b",
+    "sgs": [
+      "sg-09804a3201b3fd966"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/Ec2AutoshutdownStack-AutoshutdownInstanceInstanceProfile18642ABF-MOd4VxxiFGs8",
+    "key": "Ec2AutoshutdownStack-keypair",
+    "enis": [
+      "eni-0c9a4a9273af0c579"
+    ],
+    "tags": {
+      "aws:cloudformation:logical-id": "AutoshutdownInstance246295DF",
+      "aws:cloudformation:stack-id": "arn:aws:cloudformation:ap-southeast-1:600627330911:stack/Ec2AutoshutdownStack/680c01a0-fc3c-11f0-8f0c-066d515aa4d7",
+      "aws:cloudformation:stack-name": "Ec2AutoshutdownStack",
+      "Name": "Ec2AutoshutdownStack/AutoshutdownInstance"
+    }
+  },
+  {
+    "id": "i-076530fb82f6139ab",
+    "name": "neuron-pipelines-trn1-quant",
+    "type": "trn1.2xlarge",
+    "ami": "ami-0d169aea1c31aa5ec",
+    "az": "us-west-2b",
+    "subnet": "subnet-0004804fe13fb126e",
+    "vpc": "vpc-0f665b20beca92415",
+    "sgs": [
+      "sg-0621220136996c36a"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/NeuronPipelinesTrainium-Trn1InstanceInstanceProfile8B2BDF24-2yWZ0KleBY5O",
+    "key": null,
+    "enis": [
+      "eni-093b85ea46ce957d9"
+    ],
+    "tags": {
+      "Name": "neuron-pipelines-trn1-quant",
+      "Purpose": "quantization-trn1",
+      "Ephemeral": "true"
+    }
+  },
+  {
+    "id": "i-085d18f0cbf836630",
+    "name": "(untagged)",
+    "type": "trn1.2xlarge",
+    "ami": "ami-025b3ba8491a26d32",
+    "az": "us-east-2c",
+    "subnet": "subnet-01172fec075d8fa65",
+    "vpc": "vpc-0eeb5d22cfb35b8a3",
+    "sgs": [
+      "sg-0f6ea9832bff5ac4f"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/TrainiumSpotStack-TrainiumLaunchTemplateProfile1281FB75-SW3EtlZrN2pk",
+    "key": "TrainiumSpotStack-keypair",
+    "enis": [
+      "eni-0bf019102a9495d5d"
+    ],
+    "tags": {}
+  },
+  {
+    "id": "i-0936ae7615727251e",
+    "name": "neuron-pipelines-inf2",
+    "type": "inf2.xlarge",
+    "ami": "ami-035c945d557065665",
+    "az": "us-west-2b",
+    "subnet": "subnet-0004804fe13fb126e",
+    "vpc": "vpc-0f665b20beca92415",
+    "sgs": [
+      "sg-0621220136996c36a"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/NeuronPipelinesInferentia-Inf2InstanceInstanceProfileF9565F5A-5Qw5T7Ufj1Vu",
+    "key": null,
+    "enis": [
+      "eni-0ea72024016798214"
+    ],
+    "tags": {
+      "aws:ec2launchtemplate:version": "1",
+      "Stack": "inferentia",
+      "aws:ec2launchtemplate:id": "lt-098aea6c558610701",
+      "aws:cloudformation:logical-id": "Inf2InstanceF360EBE1",
+      "aws:cloudformation:stack-name": "NeuronPipelinesInferentia",
+      "Lane": "inference",
+      "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:600627330911:stack/NeuronPipelinesInferentia/ac5ea1e0-8c3e-11f1-9ddc-068b0e303a43",
+      "Name": "neuron-pipelines-inf2",
+      "Project": "neuron-pipelines"
+    }
+  },
+  {
+    "id": "i-0cb9e758143a745d5",
+    "name": "neuron-pipelines-trn1",
+    "type": "trn1.2xlarge",
+    "ami": "ami-0d169aea1c31aa5ec",
+    "az": "us-west-2b",
+    "subnet": "subnet-0004804fe13fb126e",
+    "vpc": "vpc-0f665b20beca92415",
+    "sgs": [
+      "sg-0621220136996c36a"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/NeuronPipelinesTrainium-Trn1InstanceInstanceProfile8B2BDF24-2yWZ0KleBY5O",
+    "key": null,
+    "enis": [
+      "eni-071d9247f8ec3b444"
+    ],
+    "tags": {
+      "aws:ec2launchtemplate:version": "1",
+      "aws:cloudformation:stack-name": "NeuronPipelinesTrainium",
+      "aws:ec2launchtemplate:id": "lt-09fa3ee64a6f6c73c",
+      "Name": "neuron-pipelines-trn1",
+      "Lane": "training",
+      "Stack": "trainium",
+      "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-west-2:600627330911:stack/NeuronPipelinesTrainium/8a817fb0-8b3b-11f1-9cd3-02936d034749",
+      "Project": "neuron-pipelines",
+      "aws:cloudformation:logical-id": "Trn1Instance04E1A837"
+    }
+  },
+  {
+    "id": "i-0d41b323ab55a07db",
+    "name": "neuron-pipelines-inf2-b",
+    "type": "inf2.xlarge",
+    "ami": "ami-035c945d557065665",
+    "az": "us-west-2b",
+    "subnet": "subnet-0004804fe13fb126e",
+    "vpc": "vpc-0f665b20beca92415",
+    "sgs": [
+      "sg-0621220136996c36a"
+    ],
+    "iam": "arn:aws:iam::600627330911:instance-profile/NeuronPipelinesInferentia-Inf2InstanceInstanceProfileF9565F5A-5Qw5T7Ufj1Vu",
+    "key": null,
+    "enis": [
+      "eni-032df73703cae2fd0"
+    ],
+    "tags": {
+      "Name": "neuron-pipelines-inf2-b",
+      "Purpose": "sharegpt-serving-bench"
+    }
+  }
+]

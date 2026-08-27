@@ -1,0 +1,13 @@
+=== launch_vllm: llama31_base (decode) ===
+    model_id      : meta-llama/Llama-3.1-8B-Instruct
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 32
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/serve/llama31_base_decode/boot.json
+--- server pid 9906; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 1824s (cache 1986 -> 1986 MB); boot recorded in /opt/np/repo/inf2/results/serve/llama31_base_decode/boot.json ---
+--- point isl128_osl1900_c1 (num_prompts=8) ---
+--- point isl128_osl1900_c4 (num_prompts=16) ---
+--- point isl128_osl1900_c8 (num_prompts=32) ---
+--- sweep complete: /opt/np/repo/inf2/results/serve/llama31_base_decode ---

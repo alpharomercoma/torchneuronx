@@ -1,0 +1,1 @@
+{"tag":"fullft_qwen3_1_7b","box":"trn1","status":"failed","reason":"NCC_EOOM001] Maximum peak HBM usage of 19.46GB (at instruction I-67488-1) exceeds HBM limit of 16.00GB for Trn1. This consists of 14.42GB I/O tensors, ","captured":"2026-08-06T05:25:57Z"}

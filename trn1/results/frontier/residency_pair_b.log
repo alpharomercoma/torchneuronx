@@ -1,0 +1,112 @@
+[sft_lora] profile=trn1 (trn1.2xlarge) -- re-exec under torchrun (--nproc_per_node=1, one rank per logical NeuronCore)
+[sft_lora] /opt/aws_neuronx_venv_pytorch_2_9/bin/python -m torch.distributed.run --nproc_per_node=1 --master_port=29512 /opt/np/repo/shared/train/sft_lora.py --tag residency_pair_b --device-profile trn1 --nproc-per-node 1 --tensor-parallel-size 1 --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --max-steps 50 --out /opt/np/repo/trn1/results/frontier/residency_pair_b.json
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+2026-Aug-12 11:58:27.102822  2595:2595   WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Aug-12 11:58:27.102967  2595:2595  ERROR   NRT:nrt_allocate_neuron_cores               Logical Neuron Core(s) not available - Requested:lnc0-lnc0 Available:0 Logical Core size:1 (cores busy, ret=-16)
+2026-Aug-12 11:58:27.113432  2595:2595  ERROR   NRT:nrt_infodump                            Neuron runtime information - please include in any support request:
+2026-Aug-12 11:58:27.121636  2595:2595  ERROR   NRT:nrt_infodump                            ------------->8------------[ cut here ]------------>8-------------
+2026-Aug-12 11:58:27.129766  2595:2595  ERROR   NRT:nrt_infodump                            NRT version: 2.33.10.0 (3dcef56f04438fb7a53619634a3d86be0f610988)
+2026-Aug-12 11:58:27.137832  2595:2595  ERROR   NRT:nrt_infodump                            Embedded FW version: unknown (unknown)
+2026-Aug-12 11:58:27.145173  2595:2595  ERROR   NRT:nrt_infodump                            CCOM not loaded
+2026-Aug-12 11:58:27.151541  2595:2595  ERROR   NRT:nrt_infodump                            NCFW version: 2.33.5.0 (2b1991dce9f274619aa76144e07f0a9918345423)
+2026-Aug-12 11:58:27.159526  2595:2595  ERROR   NRT:nrt_infodump                            Instance ID: i-0cb9e758143a745d5
+2026-Aug-12 11:58:27.166419  2595:2595  ERROR   NRT:nrt_infodump                            Cluster ID: N/A
+2026-Aug-12 11:58:27.172780  2595:2595  ERROR   NRT:nrt_infodump                            Kernel: Linux 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:53:06 UTC 2026
+2026-Aug-12 11:58:27.182846  2595:2595  ERROR   NRT:nrt_infodump                            Nodename: ip-172-31-24-108
+2026-Aug-12 11:58:27.189589  2595:2595  ERROR   NRT:nrt_infodump                            Driver version: 2.29.0.0
+
+2026-Aug-12 11:58:27.198388  2595:2595  ERROR   NRT:nrt_infodump                            Failure: NRT_FAILURE in nrt_init()
+2026-Aug-12 11:58:27.205358  2595:2595  ERROR   NRT:nrt_infodump                            Visible cores: 0
+2026-Aug-12 11:58:27.211754  2595:2595  ERROR   NRT:nrt_infodump                            Environment:
+2026-Aug-12 11:58:27.218026  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_CC_FLAGS= --retry_failed_compilation
+2026-Aug-12 11:58:27.225408  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_COMPILE_CACHE_URL=/opt/np/cache/neuron-compile-cache
+2026-Aug-12 11:58:27.233309  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_FUSE_SOFTMAX=1
+2026-Aug-12 11:58:27.239990  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS=3
+2026-Aug-12 11:58:27.247389  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_LIBRARY_PATH=/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/libneuronxla/libneuronpjrt.so
+2026-Aug-12 11:58:27.258520  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_RT_ROOT_COMM_ID=127.0.0.1:62182
+2026-Aug-12 11:58:27.265754  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_PJRT_PROCESS_INDEX=0
+2026-Aug-12 11:58:27.272595  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_PT_MPMD_MODE=1
+2026-Aug-12 11:58:27.279268  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_PJRT_WORLD_SIZE=1
+2026-Aug-12 11:58:27.286024  2595:2595  ERROR   NRT:nrt_infodump                                NEURON_INTERNAL_PJRT_C_API_VERSION=0.75
+2026-Aug-12 11:58:27.293243  2595:2595  ERROR   NRT:nrt_infodump                            -------------8<-----------[ cut to here ]-----------8<------------
+Traceback (most recent call last):
+  File "/opt/np/repo/shared/train/sft_lora.py", line 1693, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/np/repo/shared/train/sft_lora.py", line 876, in main
+    return run(args, cache_dir, profile)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/np/repo/shared/train/sft_lora.py", line 909, in run
+    training_args = NeuronTrainingArguments(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 76, in __init__
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/training_args.py", line 662, in __post_init__
+    self.trn_config = TrainingNeuronConfig(
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 18, in __init__
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/config.py", line 41, in __post_init__
+    init_process_group()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/utils/torch_xla_and_neuronx_initialization.py", line 33, in init_process_group
+    torch.distributed.init_process_group(backend="xla")
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_neuronx/xla.py", line 138, in new_init_process_group
+    return old_init_process_group(backend, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 95, in wrapper
+    func_return = func(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 1762, in init_process_group
+    store, rank, world_size = next(rendezvous_iterator)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/_internal/rendezvous.py", line 32, in pjrt_rendezvous_handler
+    pjrt.initialize_singleprocess()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/_internal/pjrt.py", line 107, in initialize_singleprocess
+    xm.set_replication(torch_xla.device(), [])
+                       ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 40, in device
+    return torch.device(torch_xla._XLAC._xla_get_default_device())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Init: error condition (((rt_status) != NRT_SUCCESS)):  [General]: [NRT_FAILURE] status_code=1. Operation failed due to an unspecified error condition in the runtime system. For more details check stderr, or system logs for neuron messages. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/nrt-troubleshoot.html#nrt-troubleshooting
+E0812 11:58:28.435000 2551 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 2595) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/sft_lora.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-12_11:58:28
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2595)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,9 @@
+{
+  "tag": "pretrain_probe",
+  "stage": "pretrain",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "Superseded. This tag's outcome is recorded under pretrain_probe_capturable.failure.json, which holds the measured evidence and both withdrawn hypotheses. This file exists so the driver's resumability guard treats the lane as terminal instead of re-running an hour-per-graph compile that is already understood.",
+  "see": "pretrain_probe_capturable.failure.json",
+  "captured": "2026-08-14T19:47:00Z"
+}

@@ -1,0 +1,33 @@
+{
+  "tag": "pretrain_probe_lrsched",
+  "stage": "pretrain",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "a hand-written training loop recompiles the XLA graph on every optimizer step. TWO attributions have been made and BOTH withdrawn: first the LR schedule (falsified by a constant-LR control), then AdamW's non-capturable bias correction (falsified by capturable=True). See pretrain_probe_capturable.failure.json. The recompile is measured; its cause is not yet established.",
+  "detail": "Two runs, seq 1024 / micro_batch 1 / grad_accum 2. With a cosine schedule: 3 distinct graphs across 2 optimizer steps, step 2 took 3,213,869 ms, the peer rank waited 23 min on the compile. Pinning the LR to a constant did NOT change the ratio -- still 3 graphs in 2 steps -- which RULES OUT the LR schedule as the sole cause. The apparent 114x speedup of step 2 under a constant LR (28,153 ms) was NEFF cache reuse from the earlier attempts, not fewer recompiles; that A/B was confounded and is retracted. Cause identified in torch.optim.AdamW: bias_correction1 = 1 - beta1 ** _get_value(step_t), where _get_value() .item()s a non-capturable step into a PYTHON FLOAT that is traced as a graph constant. The constant changes every step, so every step is a new graph. Fix: capturable=True keeps step as a device tensor (torch 2.9 lists xla in _get_capturable_supported_devices).",
+  "evidence": {
+    "graphs_compiled": 3,
+    "optimizer_steps_completed": 2,
+    "step_1_ms": 82136.0,
+    "step_2_ms": 3213869.0,
+    "peer_rank_compile_wait_min": 23.0,
+    "config": {
+      "seq_len": 1024,
+      "micro_batch": 1,
+      "grad_accum": 2,
+      "lr_schedule": "linear warmup -> cosine decay",
+      "warmup_steps": 100
+    },
+    "constant_lr_control": {
+      "graphs_compiled": 3,
+      "optimizer_steps_completed": 2,
+      "step_1_ms": 2525.0,
+      "step_2_ms": 28153.0,
+      "note": "step 2 faster only because the graph was already in the NEFF cache; the graph COUNT is what matters and it did not improve"
+    }
+  },
+  "implication": "A hand-written XLA training loop must keep every per-step scalar on device. Plain torch.optim.AdamW does not, and silently costs a full neuronx-cc compile per step. optimum-neuron avoids this for the SFT lanes by wrapping AdamW in an XLA-aware Zero-1 optimizer via its own accelerator; a lane that owns its loop must ask for the equivalent explicitly.",
+  "supersedes": null,
+  "captured": "2026-08-14T15:44:00Z",
+  "correction": "An earlier version of this receipt blamed the LR schedule alone. That attribution was wrong and is superseded by the constant-LR control recorded above."
+}

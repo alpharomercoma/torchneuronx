@@ -1,0 +1,9 @@
+{
+  "model_key": "gemma3_12b",
+  "config": "short",
+  "model_id": "google/gemma-3-12b-it",
+  "status": "server_failed_to_start",
+  "looks_like_capacity_failure": false,
+  "reason": "(APIServer pid=1812) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}",
+  "captured": "2026-08-19T18:41:31Z"
+}

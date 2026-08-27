@@ -1,0 +1,23 @@
+{
+ "wer_delta_pp": -0.030747155888080635,
+ "wer_delta_ci95_pp": {
+  "lo": -0.07023881196066627,
+  "hi": 0.0,
+  "point": -0.030747155888080354,
+  "n_boot": 2000,
+  "seed": 1234
+ },
+ "mlperf_gate": {
+  "passed": true,
+  "ratio": 1.0003243944636677,
+  "floor": 0.99,
+  "candidate": 0.9481397970687712,
+  "reference": 0.9478323255098904,
+  "rule": "MLPerf Inference closed division: >=99% of reference accuracy",
+  "relative_error_increase": -0.005893909626719111,
+  "error_rates": {
+   "candidate": 0.05186020293122886,
+   "reference": 0.052167674490109665
+  }
+ }
+}

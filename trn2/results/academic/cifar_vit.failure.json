@@ -1,0 +1,1 @@
+{"tag":"cifar_vit","box":"trn2","status":"failed","reason":"[F137] neuronx-cc was forcibly killed - This most commonly occurs due to insufficient system memory. Using a smaller data type, dimensions, batch size, or a","captured":"2026-08-06T06:16:14Z"}

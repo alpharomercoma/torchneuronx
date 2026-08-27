@@ -1,0 +1,128 @@
+{
+  "what": "Spec-Bench on trn1.2xlarge. Llama-3.1-8B-Instruct target + Llama-3.2-1B-Instruct draft, NxDI fused speculation, TP=2, batch=1, seq_len=1280, greedy, EOS active, 39 prompts / 13 categories.",
+  "every_column_is_wall_clock": true,
+  "baseline_correction": {
+    "problem": "sb_k0.json capped every prompt at exactly 128 generated tokens (39x128=4992, 1 distinct length) while every k>=2 arm ran uncapped to max_length=1280 (~1,120 tok/prompt). Prefill was amortised ~8.7x less in the baseline, inflating every speedup.",
+    "fix": "sb_k0_matched.json, 2026-08-20: k=0 re-run through specbench_persistent.py with an invocation byte-identical to the k>=2 arms except the speculation flags.",
+    "old_baseline_tok_s": 30.85,
+    "new_baseline_tok_s": 31.61,
+    "output_length_match": {
+      "matched": [
+        439,
+        1270
+      ],
+      "k2": [
+        439,
+        1270
+      ]
+    }
+  },
+  "table": [
+    {
+      "k": 0,
+      "real_tok_s": 31.61,
+      "speedup": 1.0,
+      "agreement_pct": null,
+      "expected_accepted": 1.0009,
+      "generated_tokens": 44400,
+      "wall_s": 1404.58,
+      "decode_calls": 44362,
+      "ms_per_call": 31.66,
+      "marginal_gain_vs_prev": null
+    },
+    {
+      "k": 2,
+      "real_tok_s": 44.51,
+      "speedup": 1.408,
+      "agreement_pct": 96.6,
+      "expected_accepted": 1.932,
+      "generated_tokens": 43711,
+      "wall_s": 982.0,
+      "decode_calls": 22625,
+      "ms_per_call": 43.4,
+      "marginal_gain_vs_prev": 0.408
+    },
+    {
+      "k": 3,
+      "real_tok_s": 56.41,
+      "speedup": 1.784,
+      "agreement_pct": 92.8,
+      "expected_accepted": 2.7834,
+      "generated_tokens": 43454,
+      "wall_s": 770.39,
+      "decode_calls": 15612,
+      "ms_per_call": 49.35,
+      "marginal_gain_vs_prev": 0.376
+    },
+    {
+      "k": 4,
+      "real_tok_s": 64.3,
+      "speedup": 2.034,
+      "agreement_pct": 88.8,
+      "expected_accepted": 3.5505,
+      "generated_tokens": 44033,
+      "wall_s": 684.82,
+      "decode_calls": 12402,
+      "ms_per_call": 55.22,
+      "marginal_gain_vs_prev": 0.25
+    },
+    {
+      "k": 5,
+      "real_tok_s": 70.37,
+      "speedup": 2.226,
+      "agreement_pct": 85.9,
+      "expected_accepted": 4.294,
+      "generated_tokens": 43326,
+      "wall_s": 615.68,
+      "decode_calls": 10090,
+      "ms_per_call": 61.02,
+      "marginal_gain_vs_prev": 0.192
+    },
+    {
+      "k": 6,
+      "real_tok_s": 73.86,
+      "speedup": 2.336,
+      "agreement_pct": 82.4,
+      "expected_accepted": 4.9451,
+      "generated_tokens": 44308,
+      "wall_s": 599.92,
+      "decode_calls": 8960,
+      "ms_per_call": 66.96,
+      "marginal_gain_vs_prev": 0.11
+    },
+    {
+      "k": 7,
+      "real_tok_s": 77.34,
+      "speedup": 2.447,
+      "agreement_pct": 80.4,
+      "expected_accepted": 5.6283,
+      "generated_tokens": 43867,
+      "wall_s": 567.2,
+      "decode_calls": 7794,
+      "ms_per_call": 72.77,
+      "marginal_gain_vs_prev": 0.11
+    },
+    {
+      "k": 10,
+      "real_tok_s": 78.47,
+      "speedup": 2.482,
+      "agreement_pct": 70.9,
+      "expected_accepted": 7.0853,
+      "generated_tokens": 43270,
+      "wall_s": 551.42,
+      "decode_calls": 6107,
+      "ms_per_call": 90.29,
+      "marginal_gain_vs_prev": 0.036
+    }
+  ],
+  "cost_model": {
+    "form": "t_call(k) = intercept + slope*k",
+    "intercept_ms": 31.711,
+    "slope_ms": 5.864,
+    "r_draft_target_cost_ratio": 0.1849,
+    "r_squared": 0.999993,
+    "note": "r is MEASURED from the fitted slope over 8 points, not assumed from weight bytes. The k=0 point was not used to anchor the fit and lands on the intercept to within 0.05 ms."
+  },
+  "headline": "Speedup saturates. k=7 -> k=10 costs three more draft tokens and buys +0.036x (1.4%); k=0 -> k=2 bought +0.408x. The COST side stays exactly linear (R^2 0.999993); it is ACCEPTANCE that decays -- agreement falls 96.6% -> 70.9% and E[accepted] at k=10 came in at 7.085 against a naive extrapolation of 7.68, so the naive prediction overshot by 7.6%.",
+  "captured": "2026-08-21T08:12Z"
+}

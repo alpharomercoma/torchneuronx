@@ -1,0 +1,8 @@
+{
+ "lane": "zeroshot_imagenet",
+ "status": "lane_failed",
+ "stage": "compare",
+ "reason": "ValueError: receipts differ in the EXPERIMENT, not just the engine -- refusing to call this a hardware delta: ('engine_meta', 'auto_cast'): 'matmult' vs 'none'",
+ "traceback": "Traceback (most recent call last):\n  File \"/opt/np/repo/extras/zeroshot_imagenet_lane.py\", line 679, in main\n    return compare(args)\n           ^^^^^^^^^^^^^\n  File \"/opt/np/repo/extras/zeroshot_imagenet_lane.py\", line 607, in compare\n    A.assert_same_protocol(cand, ref)\n  File \"/opt/np/repo/extras/../shared/eval/accuracy.py\", line 359, in assert_same_protocol\n    raise ValueError(\nValueError: receipts differ in the EXPERIMENT, not just the engine -- refusing to call this a hardware delta: ('engine_meta', 'auto_cast'): 'matmult' vs 'none'\n",
+ "captured": "2026-08-20T13:36:50Z"
+}

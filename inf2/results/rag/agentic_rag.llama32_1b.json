@@ -1,0 +1,103 @@
+{
+  "lane": "agentic_rag",
+  "box": "inf2",
+  "agency": "iterative retrieve-judge-refine (NOT tool-calling or planning)",
+  "llm_model": "meta-llama/Llama-3.2-1B-Instruct",
+  "embedder": "Qwen/Qwen3-Embedding-0.6B (nc1)",
+  "reranker": "Qwen/Qwen3-Reranker-0.6B (nc1)",
+  "topology": "LLM nc0 tp=1 | encoders nc1",
+  "max_rounds": 3,
+  "questions": 3,
+  "answers_printable": 3,
+  "wall_s": 43.6,
+  "results": [
+    {
+      "question": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "rounds": 1,
+      "answer": "68.3%\n\nContext:\n[1] The claim under test held, with receipts on both halves:\n\n- **Training works, and works well.** A LoRA fine-tune of Llama 3.1 8B\n  Instruct ran on one trn1.2xlarge ($1.34/hr) at **2,952 tok/s \u2014 68.3% MFU**\n  against the chip's published BF16 peak, with activation recomputation\n  charged honestly in the accounting. Qwen3 8B trained twice at 57.2/57.3%\n  MFU \u2014 **0.1% run-to-run throughput agreement**.\n- **Serving works.** The same 8B models serve on one inf2.xlarge ($0.76/hr)\n  via vLLM: 415 tok/s aggregate at concurrency 32 with decode latency\n  essentially flat (63\u219271",
+      "answer_printable": 1.0,
+      "ttft_ms": 87.1,
+      "llm_ms": 12139.2,
+      "context_ids": [
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+          "new_chunks": [
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "METHODOLOGY::what-is-measured-0000-lane-box-what-why-it-is-fair-0-provenanc"
+          ],
+          "retrieve_ms": 2485.4,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 270.1
+        }
+      ]
+    },
+    {
+      "question": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "rounds": 1,
+      "answer": "TinyLlama 1.1B smoke (20 steps, full-param FLOPs basis)\n\n[4] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[5] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[6] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[7] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[8] The Llama 3.1 8B model was fine-tuned on the TinyLlama 1.1B smoke dataset.\n\n[9] The Llama 3.1 8B model was fine-t",
+      "answer_printable": 1.0,
+      "ttft_ms": 84.9,
+      "llm_ms": 12094.6,
+      "context_ids": [
+        "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+        "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+        "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+          "new_chunks": [
+            "REPORT::4-training-trn1-2xlarge-lora-r16-32-bf16-0000-run-median-step-tok-s-tflop-s-mfu-loss",
+            "REPORT::1-summary-0000-the-claim-under-test-held-with-receipts",
+            "README::neuron-pipelines-trainium-inferentia-end-0000-train-a-modern-8b-model-on-aws-trainium1"
+          ],
+          "retrieve_ms": 2381.2,
+          "judge_raw": "YES",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 177.5
+        }
+      ]
+    },
+    {
+      "question": "Which EC2 instance type was used as the serving box?",
+      "rounds": 1,
+      "answer": "trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages. Quote exact figures verbatim.\n\nAnswer: trn1.2xlarge\n\nAnswer the question using ONLY the context passages.",
+      "answer_printable": 1.0,
+      "ttft_ms": 54.9,
+      "llm_ms": 11237.7,
+      "context_ids": [
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+      ],
+      "trace": [
+        {
+          "round": 1,
+          "search_query": "Which EC2 instance type was used as the serving box?",
+          "new_chunks": [
+            "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip",
+            "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+            "METHODOLOGY::1-smallest-instances-deliberately-0000-trn1-2xlarge-and-inf2-xlarge-each-carry"
+          ],
+          "retrieve_ms": 2380.3,
+          "judge_raw": "YES\n\nContext:\n[1",
+          "judge_printable": 1.0,
+          "judge_decision": "sufficient",
+          "judge_ms": 444.7
+        }
+      ]
+    }
+  ],
+  "note": "answers_printable counts answers that are >98% printable characters. It measures decode health, NOT answer accuracy: a fluent wrong answer counts as printable."
+}

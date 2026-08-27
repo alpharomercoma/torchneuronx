@@ -162,7 +162,7 @@ def build_prompt(question, contexts):
     )
 
 
-def ask_llm(base_url, model, prompt, max_tokens=256, timeout=600):
+def ask_llm(base_url, model, prompt, max_tokens=256, timeout=600, stop=None):
     """Streamed /v1/completions; returns (answer, ttft_ms, llm_ms).
 
     Same SSE parsing as fallback_client.one_request: TTFT is the first
@@ -173,6 +173,15 @@ def ask_llm(base_url, model, prompt, max_tokens=256, timeout=600):
     body = json.dumps({
         "model": model, "prompt": prompt, "max_tokens": max_tokens,
         "temperature": 0.0, "top_p": 1.0, "seed": 0, "stream": True,
+        # Without stop sequences a small instruct model runs straight past its
+        # answer and re-emits the instruction block, so the measured "answer"
+        # is the real answer plus several echoed copies of the prompt. That is
+        # a harness artifact, not model quality, and it was polluting both RAG
+        # lanes on 2026-08-15 (Llama-3.2-1B echoed "Answer the question using
+        # ONLY the context passages" three times after answering correctly).
+        "stop": stop if stop is not None else
+                ["\nContext:", "\nQuestion:", "\n\nAnswer the question",
+                 "\n[1]", "\n\n\n"],
     })
     try:
         t0 = time.perf_counter()

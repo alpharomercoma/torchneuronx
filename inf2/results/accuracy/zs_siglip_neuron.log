@@ -1,0 +1,40 @@
+# zeroshot engine=neuron model=google/siglip-base-patch16-224 n_images=10000 per_class=10 templates=80 seed=1234 auto_cast=none digest=4c4b10b345a824ca
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+--- tracing google/siglip-base-patch16-224 towers (text_batch=80, image_batch=16, auto_cast=none) ---
+`torch_dtype` is deprecated! Use `dtype` instead!
+.....
+Compiler status PASS
+.....
+Compiler status PASS
+  classifier 100/1000
+  classifier 200/1000
+  classifier 300/1000
+  classifier 400/1000
+  classifier 500/1000
+  classifier 600/1000
+  classifier 700/1000
+  classifier 800/1000
+  classifier 900/1000
+  classifier 1000/1000
+  images 512/10000
+  images 1008/10000
+  images 1504/10000
+  images 2000/10000
+  images 2512/10000
+  images 3008/10000
+  images 3504/10000
+  images 4000/10000
+  images 4512/10000
+  images 5008/10000
+  images 5504/10000
+  images 6000/10000
+  images 6512/10000
+  images 7008/10000
+  images 7504/10000
+  images 8000/10000
+  images 8512/10000
+  images 9008/10000
+  images 9504/10000
+  images 10000/10000
+
+top1 76.12%  top5 94.48%  (nonfinite rows 0/10000, chance 0.10%)  ->  /opt/np/repo/inf2/results/accuracy/zs_siglip_neuron.json

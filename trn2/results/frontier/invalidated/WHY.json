@@ -1,0 +1,6 @@
+{
+  "invalidated": ["residency_pair_a","residency_pair_b","residency_solo_a","residency_solo_b"],
+  "reason": "The two concurrent jobs both used torch.distributed.run's default master port 29500. pair_a died instantly with EADDRINUSE, so pair_b ran ALONE on an otherwise idle chip. Its apparent 1.009x retention measured no interference because there was no second tenant -- the experiment never took place.",
+  "fix": "torchrun_argv now honours NP_MASTER_PORT; the four invocations use 29511-29514",
+  "not_a_measurement": true
+}

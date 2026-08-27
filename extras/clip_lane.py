@@ -122,6 +122,21 @@ def trace_fallback(args, compiled):
     # graph returned NaN logits (CLIP's attention masks use finfo.min
     # constants that overflow in bf16). Measured 2026-07-31; the optimum
     # exporter presumably rescales these, the raw trace must not cast.
+    #
+    # 2026-08-20 -- the fp32 trace is ALSO NaN on trn1 and inf2, and we now
+    # know why. This wrapper passes `attention_mask` into CLIPModel, whose
+    # text encoder fills a causal mask with finfo(float32).min (-3.4e38) and
+    # then ADDS the padding mask, filled with the same constant: the sum
+    # overflows to -inf and softmax(-inf - -inf) is NaN. Bisected six ways in
+    # extras/clip_nan_bisect.py; trn2 (NeuronCore-v3) does not show it.
+    #
+    # THIS LANE IS DELIBERATELY NOT FIXED. Its trn2 number (188.48 images/s,
+    # correct probabilities) was measured WITH the mask, and silently changing
+    # the traced signature now would leave three boxes reporting a "CLIP
+    # parity" figure from two different graphs. The corrected recipe -- no
+    # attention mask, as open_clip and clip_benchmark do it -- lives in
+    # extras/zeroshot_imagenet_lane.py, where it is scored on ImageNet-1k
+    # rather than on one photograph of two cats.
     traced = torch_neuronx.trace(ZeroShot(base), dummy,
                                  compiler_args=["--auto-cast", "none"])
     os.makedirs(compiled, exist_ok=True)

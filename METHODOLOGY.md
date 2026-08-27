@@ -147,4 +147,75 @@ never headline; they bound the serving numbers' interpretation.
 - Trainium1 and Inferentia2 are the *previous* Neuron generation (Trn2/Inf2
   successors exist). That is deliberate: these are the instances whose quotas,
   prices, and availability make them the realistic first contact with the
-  platform — but claims here do not extend to Trainium2.
+  platform. Phase 3 adds a **training** lane on one Trainium2
+  (trn2.3xlarge, sa-east-1) so the generational comparison is measured rather
+  than assumed — but the *serving* results here still do not extend to
+  Trainium2, and the inf2 vLLM 0.16 AMI pin exists precisely because the
+  Trn2-targeted DLAMI cannot boot on NeuronCore-v2 at all.
+- Phase 3 rule, inherited from rule 6: **the trn2 box runs the identical lane
+  list and identical hyperparameters as trn1, through the same driver branch.**
+  A tuned Trainium2 measured against an untuned Trainium1 is not a comparison.
+  Efficiency levers (longer sequences, recompute off) are separate declared
+  lanes with their own triplets, never edits to the primary lane. And because
+  the parallelism degree is decided by a probe rather than assumed, any result
+  that ran on fewer than all four logical cores is labelled as a partial-chip
+  configuration wherever it appears.
+- **Phase 4 limits (pretraining and post-training).** The ORPO lanes measure
+  throughput and nothing else: both 30-step runs had their loss *rise*, so no
+  claim is made that preference optimisation improved any model. The ORPO
+  numbers (25.9% MFU at max_length 512, 30.2% at 1024) must not be read against
+  the SFT lane's 68.3% at seq 2048 — the sequence lengths differ, and a
+  preference step forwards two sequences where an SFT step forwards one, so the
+  shapes differ too. The gap between them has **not** been separated into
+  "shorter sequences" and "heavier objective".
+- **Phase 4 non-claim.** The pretraining lane recompiles its XLA graph every
+  step and the cause is not established (two attributions made, both falsified
+  by measurement). That lane is a **hand-written** training loop. Every other
+  training lane in this study runs through optimum-neuron's `NeuronTrainer` and
+  shows no such behaviour, and pretraining *through* that framework path was
+  never tested. Nothing here supports the claim "pretraining from scratch does
+  not work on Trainium1"; what is supported is "a hand-rolled lazy-tensor
+  training loop recompiles per step on this stack."
+- **Phase 4 update (§32.11): the framework path WAS then tested, and it
+  trains.** 362M from random init through `NeuronTrainer`, single steady graph
+  held for 58 consecutive steps, loss 11.02 -> 7.76. Two caveats travel with
+  that number and must not be dropped. (1) It ran on ONE of two NeuronCores:
+  optimum-neuron 0.4.3 exposes no data-parallel dimension, and SmolLM2-360M's
+  15 attention heads cannot shard across TP=2, so *that architecture* is
+  confined to a half-chip configuration. (2) It is NOT a clean one-variable
+  comparison against the hand-written lane, which ran DP=2 on both cores --
+  loop ownership and core count both changed, so this does not prove the hand
+  loop caused its own recompile. Closing that would need the hand loop re-run
+  at nproc=1.
+- **Phase 4 update: what the whole chip is worth, measured.** Caveat (1) above
+  is a property of SmolLM2-360M, not of the platform, and the distinction is
+  now measured rather than argued. A 16-head/4-KV variant at hidden 1024 --
+  386M params, and deliberately NOT labelled SmolLM2-360M anywhere, because
+  reshaping a published architecture to flatter the hardware would destroy the
+  thing being measured -- was run at BOTH widths from the same random init,
+  same corpus, same shapes, changing only nproc/tp:
+  **TP=1 2,463.5 tok/s against TP=2 2,652.6 tok/s, a 7.7% gain for doubling
+  the cores.** Tensor parallelism shards one model across cores working on the
+  same micro-batch, adding a collective per layer; at 386M the collectives
+  consume nearly all of the added compute. Two consequences for reading this
+  report: half-chip pretraining numbers are NOT ~2x below a whole-chip ceiling,
+  and the 386M lanes are comparable only to each other, never to the 362M lane
+  (different architecture) or to the SFT and ORPO lanes (different model,
+  objective and shapes).
+- **Phase 4 retraction: the DPO wall was misattributed.** Earlier text in
+  README, this file, runbook 13 and §32 stated that DPO is terminal because the
+  adapter-disabled reference forward fails to compile. It compiles. Run once
+  before training via `precompute_ref_log_probs` instead of inside every step,
+  neuronx-cc returns `Compiler status PASS` on that exact forward. The blocker
+  was its **placement inside the training-step graph**. The lane still produces
+  no throughput number -- it fails later on `.cpu()` against an unflushed lazy
+  tensor -- so no result changes; the stated cause does. Recorded here because
+  a wrong mechanism that happens to predict the right outcome is the hardest
+  kind of error to notice.
+- **Phase 4 preference-lane FLOPs.** MFU for preference lanes uses the same
+  `6*trainable + 4*frozen` convention as every other lane, so it stays
+  comparable. For ORPO that is exact — it is reference-free. For DPO it would
+  under-count by roughly `2*frozen` per token (the adapter-disabled reference
+  forward), and the code emits `mfu_pct_with_reference_pass` beside the
+  comparable figure rather than silently choosing one. As everywhere else in
+  this study, the convention omits sequence-dependent attention work.

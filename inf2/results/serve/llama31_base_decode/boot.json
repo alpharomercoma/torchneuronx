@@ -1,0 +1,11 @@
+{
+  "model_key": "llama31_base",
+  "config": "decode",
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "boot_wall_s": 1824,
+  "cache_dir_size_mb_before": 1986,
+  "cache_dir_size_mb_after": 1986,
+  "warm": false,
+  "server_pid": 9906,
+  "captured": "2026-08-05T13:52:44Z"
+}

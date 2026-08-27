@@ -1,0 +1,177 @@
+{
+  "mode": "end_to_end",
+  "llm_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "answer": "Theos\u0018k\u0018k\u0010\u0018c\u0010\u0010\u0010\b\u0000\u0000\u0018c\b\u0000\u0000.).).ption&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& usSEQ%*v\"vXnVfQfInIaAYa9Q1Ia9IYa1A1A)\u0018[\u0010\b",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1777.71,
+        "retrieve_ms": 331.56,
+        "rerank_ms": 1910.17,
+        "ttft_ms": 5888.94,
+        "e2e_ms": 156508.83
+      },
+      "probe_wall_ms": 200435.2
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "answer": "The\t\t\t\t\t\ufffd\ufffd \u05d9\u05d4\u05d9\u05d5 are are are-------- topndhed are-------- are-------------------------------------------------------- new new trb trVestestterteropantop exl + or or\t\t\t\t\ufffd\u606f\u05d8\u05e2\u05df\u00fcndig\u05d8\u05e2\u05df\u0014 t\u0014\u0014\u0014\b\u00fcndig\u0014\u05d8\u05e2\u05df\u0014\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u05d8\u05e2\u05df \u0111\u00e1m \u05d9\u05d4\u05d9\u05d5--------\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c new trVterop ex`` \u05de\u05d9\u05e9\u05d4\u05e8\u05ea\u05d9 \u05de\u05d9\u05e9\u05d4 looking O sw\u00f3j\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u05d8\u05e2\u05df \u0111\u00e1m \u05de\u05d9\u05e9\u05d4_asm\u05d8\u05e2\u05df\u05d8\u05e2\u05dfMOOTH\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c trJop ofestop ofteropnd\\T\u0014\b\u0014\b\b\ufffd\u0014\u0014\u0014\b\u0014\ufffd\u0014\b\b\u05d8\u05e2\u05df\u05d8\u05e2\u05df\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044cestrom\u05d8\u05e2\u05df\u05d8\u05e2\u05df",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "07-inference-lanes::lane-5-30-min-sustained-lane-6-quality-l-0000-tail-f-inf2-results-serve-llama31-base-s"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1509.72,
+        "retrieve_ms": 326.38,
+        "rerank_ms": 1883.57,
+        "ttft_ms": 1521.73,
+        "e2e_ms": 111746.71
+      },
+      "probe_wall_ms": 129421.7
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": false,
+      "answer": "N fail chuees r r thisatieatieQ* thisatie encouragingonon\ufffd\ufffd\ufffd start^.WNNNNN Louount\ufffdd\u0010\u0010\u0000\u0010\u0000\u0000\u0000\u0000c\u0010\u0000\u0000\u0000S\u0000\u0000Sc\u0000ScCSc3\"#N#>>>#.>#......................_sO_#OOOOOOOOricb?N/!>>range.._s??> insideon\ufffd\ufffd\ufffd sw\u00f3j \u043e\u0442\u043b\u0438\u0447\u0430 poder\u00e1eter c\u0010Sc3C#>>#........_s?/> null/!......c/#??>\u0010\u0000 \u043e\u0442\u043b\u0438\u0447\u0430 poder\u00e1ative      _s/ inside\ufffd\u0010\u0000SSc#.cC#.Sc#C#C#33###### el/\u0010\u0000C/#/C/#3##### el\u0000is\u0010\u0010\u0000C#3#### */3#### */#### elor\u0000\u0010\u0000C##### el\ufffd\u0000",
+      "ids": [
+        "METHODOLOGY::6-kv-cache-arithmetic-drives-the-serving-0000-llama-3-1-8b-32-layers-8-kv-heads-128-he",
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1530.96,
+        "retrieve_ms": 266.78,
+        "rerank_ms": 1889.73,
+        "ttft_ms": 2112.11,
+        "e2e_ms": 114039.38
+      },
+      "probe_wall_ms": 140018.5
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": false,
+      "answer": "not = = = = a\u00e7 damit aimarydown a void\n\nGulch&3%\f\f\ufffd& sw\u00f3j poder\u00e1\ufffd\ufffd\u3061\u3083\u3093\u3068 d\u00e0y\u0623\u0633\u062a d\u00e0y ch\u00e0ng \u0111\u00e1m\ufffd h\u1ecdp\u3061\u3083\u3093\u3068imum sw\u00f3j ch\u00e0ng ch\u00e0ng ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068 c\u1eadn\ufffd ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068 \u0111\u00e1m p\u00e9riode h\u1ecdp\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068 \u0111\u00e1m \u0111\u00e1m ch\u00e0ng ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068\u0e35\u0e48\u0e22\u0e27 \u0111\u00e1m d\u00e0y ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068 ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068 ch\u00e0ng ch\u00e0ng\u3061\u3083\u3093\u3068 c\u1eadn\ufffd reveals d\u00e0y ch\u00e0ng\ufffd\ufffd reveals d\u00e0y\u3061\u3083\u3093\u3068 reveals d\u00e0y h\u1ecdp\u3061\u3083\u3093\u3068\u3061\u3083\u3093\u3068 reveals\ufffd ch\u00e0ng ",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "01-security-hardening::2-new-keys-new-profile-also-make-it-the-0000-aws-iam-create-access-key-user-name-neur",
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 564.8,
+        "retrieve_ms": 94.39,
+        "rerank_ms": 1834.91,
+        "ttft_ms": 422.04,
+        "e2e_ms": 106416.92
+      },
+      "probe_wall_ms": 112983.9
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": false,
+      "answer": "! \"\");\n\n_f choRadius\b\b\ufffd\ufffd\nrib\b\ufffd\u0010\nrib\ufffd\u0010\u000b\ufffdp\ufffdi\ufffdi\u0623\u0633\u062a\u0627\u0630\ufffd\u001d\u000b \u05de\u05d9\u05e9\u05d4\u05d5\ufffd\u0013 \u05de\u05d9\u05e9\u05d4modal\u0623\u0633\u062a\u0627\u0630\ufffd\u0010\b\uc81c\ub3c4 Je\u017celi\b\u0623\u0633\u062a\u05e4\u05d9\u05dc\u0623\u0633\u062a\u0627\u0630 \u05de\u05d9\u05e9\u05d4\u05d5\u0623\u0633\u062a\u0627\u0630\u0623\u0633\u062a\u0627\u0630\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c gusta \u05de\u05d9\u05e9\u05d4 Product\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u0623\u0633\u062a\u0627\u0630\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c gusta\u0623\u0633\u062a\u0627\u0630 gusta gusta protobuf\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044cim intactW liked Rolls\uc81c\ub3c4\u0623\u0633\u062a\u0627\u0630 gusta protobuficedodeodeode\u0623\u0633\u062a\u0627\u0630 protobufode\u0623\u0633\u062a\u0627\u0630imMont a\b \u05de\u05d9\u05e9\u05d4 \u05de\u05d9\u05e9\u05d4\u0623\u0633\u062a\u0627\u0630im\u0623\u0633\u062a\u0627\u0630iced:\nrib\ufffd\u0010\ufffd\u0010 ch\u00e0ng \u05de\u05d9\u05e9\u05d4 \u05de\u05d9\u05e9\u05d4\u05d5 gusta Rolls\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044cimMont\ufffd \u05de\u05d9\u05e9\u05d4\u05d5im\u0623\u0633\u062a\u0627\u0630\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044cimi",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::caveats-worth-knowing-before-you-read-th-0000-compile-time-is-real-and-reported-rule-3",
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 571.49,
+        "retrieve_ms": 97.08,
+        "rerank_ms": 1838.97,
+        "ttft_ms": 201.43,
+        "e2e_ms": 104728.13
+      },
+      "probe_wall_ms": 111355.6
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": false,
+      "answer": "Theres besan_ncMoc1oc1 -oc - -opopop Bop B B B>\nPI&5ocop B B>\nPI\" - - B B>\n made\ufffdop>\nPI\"op for\ufffd B>\n made\"op forred forument forating for\ufffd>\n made\" B>\n\"\n\nec B for functionce>\n functionim\"op forument {\n),oc B>\n), -op B forating {\nress>\n being\" B forating-- foratingisoc>\n well\">\n_NI foratingis -op>\n         op forating    op for#includect for#include s for our {\n\ufffd\ufffd\u0006\ufffd\u000f\uc0c1\uc744\uc0c1\uc744\uc0c1\uc744bens h\u1ecdp h\u1ecdp\uc0c1\uc744\u0625\u0635\u0644\u0627\u062d\u6fc0\u6d3b\u8f66\u4e0a\u6bcd\u4eb2d\u0142u",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met",
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1505.5,
+        "retrieve_ms": 291.04,
+        "rerank_ms": 1889.22,
+        "ttft_ms": 882.83,
+        "e2e_ms": 109736.45
+      },
+      "probe_wall_ms": 135286.9
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "answer": "TheturnUprownMDSMArea\ufffd_gUAAAA\ufffd!\u0000ou!_g5!??\u0000??\u0000\ufffd\ufffd\u0013\u0000\u0000\u0000\ufffd`\ufffd\ufffd\t Je\u017celi p\u00e9riodeck\u0000\u0000\u0000\u0000\ufffd`\uc81c\ub3c4 \u0441\u043e\u0432\u0441\u0641\u064a\u0631\u0641\u064a\u0631\u0641\u064a\u0631\u0641\u064a\u0631\u0641\u064a\u0631\u0641\u064a\u0631\ufffd\u0e18\u0e23\u0e23\u0e21 undes\uc81c\ub3c4 \u0441\u043e\u0432\u0441 \u0441\u043e\u0432\u0441\u0641\u064a\u0631\u0641\u064a\u0631\u0e18\u0e23\u0e23\u0e21\u0000 \u0441\u043e\u0432\u0441\uc81c\ub3c4\u0000\u0641\u064a\u0631\u0641\u064a\u0631\u0e18\u0e23\u0e23\u0e21 \u0441\u043e\u0432\u0441 \u0441\u043e\u0432\u0441\u0641\u064a\u0631\u0641\u064a\u0631\u0e27\u0e14 undes \u0441\u043e\u0432\u0441\u898f\u5f7c c\u1eadnd\u0142ug\uc81c\ub3c4\u0000\u0641\u064a\u0631 Je\u017celiwanted\uc81c\ub3c4 \u0441\u043e\u0432\u0441 \u0441\u043e\u0432\u0441 \u0441\u043e\u0432\u0441\u0641\u064a\u0631\u0641\u064a\u0631\u0e27\u0e14 Rac Je\u017celi\u0641\u064a\u0631 Je\u017celi\u0641\u064a\u0631 Je\u017celi \u0441\u043e\u0432\u0441jourd inte\u0641\u064a\u0631\u0641\u064a\u0631 Je\u017celi-S\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u0641\u064a\u0631\u0641\u064a\u0631 Je\u017celi\u0641\u064a\u0631 Je\u017celi\u0641\u064a\u0631 Je\u017celi \u0441\u043e\u0432\u0441\u0641\u064a\u0631\u0641\u064a\u0631 Je\u017celi Je\u017celi\u0641\u064a\u0631 inte\u0641\u064a\u0631\u0641\u064a\u0631 Je\u017celi Je",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 568.52,
+        "retrieve_ms": 138.22,
+        "rerank_ms": 1850.8,
+        "ttft_ms": 214.57,
+        "e2e_ms": 106146.74
+      },
+      "probe_wall_ms": 113038.1
+    }
+  ],
+  "passed": 0,
+  "total": 7,
+  "pass_rate": 0.0,
+  "errored": 0,
+  "captured": "2026-08-15T14:19:25Z"
+}

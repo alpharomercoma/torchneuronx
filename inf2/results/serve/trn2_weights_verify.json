@@ -1,0 +1,38 @@
+{
+  "model_dir": "/opt/np/models/llama31-8b-dolly-merged-trn2",
+  "expected_from": "/opt/np/repo/trn2/results/train/merge_llama31.json",
+  "files": {
+    "config.json": {
+      "expected": "9244b967aff5712ec3e8ae05a1a7364fb274c3af10d41eac2eca2dc6db29a1c2",
+      "got": "9244b967aff5712ec3e8ae05a1a7364fb274c3af10d41eac2eca2dc6db29a1c2",
+      "match": true
+    },
+    "model-00001-of-00004.safetensors": {
+      "expected": "f5e44f4fe757db95d52d7eebcf91c0643fbbbf8cee4d4f393ae225c2126c36e0",
+      "got": "f5e44f4fe757db95d52d7eebcf91c0643fbbbf8cee4d4f393ae225c2126c36e0",
+      "match": true
+    },
+    "model-00002-of-00004.safetensors": {
+      "expected": "3fe58905e27464dce634362083f709ddee96b04c4f43e41de810f7df14ad2ff3",
+      "got": "3fe58905e27464dce634362083f709ddee96b04c4f43e41de810f7df14ad2ff3",
+      "match": true
+    },
+    "model-00003-of-00004.safetensors": {
+      "expected": "f1bfeec23c7683fc0342eb91c85a503505661dd0d243ba8f5db3869b322cd200",
+      "got": "f1bfeec23c7683fc0342eb91c85a503505661dd0d243ba8f5db3869b322cd200",
+      "match": true
+    },
+    "model-00004-of-00004.safetensors": {
+      "expected": "fd00cd01fe914437c124d20bb8cf26c88fdb11bbf5bfe7bae94b138a8e3a6cf3",
+      "got": "fd00cd01fe914437c124d20bb8cf26c88fdb11bbf5bfe7bae94b138a8e3a6cf3",
+      "match": true
+    },
+    "tokenizer.json": {
+      "expected": "6b9e4e7fb171f92fd137b777cc2714bf87d11576700a1dcd7a399e7bbe39537b",
+      "got": "6b9e4e7fb171f92fd137b777cc2714bf87d11576700a1dcd7a399e7bbe39537b",
+      "match": true
+    }
+  },
+  "all_match": true,
+  "note": "sha256 of the weights on the SERVING box against digests recorded by merge_adapter.py on the Trainium2 TRAINING box. This is what makes 'the served weights are the trained weights' a check, not a claim."
+}

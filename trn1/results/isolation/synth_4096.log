@@ -1,0 +1,283 @@
+[sft_lora] profile=trn1 (trn1.2xlarge) -- re-exec under torchrun (--nproc_per_node=2, one rank per logical NeuronCore)
+[sft_lora] /opt/aws_neuronx_venv_pytorch_2_9/bin/python -m torch.distributed.run --nproc_per_node=2 /opt/np/repo/shared/train/sft_lora.py --tag synth_4096 --out /opt/np/repo/trn1/results/isolation/synth_4096.json --model meta-llama/Llama-3.1-8B-Instruct --seq-len 4096 --max-steps 40 --synthetic-data 160
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+2026-Aug-05 19:50:51.985553  8331:8331   WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Aug-05 19:50:51.985553  8332:8332   WARN   NRT:nrt_config_parse_init_config            Implicit Async using NEURON_RT_ASYNC_EXEC_MAX_INFLIGHT_REQUESTS will not be supported in a future release of the Neuron Runtime. Migrate to using the new Neuron Runtime Async APIs to address the risk of this future breaking change. https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-runtime/api/nrt-async-api-overview.html
+2026-Aug-05 19:50:58.0739 8332:8353 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to 2026-Aug-05 19:50:58.0739 8331:8354 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+initialize rdma protocol
+2026-Aug-05 19:50:58.0739 8331:8354 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-05 19:50:58.0741 8332:8353 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-05 19:50:58.0741 8332:8353 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-05 19:50:58.0741 8332:8353 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-05 19:50:58.0795 8331:8354 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-05 19:50:58.0803 8331:8354 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[2026-08-05 19:50:58.930: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-05 19:50:58.930: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-05 19:50:58.930: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-05 19:50:58.930: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-05 19:50:58.930: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+2026-08-05 19:50:58.000940:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+f7f529f3/model.neff
+2026-08-05 19:50:58.000941:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_10918481393192567537+f7f529f3/model.neff
+PyTorch: setting up devices
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x71c143c1ab60>, 'Ascending Ring PG Group')>
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-05 19:50:58.967: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:12<00:36, 12.11s/it]Loading checkpoint shards:  25%|██▌       | 1/4 [00:12<00:36, 12.12s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:27<00:28, 14.02s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:28<00:29, 14.85s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:53<00:19, 19.63s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:53<00:19, 19.44s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:58<00:00, 13.90s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:58<00:00, 14.72s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+Loading checkpoint shards: 100%|██████████| 4/4 [00:58<00:00, 13.79s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:58<00:00, 14.73s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+/opt/np/repo/shared/train/sft_lora.py:1502: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:1502: DeprecationWarning: Use torch_xla.device instead
+  device=xm.xla_device())
+/opt/np/repo/shared/train/sft_lora.py:1504: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+/opt/np/repo/shared/train/sft_lora.py:1504: DeprecationWarning: Use torch_xla.sync instead
+  xm.mark_step()
+2026-08-05 19:52:39.000586:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+f7f529f3/model.neff
+2026-08-05 19:52:39.000586:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5826833238478477259+f7f529f3/model.neff
+2026-08-05 19:52:39.000635:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+f7f529f3/model.neff
+2026-08-05 19:52:39.000635:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17281575579459249431+f7f529f3/model.neff
+2026-08-05 19:52:39.000650:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+f7f529f3/model.neff
+2026-08-05 19:52:39.000651:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16314927993349291726+f7f529f3/model.neff
+  SYNTHETIC DATA     : 160 rows x 4096 random ids (vocab 128000) -- throughput probe, loss is meaningless
+PyTorch: setting up devices
+Truncating train dataset:   0%|          | 0/160 [00:00<?, ? examples/s]Truncating train dataset: 100%|██████████| 160/160 [00:00<00:00, 5525.64 examples/s]
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+Truncating train dataset:   0%|          | 0/160 [00:00<?, ? examples/s]max_steps is given, it will override any value given in num_train_epochs
+No label_names provided for model class `NeuronPeftModelForCausalLM`. Since `NeuronPeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `NeuronTrainer`. Note that empty label_names list will be used instead.
+Truncating train dataset: 100%|██████████| 160/160 [00:00<00:00, 15216.39 examples/s]
+  grad ckpt shim     : module globals ['modeling_utils', 'modeling_llama', 'modeling_granite']; 0 bound funcs wrapped
+
+==============================================================================
+  LoRA SFT on Trainium            tag=synth_4096
+==============================================================================
+  model              : meta-llama/Llama-3.1-8B-Instruct
+  params total       : 8,082,956,288  (rank-local shard 4,041,478,144; via xla_all_reduce)
+  params trainable   : 52,428,800  (0.649% of total)
+  grad checkpointing : True
+  parallelism        : world=2 tp=2 dp=1 pp=1
+  lora               : r=16 alpha=32 dropout=0.05
+  lora targets       : q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
+  seq_len            : 4096  (packing=False, attn=flash_attention_2)
+  batch              : micro=1 grad_accum=8 -> 32,768 tok/optimizer step
+  schedule           : epochs=3 max_steps=40 lr=0.0001
+  seed               : 42
+  dataset            : databricks/databricks-dolly-15k
+  neuron cache       : /opt/np/cache/neuron-compile-cache
+  adapter out        : /opt/np/models/adapters/synth_4096
+  versions           : torch=2.9.1 optimum-neuron=0.4.3 neuronx-cc=2.26.6360.0+6f180f47
+==============================================================================
+
+The following columns in the Training set don't have a corresponding argument in `NeuronPeftModelForCausalLM.forward` and have been ignored: attention_mask. If attention_mask are not expected by `NeuronPeftModelForCausalLM.forward`,  you can safely ignore this message.
+Pipeline parallelsim: forcing the dataloader to drop the last incomplete batch because it can cause failure if the last batch size is not divisible by the number of microbatches for the pipeline.
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+***** Running training *****
+  Num examples = 160
+  Num Epochs = 2
+  Data Parallel Size: 1
+  Tensor Parallel Size: 2
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Total optimization steps = 40
+  Num trainable parameters = 39,845,888
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+2026-08-05 19:52:53.000396:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+f7f529f3/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+2026-08-05 19:52:53.000502:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_4020207309534495528+f7f529f3/model.neff
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), k = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), v = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+Neuron NKI - Kernel call: flash_fwd(q = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), k = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), v = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), seed = None, logit_bias = None, softmax_scale = 0.08838834764831845, use_causal_mask = True, sliding_window = -1, mixed_precision = True, dropout_p = 0.0, config = FlashConfig(seq_tile_size=2048, attn_core_tile_size=256, training=True, should_transpose_v=True, lse_dtype=''))
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/training/llama/modeling_llama.py:496: DeprecationWarning: Block dimension is deprecated. The leading dimension of SBUF tensor must be partition dimension
+  attn_output = nki_flash_attn_func(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), k_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), v_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), o_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), dy_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), lse_ref = Tensor(shape: (1, 16, 128, 32), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)
+Neuron NKI - Kernel call: flash_attn_bwd(q_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), k_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), v_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), o_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), dy_ref = Tensor(shape: (1, 16, 128, 4096), dtype: bfloat16), lse_ref = Tensor(shape: (1, 16, 128, 32), dtype: float32), seed_ref = None, logit_bias_ref = None, use_causal_mask = True, mixed_precision = True, dropout_p = 0.0, softmax_scale = 0.08838834764831845, sliding_window = -1, sinks = None)
+2026-08-05 19:53:01.000822:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1757034658024386166+f7f529f3/model.neff
+2026-08-05 19:53:01.000828:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_919496829817819261+f7f529f3/model.neff
+2026-08-05 19:53:28.000298:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5925339426313347225+f7f529f3/model.neff
+2026-08-05 19:53:28.000582:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_2143522893509843411+f7f529f3/model.neff
+2026-08-05 19:53:54.000420:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_8651772410009939807+f7f529f3/model.neff
+2026-08-05 19:53:54.000501:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_8651772410009939807+f7f529f3/model.neff
+2026-08-05 19:53:56.000265:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17694192085093063913+f7f529f3/model.neff
+2026-08-05 19:53:56.000279:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17694192085093063913+f7f529f3/model.neff
+  step     1  loss  12.5797  |    57270.3 ms  | warmup
+{'loss': 12.5797, 'learning_rate': 0.0001, 'grad_norm': 1.4733545780181885, 'train/tokens_per_sec': 529.9353633482298, 'train/step_time': 61.83395611299784, 'train/mfu': 154.53, 'train/efficiency': 10.19, 'train/forward_time_percent': 3.33, 'train/backward_time_percent': 6.52, 'train/optimizer_time_percent': 0.35, 'train/overhead_time_percent': 89.81, 'epoch': 0.05}
+{'loss': 12.5797, 'learning_rate': 0.0001, 'grad_norm': 1.4733545780181885, 'train/tokens_per_sec': 530.3804840400489, 'train/step_time': 61.78206209700147, 'train/mfu': 156.17, 'train/efficiency': 10.07, 'train/forward_time_percent': 3.24, 'train/backward_time_percent': 6.51, 'train/optimizer_time_percent': 0.32, 'train/overhead_time_percent': 89.93, 'epoch': 0.05}
+2026-08-05 19:54:17.000496:  8331  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13826111191422246321+f7f529f3/model.neff
+2026-08-05 19:54:17.000561:  8332  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13826111191422246321+f7f529f3/model.neff
+  step     2  loss  12.4092  |     9222.9 ms  | warmup
+{'loss': 12.4092, 'learning_rate': 0.0001, 'grad_norm': 1.1365114450454712, 'train/tokens_per_sec': 1464.2411532040755, 'train/step_time': 22.378827373002423, 'train/mfu': 174.88, 'train/efficiency': 24.7, 'train/forward_time_percent': 7.6, 'train/backward_time_percent': 16.44, 'train/optimizer_time_percent': 0.66, 'train/overhead_time_percent': 75.3, 'epoch': 0.1}
+{'loss': 12.4092, 'learning_rate': 0.0001, 'grad_norm': 1.1365114450454712, 'train/tokens_per_sec': 1455.995576827053, 'train/step_time': 22.50556287499785, 'train/mfu': 176.16, 'train/efficiency': 24.31, 'train/forward_time_percent': 7.75, 'train/backward_time_percent': 15.98, 'train/optimizer_time_percent': 0.59, 'train/overhead_time_percent': 75.69, 'epoch': 0.1}
+  step     3  loss  12.2999  |     9188.1 ms  | warmup
+{'loss': 12.2999, 'learning_rate': 0.0001, 'grad_norm': 1.172053575515747, 'train/tokens_per_sec': 1613.216259316574, 'train/step_time': 20.312217789003626, 'train/mfu': 181.17, 'train/efficiency': 26.01, 'train/forward_time_percent': 8.51, 'train/backward_time_percent': 17.06, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.99, 'epoch': 0.15}
+{'loss': 12.2999, 'learning_rate': 0.0001, 'grad_norm': 1.172053575515747, 'train/tokens_per_sec': 1612.8495355508628, 'train/step_time': 20.316836306003097, 'train/mfu': 174.53, 'train/efficiency': 26.98, 'train/forward_time_percent': 8.27, 'train/backward_time_percent': 18.26, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.02, 'epoch': 0.15}
+  step     4  loss  12.2004  |     9159.1 ms  | warmup
+{'loss': 12.2004, 'learning_rate': 0.0001, 'grad_norm': 0.9946569204330444, 'train/tokens_per_sec': 1619.6740136100927, 'train/step_time': 20.23123154699715, 'train/mfu': 179.52, 'train/efficiency': 26.35, 'train/forward_time_percent': 8.61, 'train/backward_time_percent': 17.29, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.65, 'epoch': 0.2}
+{'loss': 12.2004, 'learning_rate': 0.0001, 'grad_norm': 0.9946569204330444, 'train/tokens_per_sec': 1619.7535128064835, 'train/step_time': 20.230238576994452, 'train/mfu': 177.94, 'train/efficiency': 26.59, 'train/forward_time_percent': 8.62, 'train/backward_time_percent': 17.52, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.41, 'epoch': 0.2}
+  step     5  loss  12.1237  |     9170.7 ms  | warmup
+{'loss': 12.1237, 'learning_rate': 0.0001, 'grad_norm': 0.6261690855026245, 'train/tokens_per_sec': 1619.9940609094388, 'train/step_time': 20.227234648999, 'train/mfu': 178.77, 'train/efficiency': 26.46, 'train/forward_time_percent': 8.51, 'train/backward_time_percent': 17.51, 'train/optimizer_time_percent': 0.44, 'train/overhead_time_percent': 73.54, 'epoch': 0.25}
+{'loss': 12.1237, 'learning_rate': 0.0001, 'grad_norm': 0.6261690855026245, 'train/tokens_per_sec': 1620.0104058695201, 'train/step_time': 20.227030567999464, 'train/mfu': 179.65, 'train/efficiency': 26.41, 'train/forward_time_percent': 8.44, 'train/backward_time_percent': 17.45, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.59, 'epoch': 0.25}
+  step     6  loss  12.0603  |     9163.6 ms  | warmup
+{'loss': 12.0603, 'learning_rate': 0.0001, 'grad_norm': 0.4949469268321991, 'train/tokens_per_sec': 1619.028185448257, 'train/step_time': 20.23930175800342, 'train/mfu': 177.51, 'train/efficiency': 26.64, 'train/forward_time_percent': 8.17, 'train/backward_time_percent': 18.01, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.36, 'epoch': 0.3}
+{'loss': 12.0603, 'learning_rate': 0.0001, 'grad_norm': 0.4949469268321991, 'train/tokens_per_sec': 1619.3981221884026, 'train/step_time': 20.234678273998725, 'train/mfu': 176.48, 'train/efficiency': 26.87, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 17.95, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.13, 'epoch': 0.3}
+  step     7  loss  12.0383  |     9184.3 ms  | warmup
+{'loss': 12.0383, 'learning_rate': 0.0001, 'grad_norm': 0.46698087453842163, 'train/tokens_per_sec': 1618.6396607796983, 'train/step_time': 20.244159829999262, 'train/mfu': 176.9, 'train/efficiency': 26.79, 'train/forward_time_percent': 8.5, 'train/backward_time_percent': 17.77, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.21, 'epoch': 0.35}
+{'loss': 12.0383, 'learning_rate': 0.0001, 'grad_norm': 0.46698087453842163, 'train/tokens_per_sec': 1618.9792844278484, 'train/step_time': 20.23991308300174, 'train/mfu': 175.74, 'train/efficiency': 26.9, 'train/forward_time_percent': 8.37, 'train/backward_time_percent': 18.08, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.1, 'epoch': 0.35}
+{'loss': 12.0209, 'learning_rate': 0.0001, 'grad_norm': 0.3766820430755615, 'train/tokens_per_sec': 1619.179434345499, 'train/step_time': 20.237411187998077, 'train/mfu': 176.58, 'train/efficiency': 26.88, 'train/forward_time_percent': 8.64, 'train/backward_time_percent': 17.68, 'train/optimizer_time_percent': 0.55, 'train/overhead_time_percent': 73.12, 'epoch': 0.4}
+  step     8  loss  12.0209  |     9205.0 ms  | warmup
+{'loss': 12.0209, 'learning_rate': 0.0001, 'grad_norm': 0.3766820430755615, 'train/tokens_per_sec': 1618.8047172638926, 'train/step_time': 20.24209569600498, 'train/mfu': 174.12, 'train/efficiency': 27.29, 'train/forward_time_percent': 8.48, 'train/backward_time_percent': 18.21, 'train/optimizer_time_percent': 0.6, 'train/overhead_time_percent': 72.71, 'epoch': 0.4}
+  step     9  loss  12.0183  |     9182.1 ms  | warmup{'loss': 12.0183, 'learning_rate': 0.0001, 'grad_norm': 0.5218237042427063, 'train/tokens_per_sec': 1619.1000818920215, 'train/step_time': 20.238403028000903, 'train/mfu': 180.12, 'train/efficiency': 26.3, 'train/forward_time_percent': 8.6, 'train/backward_time_percent': 17.21, 'train/optimizer_time_percent': 0.49, 'train/overhead_time_percent': 73.7, 'epoch': 0.45}
+
+{'loss': 12.0183, 'learning_rate': 0.0001, 'grad_norm': 0.5218237042427063, 'train/tokens_per_sec': 1618.8269127302106, 'train/step_time': 20.24181816000055, 'train/mfu': 179.36, 'train/efficiency': 26.44, 'train/forward_time_percent': 8.41, 'train/backward_time_percent': 17.5, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.56, 'epoch': 0.45}
+{'loss': 11.9959, 'learning_rate': 0.0001, 'grad_norm': 0.5794950723648071, 'train/tokens_per_sec': 1620.6474943603334, 'train/step_time': 20.219079173002683, 'train/mfu': 179.68, 'train/efficiency': 26.41, 'train/forward_time_percent': 8.23, 'train/backward_time_percent': 17.67, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.59, 'epoch': 0.5}
+  step    10  loss  11.9959  |     9161.5 ms  | warmup
+{'loss': 11.9959, 'learning_rate': 0.0001, 'grad_norm': 0.5794950723648071, 'train/tokens_per_sec': 1620.4371181428046, 'train/step_time': 20.221704151997983, 'train/mfu': 180.3, 'train/efficiency': 26.25, 'train/forward_time_percent': 8.51, 'train/backward_time_percent': 17.3, 'train/optimizer_time_percent': 0.44, 'train/overhead_time_percent': 73.75, 'epoch': 0.5}
+{'loss': 11.9827, 'learning_rate': 0.0001, 'grad_norm': 0.3976455330848694, 'train/tokens_per_sec': 1618.6564575264847, 'train/step_time': 20.24394975699397, 'train/mfu': 180.28, 'train/efficiency': 26.29, 'train/forward_time_percent': 8.42, 'train/backward_time_percent': 17.36, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.71, 'epoch': 0.55}
+{'loss': 11.9827, 'learning_rate': 0.0001, 'grad_norm': 0.3976455330848694, 'train/tokens_per_sec': 1618.6557834040427, 'train/step_time': 20.24395818800258, 'train/mfu': 178.89, 'train/efficiency': 26.45, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 17.57, 'train/optimizer_time_percent': 0.47, 'train/overhead_time_percent': 73.55, 'epoch': 0.55}
+{'loss': 11.962, 'learning_rate': 0.0001, 'grad_norm': 0.26204219460487366, 'train/tokens_per_sec': 1618.6481771652527, 'train/step_time': 20.24405331700109, 'train/mfu': 183.46, 'train/efficiency': 25.8, 'train/forward_time_percent': 8.24, 'train/backward_time_percent': 17.09, 'train/optimizer_time_percent': 0.47, 'train/overhead_time_percent': 74.2, 'epoch': 0.6}
+{'loss': 11.962, 'learning_rate': 0.0001, 'grad_norm': 0.26204219460487366, 'train/tokens_per_sec': 1618.686424248205, 'train/step_time': 20.243574981002894, 'train/mfu': 176.81, 'train/efficiency': 26.73, 'train/forward_time_percent': 8.45, 'train/backward_time_percent': 17.83, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.27, 'epoch': 0.6}
+{'loss': 11.9516, 'learning_rate': 0.0001, 'grad_norm': 0.2759111523628235, 'train/tokens_per_sec': 1618.7023635717085, 'train/step_time': 20.243375643003674, 'train/mfu': 178.55, 'train/efficiency': 26.47, 'train/forward_time_percent': 8.75, 'train/backward_time_percent': 17.28, 'train/optimizer_time_percent': 0.44, 'train/overhead_time_percent': 73.53, 'epoch': 0.65}
+{'loss': 11.9516, 'learning_rate': 0.0001, 'grad_norm': 0.2759111523628235, 'train/tokens_per_sec': 1618.4001605521607, 'train/step_time': 20.247155678000126, 'train/mfu': 174.44, 'train/efficiency': 27.17, 'train/forward_time_percent': 8.49, 'train/backward_time_percent': 18.15, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 72.83, 'epoch': 0.65}
+{'loss': 11.9443, 'learning_rate': 0.0001, 'grad_norm': 0.29431435465812683, 'train/tokens_per_sec': 1618.9858736645244, 'train/step_time': 20.23983070700342, 'train/mfu': 183.77, 'train/efficiency': 25.82, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 16.89, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 74.18, 'epoch': 0.7}
+{'loss': 11.9443, 'learning_rate': 0.0001, 'grad_norm': 0.29431435465812683, 'train/tokens_per_sec': 1618.938390940033, 'train/step_time': 20.240424332005205, 'train/mfu': 178.97, 'train/efficiency': 26.42, 'train/forward_time_percent': 8.56, 'train/backward_time_percent': 17.41, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.58, 'epoch': 0.7}
+{'loss': 11.9319, 'learning_rate': 0.0001, 'grad_norm': 0.20371024310588837, 'train/tokens_per_sec': 1618.6950665056709, 'train/step_time': 20.243466899999476, 'train/mfu': 178.09, 'train/efficiency': 26.63, 'train/forward_time_percent': 8.64, 'train/backward_time_percent': 17.45, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.37, 'epoch': 0.75}{'loss': 11.9319, 'learning_rate': 0.0001, 'grad_norm': 0.20371024310588837, 'train/tokens_per_sec': 1618.5245280213012, 'train/step_time': 20.24559988600231, 'train/mfu': 181.42, 'train/efficiency': 26.14, 'train/forward_time_percent': 8.58, 'train/backward_time_percent': 17.04, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.86, 'epoch': 0.75}
+
+{'loss': 11.9245, 'learning_rate': 0.0001, 'grad_norm': 0.22741268575191498, 'train/tokens_per_sec': 1619.4023534298144, 'train/step_time': 20.23462540399487, 'train/mfu': 178.59, 'train/efficiency': 26.51, 'train/forward_time_percent': 8.5, 'train/backward_time_percent': 17.53, 'train/optimizer_time_percent': 0.48, 'train/overhead_time_percent': 73.49, 'epoch': 0.8}
+{'loss': 11.9245, 'learning_rate': 0.0001, 'grad_norm': 0.22741268575191498, 'train/tokens_per_sec': 1619.6108860135782, 'train/step_time': 20.23202009999659, 'train/mfu': 176.8, 'train/efficiency': 26.82, 'train/forward_time_percent': 8.43, 'train/backward_time_percent': 17.87, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.18, 'epoch': 0.8}
+{'loss': 11.9212, 'learning_rate': 0.0001, 'grad_norm': 0.3348195552825928, 'train/tokens_per_sec': 1619.3192569254406, 'train/step_time': 20.235663758001465, 'train/mfu': 177.15, 'train/efficiency': 26.7, 'train/forward_time_percent': 8.63, 'train/backward_time_percent': 17.61, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.3, 'epoch': 0.85}
+{'loss': 11.9212, 'learning_rate': 0.0001, 'grad_norm': 0.3348195552825928, 'train/tokens_per_sec': 1619.017902090276, 'train/step_time': 20.2394303100009, 'train/mfu': 182.13, 'train/efficiency': 26.05, 'train/forward_time_percent': 8.1, 'train/backward_time_percent': 17.42, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.95, 'epoch': 0.85}
+{'loss': 11.923, 'learning_rate': 0.0001, 'grad_norm': 0.32372501492500305, 'train/tokens_per_sec': 1618.272316343701, 'train/step_time': 20.248755212000106, 'train/mfu': 177.43, 'train/efficiency': 26.69, 'train/forward_time_percent': 8.19, 'train/backward_time_percent': 18.0, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.31, 'epoch': 0.9}
+{'loss': 11.923, 'learning_rate': 0.0001, 'grad_norm': 0.32372501492500305, 'train/tokens_per_sec': 1618.4296073194848, 'train/step_time': 20.246787288000633, 'train/mfu': 176.09, 'train/efficiency': 26.83, 'train/forward_time_percent': 8.38, 'train/backward_time_percent': 18.0, 'train/optimizer_time_percent': 0.44, 'train/overhead_time_percent': 73.17, 'epoch': 0.9}
+{'loss': 11.9187, 'learning_rate': 0.0001, 'grad_norm': 0.2880437970161438, 'train/tokens_per_sec': 1619.604353087244, 'train/step_time': 20.232101708999835, 'train/mfu': 179.63, 'train/efficiency': 26.34, 'train/forward_time_percent': 8.45, 'train/backward_time_percent': 17.44, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.66, 'epoch': 0.95}
+{'loss': 11.9187, 'learning_rate': 0.0001, 'grad_norm': 0.2880437970161438, 'train/tokens_per_sec': 1619.6911722443263, 'train/step_time': 20.231017222002265, 'train/mfu': 181.52, 'train/efficiency': 26.15, 'train/forward_time_percent': 8.41, 'train/backward_time_percent': 17.21, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.85, 'epoch': 0.95}
+{'loss': 11.9065, 'learning_rate': 0.0001, 'grad_norm': 0.2110121101140976, 'train/tokens_per_sec': 1619.4321550538239, 'train/step_time': 20.234253036003793, 'train/mfu': 182.72, 'train/efficiency': 25.97, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 17.04, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 74.03, 'epoch': 1.0}
+  step    20  loss  11.9065  |     9172.1 ms
+{'loss': 11.9065, 'learning_rate': 0.0001, 'grad_norm': 0.2110121101140976, 'train/tokens_per_sec': 1619.7592617226605, 'train/step_time': 20.230166774999816, 'train/mfu': 178.02, 'train/efficiency': 26.64, 'train/forward_time_percent': 8.62, 'train/backward_time_percent': 17.5, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.36, 'epoch': 1.0}
+{'loss': 11.8947, 'learning_rate': 0.0001, 'grad_norm': 0.18529587984085083, 'train/tokens_per_sec': 2761.149761412221, 'train/step_time': 11.867519994004397, 'train/mfu': 176.98, 'train/efficiency': 45.55, 'train/forward_time_percent': 14.7, 'train/backward_time_percent': 30.09, 'train/optimizer_time_percent': 0.76, 'train/overhead_time_percent': 54.45, 'epoch': 1.05}
+{'loss': 11.8947, 'learning_rate': 0.0001, 'grad_norm': 0.18529587984085083, 'train/tokens_per_sec': 2761.2056927471845, 'train/step_time': 11.86727960400458, 'train/mfu': 174.26, 'train/efficiency': 46.39, 'train/forward_time_percent': 14.62, 'train/backward_time_percent': 30.88, 'train/optimizer_time_percent': 0.89, 'train/overhead_time_percent': 53.61, 'epoch': 1.05}
+{'loss': 11.8971, 'learning_rate': 0.0001, 'grad_norm': 0.1996217519044876, 'train/tokens_per_sec': 1619.1241951456223, 'train/step_time': 20.238101622002432, 'train/mfu': 174.83, 'train/efficiency': 27.12, 'train/forward_time_percent': 8.78, 'train/backward_time_percent': 17.81, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 72.88, 'epoch': 1.1}
+{'loss': 11.8971, 'learning_rate': 0.0001, 'grad_norm': 0.1996217519044876, 'train/tokens_per_sec': 1618.9251986564157, 'train/step_time': 20.24058926699945, 'train/mfu': 179.04, 'train/efficiency': 26.49, 'train/forward_time_percent': 8.61, 'train/backward_time_percent': 17.35, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.51, 'epoch': 1.1}
+{'loss': 11.8907, 'learning_rate': 0.0001, 'grad_norm': 0.23572884500026703, 'train/tokens_per_sec': 1619.3276006503877, 'train/step_time': 20.235559492000903, 'train/mfu': 184.54, 'train/efficiency': 25.71, 'train/forward_time_percent': 8.41, 'train/backward_time_percent': 16.78, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 74.29, 'epoch': 1.15}
+{'loss': 11.8907, 'learning_rate': 0.0001, 'grad_norm': 0.23572884500026703, 'train/tokens_per_sec': 1619.3036245759401, 'train/step_time': 20.23585910800466, 'train/mfu': 180.84, 'train/efficiency': 26.15, 'train/forward_time_percent': 8.55, 'train/backward_time_percent': 17.16, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.85, 'epoch': 1.15}
+{'loss': 11.8926, 'learning_rate': 0.0001, 'grad_norm': 0.21097919344902039, 'train/tokens_per_sec': 1619.7890269224927, 'train/step_time': 20.22979502599628, 'train/mfu': 183.43, 'train/efficiency': 25.8, 'train/forward_time_percent': 8.18, 'train/backward_time_percent': 17.17, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 74.2, 'epoch': 1.2}
+{'loss': 11.8926, 'learning_rate': 0.0001, 'grad_norm': 0.21097919344902039, 'train/tokens_per_sec': 1619.613068389951, 'train/step_time': 20.231992838002043, 'train/mfu': 178.74, 'train/efficiency': 26.54, 'train/forward_time_percent': 8.73, 'train/backward_time_percent': 17.29, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.46, 'epoch': 1.2}
+{'loss': 11.8866, 'learning_rate': 0.0001, 'grad_norm': 0.16213415563106537, 'train/tokens_per_sec': 1621.4034403016597, 'train/step_time': 20.209652443998493, 'train/mfu': 176.83, 'train/efficiency': 26.83, 'train/forward_time_percent': 8.64, 'train/backward_time_percent': 17.68, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.17, 'epoch': 1.25}
+{'loss': 11.8866, 'learning_rate': 0.0001, 'grad_norm': 0.16213415563106537, 'train/tokens_per_sec': 1621.2279511103961, 'train/step_time': 20.211840029995074, 'train/mfu': 180.77, 'train/efficiency': 26.2, 'train/forward_time_percent': 8.5, 'train/backward_time_percent': 17.24, 'train/optimizer_time_percent': 0.46, 'train/overhead_time_percent': 73.8, 'epoch': 1.25}
+{'loss': 11.8851, 'learning_rate': 0.0001, 'grad_norm': 0.16383497416973114, 'train/tokens_per_sec': 1618.5504948940186, 'train/step_time': 20.245275080000283, 'train/mfu': 180.43, 'train/efficiency': 26.28, 'train/forward_time_percent': 8.64, 'train/backward_time_percent': 17.11, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.72, 'epoch': 1.3}
+{'loss': 11.8851, 'learning_rate': 0.0001, 'grad_norm': 0.16383497416973114, 'train/tokens_per_sec': 1618.6154698493363, 'train/step_time': 20.244462388000102, 'train/mfu': 174.94, 'train/efficiency': 27.04, 'train/forward_time_percent': 8.33, 'train/backward_time_percent': 18.23, 'train/optimizer_time_percent': 0.48, 'train/overhead_time_percent': 72.96, 'epoch': 1.3}
+{'loss': 11.8806, 'learning_rate': 0.0001, 'grad_norm': 0.21307621896266937, 'train/tokens_per_sec': 1620.6215322157204, 'train/step_time': 20.21940308000194, 'train/mfu': 176.18, 'train/efficiency': 26.92, 'train/forward_time_percent': 8.64, 'train/backward_time_percent': 17.77, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.08, 'epoch': 1.35}
+{'loss': 11.8806, 'learning_rate': 0.0001, 'grad_norm': 0.21307621896266937, 'train/tokens_per_sec': 1620.8588137925858, 'train/step_time': 20.216443110999535, 'train/mfu': 178.37, 'train/efficiency': 26.54, 'train/forward_time_percent': 8.45, 'train/backward_time_percent': 17.64, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.46, 'epoch': 1.35}
+{'loss': 11.8809, 'learning_rate': 0.0001, 'grad_norm': 0.17231227457523346, 'train/tokens_per_sec': 1619.499830715674, 'train/step_time': 20.233407487001386, 'train/mfu': 176.01, 'train/efficiency': 26.93, 'train/forward_time_percent': 8.47, 'train/backward_time_percent': 17.95, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.07, 'epoch': 1.4}
+{'loss': 11.8809, 'learning_rate': 0.0001, 'grad_norm': 0.17231227457523346, 'train/tokens_per_sec': 1620.0256468383836, 'train/step_time': 20.226840274997812, 'train/mfu': 184.34, 'train/efficiency': 25.75, 'train/forward_time_percent': 8.38, 'train/backward_time_percent': 16.85, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 74.25, 'epoch': 1.4}
+{'loss': 11.8762, 'learning_rate': 0.0001, 'grad_norm': 0.15776021778583527, 'train/tokens_per_sec': 1619.1903468757223, 'train/step_time': 20.237274798004364, 'train/mfu': 178.65, 'train/efficiency': 26.51, 'train/forward_time_percent': 8.55, 'train/backward_time_percent': 17.47, 'train/optimizer_time_percent': 0.49, 'train/overhead_time_percent': 73.49, 'epoch': 1.45}
+{'loss': 11.8762, 'learning_rate': 0.0001, 'grad_norm': 0.15776021778583527, 'train/tokens_per_sec': 1619.128891299789, 'train/step_time': 20.238042923003377, 'train/mfu': 176.49, 'train/efficiency': 26.87, 'train/forward_time_percent': 8.61, 'train/backward_time_percent': 17.73, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.13, 'epoch': 1.45}
+  step    30  loss  11.8788  |     9176.4 ms
+{'loss': 11.8788, 'learning_rate': 0.0001, 'grad_norm': 0.14382769167423248, 'train/tokens_per_sec': 1619.1235116737898, 'train/step_time': 20.23811016500258, 'train/mfu': 178.45, 'train/efficiency': 26.58, 'train/forward_time_percent': 8.51, 'train/backward_time_percent': 17.54, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.42, 'epoch': 1.5}
+{'loss': 11.8788, 'learning_rate': 0.0001, 'grad_norm': 0.14382769167423248, 'train/tokens_per_sec': 1619.4911939502572, 'train/step_time': 20.23351539199939, 'train/mfu': 183.22, 'train/efficiency': 25.9, 'train/forward_time_percent': 8.38, 'train/backward_time_percent': 17.0, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 74.1, 'epoch': 1.5}
+{'loss': 11.8743, 'learning_rate': 0.0001, 'grad_norm': 0.14514073729515076, 'train/tokens_per_sec': 1619.224338443909, 'train/step_time': 20.236849966997397, 'train/mfu': 171.7, 'train/efficiency': 27.6, 'train/forward_time_percent': 8.48, 'train/backward_time_percent': 18.59, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 72.4, 'epoch': 1.55}
+{'loss': 11.8743, 'learning_rate': 0.0001, 'grad_norm': 0.14514073729515076, 'train/tokens_per_sec': 1619.1093182634927, 'train/step_time': 20.238287576001312, 'train/mfu': 182.84, 'train/efficiency': 25.95, 'train/forward_time_percent': 8.52, 'train/backward_time_percent': 16.9, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 74.05, 'epoch': 1.55}
+{'loss': 11.8701, 'learning_rate': 0.0001, 'grad_norm': 0.1468953639268875, 'train/tokens_per_sec': 1618.1518913513387, 'train/step_time': 20.250262150999333, 'train/mfu': 183.71, 'train/efficiency': 25.78, 'train/forward_time_percent': 8.38, 'train/backward_time_percent': 16.91, 'train/optimizer_time_percent': 0.49, 'train/overhead_time_percent': 74.22, 'epoch': 1.6}{'loss': 11.8701, 'learning_rate': 0.0001, 'grad_norm': 0.1468953639268875, 'train/tokens_per_sec': 1618.1484371883164, 'train/step_time': 20.25030537800194, 'train/mfu': 174.46, 'train/efficiency': 27.13, 'train/forward_time_percent': 8.44, 'train/backward_time_percent': 18.19, 'train/optimizer_time_percent': 0.5, 'train/overhead_time_percent': 72.87, 'epoch': 1.6}
+
+{'loss': 11.8701, 'learning_rate': 0.0001, 'grad_norm': 0.18435050547122955, 'train/tokens_per_sec': 1619.0568542228402, 'train/step_time': 20.238943379001284, 'train/mfu': 178.54, 'train/efficiency': 26.57, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 17.64, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.43, 'epoch': 1.65}{'loss': 11.8701, 'learning_rate': 0.0001, 'grad_norm': 0.18435050547122955, 'train/tokens_per_sec': 1619.0853186528077, 'train/step_time': 20.23858756700065, 'train/mfu': 183.34, 'train/efficiency': 25.83, 'train/forward_time_percent': 8.31, 'train/backward_time_percent': 17.04, 'train/optimizer_time_percent': 0.47, 'train/overhead_time_percent': 74.17, 'epoch': 1.65}
+
+{'loss': 11.87, 'learning_rate': 0.0001, 'grad_norm': 0.1559179574251175, 'train/tokens_per_sec': 1618.6362684185858, 'train/step_time': 20.24420225799986, 'train/mfu': 177.58, 'train/efficiency': 26.61, 'train/forward_time_percent': 8.7, 'train/backward_time_percent': 17.47, 'train/optimizer_time_percent': 0.45, 'train/overhead_time_percent': 73.39, 'epoch': 1.7}
+{'loss': 11.87, 'learning_rate': 0.0001, 'grad_norm': 0.1559179574251175, 'train/tokens_per_sec': 1618.8095453596216, 'train/step_time': 20.242035324001336, 'train/mfu': 179.03, 'train/efficiency': 26.48, 'train/forward_time_percent': 8.65, 'train/backward_time_percent': 17.31, 'train/optimizer_time_percent': 0.52, 'train/overhead_time_percent': 73.52, 'epoch': 1.7}
+{'loss': 11.8629, 'learning_rate': 0.0001, 'grad_norm': 0.15788185596466064, 'train/tokens_per_sec': 1619.5031835556192, 'train/step_time': 20.233365597996453, 'train/mfu': 179.8, 'train/efficiency': 26.37, 'train/forward_time_percent': 8.18, 'train/backward_time_percent': 17.68, 'train/optimizer_time_percent': 0.51, 'train/overhead_time_percent': 73.63, 'epoch': 1.75}
+{'loss': 11.8629, 'learning_rate': 0.0001, 'grad_norm': 0.15788185596466064, 'train/tokens_per_sec': 1619.1955882875175, 'train/step_time': 20.23720928900002, 'train/mfu': 181.96, 'train/efficiency': 26.07, 'train/forward_time_percent': 8.4, 'train/backward_time_percent': 17.15, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.93, 'epoch': 1.75}
+{'loss': 11.8663, 'learning_rate': 0.0001, 'grad_norm': 0.14314059913158417, 'train/tokens_per_sec': 1619.1247101302454, 'train/step_time': 20.23809518499911, 'train/mfu': 176.71, 'train/efficiency': 26.83, 'train/forward_time_percent': 8.48, 'train/backward_time_percent': 17.83, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.17, 'epoch': 1.8}
+{'loss': 11.8663, 'learning_rate': 0.0001, 'grad_norm': 0.14314059913158417, 'train/tokens_per_sec': 1618.9820784639667, 'train/step_time': 20.239878152999154, 'train/mfu': 178.88, 'train/efficiency': 26.46, 'train/forward_time_percent': 8.62, 'train/backward_time_percent': 17.37, 'train/optimizer_time_percent': 0.48, 'train/overhead_time_percent': 73.54, 'epoch': 1.8}
+{'loss': 11.8626, 'learning_rate': 0.0001, 'grad_norm': 0.15201318264007568, 'train/tokens_per_sec': 1619.315132068687, 'train/step_time': 20.235715303999314, 'train/mfu': 177.68, 'train/efficiency': 26.69, 'train/forward_time_percent': 8.37, 'train/backward_time_percent': 17.8, 'train/optimizer_time_percent': 0.53, 'train/overhead_time_percent': 73.31, 'epoch': 1.85}
+{'loss': 11.8626, 'learning_rate': 0.0001, 'grad_norm': 0.15201318264007568, 'train/tokens_per_sec': 1619.0824477007284, 'train/step_time': 20.238623454002663, 'train/mfu': 182.45, 'train/efficiency': 25.92, 'train/forward_time_percent': 8.49, 'train/backward_time_percent': 16.99, 'train/optimizer_time_percent': 0.44, 'train/overhead_time_percent': 74.08, 'epoch': 1.85}
+{'loss': 11.8633, 'learning_rate': 0.0001, 'grad_norm': 0.15594743192195892, 'train/tokens_per_sec': 1618.4523752439554, 'train/step_time': 20.246502461995988, 'train/mfu': 178.06, 'train/efficiency': 26.64, 'train/forward_time_percent': 8.49, 'train/backward_time_percent': 17.6, 'train/optimizer_time_percent': 0.54, 'train/overhead_time_percent': 73.36, 'epoch': 1.9}
+{'loss': 11.8633, 'learning_rate': 0.0001, 'grad_norm': 0.15594743192195892, 'train/tokens_per_sec': 1618.9639921914988, 'train/step_time': 20.24010426300083, 'train/mfu': 175.33, 'train/efficiency': 27.07, 'train/forward_time_percent': 8.34, 'train/backward_time_percent': 18.17, 'train/optimizer_time_percent': 0.56, 'train/overhead_time_percent': 72.93, 'epoch': 1.9}
+{'loss': 11.862, 'learning_rate': 0.0001, 'grad_norm': 0.1486903876066208, 'train/tokens_per_sec': 1618.069183357732, 'train/step_time': 20.251297247996263, 'train/mfu': 176.63, 'train/efficiency': 26.78, 'train/forward_time_percent': 8.47, 'train/backward_time_percent': 17.83, 'train/optimizer_time_percent': 0.48, 'train/overhead_time_percent': 73.22, 'epoch': 1.95}
+{'loss': 11.862, 'learning_rate': 0.0001, 'grad_norm': 0.1486903876066208, 'train/tokens_per_sec': 1618.4104541291106, 'train/step_time': 20.24702690000413, 'train/mfu': 181.03, 'train/efficiency': 26.14, 'train/forward_time_percent': 8.3, 'train/backward_time_percent': 17.37, 'train/optimizer_time_percent': 0.47, 'train/overhead_time_percent': 73.86, 'epoch': 1.95}
+  step    40  loss  11.8631  |     9176.3 ms
+{'loss': 11.8631, 'learning_rate': 0.0001, 'grad_norm': 0.13731835782527924, 'train/tokens_per_sec': 1618.8148235728781, 'train/step_time': 20.24196932400082, 'train/mfu': 180.37, 'train/efficiency': 26.25, 'train/forward_time_percent': 8.73, 'train/backward_time_percent': 17.04, 'train/optimizer_time_percent': 0.49, 'train/overhead_time_percent': 73.75, 'epoch': 2.0}
+{'loss': 11.8631, 'learning_rate': 0.0001, 'grad_norm': 0.13731835782527924, 'train/tokens_per_sec': 1619.1542815986231, 'train/step_time': 20.237725565995788, 'train/mfu': 178.08, 'train/efficiency': 26.58, 'train/forward_time_percent': 8.56, 'train/backward_time_percent': 17.54, 'train/optimizer_time_percent': 0.48, 'train/overhead_time_percent': 73.42, 'epoch': 2.0}
+================================================================================
+TRAINING SUMMARY METRICS
+================================================================================
+summary/tokens_per_sec_avg: 1616.49
+summary/total_steps: 40
+summary/total_tokens_processed: 1310720
+summary/mfu_avg: 177.86%
+summary/efficiency_avg: 26.63%
+summary/forward_time_percent_avg: 8.4900s
+summary/backward_time_percent_avg: 17.6400s
+summary/optimizer_time_percent_avg: 0.5100s
+summary/overhead_time_percent_avg: 73.3700s
+================================================================================
+Summary metrics saved to: /opt/np/models/adapters/synth_4096/training_summary_metrics.json
+================================================================================
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+Saving model checkpoint to /opt/np/models/adapters/synth_4096
+Model parallelism is enabled, saving the model sharded state dict instead of the full state dict.
+[2026-08-05 20:09:05.038: I neuronx_distributed/trainer/checkpoint.py:144] synced saving of checkpoint adapter_shards began
+[2026-08-05 20:09:05.209: I neuronx_distributed/trainer/checkpoint.py:192] synced saving of checkpoint adapter_shards completed
+[2026-08-05 20:09:05.210: I neuronx_distributed/trainer/checkpoint.py:256] no checkpoints to remove.
+
+  median step 9177.5 ms | 3,570 tok/s | 173.5 TFLOP/s | MFU 91.3%
+
+SUMMARY tag=synth_4096 model=meta-llama/Llama-3.1-8B-Instruct tp=2 dp=1 steps=40 median_step_ms=9177.5 first_step_ms=57270.3 compile_s=48.1 tokens_per_s=3570 tflops=173.53 mfu_pct=91.33 final_loss=11.8631 peak_host_mem_mib=16568 train_wall_s=982.9
+wrote /opt/np/repo/trn1/results/isolation/synth_4096.json
+adapter -> /opt/np/models/adapters/synth_4096  (TP-sharded; merge_adapter.py consolidates)

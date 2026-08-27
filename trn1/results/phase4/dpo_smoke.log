@@ -1,0 +1,475 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026-Aug-14 19:46:02.0417 15669:15686 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-14 19:46:02.0428 15669:15686 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 19:46:02.0438 15669:15686 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 19:46:02.0446 15669:15686 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-14 19:46:10.0425 15668:15717 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+2026-Aug-14 19:46:10.0436 15668:15717 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 19:46:10.0446 15668:15717 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 19:46:10.0454 15668:15717 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[dpo] accelerate state @startup: initialised -> True[dpo] accelerate state @startup: initialised -> True
+
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+[dpo] re-based trainer MRO: _NeuronDPOTrainer -> _NeuronTrainerShim -> HFTrainerCompat -> NeuronTrainer
+[dpo] 32 preference pairs, columns ['prompt', 'chosen', 'rejected']
+[2026-08-14 19:46:14.391: I neuronx_distributed/parallel_layers/parallel_state.py:638] > initializing tensor model parallel with size 2
+[2026-08-14 19:46:14.392: I neuronx_distributed/parallel_layers/parallel_state.py:639] > initializing pipeline model parallel with size 1
+[2026-08-14 19:46:14.392: I neuronx_distributed/parallel_layers/parallel_state.py:640] > initializing context model parallel with size 1
+[2026-08-14 19:46:14.392: I neuronx_distributed/parallel_layers/parallel_state.py:641] > initializing data parallel with size 1
+[2026-08-14 19:46:14.392: I neuronx_distributed/parallel_layers/parallel_state.py:642] > initializing world size to 2
+2026-08-14 19:46:14.000402:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15288743754125041587+e30acd3a/model.neff
+2026-08-14 19:46:14.000402:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15288743754125041587+e30acd3a/model.neff
+[2026-08-14 19:46:14.427: I neuronx_distributed/parallel_layers/parallel_state.py:387] [rank_0_pp-1_tp-1_dp-1_cp-1] Chosen Logic for replica groups ret_logic=<PG_Group_Logic.LOGIC1: (<function ascending_ring_PG_group at 0x77d0387839c0>, 'Ascending Ring PG Group')>
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:666] [rank_0_pp-1_tp-1_dp-1_cp-1] tp_groups: replica_groups.tp_groups=[[0, 1]]
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:667] [rank_0_pp-1_tp-1_dp-1_cp-1] dp_groups: replica_groups.dp_groups=[[0], [1]]
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:668] [rank_0_pp-1_tp-1_dp-1_cp-1] pp_groups: replica_groups.pp_groups=[[0], [1]]
+PyTorch: setting up devices
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:669] [rank_0_pp-1_tp-1_dp-1_cp-1] cp_groups: replica_groups.cp_groups=[[0], [1]]
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:670] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_model_groups: replica_groups.ep_model_groups=[[0], [1]]
+[2026-08-14 19:46:14.428: I neuronx_distributed/parallel_layers/parallel_state.py:671] [rank_0_pp-1_tp-1_dp-1_cp-1] ep_data_groups: replica_groups.ep_data_groups=[[0], [1]]
+PyTorch: setting up devices
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/models/inference/llama/modeling_llama.py:33: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  from ..backend.modules.attention.attention_base import NeuronAttentionBase
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+loading weights file model.safetensors from cache at /opt/np/models/hf/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659/model.safetensors.index.json
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:27<01:21, 27.14s/it]Loading checkpoint shards:  25%|██▌       | 1/4 [00:40<02:01, 40.66s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:11<01:10, 35.08s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:13<01:16, 38.48s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:05<00:44, 44.61s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:05<00:43, 43.65s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:10<00:00, 28.87s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:10<00:00, 32.55s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+Loading checkpoint shards: 100%|██████████| 4/4 [02:10<00:00, 28.21s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:10<00:00, 32.56s/it]
+All model checkpoint weights were used when initializing LlamaForCausalLM.
+
+All the weights of LlamaForCausalLM were initialized from the model checkpoint at meta-llama/Llama-3.1-8B-Instruct.
+If your task is similar to the task the model of the checkpoint was trained on, you can already use LlamaForCausalLM for predictions without further training.
+[dpo] pinned param counts (26,214,400 trainable / 4,041,478,144 total) so disable_adapter() cannot trigger a mid-step compile
+[dpo] accelerate state @pre-trainer: initialised -> True
+[dpo] accelerate state @pre-trainer: initialised -> True
+`even_batches` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored. Make sure that your dataset size is divisible by the train batch size x gradient accumulation steps x data parallel size.
+`use_seedable_sampler` in `AcceleratorConfig` is not supported in NeuronTrainer and will be ignored.
+max_steps is given, it will override any value given in num_train_epochs
+No label_names provided for model class `NeuronPeftModelForCausalLM`. Since `NeuronPeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `NeuronTrainer`. Note that empty label_names list will be used instead.
+[dpo] gather_for_metrics -> identity (dp=1, tp=2): removes the 8 out-of-graph host syncs TRL performs per step
+[dpo] collator wrapped -> fixed 512-token shapes
+The following columns in the Training set don't have a corresponding argument in `NeuronPeftModelForCausalLM.forward` and have been ignored: prompt. If prompt are not expected by `NeuronPeftModelForCausalLM.forward`,  you can safely ignore this message.
+Pipeline parallelsim: forcing the dataloader to drop the last incomplete batch because it can cause failure if the last batch size is not divisible by the number of microbatches for the pipeline.
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+***** Running training *****
+  Num examples = 32
+  Num Epochs = 1
+  Data Parallel Size: 1
+  Tensor Parallel Size: 2
+  Pipeline Parallel Size: 1
+  Instantaneous batch size per data parallel rank = 1
+  Gradient Accumulation steps = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 8
+  Total optimization steps = 4
+  Num trainable parameters = 39,845,888
+2026-08-14 19:49:41.000630:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6260965995345663759+e30acd3a/model.neff
+2026-08-14 19:49:41.000927:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_11242024409621035500+e30acd3a/model.neff
+2026-08-14 19:49:42.000095:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15990061406863718817+e30acd3a/model.neff
+2026-08-14 19:49:42.000253:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 19:49:42.000406:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 19:49:42.000815:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13242266389929337646+e30acd3a/model.neff
+2026-08-14 19:49:43.000004:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17853289496092567231+e30acd3a/model.neff
+2026-08-14 19:49:43.000175:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5209352908576246583+e30acd3a/model.neff
+WARNING:root:Not saving master weights may have accuracy issues when resuming training!
+2026-08-14 19:49:43.000699:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6260965995345663759+e30acd3a/model.neff
+2026-08-14 19:49:43.000884:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_11242024409621035500+e30acd3a/model.neff
+2026-08-14 19:49:44.000092:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_15990061406863718817+e30acd3a/model.neff
+2026-08-14 19:49:44.000257:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 19:49:44.000403:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 19:49:44.000744:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_13242266389929337646+e30acd3a/model.neff
+2026-08-14 19:49:44.000898:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_17853289496092567231+e30acd3a/model.neff
+2026-08-14 19:49:45.000072:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5209352908576246583+e30acd3a/model.neff
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6272987300305260263+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6272987300305260263+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6272987300305260263+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+
+Compiler status PASS
+2026-08-14 19:51:24.000028:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_6272987300305260263+e30acd3a.hlo_module.pb
+2026-08-14 19:51:24.000044:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_18029947993382383348+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11970352378856016240+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11970352378856016240+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11970352378856016240+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 19:53:02.000286:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_11970352378856016240+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:53:02.000855:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_12045643668218439026+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10063771904719715455+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10063771904719715455+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10063771904719715455+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 19:54:40.000195:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_10063771904719715455+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:54:41.000042:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_15750480088931731545+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6241146091978833558+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6241146091978833558+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6241146091978833558+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 19:56:18.000833:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_6241146091978833558+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:56:20.000158:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_12476964011233701471+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7426771594531274107+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7426771594531274107+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7426771594531274107+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+........
+Compiler status PASS
+2026-08-14 19:57:26.000327:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7426771594531274107+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:57:31.000223:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_7322539834028906312+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10221744293670535769+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10221744293670535769+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10221744293670535769+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+........
+Compiler status PASS
+2026-08-14 19:58:38.000051:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_10221744293670535769+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:58:38.000528:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_4227720147327312642+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_15562716642746929845+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_15562716642746929845+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_15562716642746929845+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-14 19:59:28.000020:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_15562716642746929845+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 19:59:32.000056:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_6068679100433086871+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14261271334563761434+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+.
+Compiler status PASS
+2026-08-14 19:59:34.000780:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_14261271334563761434+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+2026-08-14 19:59:38.000301:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14261271334563761434+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+.neuronxcc-2.26.6360.0+6f180f47/MODULE_7079455136498901740+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7079455136498901740+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7079455136498901740+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...........................................................................................................
+Compiler status PASS
+2026-08-14 20:17:27.000398:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_552244650810702943+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:17:31.000461:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7079455136498901740+e30acd3a.hlo_module.pb
+2026-08-14 20:17:50.000194:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 20:17:50.000203:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 20:17:50.000350:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+2026-08-14 20:17:50.000358:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 20:17:50.000895:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3362068619645231368+e30acd3a/model.neff
+2026-08-14 20:17:50.000905:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3362068619645231368+e30acd3a/model.neff
+2026-08-14 20:17:51.000077:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16038994223372181285+e30acd3a/model.neff
+2026-08-14 20:17:51.000085:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16038994223372181285+e30acd3a/model.neff
+2026-08-14 20:17:51.000243:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1879797670133792555+e30acd3a/model.neff
+2026-08-14 20:17:51.000262:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1879797670133792555+e30acd3a/model.neff
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12751839720210886850+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12751839720210886850+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_12751839720210886850+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 20:19:30.000286:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_12751839720210886850+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:19:31.000309:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_12110359695563733959+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1050501902303357634+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1050501902303357634+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1050501902303357634+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 20:21:09.000159:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_7334443627300473114+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:21:09.000618:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_1050501902303357634+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17895581529863745579+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17895581529863745579+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_17895581529863745579+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 20:22:44.000834:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_17895581529863745579+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:22:48.000284:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_14903354547861114205+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6845970100883455852+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6845970100883455852+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_6845970100883455852+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 20:24:25.000828:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_6845970100883455852+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:24:27.000893:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_1187062758317034381+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1615881738727179879+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1615881738727179879+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1615881738727179879+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-14 20:25:31.000498:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_8633859244649138969+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-08-14 20:25:35.000763:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_1615881738727179879+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14366764598475178510+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14366764598475178510+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_14366764598475178510+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-14 20:26:36.000894:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_15042408602233284880+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-08-14 20:26:40.000306:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_14366764598475178510+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7288166714187518724+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7288166714187518724+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7288166714187518724+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-14 20:27:32.000447:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7288166714187518724+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:27:32.000796:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_12804611970765643778+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_13355393769598369554+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_13355393769598369554+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_13355393769598369554+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+......
+Compiler status PASS
+2026-08-14 20:28:20.000558:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_13355393769598369554+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:28:26.000015:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_6200092180506208932+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3755959991881907044+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3755959991881907044+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3755959991881907044+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+............................................................................................................
+Compiler status PASS
+2026-08-14 20:46:17.000795:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_6492706811788570658+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:46:23.000959:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_3755959991881907044+e30acd3a.hlo_module.pb
+2026-08-14 20:46:42.000407:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 20:46:42.000548:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 20:46:42.000796:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6582224889384588657+e30acd3a/model.neff
+2026-08-14 20:46:42.000949:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_3621927010457751959+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 20:46:43.000011:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5479462678590622403+e30acd3a/model.neff
+2026-08-14 20:46:43.000173:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14579526787973737019+e30acd3a/model.neff
+2026-08-14 20:46:43.000339:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_9236813920425345405+e30acd3a/model.neff
+2026-08-14 20:46:43.000422:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_5479462678590622403+e30acd3a/model.neff
+2026-08-14 20:46:43.000594:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14579526787973737019+e30acd3a/model.neff
+2026-08-14 20:46:43.000743:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_9236813920425345405+e30acd3a/model.neff
+neuronxcc-2.26.6360.0+6f180f47/MODULE_736168384181275084+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_736168384181275084+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+.neuronxcc-2.26.6360.0+6f180f47/MODULE_736168384181275084+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+...............
+Compiler status PASS
+2026-08-14 20:49:15.000439:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_736168384181275084+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:49:18.000231:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_2707207317874125503+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3663612017737413942+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3663612017737413942+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_3663612017737413942+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+................
+Compiler status PASS
+2026-08-14 20:51:51.000122:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_11695003577491075518+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:51:56.000662:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_3663612017737413942+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1518814422490417140+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1518814422490417140+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_1518814422490417140+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+................
+Compiler status PASS
+2026-08-14 20:54:31.000510:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_1518814422490417140+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:54:33.000403:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_7153980405312539194+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_493203331359768891+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_493203331359768891+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_493203331359768891+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+................
+Compiler status PASS
+2026-08-14 20:57:13.000110:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_9841680748455423608+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:57:13.000386:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_493203331359768891+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7314132613583151134+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7314132613583151134+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7314132613583151134+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 20:58:50.000735:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_18154861935869973788+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 20:58:53.000882:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7314132613583151134+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7259887079176138947+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7259887079176138947+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7259887079176138947+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 21:00:28.000342:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7259887079176138947+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 21:00:33.000771:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_1761277917757606923+e30acd3a.hlo_module.pb
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7768838347681906960+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7768838347681906960+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_7768838347681906960+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 21:02:11.000442:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_9505696635020918938+e30acd3a.hlo_module.pb
+
+Compiler status PASS
+2026-08-14 21:02:12.000114:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_7768838347681906960+e30acd3a.hlo_module.pb
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11464287980444011569+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11464287980444011569+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_11464287980444011569+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+............................................
+Compiler status PASS
+2026-08-14 21:09:38.000112:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_7982533944784863046+e30acd3a.hlo_module.pb
+.
+Compiler status PASS
+2026-08-14 21:09:41.000762:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_11464287980444011569+e30acd3a.hlo_module.pb
+2026-08-14 21:09:47.000660:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1053015919590187477+e30acd3a/model.neff
+2026-08-14 21:09:47.000672:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1053015919590187477+e30acd3a/model.neff
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/neuronx_distributed/parallel_layers/layers.py:531: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=False):
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/utils/checkpoint.py:85: UserWarning: None of the inputs have requires_grad=True. Gradients will be None
+  warnings.warn(
+2026-08-14 21:09:48.000042:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1457135541643811871+e30acd3a/model.neff
+2026-08-14 21:09:48.000042:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_1457135541643811871+e30acd3a/model.neff
+2026-08-14 21:09:48.000204:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_9632432644262315826+e30acd3a/model.neff
+2026-08-14 21:09:48.000206:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_9632432644262315826+e30acd3a/model.neff
+2026-08-14 21:09:48.000363:  15668  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_7036550492475764478+e30acd3a/model.neff
+2026-08-14 21:09:48.000365:  15669  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_7036550492475764478+e30acd3a/model.neff
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10798608107767455194+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10798608107767455194+e30acd3a/model.done not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+neuronxcc-2.26.6360.0+6f180f47/MODULE_10798608107767455194+e30acd3a/model.log not found in aws-neuron/optimum-neuron-cache: the corresponding graph will be recompiled. This may take up to one hour for large models.
+..........
+Compiler status PASS
+2026-08-14 21:11:17.000756:  15668  [INFO]: Compilation Successfully Completed for model.MODULE_10798608107767455194+e30acd3a.hlo_module.pb
+[dpo] FAILED -> /opt/np/repo/trn1/results/phase4/dpo_smoke.failure.json
+Traceback (most recent call last):
+  File "/opt/np/repo/shared/train/posttrain_align.py", line 748, in main
+    trainer.train()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1246, in train
+    output = self._train(resume_from_checkpoint=resume_from_checkpoint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1170, in _train
+    loss_step = self.training_step(self.model, inputs, num_items_in_batch=num_items_in_batch)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/optimum/neuron/trainers/transformers.py", line 1007, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py", line 1822, in compute_loss
+    loss, metrics = self.get_batch_loss_metrics(model, inputs, train_eval="train")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/trl/trainer/dpo_trainer.py", line 1782, in get_batch_loss_metrics
+    metrics[f"{prefix}rewards/chosen"] = self.accelerator.gather_for_metrics(chosen_rewards).mean().item()
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: RunNeuronCCImpl: error condition !(error != 400): <class 'TypeError'>: stat: path should be string, bytes, os.PathLike or integer, not NoneType
+
+Compiler status PASS
+2026-08-14 21:11:19.000861:  15669  [INFO]: Compilation Successfully Completed for model.MODULE_17129376222543598190+e30acd3a.hlo_module.pb
+E0814 21:11:29.397000 15620 torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 4) local_rank: 0 (pid: 15668) of binary: /opt/aws_neuronx_venv_pytorch_2_9/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/opt/np/repo/shared/train/posttrain_align.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-08-14_21:11:29
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 1 (local_rank: 1)
+  exitcode  : 4 (pid: 15669)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-14_21:11:29
+  host      : ip-172-31-24-108.us-west-2.compute.internal
+  rank      : 0 (local_rank: 0)
+  exitcode  : 4 (pid: 15668)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

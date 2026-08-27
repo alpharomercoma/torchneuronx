@@ -1,0 +1,1 @@
+{"tag":"residency_pair_b","box":"trn1","status":"failed","reason":"RuntimeError: Init: error condition (((rt_status) != NRT_SUCCESS)):  [General]: [NRT_FAILURE] status_code=1. Operation failed due to an unspecified error ","captured":"2026-08-12T12:17:30Z"}

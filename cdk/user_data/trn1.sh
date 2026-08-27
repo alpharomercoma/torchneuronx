@@ -62,3 +62,35 @@ EOF
 
 systemctl daemon-reload
 systemctl enable --now np-scratch.service
+
+# ---- training packages the DLAMI does not ship -----------------------------
+# These were installed BY HAND on the first box and died with its EBS volume
+# when the ASG replaced the instance. The replacement then failed every TP rung
+# in six seconds on ModuleNotFoundError: no module named 'datasets', halting the
+# suite twice. Provisioning belongs in user-data so ANY replacement box brings
+# itself up complete.
+#
+# Versions are pinned to trn1's exactly, which is also what makes the
+# cross-generation comparison a hardware comparison rather than a software one.
+#
+# numpy is installed LAST and deliberately: optimum-neuron 0.4.3 declares
+# numpy<=1.26.4, but neuronx-cc requires >=2.0 and trn1 has run every published
+# lane on 2.5.1. Installing the pinned set first lets pip resolve, then numpy is
+# forced forward. The resulting pip warning is expected and is not an error.
+V=/opt/aws_neuronx_venv_pytorch_2_9
+if [ -x "$V/bin/pip" ]; then
+  "$V/bin/pip" install --quiet \
+    optimum-neuron==0.4.3 trl==0.24.0 peft==0.17.0 datasets==5.0.1 \
+    transformers==4.57.6 accelerate==1.8.1 || echo "np: pinned install returned nonzero"
+  "$V/bin/pip" install --quiet "numpy>=2.0.0,<2.8" || echo "np: numpy bump returned nonzero"
+  "$V/bin/python" -c "import datasets,trl,peft;from optimum.neuron import NeuronSFTTrainer" \
+    && echo "np: training packages verified" \
+    || echo "np: TRAINING PACKAGES BROKEN -- lanes will fail fast at the TP probe"
+fi
+
+# PROVISIONING MARKER. common.sh writes /opt/np/.userdata-done, but that
+# fires before this box-specific script has installed its packages and
+# scratch disk -- so anything waiting on it can start too early. Each box
+# now writes its OWN marker as the last action, which is the only reliable
+# "this box is ready" signal for a launcher polling from outside.
+date -u '+%Y-%m-%dT%H:%M:%SZ' > /opt/np/.userdata-trn1-done

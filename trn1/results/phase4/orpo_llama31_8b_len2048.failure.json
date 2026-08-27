@@ -1,0 +1,38 @@
+{
+  "tag": "orpo_llama31_8b_len2048",
+  "stage": "orpo",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "RuntimeError: AllocBuffer: error condition NRT_RESOURCE == rt_status: Not enough Neuron memory on core 0 for size=262540032. Device HBM was at 15.596 GB (core 0) and 15.614 GB (core 1) of the 16 GB per-core budget when a further 250 MiB allocation was refused.",
+  "wall": "per-core HBM, at RUNTIME",
+  "why_this_is_a_result_and_not_just_a_crash": "The published SFT lane runs Llama-3.1-8B LoRA at seq 2048 on this same chip at 68.3% MFU. ORPO at max_length 2048 does not fit, because a preference step forwards chosen AND rejected -- the activation footprint of a 2048-token preference step is that of a 4096-token supervised step. Preference training therefore runs out of memory one rung of the sequence ladder EARLIER than supervised fine-tuning on identical hardware. That is a concrete capacity-planning fact, and it is the reason the ORPO ladder in this study stops at 1024.",
+  "distinct_from_the_pretrain_ceiling": "The pretraining lane hit NCC_EOOM001 at seq 2048, which is a COMPILE-time refusal by neuronx-cc (16.20 GB predicted vs a 16.00 GB limit). This is a RUNTIME refusal by the Neuron runtime: the graph compiled and the allocation failed during execution. Both are the 16 GiB per-core ceiling; they are reported by different layers and a practitioner will see different error text.",
+  "measured_hbm_at_failure": {
+    "core_0_gb": 15.596,
+    "core_1_gb": 15.614,
+    "per_core_budget_gb": 16.0,
+    "refused_allocation_bytes": 262540032
+  },
+  "config": {
+    "algo": "orpo",
+    "base_model": "meta-llama/Llama-3.1-8B",
+    "max_length": 2048,
+    "max_prompt_length": 1024,
+    "n_samples": 320,
+    "max_steps": 20,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "data_parallel_size": 1,
+    "gradient_checkpointing": true,
+    "lora_r": 16,
+    "lora_alpha": 32
+  },
+  "sequence_ladder_context": {
+    "512": "1012.5 tok/s, 25.90% MFU",
+    "1024": "1181.0 tok/s, 30.21% MFU",
+    "2048": "does not fit"
+  },
+  "captured": "2026-08-15T00:04:33Z"
+}

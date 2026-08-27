@@ -1,0 +1,19 @@
+{
+ "model": "openai/clip-vit-base-patch32",
+ "export_path": "torch_neuronx_trace_fallback",
+ "optimum_export_error": ":Dictionary inputs to traced functions must have consistent type. Found Tensor and Dict[str, Tensor]",
+ "probs": {
+  "two cats lying on a couch": 1.0,
+  "a dog playing in a park": 0.0,
+  "a plate of food on a table": 0.0,
+  "a car driving on a road": 0.0,
+  "a person riding a bicycle": 0.0
+ },
+ "top_label": "two cats lying on a couch",
+ "images_per_s_b1": 188.48,
+ "bench_iters": 100,
+ "compile_s": 176.2,
+ "load_s": 7.1,
+ "mlx_reference": "github.com/alpharomercoma/mlx-models 4_clip (Apple M5)",
+ "captured": "2026-08-05T20:40:13Z"
+}

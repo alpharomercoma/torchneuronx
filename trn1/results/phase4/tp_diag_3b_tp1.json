@@ -1,0 +1,142 @@
+{
+  "tag": "tp_diag_3b_tp1",
+  "stage": "orpo",
+  "model": "meta-llama/Llama-3.2-3B",
+  "dataset": "HuggingFaceH4/ultrafeedback_binarized:train_prefs",
+  "params_total": 3235687424,
+  "params_trainable": 22937600,
+  "params_frozen": 3212749824,
+  "params_count_method": "xla_all_reduce",
+  "params_local_total": 3235687424,
+  "params_local_trainable": 22937600,
+  "params_note": "Summed across the TP group with xm.all_reduce, so these are whole-model counts rather than this rank's shard. Parameters that are replicated rather than sharded (norms, LoRA A/B on replicated modules) are counted once per rank and so are marginally over-counted -- under 0.01% for an 8B model.",
+  "config": {
+    "algo": "orpo",
+    "base_model": "meta-llama/Llama-3.2-3B",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 200,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 1,
+    "world_size": 1,
+    "gradient_checkpointing": true,
+    "chat_template_source": "meta-llama/Llama-3.1-8B-Instruct",
+    "orpo_numerics_guard": {
+      "applied": true,
+      "algo": "orpo",
+      "nonfinite_logps": 0,
+      "nonfinite_batches": 0,
+      "clamped_values": 0
+    },
+    "orpo_numerics_guard_note": "32.10 left the ORPO NaN unexplained. trl 0.24 has two reachable NaN paths, both from a pathologically short completion: orpo_trainer.py:721 divides by loss_mask.sum(-1) (0/0 on an empty completion), and odds_ratio_loss takes log1p(-exp(mean_logp)) where bf16 rounds exp() to exactly 1.0 once mean_logp > -0.000977, giving log1p(-1) = -inf and -inf - -inf = NaN. The guard recasts to fp32 and clamps; counts above are how often each fired. Zero counts mean the run never approached either path, NOT that the guard was inactive.",
+    "reference_model": "none (ORPO is reference-free)",
+    "data_parallel_size": 1,
+    "tokens_per_step_note": "max_length * micro_batch * grad_accum * dp_size * 2. The 2x counts chosen AND rejected: a preference step forwards both sequences, so its token cost is twice an SFT step of equal length. dp_size, NOT the world size: tensor parallelism shares one micro-batch across ranks and multiplies neither batch nor tokens.",
+    "flops_caveat": "ORPO is reference-free: one forward-backward over chosen and rejected, so 6*trainable + 4*frozen applies unmodified and this MFU is directly comparable to the SFT lanes.",
+    "trainer_construction": "TRL trainer re-based onto optimum-neuron NeuronTrainer via type(name,(NeuronTrainer,),Trainer.__dict__.copy()), mirroring how optimum-neuron builds NeuronSFTTrainer"
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "tokens_per_optimizer_step": 8192,
+  "steps_recorded": 10,
+  "warmup_steps_excluded": 10,
+  "loss_finite_steps": 10,
+  "loss_nonfinite_steps": 0,
+  "loss_first_nonfinite_step": null,
+  "loss_numerically_valid": true,
+  "loss_validity_note": null,
+  "first_step_ms": 790723.77,
+  "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache collapses this toward the median; a cold cache leaves tens of minutes in it.",
+  "median_step_ms": null,
+  "compile_s": null,
+  "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
+  "train_wall_s": 1573.78,
+  "final_loss": 19.4038,
+  "loss_trace": [
+    {
+      "step": 1,
+      "loss": 23.8842,
+      "ms": 790723.77,
+      "warmup": true
+    },
+    {
+      "step": 2,
+      "loss": 21.7562,
+      "ms": 702395.09,
+      "warmup": true
+    },
+    {
+      "step": 3,
+      "loss": 23.4681,
+      "ms": 10099.87,
+      "warmup": true
+    },
+    {
+      "step": 4,
+      "loss": 21.5556,
+      "ms": 10089.45,
+      "warmup": true
+    },
+    {
+      "step": 5,
+      "loss": 19.5806,
+      "ms": 10115.83,
+      "warmup": true
+    },
+    {
+      "step": 6,
+      "loss": 19.4097,
+      "ms": 10078.75,
+      "warmup": true
+    },
+    {
+      "step": 7,
+      "loss": 15.7892,
+      "ms": 10070.26,
+      "warmup": true
+    },
+    {
+      "step": 8,
+      "loss": 21.7756,
+      "ms": 10074.51,
+      "warmup": true
+    },
+    {
+      "step": 9,
+      "loss": 20.3444,
+      "ms": 10066.65,
+      "warmup": true
+    },
+    {
+      "step": 10,
+      "loss": 19.4038,
+      "ms": 10067.78,
+      "warmup": true
+    }
+  ],
+  "tokens_per_s_end_to_end": 52.1,
+  "tokens_per_s_note": "tokens_per_s is the steady-state median, excluding the compile-bearing warmup steps -- it describes the chip. tokens_per_s_end_to_end includes compile and is the wall-clock a practitioner actually experiences.",
+  "peak_device_mem_mib": null,
+  "peak_device_mem_note": "Not available from torch on XLA. Read mem_used_mib from the matching telemetry CSV (1 Hz neuron-monitor). Deliberately null rather than estimated."
+}

@@ -1,0 +1,11 @@
+{
+  "model_key": "llama31_dolly_trn2",
+  "config": "short",
+  "model_id": "/opt/np/models/llama31-8b-dolly-merged-trn2",
+  "boot_wall_s": 602,
+  "cache_dir_size_mb_before": 1986,
+  "cache_dir_size_mb_after": 1986,
+  "warm": false,
+  "server_pid": 18727,
+  "captured": "2026-08-06T08:27:03Z"
+}

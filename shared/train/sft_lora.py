@@ -41,15 +41,27 @@ script re-execs ITSELF under `python -m torch.distributed.run
 --nproc_per_node=2` when WORLD_SIZE is absent. Arguments are parsed BEFORE the
 re-exec so a typo fails once, in one process, instead of twice inside torchrun.
 
-WHY nproc_per_node=2 and tensor_parallel_size=2
------------------------------------------------
-trn1.2xlarge carries one Trainium1 device = 2 NeuronCores. One rank per core
-gives world=2; spending the whole world on tensor parallelism gives TP=2, DP=1.
-Llama 3.1 8B in BF16 is ~16 GiB of weights against 32 GiB of device HBM -- it
-would nominally fit on one core, but activations, gradients and optimizer state
-would not, so TP=2 is what makes the primary lane run at all. DP=1 is therefore
-a consequence of the instance, not a tuning choice, and it is why the token
-accounting below has no data-parallel multiplier on this box.
+WHY world == TP, AND WHY IT IS A PROFILE
+----------------------------------------
+One rank per logical NeuronCore, and the whole world spent on tensor
+parallelism, so DP=1. That is a consequence of the instance, not a tuning
+choice, and it is why the token accounting below has no data-parallel
+multiplier on either box.
+
+  trn1.2xlarge  1x Trainium1, 2x NeuronCore-v2  -> world 2, TP=2, 16 GiB/core
+  trn2.3xlarge  1x Trainium2, 8x NeuronCore-v3 grouped into 4 logical cores
+                at LNC=2 (the Neuron default)   -> world 4, TP=4, 24 GiB/core
+
+Llama 3.1 8B in BF16 is ~16 GiB of weights; it would nominally fit on one trn1
+core, but activations, gradients and optimizer state would not, so TP is what
+makes the primary lane run at all.
+
+These live in DEVICE_PROFILES, selected by --device-profile, else NP_DEVICE,
+else the instance type from IMDS, else trn1. The profile also carries the peak
+BF16 FLOP/s that MFU is divided by -- so an MFU number can never be silently
+compared against the wrong chip. --nproc-per-node and --tensor-parallel-size
+override it, which is what makes the trn2 TP ladder a flag change rather than
+an edit to this file mid-study.
 
 WHY THE FLOPS FORMULA IS NOT 6N
 -------------------------------
@@ -111,10 +123,89 @@ DEFAULT_WARMUP_STEPS = 5
 DEFAULT_ADAPTER_ROOT = "/opt/np/models/adapters"
 DEFAULT_CACHE_DIR = "/opt/np/cache/neuron-compile-cache"
 
-# trn1.2xlarge: one Trainium1 = 2 NeuronCores. World = TP, so DP = 1.
-NPROC_PER_NODE = 2
-TENSOR_PARALLEL_SIZE = 2
-PIPELINE_PARALLEL_SIZE = 1
+# One profile per accelerator generation this study runs on. Everything that
+# differs between Trainium1 and Trainium2 lives here and nowhere else, so a
+# result JSON always carries the denominator its MFU was computed against.
+#
+# World = TP on both boxes (one rank per logical NeuronCore, DP = 1): the point
+# of this study is per-chip efficiency, so the whole chip goes to one model.
+#
+# peak_bf16_flops is per CHIP, dense BF16, because TP spreads every token
+# across all of the chip's cores.
+#
+# TWO DENOMINATORS, BOTH REPORTED -- AWS's own sources disagree for Trainium1
+# ---------------------------------------------------------------------------
+# The Trainium1 ARCHITECTURE page states "190 FP16/BF16/cFP8/TF32 TFLOPS" per
+# chip. AWS separately markets trn1.32xlarge at 3.4 PFLOP/s, which over 16
+# devices is 212.5 -> the 210e12 this project used for every Phase-1/2 number.
+# 190 x 16 = 3.04 PF, so the two AWS figures cannot both be right.
+#
+# For Trainium2 there is no conflict: the arch page says 667/chip and
+# 667 x 16 = 10.7 PF agrees with the instance-level spec.
+#
+# That asymmetry is the actual bug. Using the INSTANCE figure for trn1 and the
+# ARCH figure for trn2 mixes sources in the direction that flatters the newer
+# chip -- it understates trn1's MFU and shrinks the peak ratio trn2 has to beat
+# from 3.51x to 3.18x. So every lane now reports MFU under BOTH conventions:
+#
+#   primary ("arch")     trn1 190, trn2 667  -> peak ratio 3.51x
+#   alt     ("instance") trn1 210, trn2 667  -> peak ratio 3.18x, and what
+#                                               REPORT.md's published 68.3% /
+#                                               82.7% were computed against
+#
+# A reader must be able to see the denominator, not just the ratio. Neither
+# figure is "the" truth; what matters is that the two boxes are divided by
+# numbers drawn from the same source.
+DEVICE_PROFILES = {
+    "trn1": {
+        "instance_type": "trn1.2xlarge",
+        "nproc": 2,
+        "tp": 2,
+        "pp": 1,
+        "peak_bf16_flops": 190e12,
+        "peak_source": ("Neuron arch page arch/neuron-hardware/trainium: "
+                        "190 FP16/BF16/cFP8/TF32 TFLOPS per chip"),
+        "peak_bf16_flops_alt": 210e12,
+        "peak_source_alt": ("trn1.32xlarge marketed at 3.4 PFLOP/s / 16 "
+                            "devices = 212.5, rounded to 210 -- the "
+                            "denominator behind every published Phase-1/2 MFU"),
+        "hbm_gib_per_core": 16,
+        "hbm_bandwidth_gbs": 820,
+        "logical_nc_config": None,   # LNC does not exist on NeuronCore-v2
+        "note": ("trn1.2xlarge: 1x Trainium1, 2x NeuronCore-v2, 32 GiB HBM "
+                 "(16 GiB per core) at 820 GB/s. 190 TFLOP/s BF16 per chip "
+                 "(arch page); 210 under the instance-derived convention."),
+    },
+    "trn2": {
+        "instance_type": "trn2.3xlarge",
+        "nproc": 4,
+        "tp": 4,
+        "pp": 1,
+        "peak_bf16_flops": 667e12,
+        "peak_source": ("Neuron arch page arch/neuron-hardware/trainium2: "
+                        "667 BF16/FP16/TF32 TFLOPS per chip"),
+        # No conflicting source for Trainium2: 667 x 16 = 10.7 PF matches the
+        # instance spec, so both conventions land on the same number.
+        "peak_bf16_flops_alt": 667e12,
+        "peak_source_alt": ("same figure; arch and instance-level specs agree "
+                            "for Trainium2"),
+        "hbm_gib_per_core": 24,
+        "hbm_bandwidth_gbs": 2900,
+        "logical_nc_config": 2,      # Neuron default on Trainium2
+        "note": ("trn2.3xlarge: 1x Trainium2, 8x NeuronCore-v3 grouped into 4 "
+                 "logical cores at LNC=2 (the Neuron default), 96 GiB HBM "
+                 "(24 GiB per logical core) at 2.9 TB/s. 667 TFLOP/s BF16 "
+                 "per chip; 1299 FP8 and 2563 sparse are NOT used here."),
+    },
+}
+DEFAULT_DEVICE = "trn1"
+
+# Module-level aliases kept for the trn1 lanes published in Phase 1/2: those
+# numbers must stay byte-reproducible, so the historical names still resolve to
+# the historical values. New code reads the profile.
+NPROC_PER_NODE = DEVICE_PROFILES[DEFAULT_DEVICE]["nproc"]
+TENSOR_PARALLEL_SIZE = DEVICE_PROFILES[DEFAULT_DEVICE]["tp"]
+PIPELINE_PARALLEL_SIZE = DEVICE_PROFILES[DEFAULT_DEVICE]["pp"]
 
 # LoRA target modules: every projection in the transformer block. Attention
 # only (q,k,v,o) trains ~half as many parameters and reliably underperforms on
@@ -124,12 +215,10 @@ LORA_TARGET_MODULES = [
     "gate_proj", "up_proj", "down_proj",
 ]
 
-# One Trainium1 device, dense BF16. AWS quotes trn1.32xlarge at 3.4 PFLOP/s
-# BF16 across 16 Trainium devices -> 212.5 TFLOP/s per device; 210e12 is the
-# rounded per-device figure used consistently across this study. MFU is
-# measured against the WHOLE device because TP=2 means both NeuronCores
-# cooperate on every token.
-PEAK_BF16_FLOPS = 210e12
+# Historical alias for the Trainium1 peak; see DEVICE_PROFILES above. Kept so
+# throughput_metrics() has the same default it had when Phase-1 numbers were
+# recorded, and so a caller that never heard of profiles still gets trn1.
+PEAK_BF16_FLOPS = DEVICE_PROFILES[DEFAULT_DEVICE]["peak_bf16_flops"]
 
 # Steps excluded from the median. Step 1 pays graph tracing/compile; the next
 # few pay cache warm-up and dataloader spin-up.
@@ -190,15 +279,63 @@ def build_parser():
     ap.add_argument("--lr", type=float, default=DEFAULT_LR)
     ap.add_argument("--seed", type=int, default=DEFAULT_SEED)
     ap.add_argument("--dataset", default=DEFAULT_DATASET)
+    ap.add_argument("--holdout-frac", type=float, default=0.0,
+                    help=("Fraction of the dataset held out and evaluated "
+                          "BEFORE and AFTER training. Every number this study "
+                          "reports otherwise measures speed; none of them "
+                          "shows the model actually learned. Held-out loss is "
+                          "the minimum credible answer to 'did it train, or "
+                          "just run fast?'. 0 disables (the published lanes)."))
+    ap.add_argument("--holdout-split-seed", type=int, default=20260805,
+                    help="Fixed split seed so both chips hold out the SAME rows.")
+    ap.add_argument("--data-seed", type=int, default=None,
+                    help=("Separate sampler seed. --seed alone did not change "
+                          "the loss trajectory at all on this stack (three "
+                          "trn1 seeds produced bit-identical loss), so data "
+                          "order is pinned elsewhere -- probably by packing."))
+    ap.add_argument("--synthetic-data", type=int, default=0, metavar="N",
+                    help=("DATALOADER ISOLATION. Replace the dataset with N "
+                          "rows of random token IDs, pre-tokenised to exactly "
+                          "--seq-len, with no formatter, no packing and no Hub "
+                          "download. Compiled graph shapes are unchanged so "
+                          "nothing recompiles. Isolates device throughput from "
+                          "host-side dataloader cost -- the leading hypothesis "
+                          "for why trn2 is 1.20x at seq 2048 but 1.92x at "
+                          "4096. THE LOSS FROM THIS LANE IS MEANINGLESS and "
+                          "the result JSON marks it so. 0 disables (every "
+                          "published lane)."))
+    ap.add_argument("--dataset-fields", default=None,
+                    help=("Remap columns onto the Dolly schema the formatter "
+                          "expects, e.g. 'context=input,response=output' for "
+                          "tatsu-lab/alpaca. Without this a dataset with "
+                          "different column names raises KeyError inside the "
+                          "formatter, which would look like a training bug "
+                          "rather than a schema mismatch."))
     ap.add_argument("--adapter-out", default=None,
                     help=f"default {DEFAULT_ADAPTER_ROOT}/<tag>")
-    ap.add_argument("--tensor-parallel-size", type=int,
-                    default=TENSOR_PARALLEL_SIZE)
+    ap.add_argument("--tensor-parallel-size", type=int, default=None,
+                    help="default: the device profile's tp (trn1 2, trn2 4)")
+    ap.add_argument("--device-profile", default=None,
+                    choices=sorted(DEVICE_PROFILES),
+                    help="accelerator profile: sets ranks, TP and the peak "
+                         "FLOP/s that MFU is measured against. Default: "
+                         "NP_DEVICE, else the instance type from IMDS, else "
+                         f"{DEFAULT_DEVICE}")
+    ap.add_argument("--nproc-per-node", type=int, default=None,
+                    help="override the profile's rank count (one rank per "
+                         "logical NeuronCore). Used by the trn2 TP ladder")
     ap.add_argument("--attn-impl", default="flash_attention_2",
                     help="flash_attention_2 needs seq-len to be a multiple of "
                          "2048; pass eager to disable")
     ap.add_argument("--no-packing", action="store_true",
                     help="disable example packing (packing is ON by default)")
+    ap.add_argument("--no-lora", action="store_true",
+                    help=("Full fine-tune: update every weight instead of a "
+                          "LoRA adapter. Only reachable on Trainium2 -- the "
+                          "optimizer state alone (fp32 master + 2 moments = "
+                          "12 B/param) exceeds trn1's 16 GiB per core for "
+                          "anything past ~1B. Changes the FLOPs accounting to "
+                          "dense 6N, which is handled in run()."),)
     ap.add_argument("--no-gradient-checkpointing", action="store_true",
                     help="disable activation recomputation (8B models then "
                          "exceed the 16 GB/core HBM limit: NCC_EOOM001)")
@@ -232,6 +369,35 @@ def dolly_messages(example, system_prompt=DOLLY_SYSTEM_PROMPT):
         {"role": "user", "content": user_content},
         {"role": "assistant", "content": example["response"]},
     ]
+
+
+def format_messages(example, tokenizer):
+    """Conversational row ({"messages": [{role, content}, ...]}) -> one string.
+
+    WHY THIS EXISTS
+    ---------------
+    format_dolly() expects instruction/context/response columns, and
+    --dataset-fields only RENAMES columns, so it cannot reach a dataset whose
+    unit is a message LIST. Tulu 3, SmolTalk, OpenHermes and every modern SFT
+    mixture ship `messages`; dolly-15k's flat triple is the 2023 shape.
+
+    Rendering goes through the tokenizer's OWN chat template for the same
+    reason format_dolly does: the merged adapter is served on inf2 later and
+    must be prompted with the template that ships with the tokenizer. Training
+    on one template and serving on another is a silent quality loss.
+    """
+    msgs = example["messages"]
+    if hasattr(tokenizer, "chat_template") and tokenizer.chat_template:
+        return tokenizer.apply_chat_template(msgs, tokenize=False)
+    # Same fallback shape as format_dolly's, so the two lanes stay comparable
+    # when a tokenizer ships no template.
+    parts = []
+    for m in msgs:
+        role = m.get("role", "user")
+        head = {"user": "### Instruction", "assistant": "### Answer",
+                "system": "### System"}.get(role, f"### {role.title()}")
+        parts.append(f"{head}\n{m.get('content', '')}")
+    return "\n\n".join(parts)
 
 
 def format_dolly(example, tokenizer, system_prompt=DOLLY_SYSTEM_PROMPT):
@@ -284,26 +450,120 @@ def lora_flops_per_token(params_trainable, params_frozen):
     return 6.0 * params_trainable + 4.0 * params_frozen
 
 
+def attention_flops_per_token(n_layers, hidden_size, seq_len,
+                              gradient_checkpointing=False):
+    """Sequence-dependent attention FLOPs per token -- the term 6N omits.
+
+    The parameter-count formula (6*trainable + 4*frozen) covers every GEMM
+    whose cost scales with WEIGHTS. It does not cover the two matmuls whose
+    cost scales with SEQUENCE LENGTH: scores = Q @ K^T and context = A @ V.
+    Per token per layer those are 2*seq*d each, so forward is
+
+        4 * n_layers * seq_len * hidden_size
+
+    and training is ~3x forward (backward is ~2x), plus another forward when
+    activations are recomputed.
+
+    WHY THIS MATTERS HERE, AND ONLY HERE
+    ------------------------------------
+    At seq 2048 on Llama 3.1 8B this is ~6.6% of the parameter term -- small
+    enough that Phase 1/2 ignoring it was defensible. It grows LINEARLY with
+    sequence length while the parameter term stays flat:
+
+        seq  2048   ~7%      seq  8192   ~27%
+        seq  4096   ~13%     seq 16384   ~53%
+
+    The context ladder is the headline of Phase 3, so by seq 16384 the
+    published convention would understate FLOPs -- and therefore MFU -- by
+    roughly a third. This is reported as an ADDITIONAL field rather than folded
+    into flops_per_token, because changing the primary number would silently
+    restate every Phase-1/2 result and destroy comparability with trn1.
+
+    GQA note: grouped-query attention shrinks the K/V PROJECTIONS (already in
+    the parameter term) but not the score/context matmuls, which still run at
+    full head width. So this term is unaffected by the KV-head count.
+    """
+    if not (n_layers and hidden_size and seq_len):
+        return None
+    fwd = 4.0 * n_layers * seq_len * hidden_size
+    return fwd * (4.0 if gradient_checkpointing else 3.0)
+
+
+def provenance(args):
+    """Everything needed to reconstruct this run's inputs, not just name them."""
+    import subprocess
+    def sh(cmd):
+        try:
+            return subprocess.check_output(cmd, shell=True, text=True,
+                                           stderr=subprocess.DEVNULL).strip()
+        except Exception:
+            return None
+    return {
+        "git_commit": sh("git -C /opt/np/repo rev-parse HEAD"),
+        "git_dirty": bool(sh("git -C /opt/np/repo status --porcelain")),
+        "argv": sys.argv,
+        "dataset": args.dataset,
+        "dataset_fields": args.dataset_fields,
+        "holdout_frac": args.holdout_frac,
+        "holdout_split_seed": args.holdout_split_seed,
+        "model": args.model,
+        "seed": args.seed,
+        "data_seed": args.data_seed,
+    }
+
+
 def throughput_metrics(params_trainable, params_frozen, tokens_per_s,
                        peak_flops=PEAK_BF16_FLOPS,
-                       gradient_checkpointing=False):
+                       gradient_checkpointing=False,
+                       peak_flops_alt=None):
     """(trainable, frozen, tok/s) -> flops_per_token, TFLOP/s, MFU%. Pure.
 
     With activation recomputation every parameter pays one extra forward
     GEMM (+2 FLOPs/param/token): frozen 4 -> 6, trainable 6 -> 8. Same
     convention as the GPU study's x4/3 checkpointing adjustment, restated
     for the LoRA-split accounting.
+
+    peak_flops_alt, when given, yields a second MFU under the other published
+    denominator. AWS's arch page and instance marketing disagree for Trainium1
+    (190 vs 210 TFLOP/s), so a single MFU number would hide which one it used --
+    see DEVICE_PROFILES. tflops is denominator-independent and is the number to
+    trust when the two disagree.
     """
     fpt = lora_flops_per_token(params_trainable, params_frozen)
     if gradient_checkpointing:
         fpt += 2.0 * (params_trainable + params_frozen)
     achieved = fpt * tokens_per_s
-    return {
+    out = {
         "flops_per_token": fpt,
         "tflops": achieved / 1e12,
         "mfu_pct": 100.0 * achieved / peak_flops,
         "gradient_checkpointing": bool(gradient_checkpointing),
     }
+    out["mfu_pct_alt"] = (
+        100.0 * achieved / peak_flops_alt if peak_flops_alt else None)
+
+    # MFU ABOVE 100% IS PHYSICALLY IMPOSSIBLE. It means the measurement is
+    # wrong, not that the chip is fast, and it must never reach a chart.
+    #
+    # This fired for real: a control at grad_accum=4 reported 146.7%. The cause
+    # is that gradient accumulation is UNROLLED INTO THE COMPILED GRAPH on this
+    # stack (changing grad_accum triggers a full recompile), and the per-step
+    # timer captures a different fraction of the deferred XLA work at different
+    # accumulation depths. The same micro-batch shape measured 1147 ms/micro-
+    # batch at accum 8 and 714 ms at accum 4. Steady-state throughput is
+    # therefore NOT comparable across grad_accum settings, and the impossible
+    # MFU is the only signal that says so out loud.
+    if out["mfu_pct"] > 100.0:
+        out["mfu_impossible"] = {
+            "measured_mfu_pct": round(out["mfu_pct"], 3),
+            "why": ("MFU > 100% cannot be physical. The steady-state step timer "
+                    "under-measures at this configuration -- most likely a "
+                    "grad_accum different from the published lanes, which "
+                    "recompiles the graph and changes how much deferred XLA "
+                    "work lands inside the timed window."),
+            "use_instead": "tokens_per_s_end_to_end / mfu_pct_end_to_end",
+        }
+    return out
 
 
 def make_kwarg_tolerant(checkpoint_fn, is_tensor):
@@ -495,6 +755,74 @@ def world_size(env=None):
         return 1
 
 
+def detect_device_key(env=None, instance_type=None):
+    """Pick a DEVICE_PROFILES key. Pure given its inputs, so it is unit-tested.
+
+    Order: explicit instance type (from IMDS, passed in by the caller) beats
+    NP_DEVICE in the environment, which beats the trn1 default. The default is
+    trn1 rather than "fail loudly" because every Phase-1/2 lane ran without
+    this flag existing and must keep reproducing byte-for-byte.
+    """
+    env = os.environ if env is None else env
+    if instance_type:
+        family = str(instance_type).split(".")[0].lower()
+        if family in DEVICE_PROFILES:
+            return family
+    requested = (env.get("NP_DEVICE") or "").strip().lower()
+    if requested in DEVICE_PROFILES:
+        return requested
+    return DEFAULT_DEVICE
+
+
+def read_imds_instance_type(timeout=1.0):
+    """Ask IMDSv2 for this box's instance type, or None. Never raises.
+
+    Best-effort only: a wrong answer here would silently change the MFU
+    denominator, so every caller also honours --device-profile / NP_DEVICE,
+    and the resolved profile is written into the result JSON for audit.
+    """
+    try:
+        import urllib.request
+
+        def _get(url, headers, method="GET"):
+            req = urllib.request.Request(url, headers=headers, method=method)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode().strip()
+
+        token = _get("http://169.254.169.254/latest/api/token",
+                     {"X-aws-ec2-metadata-token-ttl-seconds": "60"}, "PUT")
+        return _get("http://169.254.169.254/latest/meta-data/instance-type",
+                    {"X-aws-ec2-metadata-token": token})
+    except Exception:
+        return None
+
+
+def resolve_device_profile(args, env=None, instance_type=None):
+    """(args, env) -> a DEVICE_PROFILES entry with CLI overrides applied.
+
+    Returns a fresh dict so callers can stash it straight into the result JSON.
+    --nproc-per-node and --tensor-parallel-size override the profile; that is
+    what makes the trn2 TP ladder (4 -> 2 -> 8 at LNC=1) a flag change rather
+    than an edit to this file mid-study.
+    """
+    key = getattr(args, "device_profile", None)
+    if key:
+        key = key.strip().lower()
+        if key not in DEVICE_PROFILES:
+            raise SystemExit(f"unknown --device-profile {key!r}; "
+                             f"known: {sorted(DEVICE_PROFILES)}")
+    else:
+        key = detect_device_key(env=env, instance_type=instance_type)
+
+    profile = dict(DEVICE_PROFILES[key])
+    profile["device_profile"] = key
+    if getattr(args, "nproc_per_node", None):
+        profile["nproc"] = int(args.nproc_per_node)
+    if getattr(args, "tensor_parallel_size", None):
+        profile["tp"] = int(args.tensor_parallel_size)
+    return profile
+
+
 def torchrun_argv(script_path, argv, nproc_per_node=NPROC_PER_NODE):
     """Build the `python -m torch.distributed.run ...` argv. Pure, so the
     re-exec command is testable without ever executing it.
@@ -504,12 +832,21 @@ def torchrun_argv(script_path, argv, nproc_per_node=NPROC_PER_NODE):
     matters on a DLAMI where several Neuron venvs are on the box and PATH order
     decides which `torchrun` you get.
     """
-    return [sys.executable, "-m", "torch.distributed.run",
-            f"--nproc_per_node={nproc_per_node}",
-            os.path.abspath(script_path)] + list(argv)
+    # MASTER_PORT must be overridable. torch.distributed.run defaults to 29500,
+    # so TWO concurrent jobs on one host always collide -- the second dies with
+    # EADDRINUSE before it starts. That silently broke the multi-model residency
+    # lane: one side failed, the survivor ran ALONE, and its "no interference"
+    # result was measuring an empty chip. Any lane that runs two jobs at once
+    # must give them different ports.
+    port = os.environ.get("NP_MASTER_PORT")
+    cmd = [sys.executable, "-m", "torch.distributed.run",
+           f"--nproc_per_node={nproc_per_node}"]
+    if port:
+        cmd.append(f"--master_port={port}")
+    return cmd + [os.path.abspath(script_path)] + list(argv)
 
 
-def apply_neuron_env(env=None, cache_dir=None):
+def apply_neuron_env(env=None, cache_dir=None, profile=None):
     """Set the Neuron compiler/runtime env vars, without clobbering the user's.
 
     Must run before torch_xla is imported anywhere, hence before the re-exec:
@@ -518,6 +855,11 @@ def apply_neuron_env(env=None, cache_dir=None):
     env = os.environ if env is None else env
     for key, value in NEURON_ENV.items():
         env.setdefault(key, value)
+    # Logical NeuronCore config exists only from Trainium2 on. setdefault, so
+    # the TP ladder can force LNC=1 from the driver without editing code.
+    lnc = (profile or {}).get("logical_nc_config")
+    if lnc:
+        env.setdefault("NEURON_LOGICAL_NC_CONFIG", str(lnc))
     cache = cache_dir or env.get("NEURON_COMPILE_CACHE_URL") or DEFAULT_CACHE_DIR
     # NEURON_COMPILE_CACHE_URL is the repo-wide convention -- shared/bin/
     # sync_neuron_cache.sh syncs exactly this directory to S3, so a replaced
@@ -531,25 +873,41 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     args = build_parser().parse_args(argv)
 
-    cache_dir = apply_neuron_env()
+    # IMDS is only worth asking before the re-exec: the children inherit
+    # NP_DEVICE below, so exactly one HTTP call happens per lane.
+    if not is_distributed_launch() and not args.device_profile \
+            and not os.environ.get("NP_DEVICE"):
+        detected = read_imds_instance_type()
+        if detected:
+            print(f"[sft_lora] IMDS instance-type: {detected}", flush=True)
+    else:
+        detected = None
+    profile = resolve_device_profile(args, instance_type=detected)
+
+    cache_dir = apply_neuron_env(profile=profile)
     random.seed(args.seed)
 
     # Re-exec under torchrun if we were launched as plain `python`. Arguments
     # are already validated at this point, so a bad flag has failed once rather
     # than twice inside the elastic launcher.
     if not is_distributed_launch():
-        cmd = torchrun_argv(__file__, argv)
-        print(f"[sft_lora] no WORLD_SIZE in env -- re-exec under torchrun "
-              f"(--nproc_per_node={NPROC_PER_NODE}, one rank per NeuronCore)",
-              flush=True)
+        # Pin the resolved profile for the children so they do not re-detect
+        # and cannot disagree with the parent about the MFU denominator.
+        os.environ["NP_DEVICE"] = profile["device_profile"]
+        cmd = torchrun_argv(__file__, argv, nproc_per_node=profile["nproc"])
+        print(f"[sft_lora] profile={profile['device_profile']} "
+              f"({profile['instance_type']}) -- re-exec under torchrun "
+              f"(--nproc_per_node={profile['nproc']}, one rank per logical "
+              f"NeuronCore)", flush=True)
         print(f"[sft_lora] {' '.join(cmd)}", flush=True)
         os.execv(sys.executable, cmd)
 
-    return run(args, cache_dir)
+    return run(args, cache_dir, profile)
 
 
-def run(args, cache_dir):
+def run(args, cache_dir, profile=None):
     """The distributed body. Every heavy import lives below this line."""
+    profile = profile or resolve_device_profile(args)
     import torch
     from datasets import load_dataset
     from peft import LoraConfig
@@ -569,7 +927,10 @@ def run(args, cache_dir):
 
     adapter_out = resolve_adapter_out(args.adapter_out, args.tag)
     packing = not args.no_packing
-    tp_size = args.tensor_parallel_size
+    tp_size = profile["tp"]
+    pp_size = profile["pp"]
+    peak_flops = profile["peak_bf16_flops"]
+    peak_flops_alt = profile.get("peak_bf16_flops_alt")
     dp_size = max(1, world // tp_size)
     max_steps = args.max_steps if args.max_steps is not None else -1
 
@@ -601,7 +962,7 @@ def run(args, cache_dir):
         # dataclass: the field is `tensor_parallel_size`, and it partitions the
         # torchrun world -- it does not create one.
         tensor_parallel_size=tp_size,
-        pipeline_parallel_size=PIPELINE_PARALLEL_SIZE,
+        pipeline_parallel_size=pp_size,
         logging_steps=1,          # every optimizer step; the trace needs them all
         # Default: one explicit save at the end. Track C4 overrides to timed
         # periodic saves -- checkpoint cost is a production ops number.
@@ -610,6 +971,11 @@ def run(args, cache_dir):
         save_total_limit=1,
         report_to=[],             # no wandb/tensorboard phoning home from the box
         seed=args.seed,
+        # HF falls back to `seed` when data_seed is None. Passing it explicitly
+        # is the one lever left for varying data order; if the trajectory is
+        # STILL bit-identical, packing has pinned the order and that is the
+        # finding, not a bug to keep chasing.
+        **({"data_seed": args.data_seed} if args.data_seed is not None else {}),
         disable_tqdm=True,        # log files, not a redrawn progress bar
     )
 
@@ -626,7 +992,10 @@ def run(args, cache_dir):
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     ensure_pad_token(tokenizer)
 
-    lora_config = LoraConfig(
+    # --no-lora -> peft_config=None -> NeuronSFTTrainer full fine-tunes.
+    # The LoRA lanes freeze >99% of weights; a full FT updates all of them,
+    # which changes both the memory profile and the FLOPs accounting below.
+    lora_config = None if args.no_lora else LoraConfig(
         r=args.lora_r,
         lora_alpha=args.lora_alpha,
         lora_dropout=args.lora_dropout,
@@ -635,7 +1004,78 @@ def run(args, cache_dir):
         task_type="CAUSAL_LM",
     )
 
-    dataset = load_dataset(args.dataset, split="train")
+    if args.synthetic_data:
+        # ---- DATALOADER ISOLATION LANE ------------------------------------
+        # WHY: Trainium2 is only 1.20x faster than Trainium1 at seq 2048 but
+        # 1.92x at seq 4096. One explanation is that at short context the step
+        # is not device-bound at all -- host-side work (tokenise, pack, collate,
+        # copy to device) takes a fixed wall-clock toll that the faster chip
+        # cannot shrink, so it eats a larger FRACTION of trn2's shorter step.
+        #
+        # This lane tests that by deleting the host work. Rows are random token
+        # IDs generated once, already the exact seq_len, already carrying
+        # attention_mask and labels. No Hub download, no tokenisation, no
+        # packing, no formatter. The compiled graph sees IDENTICAL shapes, so
+        # the NEFF cache hits and nothing recompiles.
+        #
+        # If tokens/s jumps, host work was the bottleneck and the 1.20x is a
+        # dataloader artifact. If it does not move, the chip really was
+        # saturated and 1.20x is the honest device-level answer at this shape.
+        # Either outcome is publishable; that is why the lane is worth running.
+        #
+        # The loss from this lane is MEANINGLESS -- random tokens teach nothing.
+        # It is a throughput probe only, and the result JSON says so.
+        from datasets import Dataset as _HFDataset
+
+        rng = random.Random(args.data_seed if args.data_seed is not None else 20260805)
+        vocab = int(getattr(tokenizer, "vocab_size", 32000) or 32000)
+        n_rows = int(args.synthetic_data)
+        say(f"  SYNTHETIC DATA     : {n_rows} rows x {args.seq_len} random ids "
+            f"(vocab {vocab}) -- throughput probe, loss is meaningless")
+        rows = []
+        for _ in range(n_rows):
+            ids = [rng.randrange(vocab) for _ in range(args.seq_len)]
+            rows.append({"input_ids": ids,
+                         "attention_mask": [1] * args.seq_len,
+                         "labels": list(ids)})
+        dataset = _HFDataset.from_list(rows)
+        packing = False          # rows are already exactly seq_len
+    else:
+        dataset = load_dataset(args.dataset, split="train")
+        if args.dataset_fields:
+            # target=source pairs; rename so format_dolly() keeps working
+            # unchanged. Doing this here rather than branching the formatter
+            # keeps every lane on ONE prompt template -- a different template
+            # would confound any cross-dataset comparison with a formatting
+            # change.
+            for pair in args.dataset_fields.split(","):
+                target, _, source = pair.partition("=")
+                target, source = target.strip(), source.strip()
+                if source and source in dataset.column_names:
+                    dataset = dataset.rename_column(source, target)
+            if "context" not in dataset.column_names:
+                dataset = dataset.add_column("context", [""] * len(dataset))
+
+    # ---- deterministic held-out split -------------------------------------
+    # Same split_seed on both chips => byte-identical held-out rows, so the two
+    # boxes are scored on the same examples. Split BEFORE packing: packing
+    # concatenates examples, so splitting after it would leak train content
+    # into eval sequences.
+    #
+    # Skipped entirely for synthetic data: holding out random tokens would
+    # produce a held-out loss with no meaning, and reporting one would be worse
+    # than reporting none.
+    eval_dataset = None
+    if args.synthetic_data and args.holdout_frac:
+        say("  holdout SKIPPED    : synthetic rows are random tokens; "
+            "a held-out loss on them would be meaningless")
+    elif args.holdout_frac and args.holdout_frac > 0:
+        split = dataset.train_test_split(test_size=args.holdout_frac,
+                                         seed=args.holdout_split_seed)
+        dataset, eval_dataset = split["train"], split["test"]
+        say(f"  holdout            : {len(eval_dataset)} rows "
+            f"({args.holdout_frac:.0%}, split seed {args.holdout_split_seed}); "
+            f"train {len(dataset)}")
 
     sft_config = build_sft_config(NeuronSFTConfig, training_args,
                                   seq_len=args.seq_len, packing=packing)
@@ -699,6 +1139,9 @@ def run(args, cache_dir):
     metrics_cb = StepMetrics()
     trainer = build_trainer(NeuronSFTTrainer, sft_config, model, lora_config,
                             tokenizer, dataset, args, metrics_cb)
+    if args.no_lora:
+        say("  full fine-tune     : LoRA disabled, every weight trains "
+            "(dense 6N accounting)")
 
     # The checkpoint-kwargs shim MUST be live before the first forward: patch
     # the imported symbol in every optimum-neuron modeling module, plus any
@@ -754,7 +1197,7 @@ def run(args, cache_dir):
         say("  params trainable   : unknown (degenerate recount; MFU nulled)")
     say(f"  grad checkpointing : {not args.no_gradient_checkpointing}")
     say(f"  parallelism        : world={world} tp={tp_size} dp={dp_size} pp="
-        f"{PIPELINE_PARALLEL_SIZE}")
+        f"{pp_size}")
     say(f"  lora               : r={args.lora_r} alpha={args.lora_alpha} "
         f"dropout={args.lora_dropout}")
     say(f"  lora targets       : {','.join(LORA_TARGET_MODULES)}")
@@ -777,9 +1220,102 @@ def run(args, cache_dir):
     say("")
 
     # ------------------------------------------------------------- train
+    # ---- held-out loss BEFORE training ------------------------------------
+    # Measured before and after so the reported quantity is an IMPROVEMENT on
+    # unseen data, not an absolute loss whose scale means little on its own.
+    # Wrapped: if NeuronSFTTrainer.evaluate() is unsupported on this stack we
+    # record that as a receipt and still run the lane, rather than losing the
+    # throughput measurement to a quality feature.
+    eval_before = eval_after = eval_error = None
+    eval_method = None
+    eval_wall_s = 0.0
+    nonlocal_tb = []
+
+    def holdout_loss(phase):
+        """Mean forward loss on the held-out split.
+
+        optimum-neuron 0.4.3's NeuronSFTTrainer has NO .evaluate() -- confirmed
+        on trn1: AttributeError. So the primary path is a ZERO-LEARNING-RATE
+        pass over the held-out rows using the SAME trainer machinery: same
+        collator, same packing, same compiled graph shapes, so it needs no new
+        API and no new compile. With lr=0 and a constant schedule the optimizer
+        cannot move a weight, so the logged per-step losses are exactly forward
+        losses on unseen data.
+
+        Gradients are still computed and thrown away. That is wasted work, but
+        it buys correctness through supported APIs instead of hand-rolling an
+        XLA eval loop whose numerics we would then have to defend.
+        """
+        nonlocal eval_error, eval_method
+        try:
+            if hasattr(trainer, "evaluate"):
+                eval_method = "trainer.evaluate"
+                out = trainer.evaluate(eval_dataset=eval_dataset,
+                                       metric_key_prefix=phase)
+                return out.get(f"{phase}_loss")
+            eval_method = "zero_lr_forward_pass"
+            cb = StepMetrics()
+            import dataclasses as _dc
+            # dataclasses.replace keeps every field the real config already
+            # resolved (parallelism, dtype, packing, seq len) and overrides
+            # only what makes this a scoring pass instead of a training one.
+            cfg = _dc.replace(sft_config,
+                              learning_rate=0.0,
+                              num_train_epochs=1,
+                              max_steps=-1,
+                              warmup_steps=0,
+                              lr_scheduler_type="constant",
+                              # ZeRO-1 clips gradients before stepping, and on
+                              # a frozen scoring pass there ARE no gradients:
+                              # neuronx_distributed grads.get_grad_norm([])
+                              # raises IndexError on the empty list. Clipping a
+                              # gradient we never intend to apply is pointless
+                              # anyway, so switch it off rather than fabricate
+                              # gradients to keep the optimizer happy.
+                              max_grad_norm=0.0,
+                              save_strategy="no",
+                              output_dir=f"/tmp/holdout_{phase}")
+            # After training the model is already PEFT-wrapped. Passing a
+            # peft_config again (or letting trl re-wrap) is the most likely
+            # source of the post-pass failure, so use the trainer's own model
+            # when it exists and never re-apply an adapter.
+            base = getattr(trainer, "model", model)
+            ev = build_trainer(NeuronSFTTrainer, cfg, base, None,
+                               tokenizer, eval_dataset, args, cb)
+            ev.train()
+            losses = [e["loss"] for e in cb.trace if e.get("loss") is not None]
+            return round(sum(losses) / len(losses), 6) if losses else None
+        except Exception as exc:                      # noqa: BLE001
+            # Capture the TRACEBACK, not just the message. The first version
+            # recorded "IndexError: list index out of range" with no frame
+            # information, which made the failure undiagnosable and cost a
+            # whole round trip. A receipt that cannot be acted on is not a
+            # receipt.
+            import traceback
+            eval_error = f"{type(exc).__name__}: {exc}"[:200]
+            eval_traceback = traceback.format_exc()[-1800:]
+            say(f"  holdout eval FAILED ({eval_method}): {eval_error}")
+            say("  --- traceback ---")
+            say(eval_traceback)
+            nonlocal_tb.append(eval_traceback)
+            return None
+
+    if eval_dataset is not None:
+        _t = time.perf_counter()
+        eval_before = holdout_loss("holdout_pre")
+        say(f"  holdout loss (pre) : {eval_before}  [{eval_method}]")
+        eval_wall_s += time.perf_counter() - _t
+
     t_train0 = time.perf_counter()
     trainer.train()
     train_wall_s = time.perf_counter() - t_train0
+
+    # ---- held-out loss AFTER training -------------------------------------
+    if eval_dataset is not None and eval_error is None:
+        _t = time.perf_counter()
+        eval_after = holdout_loss("holdout_post")
+        say(f"  holdout loss (post): {eval_after}  [{eval_method}]")
+        eval_wall_s += time.perf_counter() - _t
 
     # save_model() writes the adapter (TP-sharded when tp>1 -- merge_adapter.py
     # consolidates). It is collective, so every rank calls it; only rank 0
@@ -806,12 +1342,24 @@ def run(args, cache_dir):
     if tok_s is not None and params_trainable is not None:
         perf = throughput_metrics(
             params_trainable, params_total - params_trainable, tok_s,
+            peak_flops=peak_flops,
+            peak_flops_alt=peak_flops_alt,
             gradient_checkpointing=not args.no_gradient_checkpointing)
 
     payload = {
         "tag": args.tag,
         "model": args.model,
-        "dataset": args.dataset,
+        "dataset": ("synthetic:random-token-ids" if args.synthetic_data
+                    else args.dataset),
+        # A throughput probe on random tokens produces a loss number, and a
+        # loss number in a results file WILL eventually be plotted by someone.
+        # Marking it in the payload is the only thing that stops that.
+        "synthetic_data": ({"rows": int(args.synthetic_data),
+                            "seq_len": args.seq_len,
+                            "loss_is_meaningless": True,
+                            "purpose": "isolate device throughput from host "
+                                       "dataloader cost; graph shapes unchanged"}
+                           if args.synthetic_data else None),
         "params_total": params_total,
         "params_trainable": params_trainable,
         "params_frozen": (params_total - params_trainable
@@ -839,12 +1387,45 @@ def run(args, cache_dir):
             "dtype": "bfloat16",
             "world_size": world,
             "tensor_parallel_size": tp_size,
-            "pipeline_parallel_size": PIPELINE_PARALLEL_SIZE,
+            "pipeline_parallel_size": pp_size,
             "data_parallel_size": dp_size,
             "neuron_compile_cache_url": cache_dir,
             "neuron_cc_flags": os.environ.get("NEURON_CC_FLAGS"),
+            # Every number below is only meaningful against this denominator.
+            "device_profile": profile["device_profile"],
+            "instance_type": profile["instance_type"],
+            "nproc_per_node": profile["nproc"],
+            "logical_nc_config": os.environ.get("NEURON_LOGICAL_NC_CONFIG"),
+            "hbm_gib_per_core": profile["hbm_gib_per_core"],
+            "device_note": profile["note"],
         },
         "versions": resolve_versions(),
+        # PROVENANCE. load_dataset(name, split=...) pins nothing: the Hub is
+        # mutable, so "dolly-15k" alone does not let anyone reconstruct the
+        # corpus this trained on. A reviewer must be able to rebuild the exact
+        # inputs, including which rows were held out.
+        "provenance": provenance(args),
+        # THE QUALITY GATE. Throughput without this cannot distinguish "trained
+        # correctly, fast" from "produced garbage, fast". eval_wall_s is kept
+        # OUT of train_wall_s so no throughput number is diluted by evaluation.
+        "holdout": {
+            "enabled": bool(args.holdout_frac),
+            "frac": args.holdout_frac,
+            "split_seed": args.holdout_split_seed,
+            "loss_before": eval_before,
+            "loss_after": eval_after,
+            "loss_delta": (round(eval_after - eval_before, 6)
+                           if (eval_before is not None and eval_after is not None)
+                           else None),
+            "eval_wall_s": round(eval_wall_s, 2),
+            "method": eval_method,
+            "traceback": (nonlocal_tb[-1] if nonlocal_tb else None),
+            "error": eval_error,
+            "note": ("Held-out in-domain token loss on rows never trained on. "
+                     "Supports 'the fine-tune learned, comparably on both "
+                     "chips'. Does NOT support any claim about instruction "
+                     "quality or downstream benchmarks."),
+        },
         "tokens_per_optimizer_step": tok_per_step,
         "steps_recorded": len(trace),
         "warmup_steps_excluded": WARMUP_STEPS,
@@ -858,11 +1439,56 @@ def run(args, cache_dir):
         "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
         "train_wall_s": round(train_wall_s, 2),
         "tokens_per_s": round(tok_s, 1) if tok_s is not None else None,
+        # ---- STEADY-STATE vs END-TO-END -----------------------------------
+        # tokens_per_s above is tokens_per_optimizer_step / MEDIAN STEP TIME:
+        # a steady-state, compute-window rate with warmup excluded. That is the
+        # standard convention and the one the GPU study this is compared
+        # against also uses -- but it is NOT what an audience hears when you
+        # say "the chip was N% utilised".
+        #
+        # On the published trn1 lane, 645 steps x 5.55 s = 59.7 min inside a
+        # 122.2 min wall: the measured window is only ~49% of the run. Some of
+        # the remainder is legitimately excluded (compile, model load,
+        # tokenisation), but optimum-neuron's own per-step telemetry reports
+        # ~46% overhead_time_percent, so most of it is BETWEEN steps, not
+        # startup. End-to-end throughput is therefore ~2x lower than the
+        # steady-state figure, and end-to-end MFU correspondingly so.
+        #
+        # Both are emitted so the report can state the convention explicitly
+        # instead of picking whichever flatters. Neither is wrong; they answer
+        # different questions, and the gap between them IS the optimisation
+        # headroom.
+        "tokens_per_s_end_to_end": (
+            round(len(trace) * tok_per_step / train_wall_s, 1)
+            if trace and tok_per_step and train_wall_s else None),
+        "measured_window_fraction": (
+            round(len(trace) * (med_ms / 1000.0) / train_wall_s, 4)
+            if trace and med_ms and train_wall_s else None),
+        "throughput_note": (
+            "tokens_per_s is steady-state (median step, warmup excluded); "
+            "tokens_per_s_end_to_end divides ALL tokens by the full training "
+            "wall clock. measured_window_fraction is what share of wall time "
+            "the median-step window actually covers. Compare like with like."),
         "flops_per_token": perf["flops_per_token"] if perf else None,
         "flops_formula": "6*params_trainable + 4*params_frozen",
         "tflops": round(perf["tflops"], 3) if perf else None,
         "mfu_pct": round(perf["mfu_pct"], 3) if perf else None,
-        "peak_bf16_flops": PEAK_BF16_FLOPS,
+        "peak_bf16_flops": peak_flops,
+        "peak_bf16_flops_source": profile.get("peak_source"),
+        # Second denominator: AWS's arch page and instance marketing disagree
+        # for Trainium1 (190 vs 210 TFLOP/s). Reporting one MFU would hide
+        # which was used, and mixing sources across boxes would bias the
+        # comparison. tflops above is denominator-free.
+        "mfu_pct_alt": (round(perf["mfu_pct_alt"], 3)
+                        if perf and perf.get("mfu_pct_alt") is not None else None),
+        "peak_bf16_flops_alt": peak_flops_alt,
+        "peak_bf16_flops_alt_source": profile.get("peak_source_alt"),
+        # Same measurement, end-to-end denominator. On the published trn1 lane
+        # this turns 68.3% into roughly 33%.
+        "mfu_pct_end_to_end": (
+            round(100.0 * perf["flops_per_token"] * len(trace) * tok_per_step
+                  / train_wall_s / peak_flops, 3)
+            if perf and trace and tok_per_step and train_wall_s else None),
         "peak_host_mem_mib": read_peak_host_mem_mib(),
         "peak_device_mem_mib": None,
         "peak_device_mem_note": (
@@ -1076,9 +1702,22 @@ def build_trainer(NeuronSFTTrainer, sft_config, model, lora_config, tokenizer,
         "model": model,
         "peft_config": lora_config,
         "train_dataset": dataset,
-        "formatting_func": lambda example: format_dolly(example, tokenizer),
+        # Dispatch on the dataset's SHAPE, not a flag: a conversational mixture
+        # carries `messages`, dolly/alpaca carry instruction/response. Detecting
+        # it removes a whole class of "wrong formatter, plausible loss" error.
+        "formatting_func": (
+            (lambda example: format_messages(example, tokenizer))
+            if "messages" in getattr(dataset, "column_names", []) or []
+            else (lambda example: format_dolly(example, tokenizer))
+        ),
         "callbacks": [callback],
     }
+    # Synthetic rows arrive ALREADY tokenized (input_ids/attention_mask/labels),
+    # which is the whole point -- no formatter, no tokenizer, no packing. Passing
+    # a formatting_func anyway would make TRL re-render them as text and the
+    # isolation would measure nothing.
+    if getattr(args, "synthetic_data", 0):
+        kwargs.pop("formatting_func")
     if "processing_class" in params:
         kwargs["processing_class"] = tokenizer
     elif "tokenizer" in params:

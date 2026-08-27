@@ -1,0 +1,1 @@
+{"tag":"eff_mb4","box":"trn1","status":"failed","reason":"NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of sunda. Needed more than 101,371,381,504 (94.41GB) vs. available bytes 17,17","captured":"2026-08-06T06:31:32Z"}

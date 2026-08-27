@@ -112,12 +112,35 @@ else
 fi
 
 # ------------------------------------------------------------ F3: LLM boot
+#
+# CORE PARTITIONING (RAG_SPLIT_CORES=1, the co-residency fix)
+# -----------------------------------------------------------
+# A NeuronCore belongs to exactly one process. The original run booted an 8B
+# model at TP=2, which owns BOTH cores of the inf2.xlarge, so the encoders had
+# no device left and every end-to-end probe died with
+#   RuntimeError: The PyTorch Neuron Runtime could not be initialized
+# That was recorded as a co-residency failure, and read as "you cannot run the
+# three models together on one Inferentia2". The real constraint is narrower:
+# you cannot run an 8B LM together with anything, because 8B in bf16 is ~16 GB
+# against a 16 GB per-core budget and must span both cores.
+#
+# With an LM that fits on one core, the appliance is possible: pin the server
+# to nc0 at TP=1 and the encoders to nc1. The encoders are plain single-core
+# torch_neuronx.trace artifacts (~1.2 GB each), so both fit on nc1 together.
 echo; echo "############ rag: LLM boot ($RAG_LLM_KEY, short) ############"; echo
 BOOT_JSON="$RESULTS_DIR/${RAG_LLM_KEY}_boot.json"
 SERVER_UP=0
+LLM_CORES="" ; ENC_CORES=""
+if [ "${RAG_SPLIT_CORES:-0}" = "1" ]; then
+  LLM_CORES="${RAG_LLM_CORES:-0}"
+  ENC_CORES="${RAG_ENC_CORES:-1}"
+  echo "--- core split: LLM on nc$LLM_CORES (tp=1), encoders on nc$ENC_CORES ---"
+fi
 # env -u PYTHONPATH: the overlay (optimum-neuron + its vllm platform plugin
 # entry point) must NEVER be visible to a vLLM server process.
-if env -u PYTHONPATH bash "$BENCH_DIR/shared/serve/launch_vllm.sh" "$RAG_LLM_KEY" short "$BOOT_JSON"; then
+if env -u PYTHONPATH \
+     ${LLM_CORES:+NP_VISIBLE_CORES="$LLM_CORES" TP_DEGREE_OVERRIDE=1} \
+     bash "$BENCH_DIR/shared/serve/launch_vllm.sh" "$RAG_LLM_KEY" short "$BOOT_JSON"; then
   SERVER_UP=1
 else
   echo "  LLM boot FAILED -- load_failure.json recorded next to $BOOT_JSON;"
@@ -135,7 +158,10 @@ if [ "$SERVER_UP" = "1" ]; then
   elif have "$RESULTS_DIR/probes_llm.json"; then
     echo "skip probes_llm (exists)"
   else
-    "$PY" "$RAG_DIR/probes.py" --llm-model "$MODEL_NAME" \
+    # The encoders take the core the server was NOT pinned to. Without this
+    # the jit.load below hits a device already owned by the server process.
+    env ${ENC_CORES:+NEURON_RT_VISIBLE_CORES="$ENC_CORES"} \
+      "$PY" "$RAG_DIR/probes.py" --llm-model "$MODEL_NAME" \
         --models-dir "$NEURON_MODELS_DIR" \
         --out "$RESULTS_DIR/probes_llm.json" \
         2>&1 | tee "$RESULTS_DIR/probes_llm.log" \

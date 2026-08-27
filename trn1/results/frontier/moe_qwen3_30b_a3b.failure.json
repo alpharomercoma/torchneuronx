@@ -1,0 +1,1 @@
+{"tag":"moe_qwen3_30b_a3b","box":"trn1","status":"failed","reason":"ValueError: Model type qwen3_moe is not supported for task text-generation in neuron in training mode. Supported types are: ['llama', 'granite', 'qwen3'].","captured":"2026-08-06T04:52:28Z"}

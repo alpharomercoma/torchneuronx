@@ -1,0 +1,63 @@
+{
+  "tag": "pretrain_probe_capturable",
+  "stage": "pretrain",
+  "box": "trn1",
+  "status": "failed",
+  "reason": "Per-step XLA graph recompilation persists with torch.optim.AdamW(capturable=True): 3 distinct graph modules across 3 steps, unchanged from the non-capturable control. capturable=True additionally regressed compile time by ~116x (step 2: 3,259,387 ms vs 28,153 ms), so the run was killed at its 1-hour cap having completed 2 steps.",
+  "hypothesis_tested": "torch.optim.AdamW computes bias_correction1 = 1 - beta1 ** _get_value(step_t), and _get_value() calls .item() on a non-capturable step counter. That materialises a NEW Python scalar every step, which XLA traces as a graph constant, so every step is a new graph. capturable=True keeps step as a device tensor and performs the bias correction on-device; torch 2.9 lists 'xla' in _get_capturable_supported_devices(), so it is a supported configuration.",
+  "verdict": "FALSIFIED. The hypothesis was well-motivated and the mechanism is real, but it is not what drives the recompiles here.",
+  "evidence": {
+    "control_non_capturable": {
+      "run": "pretrain_probe_constlr_control (2026-08-14T15:39Z)",
+      "lr_schedule": "constant",
+      "distinct_graph_modules": 3,
+      "steps_completed": 2,
+      "step_1_ms": 2525,
+      "step_2_ms": 28153,
+      "outcome": "died compiling the step-3 graph"
+    },
+    "capturable_true": {
+      "run": "pretrain_probe_capturable (2026-08-14T18:22Z)",
+      "lr_schedule": "constant",
+      "distinct_graph_modules": 3,
+      "modules": [
+        "MODULE_14269584625111936084",
+        "MODULE_6283841084427540819",
+        "MODULE_16813002179141854814"
+      ],
+      "steps_completed": 2,
+      "step_1_ms": 2270,
+      "step_2_ms": 3259387,
+      "outcome": "killed at the 1-hour cap while compiling the step-3 graph"
+    },
+    "one_variable_changed": "capturable=True, foreach=False on the AdamW constructor. Everything else -- seq_len 1024, micro_batch 1, grad_accum 2, constant LR, seed 42, the same 1.1B-token memmap -- is byte-identical between the two runs.",
+    "compile_time_regression_x": 115.8,
+    "why_compiles_got_slower": "capturable=True moves the bias-correction arithmetic onto the device, which enlarges the optimizer subgraph. On a lazy-tensor backend that is paid at compile time, and neuronx-cc pays it badly here."
+  },
+  "corrections_to_earlier_claims": [
+    "An earlier receipt attributed this recompile to the linear-warmup/cosine LR schedule writing a new Python float into param_groups each step. That was withdrawn: a constant-LR control still produced 3 graphs in 2 steps. The apparent 114x speedup that motivated the claim was NEFF cache reuse, not a schedule effect.",
+    "This receipt withdraws the follow-on claim that AdamW's non-capturable bias correction was the cause. Two hypotheses have now been falsified by measurement rather than argued down."
+  ],
+  "what_is_still_true": "The recompile itself is measured and reproducible: a hand-written XLA training loop on this stack produces a new graph per step for at least the first 3 steps. Every OTHER training lane in this study runs through optimum-neuron's NeuronTrainer, which does not exhibit this -- the trn1 SFT lane reached 68.3% MFU with a single steady-state graph. The defect is in the hand-rolled loop's interaction with lazy-tensor tracing, not in the hardware or the compiler.",
+  "not_yet_done": "No direct attribution has been obtained. The correct instrument is PT_XLA_DEBUG_LEVEL=2, which names the Python frame that severs the graph, rather than a third hypothesis argued from source reading. That was not run because each cold compile on this configuration now costs up to 54 minutes of paid instance time.",
+  "config": {
+    "architecture": "SmolLM2-360M shape, trained from random init",
+    "params_total": 362000000,
+    "seq_len": 1024,
+    "micro_batch": 1,
+    "grad_accum": 2,
+    "world_size": 2,
+    "data_parallel_size": 2,
+    "tensor_parallel_size": 1,
+    "optimizer": "AdamW(0.9,0.95) wd=0.1 eps=1e-8 capturable=True foreach=False",
+    "lr_schedule": "constant",
+    "dataset": "HuggingFaceFW/fineweb-edu:sample-10BT (1.1B tokens, uint16 memmap)"
+  },
+  "artifacts": {
+    "log": "pretrain_probe_capturable.log",
+    "telemetry": "pretrain_probe_capturable.telemetry.csv",
+    "control_log": "pretrain_probe_constlr_control.log",
+    "control_telemetry": "pretrain_probe_constlr_control.telemetry.csv"
+  },
+  "captured": "2026-08-14T19:20:00Z"
+}

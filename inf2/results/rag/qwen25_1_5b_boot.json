@@ -1,0 +1,11 @@
+{
+  "model_key": "qwen25_1_5b",
+  "config": "short",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "boot_wall_s": 372,
+  "cache_dir_size_mb_before": 2102,
+  "cache_dir_size_mb_after": 2157,
+  "warm": false,
+  "server_pid": 7379,
+  "captured": "2026-08-15T14:03:42Z"
+}

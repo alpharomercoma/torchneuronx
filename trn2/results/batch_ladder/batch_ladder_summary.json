@@ -1,0 +1,56 @@
+{
+  "box": "trn2",
+  "seq_len": 4096,
+  "rungs": [
+    {
+      "micro_batch": 1,
+      "tokens_per_s": 7004.7,
+      "mfu_pct": 51.256,
+      "median_step_ms": 4678.03
+    },
+    {
+      "micro_batch": 2,
+      "status": "failed",
+      "wall": "failed",
+      "compiler_instructions": null,
+      "compiler_instructions_is_diagnostic": false,
+      "failed_module_hashes": [
+        "MODULE_12633037957639506649+fad94d7c",
+        "MODULE_13992432707003564419+fad94d7c",
+        "MODULE_6593953723154361753+fad94d7c"
+      ],
+      "reason": "NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of gen3. Needed more than 68,861,358,848 (64.13GB) vs. available bytes 25,769,"
+    },
+    {
+      "micro_batch": 4,
+      "status": "failed",
+      "wall": "failed",
+      "compiler_instructions": null,
+      "compiler_instructions_is_diagnostic": false,
+      "failed_module_hashes": [
+        "MODULE_17696080936621593319+fad94d7c",
+        "MODULE_4412678836064189403+fad94d7c",
+        "MODULE_9929074620457744213+fad94d7c"
+      ],
+      "reason": "NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of gen3. Needed more than 68,878,144,256 (64.15GB) vs. available bytes 25,769,"
+    },
+    {
+      "micro_batch": 8,
+      "status": "failed",
+      "wall": "failed",
+      "compiler_instructions": null,
+      "compiler_instructions_is_diagnostic": false,
+      "failed_module_hashes": [
+        "MODULE_10277068661983082604+fad94d7c",
+        "MODULE_6689382641200884215+fad94d7c",
+        "MODULE_7814568531154229068+fad94d7c"
+      ],
+      "reason": "NCC_EXSP001] Size of HBM memory required for the model exceeds HBM limit of gen3. Needed more than 68,911,715,072 (64.18GB) vs. available bytes 25,769,"
+    }
+  ],
+  "independent_compiles_verified": "3 failed rungs, 3 distinct module-hash sets -- each rung compiled its own graph",
+  "best_micro_batch": 1,
+  "best_tokens_per_s": 7004.7,
+  "uplift_over_mb1": 1.0,
+  "highest_rung_that_ran": 1
+}

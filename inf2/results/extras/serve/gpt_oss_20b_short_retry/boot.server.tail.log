@@ -1,0 +1,152 @@
+erriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) WARNING:Neuron:TP degree (2) and KV heads (8) are not divisible. Overriding attention sharding strategy to GQA.CONVERT_TO_MHA!
+(EngineCore_DP0 pid=2042) INFO:Neuron:Finished loading module token_generation_model in 0.4418351650238037 seconds
+(EngineCore_DP0 pid=2042) INFO:Neuron:generating HLO: token_generation_model, input example shape = torch.Size([32, 1])
+(EngineCore_DP0 pid=2042) INFO:Neuron:Running MoE Fused NKI kernel
+(EngineCore_DP0 pid=2042) INFO:Neuron:Percentage of experts loaded >= selective loading threshold, run forward all experts kernel
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/utils/kernel_assert.py:17:5: error: assertion failed: [INTERNAL_ERROR] [NCC_INKI016] Kernel validation exception: H=2880 must be divisible by 128 - Please check the validation message and adjust kernel inputs accordingly
+    assert condition, (  # noqa: S101
+    ^
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/moe_block/moe_block_tkg_utils.py:221:5: note: called from here
+    kernel_assert(dims.H % _pmax == 0, f"H={dims.H} must be divisible by {_pmax}")
+    ^
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/moe_block/moe_block_tkg.py:215:5: note: called from here
+    validate_moe_block_inputs(
+    ^
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/nkilib/core/moe_block/moe_block_tkg.py:45:1: note: when tracing NKI kernel
+def moe_block_tkg(
+^
+(EngineCore_DP0 pid=2042) For layer 0, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 1, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 2, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 3, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 4, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 5, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 6, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 7, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 8, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 9, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 10, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 11, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 12, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 13, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 14, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 15, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 16, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 17, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 18, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 19, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 20, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 21, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 22, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 23, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 0, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 1, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 2, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 3, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 4, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 5, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 6, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 7, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 8, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 9, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 10, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 11, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 12, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 13, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 14, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 15, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 16, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 17, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 18, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 19, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 20, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 21, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) For layer 22, using K shape (32, 4, 128, 64)
+(EngineCore_DP0 pid=2042) For layer 23, using K shape (32, 4, 2048, 64)
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006] EngineCore failed to start.
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006] Traceback (most recent call last):
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 996, in run_engine_core
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 740, in __init__
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     super().__init__(
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 106, in __init__
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self.model_executor = executor_class(vllm_config)
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 103, in __init__
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self._init_executor()
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 48, in _init_executor
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self.driver_worker.load_model()
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuron_worker.py", line 155, in load_model
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self.model_runner.load_model()
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_runner.py", line 532, in load_model
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self.model = get_neuron_model(
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]                  ^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 1079, in get_neuron_model
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     model.load_weights(
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 601, in load_weights
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self._compile_and_load_model(
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/vllm_neuron/worker/neuronx_distributed_model_loader.py", line 270, in _compile_and_load_model
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     self.model.compile(compiled_path)
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]   File "/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed_inference/models/application_base.py", line 305, in compile
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]     traced_model = self.get_builder(debug).trace(**trace_kwargs)
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:00:50 [core.py:1006]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore_DP0 pid=2042) ERROR 08-20 23:0ûê.¶›­¶»§q«^

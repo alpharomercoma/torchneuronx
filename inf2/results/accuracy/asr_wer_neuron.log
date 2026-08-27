@@ -1,0 +1,99 @@
+# asr_wer engine=neuron model=openai/whisper-small n=500 splits=dev-clean,dev-other seed=1234 max_length=224 digest=e897296e0c5f4027
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:100: DeprecationWarning: torch_neuronx.nki_jit is deprecated, use nki.jit instead.
+  component, error = import_nki(config)
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+/opt/aws_neuronx_venv_pytorch_inference_vllm_0_16/lib/python3.12/site-packages/neuronx_distributed/modules/moe/blockwise.py:102: UserWarning: Warning: Failed to import blockwise_mm_bwd_baseline_shard_hidden: No module named 'neuronxcc.nki._private.blockwise_mm_bwd'
+  warnings.warn(f"Warning: {error}")
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+The `ExportConfig` class is deprecated and will be removed in a future version. Please use `ExporterConfig` instead.
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+`generation_config` default values have been modified to match model-specific defaults: {'suppress_tokens': [1, 2, 7, 8, 9, 10, 14, 25, 26, 27, 28, 29, 31, 58, 59, 60, 61, 62, 63, 90, 91, 92, 93, 359, 503, 522, 542, 873, 893, 902, 918, 922, 931, 1350, 1853, 1982, 2460, 2627, 3246, 3253, 3268, 3536, 3846, 3961, 4183, 4667, 6585, 6647, 7273, 9061, 9383, 10428, 10929, 11938, 12033, 12331, 12562, 13793, 14157, 14635, 15265, 15618, 16553, 16604, 18362, 18956, 20075, 21675, 22520, 26130, 26161, 26435, 28279, 29464, 31650, 32302, 32470, 36865, 42863, 47425, 49870, 50254, 50258, 50358, 50359, 50360, 50361, 50362], 'begin_suppress_tokens': [220, 50257]}. If this is not desired, please set these values explicitly.
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+A custom logits processor of type <class 'transformers.generation.logits_process.SuppressTokensLogitsProcessor'> has been passed to `.generate()`, but it was also created in `.generate()`, given its parameterization. The custom <class 'transformers.generation.logits_process.SuppressTokensLogitsProcessor'> will take precedence. Please check the docstring of <class 'transformers.generation.logits_process.SuppressTokensLogitsProcessor'> to see related `.generate()` flags.
+A custom logits processor of type <class 'transformers.generation.logits_process.SuppressTokensAtBeginLogitsProcessor'> has been passed to `.generate()`, but it was also created in `.generate()`, given its parameterization. The custom <class 'transformers.generation.logits_process.SuppressTokensAtBeginLogitsProcessor'> will take precedence. Please check the docstring of <class 'transformers.generation.logits_process.SuppressTokensAtBeginLogitsProcessor'> to see related `.generate()` flags.
+decoder prefix actually emitted: ĠHaving Ġreturned Ġto Ġthe ĠRoyal
+  25/500  27.4s decode
+  50/500  49.8s decode
+  75/500  74.8s decode
+  100/500  95.3s decode
+  125/500  120.5s decode
+  150/500  145.3s decode
+  175/500  165.8s decode
+  200/500  188.4s decode
+  225/500  216.7s decode
+  250/500  236.9s decode
+  275/500  258.4s decode
+  300/500  275.7s decode
+  325/500  297.4s decode
+  350/500  319.9s decode
+  375/500  340.1s decode
+  400/500  367.1s decode
+  425/500  390.0s decode
+  450/500  406.5s decode
+  475/500  426.5s decode
+  500/500  446.0s decode
+
+WER 5.186%  word_accuracy 94.814%  (506 errors / 9757 ref words, 0 truncated)  ->  /opt/np/repo/inf2/results/accuracy/asr_wer_neuron.json

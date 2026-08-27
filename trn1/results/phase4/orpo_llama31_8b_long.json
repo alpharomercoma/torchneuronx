@@ -1,0 +1,978 @@
+{
+  "tag": "orpo_llama31_8b_long",
+  "stage": "orpo",
+  "model": "meta-llama/Llama-3.1-8B",
+  "dataset": "HuggingFaceH4/ultrafeedback_binarized:train_prefs",
+  "params_total": 8082956288,
+  "params_trainable": 52428800,
+  "params_frozen": 8030527488,
+  "params_count_method": "xla_all_reduce",
+  "params_local_total": 4041478144,
+  "params_local_trainable": 26214400,
+  "params_note": "Summed across the TP group with xm.all_reduce, so these are whole-model counts rather than this rank's shard. Parameters that are replicated rather than sharded (norms, LoRA A/B on replicated modules) are counted once per rank and so are marginally over-counted -- under 0.01% for an 8B model.",
+  "config": {
+    "algo": "orpo",
+    "base_model": "meta-llama/Llama-3.1-8B",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized",
+    "split": "train_prefs",
+    "n_samples": 1400,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "lr": 5e-06,
+    "beta": 0.1,
+    "seed": 42,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "gradient_checkpointing": true,
+    "chat_template_source": "meta-llama/Llama-3.1-8B-Instruct",
+    "reference_model": "none (ORPO is reference-free)",
+    "data_parallel_size": 1,
+    "tokens_per_step_note": "max_length * micro_batch * grad_accum * dp_size * 2. The 2x counts chosen AND rejected: a preference step forwards both sequences, so its token cost is twice an SFT step of equal length. dp_size, NOT the world size: tensor parallelism shares one micro-batch across ranks and multiplies neither batch nor tokens.",
+    "flops_caveat": "ORPO is reference-free: one forward-backward over chosen and rejected, so 6*trainable + 4*frozen applies unmodified and this MFU is directly comparable to the SFT lanes.",
+    "trainer_construction": "TRL trainer re-based onto optimum-neuron NeuronTrainer via type(name,(NeuronTrainer,),Trainer.__dict__.copy()), mirroring how optimum-neuron builds NeuronSFTTrainer"
+  },
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "torch-neuronx": "2.9.0.2.15.32035+de43f57c",
+    "torch-xla": "2.9.0",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "trl": "0.24.0",
+    "peft": "0.17.0",
+    "datasets": "5.0.1",
+    "accelerate": "1.8.1",
+    "neuronx-cc": "2.26.6360.0+6f180f47",
+    "neuronx-distributed": "0.19.28492+435aae2b",
+    "libneuronxla": "2.2.17544.0+fb9962bf"
+  },
+  "tokens_per_optimizer_step": 8192,
+  "steps_recorded": 150,
+  "warmup_steps_excluded": 10,
+  "first_step_ms": 75047.24,
+  "first_step_note": "Step 1 traces the XLA graph and then either compiles it or loads it from the NEFF cache. A warm cache collapses this toward the median; a cold cache leaves tens of minutes in it.",
+  "median_step_ms": 8101.24,
+  "compile_s": 66.9,
+  "compile_s_note": "first_step_ms - median_step_ms, floored at 0.",
+  "train_wall_s": 1284.35,
+  "final_loss": NaN,
+  "loss_trace": [
+    {
+      "step": 1,
+      "loss": 14.5938,
+      "ms": 75047.24,
+      "warmup": true
+    },
+    {
+      "step": 2,
+      "loss": 14.9766,
+      "ms": 9775.84,
+      "warmup": true
+    },
+    {
+      "step": 3,
+      "loss": 13.582,
+      "ms": 8084.72,
+      "warmup": true
+    },
+    {
+      "step": 4,
+      "loss": 16.1953,
+      "ms": 8093.7,
+      "warmup": true
+    },
+    {
+      "step": 5,
+      "loss": 14.1016,
+      "ms": 8093.49,
+      "warmup": true
+    },
+    {
+      "step": 6,
+      "loss": 14.1758,
+      "ms": 8097.56,
+      "warmup": true
+    },
+    {
+      "step": 7,
+      "loss": 16.3438,
+      "ms": 8070.18,
+      "warmup": true
+    },
+    {
+      "step": 8,
+      "loss": 15.8047,
+      "ms": 8131.47,
+      "warmup": true
+    },
+    {
+      "step": 9,
+      "loss": 15.3906,
+      "ms": 8187.22,
+      "warmup": true
+    },
+    {
+      "step": 10,
+      "loss": 12.3906,
+      "ms": 8167.08,
+      "warmup": true
+    },
+    {
+      "step": 11,
+      "loss": 16.0625,
+      "ms": 8087.96,
+      "warmup": false
+    },
+    {
+      "step": 12,
+      "loss": 17.2109,
+      "ms": 8126.56,
+      "warmup": false
+    },
+    {
+      "step": 13,
+      "loss": 14.7812,
+      "ms": 8081.57,
+      "warmup": false
+    },
+    {
+      "step": 14,
+      "loss": 17.3672,
+      "ms": 8082.26,
+      "warmup": false
+    },
+    {
+      "step": 15,
+      "loss": 15.3438,
+      "ms": 8063.63,
+      "warmup": false
+    },
+    {
+      "step": 16,
+      "loss": 11.8047,
+      "ms": 8100.05,
+      "warmup": false
+    },
+    {
+      "step": 17,
+      "loss": 15.8047,
+      "ms": 8178.32,
+      "warmup": false
+    },
+    {
+      "step": 18,
+      "loss": 16.8203,
+      "ms": 8134.77,
+      "warmup": false
+    },
+    {
+      "step": 19,
+      "loss": 13.4141,
+      "ms": 8127.94,
+      "warmup": false
+    },
+    {
+      "step": 20,
+      "loss": 14.8359,
+      "ms": 8069.36,
+      "warmup": false
+    },
+    {
+      "step": 21,
+      "loss": 15.1953,
+      "ms": 8079.04,
+      "warmup": false
+    },
+    {
+      "step": 22,
+      "loss": 16.6875,
+      "ms": 8082.04,
+      "warmup": false
+    },
+    {
+      "step": 23,
+      "loss": NaN,
+      "ms": 8110.21,
+      "warmup": false
+    },
+    {
+      "step": 24,
+      "loss": NaN,
+      "ms": 8094.12,
+      "warmup": false
+    },
+    {
+      "step": 25,
+      "loss": NaN,
+      "ms": 8105.66,
+      "warmup": false
+    },
+    {
+      "step": 26,
+      "loss": NaN,
+      "ms": 8088.75,
+      "warmup": false
+    },
+    {
+      "step": 27,
+      "loss": NaN,
+      "ms": 8060.67,
+      "warmup": false
+    },
+    {
+      "step": 28,
+      "loss": NaN,
+      "ms": 8053.22,
+      "warmup": false
+    },
+    {
+      "step": 29,
+      "loss": NaN,
+      "ms": 8063.17,
+      "warmup": false
+    },
+    {
+      "step": 30,
+      "loss": NaN,
+      "ms": 8061.75,
+      "warmup": false
+    },
+    {
+      "step": 31,
+      "loss": NaN,
+      "ms": 8056.42,
+      "warmup": false
+    },
+    {
+      "step": 32,
+      "loss": NaN,
+      "ms": 8054.91,
+      "warmup": false
+    },
+    {
+      "step": 33,
+      "loss": NaN,
+      "ms": 8067.85,
+      "warmup": false
+    },
+    {
+      "step": 34,
+      "loss": NaN,
+      "ms": 8067.22,
+      "warmup": false
+    },
+    {
+      "step": 35,
+      "loss": NaN,
+      "ms": 8059.5,
+      "warmup": false
+    },
+    {
+      "step": 36,
+      "loss": NaN,
+      "ms": 8080.05,
+      "warmup": false
+    },
+    {
+      "step": 37,
+      "loss": NaN,
+      "ms": 8070.18,
+      "warmup": false
+    },
+    {
+      "step": 38,
+      "loss": NaN,
+      "ms": 8132.13,
+      "warmup": false
+    },
+    {
+      "step": 39,
+      "loss": NaN,
+      "ms": 8137.11,
+      "warmup": false
+    },
+    {
+      "step": 40,
+      "loss": NaN,
+      "ms": 8126.18,
+      "warmup": false
+    },
+    {
+      "step": 41,
+      "loss": NaN,
+      "ms": 8126.36,
+      "warmup": false
+    },
+    {
+      "step": 42,
+      "loss": NaN,
+      "ms": 8134.06,
+      "warmup": false
+    },
+    {
+      "step": 43,
+      "loss": NaN,
+      "ms": 8142.99,
+      "warmup": false
+    },
+    {
+      "step": 44,
+      "loss": NaN,
+      "ms": 8134.81,
+      "warmup": false
+    },
+    {
+      "step": 45,
+      "loss": NaN,
+      "ms": 8139.35,
+      "warmup": false
+    },
+    {
+      "step": 46,
+      "loss": NaN,
+      "ms": 8114.25,
+      "warmup": false
+    },
+    {
+      "step": 47,
+      "loss": NaN,
+      "ms": 8164.16,
+      "warmup": false
+    },
+    {
+      "step": 48,
+      "loss": NaN,
+      "ms": 8138.8,
+      "warmup": false
+    },
+    {
+      "step": 49,
+      "loss": NaN,
+      "ms": 8068.86,
+      "warmup": false
+    },
+    {
+      "step": 50,
+      "loss": NaN,
+      "ms": 8062.11,
+      "warmup": false
+    },
+    {
+      "step": 51,
+      "loss": NaN,
+      "ms": 8076.96,
+      "warmup": false
+    },
+    {
+      "step": 52,
+      "loss": NaN,
+      "ms": 8076.78,
+      "warmup": false
+    },
+    {
+      "step": 53,
+      "loss": NaN,
+      "ms": 8118.29,
+      "warmup": false
+    },
+    {
+      "step": 54,
+      "loss": NaN,
+      "ms": 8100.22,
+      "warmup": false
+    },
+    {
+      "step": 55,
+      "loss": NaN,
+      "ms": 8086.36,
+      "warmup": false
+    },
+    {
+      "step": 56,
+      "loss": NaN,
+      "ms": 8068.14,
+      "warmup": false
+    },
+    {
+      "step": 57,
+      "loss": NaN,
+      "ms": 8081.07,
+      "warmup": false
+    },
+    {
+      "step": 58,
+      "loss": NaN,
+      "ms": 8071.24,
+      "warmup": false
+    },
+    {
+      "step": 59,
+      "loss": NaN,
+      "ms": 8095.0,
+      "warmup": false
+    },
+    {
+      "step": 60,
+      "loss": NaN,
+      "ms": 8077.48,
+      "warmup": false
+    },
+    {
+      "step": 61,
+      "loss": NaN,
+      "ms": 8123.85,
+      "warmup": false
+    },
+    {
+      "step": 62,
+      "loss": NaN,
+      "ms": 8072.26,
+      "warmup": false
+    },
+    {
+      "step": 63,
+      "loss": NaN,
+      "ms": 8127.36,
+      "warmup": false
+    },
+    {
+      "step": 64,
+      "loss": NaN,
+      "ms": 8148.82,
+      "warmup": false
+    },
+    {
+      "step": 65,
+      "loss": NaN,
+      "ms": 8159.33,
+      "warmup": false
+    },
+    {
+      "step": 66,
+      "loss": NaN,
+      "ms": 8122.16,
+      "warmup": false
+    },
+    {
+      "step": 67,
+      "loss": NaN,
+      "ms": 8146.14,
+      "warmup": false
+    },
+    {
+      "step": 68,
+      "loss": NaN,
+      "ms": 8127.08,
+      "warmup": false
+    },
+    {
+      "step": 69,
+      "loss": NaN,
+      "ms": 8137.68,
+      "warmup": false
+    },
+    {
+      "step": 70,
+      "loss": NaN,
+      "ms": 8120.69,
+      "warmup": false
+    },
+    {
+      "step": 71,
+      "loss": NaN,
+      "ms": 8080.36,
+      "warmup": false
+    },
+    {
+      "step": 72,
+      "loss": NaN,
+      "ms": 8082.78,
+      "warmup": false
+    },
+    {
+      "step": 73,
+      "loss": NaN,
+      "ms": 8113.42,
+      "warmup": false
+    },
+    {
+      "step": 74,
+      "loss": NaN,
+      "ms": 8111.4,
+      "warmup": false
+    },
+    {
+      "step": 75,
+      "loss": NaN,
+      "ms": 8132.57,
+      "warmup": false
+    },
+    {
+      "step": 76,
+      "loss": NaN,
+      "ms": 8126.02,
+      "warmup": false
+    },
+    {
+      "step": 77,
+      "loss": NaN,
+      "ms": 8117.85,
+      "warmup": false
+    },
+    {
+      "step": 78,
+      "loss": NaN,
+      "ms": 8100.37,
+      "warmup": false
+    },
+    {
+      "step": 79,
+      "loss": NaN,
+      "ms": 8131.56,
+      "warmup": false
+    },
+    {
+      "step": 80,
+      "loss": NaN,
+      "ms": 8083.96,
+      "warmup": false
+    },
+    {
+      "step": 81,
+      "loss": NaN,
+      "ms": 8109.62,
+      "warmup": false
+    },
+    {
+      "step": 82,
+      "loss": NaN,
+      "ms": 8092.21,
+      "warmup": false
+    },
+    {
+      "step": 83,
+      "loss": NaN,
+      "ms": 8083.54,
+      "warmup": false
+    },
+    {
+      "step": 84,
+      "loss": NaN,
+      "ms": 8079.81,
+      "warmup": false
+    },
+    {
+      "step": 85,
+      "loss": NaN,
+      "ms": 8111.3,
+      "warmup": false
+    },
+    {
+      "step": 86,
+      "loss": NaN,
+      "ms": 8127.95,
+      "warmup": false
+    },
+    {
+      "step": 87,
+      "loss": NaN,
+      "ms": 8087.3,
+      "warmup": false
+    },
+    {
+      "step": 88,
+      "loss": NaN,
+      "ms": 8152.6,
+      "warmup": false
+    },
+    {
+      "step": 89,
+      "loss": NaN,
+      "ms": 8107.5,
+      "warmup": false
+    },
+    {
+      "step": 90,
+      "loss": NaN,
+      "ms": 8081.03,
+      "warmup": false
+    },
+    {
+      "step": 91,
+      "loss": NaN,
+      "ms": 8093.56,
+      "warmup": false
+    },
+    {
+      "step": 92,
+      "loss": NaN,
+      "ms": 8106.7,
+      "warmup": false
+    },
+    {
+      "step": 93,
+      "loss": NaN,
+      "ms": 8118.72,
+      "warmup": false
+    },
+    {
+      "step": 94,
+      "loss": NaN,
+      "ms": 8116.51,
+      "warmup": false
+    },
+    {
+      "step": 95,
+      "loss": NaN,
+      "ms": 8092.2,
+      "warmup": false
+    },
+    {
+      "step": 96,
+      "loss": NaN,
+      "ms": 8079.05,
+      "warmup": false
+    },
+    {
+      "step": 97,
+      "loss": NaN,
+      "ms": 8197.83,
+      "warmup": false
+    },
+    {
+      "step": 98,
+      "loss": NaN,
+      "ms": 8136.55,
+      "warmup": false
+    },
+    {
+      "step": 99,
+      "loss": NaN,
+      "ms": 8083.47,
+      "warmup": false
+    },
+    {
+      "step": 100,
+      "loss": NaN,
+      "ms": 8125.53,
+      "warmup": false
+    },
+    {
+      "step": 101,
+      "loss": NaN,
+      "ms": 8154.64,
+      "warmup": false
+    },
+    {
+      "step": 102,
+      "loss": NaN,
+      "ms": 8143.54,
+      "warmup": false
+    },
+    {
+      "step": 103,
+      "loss": NaN,
+      "ms": 8132.27,
+      "warmup": false
+    },
+    {
+      "step": 104,
+      "loss": NaN,
+      "ms": 8158.47,
+      "warmup": false
+    },
+    {
+      "step": 105,
+      "loss": NaN,
+      "ms": 8137.94,
+      "warmup": false
+    },
+    {
+      "step": 106,
+      "loss": NaN,
+      "ms": 8135.72,
+      "warmup": false
+    },
+    {
+      "step": 107,
+      "loss": NaN,
+      "ms": 8136.88,
+      "warmup": false
+    },
+    {
+      "step": 108,
+      "loss": NaN,
+      "ms": 8127.32,
+      "warmup": false
+    },
+    {
+      "step": 109,
+      "loss": NaN,
+      "ms": 8102.12,
+      "warmup": false
+    },
+    {
+      "step": 110,
+      "loss": NaN,
+      "ms": 8112.88,
+      "warmup": false
+    },
+    {
+      "step": 111,
+      "loss": NaN,
+      "ms": 8148.73,
+      "warmup": false
+    },
+    {
+      "step": 112,
+      "loss": NaN,
+      "ms": 8105.43,
+      "warmup": false
+    },
+    {
+      "step": 113,
+      "loss": NaN,
+      "ms": 8079.41,
+      "warmup": false
+    },
+    {
+      "step": 114,
+      "loss": NaN,
+      "ms": 8092.32,
+      "warmup": false
+    },
+    {
+      "step": 115,
+      "loss": NaN,
+      "ms": 8115.73,
+      "warmup": false
+    },
+    {
+      "step": 116,
+      "loss": NaN,
+      "ms": 8093.09,
+      "warmup": false
+    },
+    {
+      "step": 117,
+      "loss": NaN,
+      "ms": 8084.13,
+      "warmup": false
+    },
+    {
+      "step": 118,
+      "loss": NaN,
+      "ms": 8067.19,
+      "warmup": false
+    },
+    {
+      "step": 119,
+      "loss": NaN,
+      "ms": 8053.03,
+      "warmup": false
+    },
+    {
+      "step": 120,
+      "loss": NaN,
+      "ms": 8064.66,
+      "warmup": false
+    },
+    {
+      "step": 121,
+      "loss": NaN,
+      "ms": 8077.18,
+      "warmup": false
+    },
+    {
+      "step": 122,
+      "loss": NaN,
+      "ms": 8068.77,
+      "warmup": false
+    },
+    {
+      "step": 123,
+      "loss": NaN,
+      "ms": 8082.8,
+      "warmup": false
+    },
+    {
+      "step": 124,
+      "loss": NaN,
+      "ms": 8079.95,
+      "warmup": false
+    },
+    {
+      "step": 125,
+      "loss": NaN,
+      "ms": 8074.88,
+      "warmup": false
+    },
+    {
+      "step": 126,
+      "loss": NaN,
+      "ms": 8058.0,
+      "warmup": false
+    },
+    {
+      "step": 127,
+      "loss": NaN,
+      "ms": 8120.33,
+      "warmup": false
+    },
+    {
+      "step": 128,
+      "loss": NaN,
+      "ms": 8163.26,
+      "warmup": false
+    },
+    {
+      "step": 129,
+      "loss": NaN,
+      "ms": 8102.44,
+      "warmup": false
+    },
+    {
+      "step": 130,
+      "loss": NaN,
+      "ms": 8075.87,
+      "warmup": false
+    },
+    {
+      "step": 131,
+      "loss": NaN,
+      "ms": 8122.16,
+      "warmup": false
+    },
+    {
+      "step": 132,
+      "loss": NaN,
+      "ms": 8147.88,
+      "warmup": false
+    },
+    {
+      "step": 133,
+      "loss": NaN,
+      "ms": 8159.71,
+      "warmup": false
+    },
+    {
+      "step": 134,
+      "loss": NaN,
+      "ms": 8130.55,
+      "warmup": false
+    },
+    {
+      "step": 135,
+      "loss": NaN,
+      "ms": 8155.86,
+      "warmup": false
+    },
+    {
+      "step": 136,
+      "loss": NaN,
+      "ms": 8138.47,
+      "warmup": false
+    },
+    {
+      "step": 137,
+      "loss": NaN,
+      "ms": 8070.81,
+      "warmup": false
+    },
+    {
+      "step": 138,
+      "loss": NaN,
+      "ms": 8062.97,
+      "warmup": false
+    },
+    {
+      "step": 139,
+      "loss": NaN,
+      "ms": 8059.17,
+      "warmup": false
+    },
+    {
+      "step": 140,
+      "loss": NaN,
+      "ms": 8083.86,
+      "warmup": false
+    },
+    {
+      "step": 141,
+      "loss": NaN,
+      "ms": 8083.76,
+      "warmup": false
+    },
+    {
+      "step": 142,
+      "loss": NaN,
+      "ms": 8055.07,
+      "warmup": false
+    },
+    {
+      "step": 143,
+      "loss": NaN,
+      "ms": 8052.74,
+      "warmup": false
+    },
+    {
+      "step": 144,
+      "loss": NaN,
+      "ms": 8080.18,
+      "warmup": false
+    },
+    {
+      "step": 145,
+      "loss": NaN,
+      "ms": 8069.44,
+      "warmup": false
+    },
+    {
+      "step": 146,
+      "loss": NaN,
+      "ms": 8075.89,
+      "warmup": false
+    },
+    {
+      "step": 147,
+      "loss": NaN,
+      "ms": 8151.62,
+      "warmup": false
+    },
+    {
+      "step": 148,
+      "loss": NaN,
+      "ms": 8147.95,
+      "warmup": false
+    },
+    {
+      "step": 149,
+      "loss": NaN,
+      "ms": 8173.49,
+      "warmup": false
+    },
+    {
+      "step": 150,
+      "loss": NaN,
+      "ms": 8102.25,
+      "warmup": false
+    }
+  ],
+  "tokens_per_s": 1011.2,
+  "flops_per_token": 48602595328.0,
+  "tflops": 49.147,
+  "mfu_pct": 25.867,
+  "gradient_checkpointing": true,
+  "mfu_pct_alt": 23.403,
+  "flops_formula": "6*params_trainable + 4*params_frozen + 2*(trainable+frozen) for recompute",
+  "peak_bf16_flops": 190000000000000.0,
+  "peak_bf16_flops_source": "Neuron arch page arch/neuron-hardware/trainium: 190 FP16/BF16/cFP8/TF32 TFLOPS per chip",
+  "tokens_per_s_end_to_end": 956.7,
+  "tokens_per_s_note": "tokens_per_s is the steady-state median, excluding the compile-bearing warmup steps -- it describes the chip. tokens_per_s_end_to_end includes compile and is the wall-clock a practitioner actually experiences.",
+  "peak_device_mem_mib": null,
+  "peak_device_mem_note": "Not available from torch on XLA. Read mem_used_mib from the matching telemetry CSV (1 Hz neuron-monitor). Deliberately null rather than estimated."
+}

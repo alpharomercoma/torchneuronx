@@ -1,0 +1,46 @@
+{
+  "lane": "merge",
+  "base": "meta-llama/Llama-3.1-8B-Instruct",
+  "adapter": "/opt/np/models/adapters/llama31_lora",
+  "adapter_consolidated_dir": "/opt/np/models/adapters/llama31_lora/adapter_default",
+  "consolidation": {
+    "performed": true,
+    "shard_dirs": [
+      "/opt/np/models/adapters/llama31_lora/adapter_default/adapter_shards"
+    ],
+    "shards": 12
+  },
+  "merged_out": "/opt/np/models/llama31-8b-dolly-merged",
+  "files": {
+    "config.json": "9244b967aff5712ec3e8ae05a1a7364fb274c3af10d41eac2eca2dc6db29a1c2",
+    "model-00001-of-00004.safetensors": "f5e44f4fe757db95d52d7eebcf91c0643fbbbf8cee4d4f393ae225c2126c36e0",
+    "model-00002-of-00004.safetensors": "3fe58905e27464dce634362083f709ddee96b04c4f43e41de810f7df14ad2ff3",
+    "model-00003-of-00004.safetensors": "f1bfeec23c7683fc0342eb91c85a503505661dd0d243ba8f5db3869b322cd200",
+    "model-00004-of-00004.safetensors": "fd00cd01fe914437c124d20bb8cf26c88fdb11bbf5bfe7bae94b138a8e3a6cf3",
+    "tokenizer.json": "6b9e4e7fb171f92fd137b777cc2714bf87d11576700a1dcd7a399e7bbe39537b"
+  },
+  "files_note": "sha256 of every *.safetensors plus config.json and tokenizer.json in the merged directory. The inf2 box re-hashes the same set with shared/verify_models.sh after pulling from S3; matching digests are what make 'the served weights are the trained weights' a check rather than an assumption.",
+  "hashed_bytes": 16077767164,
+  "total_bytes": 16077846769,
+  "total_gib": 14.974,
+  "timings_s": {
+    "load_s": 0.9,
+    "merge_s": 14.07,
+    "save_s": 6.05
+  },
+  "upload_dest": "s3://neuron-pipelines-artifacts-600627330911/artifacts/llama31-8b-dolly-merged/",
+  "upload_s": 207.08,
+  "upload_ok": true,
+  "wall_s": 245.66,
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.9.1",
+    "optimum-neuron": "0.4.3",
+    "transformers": "4.57.6",
+    "peft": "0.17.0",
+    "safetensors": "0.8.0",
+    "neuronx-cc": "2.26.6360.0+6f180f47"
+  },
+  "host_ram_note": "Heaviest host-RAM step in the trn1 suite: base model in bf16 plus the merged state dict during safetensors serialisation, against 32 GiB on trn1.2xlarge. See the module docstring for the local-merge fallback if this OOMs.",
+  "captured": "2026-08-05T20:14:14Z"
+}

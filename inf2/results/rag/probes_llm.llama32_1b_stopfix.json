@@ -1,0 +1,177 @@
+{
+  "mode": "end_to_end",
+  "llm_model": "meta-llama/Llama-3.2-1B-Instruct",
+  "probes": [
+    {
+      "q": "What MFU did the Llama 3.1 8B LoRA fine-tune reach?",
+      "expect_any": [
+        "68.3"
+      ],
+      "pass": false,
+      "answer": "6\u00b7N trainable + 4\u00b7N frozen = 24\u00b7N\n\nContext passage not in context: \"The usual 6\u00b7N-for-everything convention would overstate LoRA MFU by ~50%.\" (METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token)",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "METHODOLOGY::5-mfu-is-lora-corrected-0000-model-flops-utilization-uses-flops-token",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1941.6,
+        "retrieve_ms": 301.49,
+        "rerank_ms": 1942.7,
+        "ttft_ms": 9551.81,
+        "e2e_ms": 145743.45
+      },
+      "probe_wall_ms": 208181.1
+    },
+    {
+      "q": "How long did the first-ever cold boot of the Llama 8B serving config take, including compilation?",
+      "expect_any": [
+        "39.5",
+        "2,372",
+        "2372"
+      ],
+      "pass": false,
+      "answer": "30 minutes. Not in context.",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "07-inference-lanes::lane-5-30-min-sustained-lane-6-quality-l-0000-tail-f-inf2-results-serve-llama31-base-s"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 568.35,
+        "retrieve_ms": 111.62,
+        "rerank_ms": 1838.1,
+        "ttft_ms": 554.56,
+        "e2e_ms": 97536.74
+      },
+      "probe_wall_ms": 104333.0
+    },
+    {
+      "q": "Which compiler error code crashed long-context serving at max-model-len 9216 and 10240?",
+      "expect_any": [
+        "ncc_inla001"
+      ],
+      "pass": true,
+      "answer": "NCC_INLA001\n\nContext passage not in context: \"The primary bench client is this repo's `fallback_client.py` (schema-identical to `vllm bench serve --save-result`). Input length is exact: the prompt over-provisions words and the request pins the token count via vLLM's `truncate_prompt_tokens` (adopted after the BOS token pushed 1024-word prompts to 1025 tokens and 400'd an entire sweep). Output leng",
+      "ids": [
+        "METHODOLOGY::6-kv-cache-arithmetic-drives-the-serving-0000-llama-3-1-8b-32-layers-8-kv-heads-128-he",
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 581.51,
+        "retrieve_ms": 98.35,
+        "rerank_ms": 1840.08,
+        "ttft_ms": 3094.53,
+        "e2e_ms": 112754.76
+      },
+      "probe_wall_ms": 119566.9
+    },
+    {
+      "q": "Which EC2 instance type was used as the serving box?",
+      "expect_any": [
+        "inf2.xlarge"
+      ],
+      "pass": false,
+      "answer": "trn1.2xlarge\n\n[4] (01-security-hardening::2-new-keys-new-profile-0000-aws-iam-create-access-key-user-name-neur)\naws iam create-access-key --user-name neuron-pipelines-admin \\\n  --query 'AccessKey.[AccessKeyId,SecretAccessKey]' --output text\naws configure --profile neuron-pipelines \\\n  # paste the pair; region us-west-2\naws configure                              # paste the SAME pair as default\naws",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "01-security-hardening::2-new-keys-new-profile-also-make-it-the-0000-aws-iam-create-access-key-user-name-neur",
+        "01-security-hardening::1-create-the-working-iam-user-0000-aws-iam-create-user-user-name-neuron-pip"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 566.59,
+        "retrieve_ms": 99.57,
+        "rerank_ms": 1836.01,
+        "ttft_ms": 1038.69,
+        "e2e_ms": 116469.03
+      },
+      "probe_wall_ms": 123202.3
+    },
+    {
+      "q": "What throughput retention was measured over 30 minutes of sustained serving load?",
+      "expect_any": [
+        "100.4"
+      ],
+      "pass": true,
+      "answer": "100.4% vs first, 100.0% vs peak.\n\nContext passage not in context: \"The serving concurrency grid tops out where KV memory says it must\" (rule 6). This is not in context.",
+      "ids": [
+        "REPORT::12-limits-0000-as-pre-registered-one-box-per-role-singl",
+        "README::caveats-worth-knowing-before-you-read-th-0000-compile-time-is-real-and-reported-rule-3",
+        "REPORT::6-sustained-30-min-config-a-concurrency-0000-7-iterations-118-8-119-3-tok-s-tail-3-me"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1951.02,
+        "retrieve_ms": 159.14,
+        "rerank_ms": 1879.01,
+        "ttft_ms": 2444.96,
+        "e2e_ms": 124733.35
+      },
+      "probe_wall_ms": 184720.2
+    },
+    {
+      "q": "Which dataset was the Llama 3.1 8B model fine-tuned on?",
+      "expect_any": [
+        "dolly-15k",
+        "dolly 15k",
+        "dolly"
+      ],
+      "pass": false,
+      "answer": "Not in context.",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met",
+        "REPORT::3-compile-costs-rule-3-a-result-not-over-0000-event-wall-time-cache-state-llama-8b-ser"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 1645.67,
+        "retrieve_ms": 259.3,
+        "rerank_ms": 1904.95,
+        "ttft_ms": 2077.25,
+        "e2e_ms": 91493.98
+      },
+      "probe_wall_ms": 160100.0
+    },
+    {
+      "q": "How many tokens per second did the Llama 3.1 8B LoRA training run sustain?",
+      "expect_any": [
+        "2,952",
+        "2952"
+      ],
+      "pass": false,
+      "answer": "400'd an entire sweep.",
+      "ids": [
+        "METHODOLOGY::known-limits-0000-one-box-per-role-one-seed-one-run-per-la",
+        "README::models-0000-model-role-regime-it-probes-llama-3-1-8b",
+        "README::what-is-measured-0000-see-the-lane-table-in-methodology-md-met"
+      ],
+      "reranked": true,
+      "rerank_note": null,
+      "timings": {
+        "embed_ms": 571.28,
+        "retrieve_ms": 99.72,
+        "rerank_ms": 1839.76,
+        "ttft_ms": 454.03,
+        "e2e_ms": 97140.08
+      },
+      "probe_wall_ms": 103933.5
+    }
+  ],
+  "passed": 2,
+  "total": 7,
+  "pass_rate": 0.286,
+  "errored": 0,
+  "captured": "2026-08-15T15:21:37Z"
+}

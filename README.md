@@ -15,6 +15,17 @@ Companion repo: [MI300X-vs-H200](https://github.com/alpharomercoma/MI300X-vs-H20
 — same harness lineage, same metrics schema, so numbers are directly
 comparable across repos.
 
+![Architecture: four CloudFormation stacks across two regions, three Neuron instances, SSM-only access, one S3 artifacts bucket](architecture-clean.png)
+
+The study as built: four CDK stacks across two regions, three Neuron instances
+reached only through SSM Session Manager, and a single versioned us-west-2
+bucket that all three boxes read and write cross-region. The instances were
+terminated on 2026-08-26 and the `NeuronPipelinesTrainium`,
+`NeuronPipelinesInferentia` and `Ec2AutoshutdownStack` stacks deleted with them;
+`NeuronPipelinesBase` (the bucket and the budget) and
+`NeuronPipelinesTrainium2` (scale-to-zero, max 1) remain. The diagram is
+therefore the architecture *as measured*, not the account as it stands today.
+
 ## Machines
 
 ```
@@ -26,7 +37,20 @@ trn1.2xlarge  (us-west-2)                 inf2.xlarge  (us-west-2)
   Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04)  Neuron vLLM 0.16 DLAMI (Ubuntu 24.04)
   torch-neuronx 2.9.0 | neuronx-cc 2.26     vllm 0.16.0 | NxDI 0.10 | neuronx-cc 2.26
   optimum-neuron 0.4.3 (pins: trl 0.24.0)   ami-035c945d557065665 (pin is load-bearing)
+
+trn2.3xlarge  (sa-east-1)                  <- Phase 3, generational comparison
+  1x Trainium2: 8 NeuronCores v3
+    -> 4 logical cores at LNC=2 (default)
+  96 GB HBM, 2.9 TB/s (24 GB per logical core)
+  ~667 TFLOP/s dense BF16 (paper) = 3.18x trn1
+  12 vCPU, 128 GiB host RAM
+  Neuron DLAMI (PyTorch 2.9, Ubuntu 24.04), no AMI pin needed
 ```
+
+sa-east-1 is not a preference: it is the only region on earth offering the
+small Trainium2 SKU. The artifacts bucket stays in us-west-2 and all three
+boxes report into one comparison; v3 NEFFs use a separate S3 cache prefix
+because a NEFF is compiled for a specific NeuronCore version.
 
 Both boxes are provisioned by the CDK app in [cdk/](cdk/), accessed only via
 SSM Session Manager (no SSH, zero ingress rules), and stopped — not
@@ -85,4 +109,65 @@ make pull-results && make report     # regenerate REPORT.md numbers
 
 ## Status
 
-Complete. Measured results in [REPORT.md](REPORT.md) + [REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from `analysis/comparison.json` via `make report`.
+Complete through Phase 5. Measured results in [REPORT.md](REPORT.md) +
+[REPORT-EXTENSIONS.md](REPORT-EXTENSIONS.md); every number regenerates from
+`analysis/comparison.json` via `make report`, the Phase-4 tables from
+`analysis/phase4_summary.py`, and the Phase-5 tables from
+`analysis/accuracy_summary.py` and `analysis/specdec_summary.py`.
+
+**Phase 5 — correctness, acceptance, and replication** (§35-38):
+
+| question | answer |
+|---|---|
+| Do the graphs compute the *right* answer, not just fast? | yes — zero-shot ImageNet is **bit-exact vs CPU on 10,000 images**, both boxes; ASR WER moves −0.02 to −0.03 pp. All six paired lanes PASS the MLPerf gate (§35) |
+| Can a fast graph be silently wrong? | **yes** — the traced CLIP text tower returned NaN for all 1000 classes at 1,165 images/s with `Compiler status PASS` (§35.3) |
+| How far does speculative decoding actually go? | **2.45× at k=7** over Spec-Bench's 39 prompts; cost is linear (R² 0.999993), acceptance is what decays (§36) |
+| Does the 68.3% MFU headline replicate on another corpus? | yes — Tulu-3 lands at **2,964 tok/s vs dolly's 2,952**, 0.4% apart (§37) |
+| Why is gpt-oss-20b blocked on inf2? | a MoE kernel **shape** constraint (`hidden_size` 2880 not divisible by 128), not memory — no OOM evidence at all (§36.3) |
+
+One Phase-5 lane is deliberately **not** published as a result: the midtrain
+learning-rate-schedule comparison failed its own control (bit-identical loss
+traces across two schedules that demonstrably ran). The anomaly is recorded in
+§38 instead of a recommendation.
+
+**The boxes are gone.** All seven EC2 instances backing this study were
+terminated on 2026-08-26; the disks survive as EBS snapshots. Everything needed
+to rebuild them — snapshot IDs, AMI pins, user-data, KMS keys, CloudFormation
+templates — is in
+[docs/preservation/2026-08-26-RECOVERY.md](docs/preservation/2026-08-26-RECOVERY.md).
+Results in this repo regenerate without any AWS access.
+
+**Phase 4 — the training stages either side of SFT** (§32):
+
+| stage | on one Trainium1 |
+|---|---|
+| SFT | works — 2,952 tok/s, 68.3% MFU @ seq 2048 |
+| ORPO (preference) | works — 1,181 tok/s, 30.2% MFU @ max_length 1024 |
+| DPO | unresolved — the reference forward **compiles**; the lane dies later, in a host transfer |
+| GRPO / RLVR | architecturally blocked — no `generate()` on the training model class |
+| pretraining from scratch | works — 4,573 tok/s on one core; the whole chip is worth **+7.7%**, measured |
+
+Read §32.3 and §32.4 before quoting the ORPO figures: they are throughput
+measurements at shorter sequences than the SFT lane, and their loss did not
+descend.
+
+**Pretraining, and what the whole chip is actually worth.** SmolLM2-360M has 15
+attention heads and 5 KV heads; neither divides 2, so that architecture is
+stranded on one of the chip's two NeuronCores (optimum-neuron 0.4.3 offers no
+data-parallel dimension, so tensor parallelism is the only way to use both).
+Running a 16-head/4-KV variant at hidden 1024 — 386M params, and *not*
+SmolLM2-360M — at both widths from the same random init gives the controlled
+answer: **2,463.5 tok/s at TP=1 against 2,652.6 at TP=2, a 7.7% gain for
+doubling the cores.** Tensor parallelism adds a collective on every layer, and
+at this model size the collectives eat almost all of it. Low MFU here is the
+model's size, not the chip's speed — the same chip reaches 68.3% on an 8B
+fine-tune.
+
+**A correction that supersedes earlier text.** This table previously recorded
+DPO as *terminal, the adapter-disabled reference forward fails to compile*.
+That is wrong. Moving the reference pass out of the training step and running
+it once beforehand produces `Compiler status PASS` on that forward: what
+blocked DPO was its **placement inside the training-step graph**, not the
+forward itself. The lane still yields no throughput number — it dies afterwards
+in a host transfer (`.cpu()` on an unflushed lazy tensor, `BufferMapAdd`) — so
+the outcome is unchanged while the stated reason is retracted.

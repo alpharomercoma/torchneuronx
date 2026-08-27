@@ -1,0 +1,16 @@
+{
+  "lane": "precompile",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "exit_code": 0,
+  "wall_s": 213.58,
+  "cache_dir": "/opt/np/cache/neuron-compile-cache",
+  "cache_dir_size_mb": 1346,
+  "cache_dir_size_mb_before": 1346,
+  "neff_files_before": 42,
+  "neff_files_after": 42,
+  "graphs_compiled": 0,
+  "cache_hits_note": "No new NEFFs were produced: every graph this model needs was already in the cache, so lane 4 should show a first step close to its median. wall_s here is cache-lookup and graph-tracing time only, not compilation.",
+  "numerics_note": "NEURON_EXTRACT_GRAPHS_ONLY=1 -- graphs were traced and compiled but never executed. No loss, gradient or throughput value from this phase is recorded anywhere; the training metrics JSON was written to /tmp/precompile_discard.json and deleted.",
+  "max_steps": 10,
+  "captured": "2026-08-05T18:11:27Z"
+}

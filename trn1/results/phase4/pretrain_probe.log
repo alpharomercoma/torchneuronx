@@ -1,0 +1,64 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026-Aug-14 19:33:23.0567 15163:15185 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed t2026-Aug-14 19:33:23.0567 15162:15184 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):273 CCOM WARN NET/OFI Failed to initialize rdma protocol
+o initialize rdma protocol
+2026-Aug-14 19:33:23.0567 15163:15185 [1] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 19:33:23.0569 15162:15184 [0] int nccl_net_ofi_create_plugin(nccl_net_ofi_plugin_t**):416 CCOM WARN NET/OFI aws-ofi-nccl initialization failed
+2026-Aug-14 19:33:23.0571 15163:15185 [1] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 19:33:23.0573 15162:15184 [0] ncclResult_t nccl_net_ofi_init(ncclDebugLogger_t):78 CCOM WARN NET/OFI Initializing plugin failed
+2026-Aug-14 19:33:23.0575 15163:15185 [1] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+2026-Aug-14 19:33:23.0577 15162:15184 [0] net_plugin.cc:104 CCOM WARN OFI plugin initNet() failed is EFA enabled?
+[pretrain] rank 0/2 device=xla:0
+[pretrain] 409.0M parameters, all trainable
+[pretrain] 4096 tok/step, 60 steps planned, cap 1.0h
+2026-08-14 19:33:29.000024:  15163  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14269584625111936084+e30acd3a/model.neff
+2026-08-14 19:33:29.000026:  15162  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_14269584625111936084+e30acd3a/model.neff
+  step 1/60 loss 10.9527 2288ms lr 3.00e-04
+2026-08-14 19:33:38.000612:  15162  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.neff
+2026-08-14 19:33:38.000648:  15163  [INFO]: Using a cached neff at /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_6283841084427540819+e30acd3a/model.neff
+  step 2/60 loss 10.2278 28845ms lr 3.00e-04
+...2026-08-14 19:35:11.000810:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 1.0 minutes
+...2026-08-14 19:36:11.000812:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 2.0 minutes
+...2026-08-14 19:37:11.000813:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 3.0 minutes
+...2026-08-14 19:38:11.000815:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 4.0 minutes
+...2026-08-14 19:39:11.000817:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 5.0 minutes
+...2026-08-14 19:40:11.000818:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 6.0 minutes
+...2026-08-14 19:41:11.000820:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 7.0 minutes
+...2026-08-14 19:42:11.000821:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 8.0 minutes
+...2026-08-14 19:43:11.000823:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 9.0 minutes
+...2026-08-14 19:44:11.000824:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 10.0 minutes
+...2026-08-14 19:45:11.000826:  15162  [INFO]: Another process must be compiling /opt/np/cache/neuron-compile-cache/neuronxcc-2.26.6360.0+6f180f47/MODULE_16813002179141854814+e30acd3a/model.hlo_module.pb, been waiting for: 11.0 minutes
+..W0814 19:45:43.814000 15132 torch/distributed/elastic/agent/server/api.py:725] Received 15 death signal, shutting down workers
+W0814 19:45:43.815000 15132 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 15162 closing signal SIGTERM
+W0814 19:45:43.815000 15132 torch/distributed/elastic/multiprocessing/api.py:908] Sending process 15163 closing signal SIGTERM
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 940, in <module>
+    main()
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 284, in launch_agent
+    result = agent.run()
+             ^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/metrics/api.py", line 138, in wrapper
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 717, in run
+    result = self._invoke_run(role)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/agent/server/api.py", line 881, in _invoke_run
+    time.sleep(monitor_interval)
+  File "/opt/aws_neuronx_venv_pytorch_2_9/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py", line 85, in _terminate_process_handler
+    raise SignalException(f"Process {os.getpid()} got signal: {sigval}", sigval=sigval)
+torch.distributed.elastic.multiprocessing.api.SignalException: Process 15132 got signal: 15

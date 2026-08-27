@@ -1,0 +1,11 @@
+{
+  "model_key": "smoke_tinyllama",
+  "config": "short",
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "boot_wall_s": 503,
+  "cache_dir_size_mb_before": 2157,
+  "cache_dir_size_mb_after": 2224,
+  "warm": false,
+  "server_pid": 9185,
+  "captured": "2026-08-15T14:29:24Z"
+}

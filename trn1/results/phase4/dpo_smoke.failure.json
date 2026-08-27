@@ -1,0 +1,57 @@
+{
+  "tag": "dpo_smoke",
+  "stage": "dpo",
+  "box": "trn1",
+  "status": "failed",
+  "verdict": "TERMINAL for LoRA DPO at 8B on this stack. Not terminal for preference optimisation, which ORPO completed on the same hardware in the same script.",
+  "reason": "RuntimeError: RunNeuronCCImpl: error condition !(error != 400): <class 'TypeError'>: stat: path should be string, bytes, os.PathLike or integer, not NoneType -- raised while compiling the graph flushed by the first .item() in trl/trainer/dpo_trainer.py:1782 (get_batch_loss_metrics).",
+  "attempts": 3,
+  "why_this_is_a_controlled_result": "ORPO ran to completion on the SAME script, the SAME re-based NeuronTrainer, the SAME chip, the SAME dataset and the SAME fixed-shape collator, and produced 1012.5 tok/s at 25.9% MFU. ORPO executes the identical metric-materialisation pattern that DPO dies in -- per-metric .item() inside the training step. The lanes differ in exactly one structural way: DPO obtains its reference log-probs by entering peft.disable_adapter() and running a second forward over the frozen base, and ORPO is reference-free by design. The reference pass is therefore isolated as the blocker by controlled comparison rather than by inference from a stack trace.",
+  "hypotheses_tested_and_rejected": [
+    {
+      "hypothesis": "disable_adapter() -> get_model_status() -> get_nb_trainable_parameters() -> optimum-neuron _get_model_param_count() -> xm.mark_step() forces the compile.",
+      "test": "Pinned the parameter counts on the model so the bookkeeping call cannot sync.",
+      "result": "REJECTED. Identical error recurred. The pin is kept because removing a per-step collective is still correct, but it fixed nothing."
+    },
+    {
+      "hypothesis": "TRL's eight per-step accelerator.gather_for_metrics calls route through optimum-neuron gather(out_of_graph=True) -> xm.mesh_reduce -> _xla_sync_multi and cut the graph at a point the two TP ranks do not agree on. Evidence: the ranks were compiling different module hashes concurrently (rank 0 MODULE_3412766081022117232, rank 1 MODULE_12367629996638363887).",
+      "test": "Replaced gather_for_metrics with the identity function, which is arithmetically exact at dp=1 because every rank holds the same batch.",
+      "result": "PARTIALLY CORRECT BUT INSUFFICIENT. The rank divergence is real and the fix is kept and justified, but the remaining bare .item() at the same line still flushes the step and the same compile still fails. An independent reviewer predicted exactly this before the run."
+    }
+  ],
+  "surviving_attribution": "The graph flushed at dpo_trainer.py:1782 contains the adapter-disabled reference forward. neuronx-cc fails to produce a NEFF for it and libneuronxla then stat()s a null path. ORPO, whose flushed graph contains no such pass, compiles and runs.",
+  "not_yet_done": "The confirming experiment is DPO with an EXPLICIT ref_model at a scale where two copies fit in 16 GiB per core (e.g. TinyLlama-1.1B), which never enters disable_adapter(). If that runs, the attribution is demonstrated rather than isolated. It was not run here for budget reasons and is recorded as an open item, not as a result.",
+  "why_an_explicit_reference_is_not_possible_at_8B": "Policy and reference are each ~8.03e9 parameters. Under TP=2 that is ~4.04e9 per core in bf16 for each copy, before optimizer state, activations and the ~2x preference batch. The implicit reference (ref_model=None + a PEFT policy) is the only configuration that fits, which is why this blocker cannot be sidestepped at this model size.",
+  "config": {
+    "algo": "dpo",
+    "base_model": "meta-llama/Llama-3.1-8B-Instruct",
+    "dataset": "HuggingFaceH4/ultrafeedback_binarized:train_prefs",
+    "n_samples": 32,
+    "max_steps": 4,
+    "max_length": 512,
+    "max_prompt_length": 256,
+    "micro_batch": 1,
+    "grad_accum": 8,
+    "tensor_parallel_size": 2,
+    "world_size": 2,
+    "data_parallel_size": 1,
+    "gradient_checkpointing": true,
+    "reference_model": "implicit: adapter disabled on the policy (ref_model=None + PEFT)"
+  },
+  "fixes_that_DID_land_and_are_carried_by_the_working_ORPO_lane": [
+    "_clone_rebound: rebinding the __class__ closure cell so copied TRL methods can call super()",
+    "HFTrainerCompat: the transformers.Trainer surface NeuronTrainer omits",
+    "HFTrainerCompat.log: absorbs Trainer.log(logs, start_time) vs NeuronTrainer.log(logs)",
+    "strip_unsupported_forward_kwargs: use_cache / output_hidden_states",
+    "ensure_accelerate_state at startup AND immediately before trainer construction",
+    "FixedShapeCollator: fixed shapes so Neuron does not recompile per batch",
+    "chat template borrowed from the matching Instruct model for base-model ORPO",
+    "neutralise_out_of_graph_gathers: exact at dp=1, guarded against dp>1 and against precompute_ref_log_probs"
+  ],
+  "artifacts": {
+    "log": "dpo_smoke.log",
+    "telemetry": "dpo_smoke.telemetry.csv",
+    "earlier_attempt_before_the_gather_fix": "dpo_smoke_gathersync.log"
+  },
+  "captured": "2026-08-14T21:35:00Z"
+}

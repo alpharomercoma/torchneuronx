@@ -1,0 +1,15 @@
+=== launch_vllm: llama31_dolly_trn2 (short) ===
+    model_id      : /opt/np/models/llama31-8b-dolly-merged-trn2
+    tp / port     : 2 / 8000
+    max-model-len : 2048   max-num-seqs: 32
+    venv          : /opt/aws_neuronx_venv_pytorch_inference_vllm_0_16
+    neuron cache  : /opt/np/cache/neuron-compile-cache
+    boot json     : /opt/np/repo/inf2/results/serve/llama31_dolly_trn2_short/boot.json
+--- server pid 18727; polling /health every 5s (up to 90 min: cold compile is slow) ---
+--- server healthy in 602s (cache 1986 -> 1986 MB); boot recorded in /opt/np/repo/inf2/results/serve/llama31_dolly_trn2_short/boot.json ---
+--- point isl1024_osl1024_c1 (num_prompts=8) ---
+--- point isl1024_osl1024_c4 (num_prompts=16) ---
+--- point isl1024_osl1024_c8 (num_prompts=32) ---
+--- point isl1024_osl1024_c16 (num_prompts=64) ---
+--- point isl1024_osl1024_c32 (num_prompts=128) ---
+--- sweep complete: /opt/np/repo/inf2/results/serve/llama31_dolly_trn2_short ---

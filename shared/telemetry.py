@@ -37,6 +37,32 @@ import time
 
 SCHEMA = ["t_s", "gpu_util_pct", "mem_used_mib", "power_w", "temp_c", "sclk_mhz", "mclk_mhz"]
 
+# Logical NeuronCores per instance, for the per-core telemetry columns. Kept
+# here rather than imported from sft_lora.py so telemetry stays dependency-free
+# and importable on a box with no training stack installed.
+DEVICE_CORES = {"trn1": 2, "inf2": 2, "trn2": 4}
+DEFAULT_CORES = 2
+
+
+def neuron_core_count(env=None):
+    """How many util_nc<i> columns to emit. Pure given env, so it is tested.
+
+    NP_TELEMETRY_CORES wins (the trn2 TP ladder may run at LNC=1 with 8 cores,
+    which no static table can predict), then NP_DEVICE, then 2 -- the value
+    every Phase-1/2 CSV was captured with.
+    """
+    env = os.environ if env is None else env
+    raw = (env.get("NP_TELEMETRY_CORES") or "").strip()
+    if raw:
+        try:
+            n = int(raw)
+            if n > 0:
+                return n
+        except ValueError:
+            pass
+    return DEVICE_CORES.get((env.get("NP_DEVICE") or "").strip().lower(),
+                            DEFAULT_CORES)
+
 
 def _read(path, scale=1.0, default=None):
     try:
@@ -128,7 +154,11 @@ class NeuronSampler:
         power_w/temp_c/sclk_mhz/mclk_mhz <- not exposed by neuron-monitor on
             trn1/inf2; left empty rather than fabricated. summarize.py reports
             tokens_per_joule as null when the power column is empty.
-    Extra columns: util_nc0, util_nc1, host_mem_used_mib.
+    Extra columns: util_nc0..util_nc<N-1>, host_mem_used_mib, where N is the
+    logical NeuronCore count. N is 2 (Trainium1/Inferentia2) unless the driver
+    exports NP_TELEMETRY_CORES or NP_DEVICE -- see neuron_core_count(). The
+    class attribute below stays the 2-core form so a CSV captured on trn1 in
+    Phase 1 still has exactly the columns it had then.
 
     When no runtime is attached, neuron-monitor emits no neuron_runtime_data
     entries; utilization is then recorded as 0.0 -- an idle accelerator is a
@@ -156,6 +186,10 @@ class NeuronSampler:
     }
 
     def __init__(self):
+        self.cores = neuron_core_count()
+        self.extra = ([f"util_nc{i}" for i in range(self.cores)]
+                      + ["host_mem_used_mib"])
+
         exe = "/opt/aws/neuron/bin/neuron-monitor"
         if not os.access(exe, os.X_OK):
             exe = shutil.which("neuron-monitor")
@@ -187,10 +221,15 @@ class NeuronSampler:
                 self._latest = obj
 
     @staticmethod
-    def parse(obj):
-        """neuron-monitor JSON -> (util_mean, mem_used_mib, util_nc0, util_nc1,
-        host_mem_used_mib). Split out from sample() so it is testable against
-        a committed fixture without hardware."""
+    def parse(obj, cores=2):
+        """neuron-monitor JSON -> (util_mean, mem_used_mib, util_nc0 ..
+        util_nc<cores-1>, host_mem_used_mib). Split out from sample() so it is
+        testable against a committed fixture without hardware.
+
+        `cores` defaults to 2 so the trn1/inf2 call shape and the Phase-1 CSV
+        columns are unchanged; util_mean is always the mean over the cores
+        actually reporting, never over `cores`, so a wrong count cannot inflate
+        the headline utilization figure."""
         utils = {}
         dev_bytes = 0
         host_bytes = 0
@@ -208,20 +247,19 @@ class NeuronSampler:
             host_bytes += used.get("host") or 0
         util_mean = (round(sum(utils.values()) / len(utils), 2)
                      if utils else 0.0)
-        return (util_mean,
-                round(dev_bytes / (1024 * 1024), 1),
-                round(utils.get(0, 0.0), 2),
-                round(utils.get(1, 0.0), 2),
-                round(host_bytes / (1024 * 1024), 1))
+        return ((util_mean, round(dev_bytes / (1024 * 1024), 1))
+                + tuple(round(utils.get(i, 0.0), 2) for i in range(cores))
+                + (round(host_bytes / (1024 * 1024), 1),))
 
     def sample(self):
         with self._lock:
             obj = self._latest
         if obj is None:
             # neuron-monitor has not emitted its first line yet
-            return [None] * 6 + [None] * 3
-        util, dev_mib, nc0, nc1, host_mib = self.parse(obj)
-        return [util, dev_mib, None, None, None, None, nc0, nc1, host_mib]
+            return [None] * (len(SCHEMA) - 1 + len(self.extra))
+        util, dev_mib, *per_core, host_mib = self.parse(obj, self.cores)
+        return ([util, dev_mib, None, None, None, None]
+                + per_core + [host_mib])
 
 
 def make_sampler():

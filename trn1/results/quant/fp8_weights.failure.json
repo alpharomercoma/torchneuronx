@@ -1,0 +1,1 @@
+{"tag":"fp8_weights","status":"failed","wall_s":918,"box":"trn1","reason":"Traceback (most recent call last): RuntimeError: Cannot get channel axis for the scale: 0.003108724020421505 ","captured":"2026-08-19T19:33:37Z"}

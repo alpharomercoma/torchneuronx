@@ -1,0 +1,13 @@
+{
+ "k": 0,
+ "prompts_detected": 1,
+ "decode_calls_per_prompt": [
+  580
+ ],
+ "total_calls": 580,
+ "tag_totals": {
+  "context_encoding_model": 1,
+  "token_generation_model": 580
+ },
+ "note": "decode_calls_per_prompt segmented on context_encoding_model boundaries. Divide each prompt's GENERATED TOKEN COUNT by its entry to get E[accepted] for that prompt."
+}
