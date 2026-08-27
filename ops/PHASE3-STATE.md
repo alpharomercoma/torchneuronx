@@ -2,6 +2,12 @@
 
 Handoff document. Everything needed to resume without prior context.
 
+> **Historical record — not edited to match the current tree.** Paths here are
+> the ones that existed on 2026-08-05: the one-off drivers it names as
+> `extras/attic/trn2-window/…` now live at `ops/attic/trn2-window/…`, and the
+> capacity scripts at `ops/capacity/`. Rewriting the log to match a later
+> layout would falsify what was actually believed and run at the time.
+
 ## Hard deadlines (UTC)
 
 | when | what |

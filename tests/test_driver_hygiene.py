@@ -17,8 +17,9 @@ ATTIC = ROOT / "ops" / "attic"
 
 
 def _active_drivers():
-    """Drivers that are maintained. The attic is frozen evidence, not code."""
-    return [p for p in EXTRAS.glob("*.sh") if ATTIC not in p.parents]
+    """Drivers that are maintained. The attic is frozen evidence, not code --
+    it lives under ops/, so nothing in extras/ needs filtering out any more."""
+    return list(EXTRAS.glob("*.sh"))
 
 
 def test_every_shell_driver_parses():

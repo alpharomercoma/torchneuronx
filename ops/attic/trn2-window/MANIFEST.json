@@ -15,7 +15,7 @@
       "lines": 89,
       "purpose": "stage 1: quality gate then dataloader isolation",
       "original_path": "extras/run_trn2_followon.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_followon.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_followon.sh"
     },
     {
       "name": "run_trn2_followon2.sh",
@@ -23,7 +23,7 @@
       "lines": 69,
       "purpose": "stage 2: batch ladder (separate file because stage 1 was mid-execution and bash reads lazily)",
       "original_path": "extras/run_trn2_followon2.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_followon2.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_followon2.sh"
     },
     {
       "name": "run_trn2_followon3.sh",
@@ -31,7 +31,7 @@
       "lines": 110,
       "purpose": "stage 3: deliberate ctx_16384 retry, last, with an early hard stop",
       "original_path": "extras/run_trn2_followon3.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_followon3.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_followon3.sh"
     },
     {
       "name": "run_trn2_followon4.sh",
@@ -39,7 +39,7 @@
       "lines": 77,
       "purpose": "stage 4: optional passes after the symmetry items",
       "original_path": "extras/run_trn2_followon4.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_followon4.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_followon4.sh"
     },
     {
       "name": "run_trn2_recover.sh",
@@ -47,7 +47,7 @@
       "lines": 130,
       "purpose": "replaced stages 3-4 after EADDRINUSE collateral; added the port guard",
       "original_path": "extras/run_trn2_recover.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_recover.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_recover.sh"
     },
     {
       "name": "run_trn2_tail.sh",
@@ -55,7 +55,7 @@
       "lines": 88,
       "purpose": "cifar_vit, then frontier pass 2, then the deferred seed lanes",
       "original_path": "extras/run_trn2_tail.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_tail.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_tail.sh"
     },
     {
       "name": "run_trn2_final.sh",
@@ -63,7 +63,7 @@
       "lines": 68,
       "purpose": "new-information-first reorder: frontier, maxutil, then seed lanes",
       "original_path": "extras/run_trn2_final.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_final.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_final.sh"
     },
     {
       "name": "run_trn2_lastwindow.sh",
@@ -71,7 +71,7 @@
       "lines": 85,
       "purpose": "seq-8192 isolation + ctx_16384 in the last idle window",
       "original_path": "extras/run_trn2_lastwindow.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_lastwindow.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_lastwindow.sh"
     },
     {
       "name": "run_trn2_optional_last.sh",
@@ -79,7 +79,7 @@
       "lines": 34,
       "purpose": "optional passes demoted behind the corrected ladder",
       "original_path": "extras/run_trn2_optional_last.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_optional_last.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_optional_last.sh"
     },
     {
       "name": "run_trn2_ladder_last.sh",
@@ -87,7 +87,7 @@
       "lines": 34,
       "purpose": "corrected batch ladder queued behind the recovery queue",
       "original_path": "extras/run_trn2_ladder_last.sh",
-      "frozen_path": "extras/attic/trn2-window/run_trn2_ladder_last.sh"
+      "frozen_path": "ops/attic/trn2-window/run_trn2_ladder_last.sh"
     },
     {
       "name": "run_cifar_vit_retry.sh",
@@ -95,7 +95,7 @@
       "lines": 81,
       "purpose": "on-demand capacity watcher for the one lane that never passed on trn2",
       "original_path": "extras/run_cifar_vit_retry.sh",
-      "frozen_path": "extras/attic/trn2-window/run_cifar_vit_retry.sh"
+      "frozen_path": "ops/attic/trn2-window/run_cifar_vit_retry.sh"
     }
   ],
   "frozen_at": "2026-08-06",

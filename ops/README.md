@@ -11,7 +11,7 @@ Reproduction lives in [`docs/runbook/`](../docs/runbook/); the numbers live in
 |---|---|
 | `preservation/` | The 2026-08-26 teardown: seven EBS snapshots, AMI pins, KMS keys, restore steps, and the persistent-spot-request trap that spawned a replacement instance mid-teardown. Snapshot and bucket IDs are specific to account 600627330911 and are useless elsewhere. |
 | `capacity/` | Trainium2 capacity hunting. `trn2_capacity_watch.sh` polls for capacity unattended, `trn2_block_launch.sh` waits for a Capacity Block to go `active` before deploying, `trn2_preserve_state.sh` snapshots on-box state before a window closes. Cited by [runbook 12](../docs/runbook/12-trainium2.md). |
-| `attic/trn2-window/` | **Frozen.** Twelve one-off drivers written against a closing trn2 window, plus `MANIFEST.json` holding their sha256s. Report citations trace to these exact bytes, so `tests/test_driver_hygiene.py` fails if one is edited or if maintained code ever sources them. |
+| `attic/trn2-window/` | **Frozen.** Eleven one-off drivers written against a closing trn2 window, plus `MANIFEST.json` holding their sha256s. Report citations trace to these exact bytes, so `tests/test_driver_hygiene.py` fails if one is edited or if maintained code ever sources them. |
 | `PHASE3-STATE.md` | The live working-state log kept during Phases 3-5. Superseded by the report; kept because it records what was *believed* at each point, including the wrong beliefs. |
 
 ## Why these are separated

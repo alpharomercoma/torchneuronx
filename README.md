@@ -87,27 +87,58 @@ trn1/ trn2/     per-box: PROVISIONING docs, 4-line run wrapper, raw results
 inf2/
 demo/           live TTFT streamer + headline tables against a warm endpoint
 docs/runbook/   00..13, in execution order -- every command with expected output
-docs/diagrams/  the architecture diagram, as measured
+docs/diagrams/  architecture PNGs (README embeds architecture-clean.png)
 tests/          local gate: fixtures, no AWS or Neuron hardware needed
 ops/            capacity hunting, preservation, teardown, frozen one-offs --
-                the account-side record; not needed to reproduce anything
+                the account-side record. No number depends on it; the driver
+                hygiene test does read it, to keep the frozen scripts frozen
 ```
 
 Results are committed, not regenerated: every number in the reports traces to a
-json + telemetry.csv + log triplet under `trn1/results/`, `trn2/results/` or
-`inf2/results/`. The three instances were terminated on 2026-08-26, so
-`make report` reproduces every table with no AWS account at all.
+receipt under `trn1/results/`, `trn2/results/` or `inf2/results/` — json + log,
+plus a telemetry.csv for every lane that ran on-chip (the cpu, compile and merge
+lanes are exempt by rule, and `analysis/make_report.py` enforces that carve-out
+rather than assuming it). The three instances were terminated on 2026-08-26, so
+the analysis re-runs with no AWS account at all.
 
 ## Reproducing
 
 ```bash
 # 0. read docs/runbook/00-prerequisites.md (HF license, token, quotas)
 make test                            # local gate: harness + infra, no hardware
-cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium
+(cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium)
 # ... then follow docs/runbook/04..07 lane by lane; each box runs:
 #   <box>/scripts/run_all.sh          # resumable; FORCE=1 to redo a lane
-make pull-results && make report     # regenerate REPORT.md numbers
+make report                          # rebuild analysis/comparison.{json,txt}
 ```
+
+`make report` needs no AWS account — the results are in the tree. It rebuilds
+`analysis/comparison.json` and `comparison.txt`, which are the source every
+table in [REPORT.md](REPORT.md) is written from; it does not rewrite the
+markdown itself. The Phase-4 and Phase-5 tables come from
+`analysis/phase4_summary.py`, `accuracy_summary.py` and `specdec_summary.py`
+(see [Status](#status)).
+
+`make pull-results-all` re-mirrors results from S3 and is only useful if you
+re-ran the lanes yourself — it mirrors *every* `results/` prefix on purpose,
+because the three canonical ones missed 736 objects (§39).
+
+### Forking this to your own AWS account
+
+The infrastructure is **pinned to account 600627330911**, deliberately: both the
+default-VPC lookup and the AMI lookup need a concrete environment, and the
+artifacts bucket name embeds the account id because S3 bucket names are global.
+Reproducing on your own account is a rename, not a redesign — but it is not a
+no-op, so here is the whole list:
+
+| what | where |
+|---|---|
+| account id | `cdk/app.py` (`ACCOUNT`), `cdk/tests/conftest.py` |
+| bucket name | 20 files — `grep -rl neuron-pipelines-artifacts-600627330911 . --exclude-dir=.venv` |
+| cached lookups | **delete `cdk/cdk.context.json` first.** It caches this account's VPC, subnet and AMI ids; left in place, `cdk synth` reuses them and silently targets the wrong network |
+| HF token | SSM SecureString `/neuron-pipelines/hf-token`, per region (runbook 00) |
+
+Everything else — the harness, the lanes, the analysis — is account-agnostic.
 
 ## Caveats worth knowing before you read the numbers
 

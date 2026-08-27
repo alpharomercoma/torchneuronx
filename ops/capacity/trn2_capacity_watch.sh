@@ -4,7 +4,7 @@
 #
 # Runs UNATTENDED from the laptop, detached from any terminal:
 #
-#   nohup bash extras/trn2_capacity_watch.sh >> ~/trn2_capacity_watch.log 2>&1 &
+#   nohup bash ops/capacity/trn2_capacity_watch.sh >> ~/trn2_capacity_watch.log 2>&1 &
 #   disown
 #
 # (macOS has no setsid; nohup + disown is the equivalent. Wrap in `caffeinate -i`
@@ -91,7 +91,7 @@ while [ "$(date +%s)" -lt "$DEADLINE" ]; do
         *ExpiredToken*|*"session has expired"*|*InvalidClientTokenId*|\
         *UnrecognizedClient*|*AuthFailure*|*"security token"*)
           log "CREDENTIALS EXPIRED -- cannot poll. Run 'aws login', then relaunch:"
-          log "  nohup caffeinate -i bash extras/trn2_capacity_watch.sh >> ~/trn2_capacity_watch.log 2>&1 & disown"
+          log "  nohup caffeinate -i bash ops/capacity/trn2_capacity_watch.sh >> ~/trn2_capacity_watch.log 2>&1 & disown"
           status "STOPPED $(date -u +%Y-%m-%dT%H:%M:%SZ): AWS credentials expired -- re-auth and relaunch"
           exit 2 ;;
         *UnauthorizedOperation*|*AccessDenied*)
