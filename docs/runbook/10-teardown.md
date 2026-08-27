@@ -6,9 +6,9 @@ bash shared/bin/push_results.sh trn1 ; bash shared/bin/push_results.sh inf2
 bash shared/bin/sync_neuron_cache.sh push
 
 cd ~/neuron-pipelines/cdk
-uv run cdk destroy NeuronPipelinesInferentia
-uv run cdk destroy NeuronPipelinesTrainium
-uv run cdk destroy NeuronPipelinesTrainium2   # sa-east-1; set DesiredCapacity 0 first
+npx -y aws-cdk@2 destroy NeuronPipelinesInferentia
+npx -y aws-cdk@2 destroy NeuronPipelinesTrainium
+npx -y aws-cdk@2 destroy NeuronPipelinesTrainium2   # sa-east-1; set DesiredCapacity 0 first
 # BaseStack: keep until the final bill clears (budget alerts live there)
 
 # Terminating a CFN-managed instance by hand drifts its stack, and a later

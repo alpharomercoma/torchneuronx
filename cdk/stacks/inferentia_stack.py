@@ -9,14 +9,16 @@ Design decisions:
   * Escape hatch: `-c inf2AmiId=ami-...` bypasses the lookup entirely and uses
     that exact AMI (useful when the name pattern drifts or for pinning).
   * Instance type comes from context `inf2InstanceType` (default inf2.xlarge,
-    which fits an 8-vCPU Inf quota; inf2.2xlarge / inf2.8xlarge are one-flag
-    upgrades once quota allows).
+    which fits an 8-vCPU Inf quota). There is no inf2.2xlarge -- the family
+    jumps xlarge -> 8xlarge, so the next step up is a 32-vCPU quota request,
+    not a one-flag change.
   * Same posture as the trainium lane: IMDSv2 required, no key pair, SG + role
     from NeuronPipelinesBase, pinned subnet, 500 GiB encrypted gp3 root.
     IMDSv2 + root volume live in an explicit LaunchTemplate because
     AWS::EC2::Instance Ebs mappings cannot express gp3 Throughput.
-  * User data = common.sh + inf2.sh (inf2 has no NVMe instance store, so
-    inf2.sh is a placeholder).
+  * User data = common.sh + inf2.sh. inf2 has no NVMe instance store, so
+    inf2.sh puts a 48 GiB swapfile on the EBS root instead -- load-bearing:
+    an 8B model does not fit in 16 GiB of host RAM during tracing.
 """
 from aws_cdk import (
     CfnOutput,

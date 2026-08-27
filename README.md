@@ -23,8 +23,12 @@ bucket that all three boxes read and write cross-region. The instances were
 terminated on 2026-08-26 and the `NeuronPipelinesTrainium`,
 `NeuronPipelinesInferentia` and `Ec2AutoshutdownStack` stacks deleted with them;
 `NeuronPipelinesBase` (the bucket and the budget) and
-`NeuronPipelinesTrainium2` (scale-to-zero, max 1) remain. The diagram is
-therefore the architecture *as measured*, not the account as it stands today.
+`NeuronPipelinesTrainium2` remain. That second stack synthesises a plain
+`AWS::EC2::Instance` by default and only becomes an AutoScalingGroup (min 0,
+max 1) when Capacity-Block or capacity-hunt context is set — and its live
+desired capacity is set outside the template, so check it rather than assume
+it is zero. The diagram is therefore the architecture *as measured*, not the
+account as it stands today.
 
 ## Machines
 
@@ -86,7 +90,8 @@ cdk/            AWS CDK app (Python): Base, Trainium, Trainium2, Inferentia stac
 shared/         the harness -- synced byte-identical to all three boxes
 extras/         the extension lanes: accuracy, quantization, spec-decode, RAG, MoE
 academic/       MNIST + CIFAR-10 on one NeuronCore (mlx-models parity)
-analysis/       make_report.py -> comparison.json -> every table in the reports
+analysis/       make_report.py -> comparison.json -> REPORT.md's core tables;
+                phase4_summary / accuracy_summary / specdec_summary for the rest
 trn1/ trn2/     per-box: PROVISIONING docs, 4-line run wrapper, raw results
 inf2/
 demo/           live TTFT streamer + headline tables against a warm endpoint
@@ -100,18 +105,22 @@ ops/            capacity hunting, preservation, teardown, frozen one-offs --
 ```
 
 Results are committed, not regenerated: every number in the reports traces to a
-receipt under `trn1/results/`, `trn2/results/` or `inf2/results/` — json + log,
-plus a telemetry.csv for every lane that ran on-chip (the cpu, compile and merge
-lanes are exempt by rule, and `analysis/make_report.py` enforces that carve-out
-rather than assuming it). The three instances were terminated on 2026-08-26, so
-the analysis re-runs with no AWS account at all.
+receipt under `trn1/results/`, `trn2/results/` or `inf2/results/` — json plus,
+for most lanes, a log and a telemetry.csv. The triplet is *enforced* where it
+gates a headline: `analysis/make_report.py:99` drops any `train/` lane other
+than merge that arrives without telemetry, so an MFU number cannot be published
+without the utilisation trace behind it. Elsewhere the triplet is a convention,
+not a gate — the cpu, compile and merge lanes have no accelerator telemetry by
+design, and the RAG receipts under `inf2/results/rag/` carry json and (mostly)
+logs but no telemetry.csv at all. The three instances were terminated on
+2026-08-26, so the analysis re-runs with no AWS account at all.
 
 ## Reproducing
 
 ```bash
 # 0. read docs/runbook/README.md, then 00-prerequisites.md (HF license, quotas)
 make test                            # local gate: harness + infra, no hardware
-(cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium)
+(cd cdk && npx -y aws-cdk@2 deploy NeuronPipelinesBase NeuronPipelinesTrainium)
 # ... then follow docs/runbook/04..07 lane by lane; each box runs:
 #   <box>/scripts/run_all.sh          # resumable; FORCE=1 to redo a lane
 make report                          # rebuild analysis/comparison.{json,txt}
@@ -139,8 +148,11 @@ no-op, so here is the whole list:
 | what | where |
 |---|---|
 | account id | `cdk/app.py` (`ACCOUNT`), `cdk/tests/conftest.py` |
-| bucket name | 20 files — `grep -rl neuron-pipelines-artifacts-600627330911 . --exclude-dir=.venv` |
+| bucket name | 28 files — `grep -rl neuron-pipelines-artifacts-600627330911 . --exclude-dir=.venv`. Sixteen of them are live code, not prose: the `Makefile`, `cdk/user_data/common.sh`, `shared/bin/{push_results,pull_code,sync_neuron_cache}.sh`, `shared/serve/launch_vllm.sh` and `shared/train/merge_adapter.py` among them |
+| pinned AZ + subnet | `cdk/cdk.json` `context.az` / `context.subnetId`. **Deleting `cdk.context.json` does not clear these** — they are committed defaults, and both the Trainium and Inferentia stacks consume them |
+| budget alert email | `cdk/cdk.json` `context.alertEmail` — the author's address, or the budget notifies the wrong person |
 | cached lookups | **delete `cdk/cdk.context.json` first.** It caches this account's VPC, subnet and AMI ids; left in place, `cdk synth` reuses them and silently targets the wrong network |
+| a default VPC | `base_stack.py` does `Vpc.from_lookup(is_default=True)`. An account without one cannot deploy this app unchanged |
 | HF token | SSM SecureString `/neuron-pipelines/hf-token`, per region (runbook 00) |
 
 Everything else — the harness, the lanes, the analysis — is account-agnostic.

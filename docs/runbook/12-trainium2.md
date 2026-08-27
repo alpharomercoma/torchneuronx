@@ -5,10 +5,14 @@ explicitly disclaims: **how much faster is one Trainium2 chip than one
 Trainium1 chip on the same LoRA workload?**
 
 Everything here is a different region from the rest of the project. That is not
-a preference — `trn2.3xlarge` is offered **only in sa-east-1** (verified
-2026-08-03 with `describe-instance-type-offerings` across all 17 enabled
-regions). It is the only Trainium2 SKU this account can run: quota
-`L-2C3B7624` was granted at **12 vCPU**, which is exactly one instance.
+a preference — `trn2.3xlarge` is offered **only in sa-east-1 on demand**
+(verified 2026-08-03 with `describe-instance-type-offerings` across all 17
+enabled regions). That API answers only for on-demand: the Capacity Blocks
+supported-regions table also lists the type in ap-southeast-4 (Melbourne), so
+availability is per *purchase mechanism*, not merely per region — see
+REPORT-EXTENSIONS §16 correction 4. It is the only Trainium2 SKU
+this account can run: quota `L-2C3B7624` was granted at **12 vCPU**, which is
+exactly one instance.
 
 ## The two chips
 

@@ -42,7 +42,7 @@ This is recorded as a correction in REPORT-EXTENSIONS.
 
 | | trn1.2xlarge | trn2.3xlarge |
 |---|---|---|
-| Swapfile | 64 GiB on `/scratch` | **none** — 128 GiB of host RAM makes it dead weight, and it would mask a real regression |
+| Swapfile | 64 GiB on `/scratch` | **none in user-data** — 128 GiB of host RAM should make it dead weight. One was added by hand later anyway: the `cifar_vit` compile was killed for memory on the 124 GiB box, and adding 64 GiB of swap did *not* fix it (§25.4). The box that produced the numbers therefore shows 63 GiB of swap, not zero |
 | `MALLOC_ARENA_MAX=64` | needed (32 GiB host OOM mitigation) | harmless, kept for uniformity |
 | Adapter merge host RAM | tight, ~high-20s GiB peak on a 32 GiB box | comfortable |
 | S3 NEFF prefix | `neuron-cache/` | **`neuron-cache-v3/`** — NEFFs are compiled per NeuronCore version and must never mix |

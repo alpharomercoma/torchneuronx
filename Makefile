@@ -20,7 +20,7 @@ pull-results:   ## fetch raw triplets from all three boxes
 pull-results-all: ## mirror EVERY results/ prefix, including the per-lane ones
 	aws s3 sync s3://$(BUCKET)/results/ .s3-mirror/results/
 
-report:         ## regenerate comparison.json + REPORT tables from results/
+report:         ## regenerate analysis/comparison.{json,txt} from results/ (not the .md)
 	python3 analysis/make_report.py
 
 test:           ## local gate 1: harness + CDK assertions (no AWS, no Neuron hardware)

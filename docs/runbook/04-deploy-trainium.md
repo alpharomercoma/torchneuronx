@@ -8,9 +8,9 @@
 
 ```bash
 cd ~/neuron-pipelines/cdk
-uv run cdk bootstrap aws://600627330911/us-west-2   # one-time
-uv run cdk deploy NeuronPipelinesBase               # bucket, role, SG, budget
-uv run cdk deploy NeuronPipelinesTrainium           # $1.34/hr STARTS HERE
+npx -y aws-cdk@2 bootstrap aws://600627330911/us-west-2   # one-time
+npx -y aws-cdk@2 deploy NeuronPipelinesBase               # bucket, role, SG, budget
+npx -y aws-cdk@2 deploy NeuronPipelinesTrainium           # $1.34/hr STARTS HERE
 # Outputs: InstanceId=i-...  SsmConnect="aws ssm start-session ..."
 ```
 

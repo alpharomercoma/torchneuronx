@@ -3,9 +3,14 @@
 Continuation of [REPORT.md](REPORT.md), and the numbering continues with it:
 that page is §1-12, this one starts at §13.
 
-Same contract: every number below comes from a result triplet (JSON + log +
-telemetry CSV) under `trn1/results/`, `trn2/results/` or `inf2/results/`,
-failures are recorded results, and anything excluded is excluded out loud.
+Same contract: every number below comes from a recorded result under
+`trn1/results/`, `trn2/results/` or `inf2/results/` — JSON always, with a log
+and a telemetry CSV wherever the lane produced them. The full triplet is
+enforced only for `train/` lanes, where telemetry is what makes an MFU number
+checkable (`analysis/make_report.py:99` drops a train lane that lacks it); the
+RAG receipts behind §13.10 are JSON-only or JSON-and-log, and the CPU, compile
+and merge lanes have no accelerator telemetry by design. Failures are recorded
+results, and anything excluded is excluded out loud.
 Phase-2 lanes were **validity-checked before spending compute** (the table in
 §13.9 was written first; the predicted-vs-observed column is the
 meta-experiment).
