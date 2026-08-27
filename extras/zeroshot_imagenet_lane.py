@@ -211,6 +211,12 @@ def ensure_dataset(data_dir, keep_tars):
                 if not m.isfile():
                     continue
                 key, ext = os.path.splitext(m.name)
+                # `key` becomes a filename below; a member named "../x" would
+                # write outside img_root. Webdataset keys are flat, so anything
+                # with a separator in it is malformed, not merely unusual.
+                if os.sep in key or (os.altsep and os.altsep in key) \
+                        or key in ("", ".", "..") or os.path.isabs(key):
+                    raise RuntimeError(f"unsafe tar member name: {m.name!r}")
                 data = tf.extractfile(m).read()
                 if ext == ".cls":
                     pending.setdefault(key, {})["cls"] = int(data.decode().strip())

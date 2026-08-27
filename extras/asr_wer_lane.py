@@ -141,6 +141,16 @@ def ensure_split(data_dir, split):
         urlretrieve(OPENSLR.format(split), tgz)
     print(f"extracting {tgz}", flush=True)
     with tarfile.open(tgz) as tf:
+        # OpenSLR is trusted and HTTPS, but an archive member is still untrusted
+        # input: refuse anything that would land outside data_dir. `filter=`
+        # arrived in 3.12; the explicit check keeps older interpreters safe too.
+        base = os.path.abspath(data_dir)
+        for m in tf.getmembers():
+            dest = os.path.abspath(os.path.join(base, m.name))
+            if dest != base and not dest.startswith(base + os.sep):
+                raise RuntimeError(f"unsafe tar member escapes data_dir: {m.name!r}")
+            if m.issym() or m.islnk():
+                raise RuntimeError(f"unsafe tar member is a link: {m.name!r}")
         tf.extractall(data_dir)
     return root
 
