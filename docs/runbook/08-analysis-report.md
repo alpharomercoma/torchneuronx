@@ -23,7 +23,12 @@ python3 demo/headline.py               # eyeball before writing prose
 > copy across what is missing, by hand. See REPORT-EXTENSIONS §39.
 
 The results are committed, so on a fresh clone `python3
-analysis/make_report.py` alone reproduces every table with no AWS account.
+analysis/make_report.py` runs with no AWS account. It rebuilds
+`analysis/comparison.{json,txt}`, which is the source for REPORT.md's core
+lane, serving, quality, isolation and rerun tables — not for every table in the
+study. The Phase-4 and Phase-5 tables come from `analysis/phase4_summary.py`,
+`accuracy_summary.py` and `specdec_summary.py`; the RAG table is written from
+`inf2/results/rag/` by hand. None of the four writes markdown either.
 
 REPORT.md rules: every number from comparison.json; a "Corrections made
 during this study" section listing anything that changed a previously

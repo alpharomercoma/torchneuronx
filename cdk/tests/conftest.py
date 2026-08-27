@@ -21,7 +21,8 @@ ENV = cdk.Environment(account=ACCOUNT, region=REGION)
 SUBNET_ID = "subnet-0004804fe13fb126e"
 
 # The Trainium2 box lives in sa-east-1 -- the only region offering trn2.3xlarge
-# -- so its default-VPC lookup needs its own pre-seeded context key.
+# ON DEMAND (Capacity Blocks also list ap-southeast-4; REPORT-EXTENSIONS §16
+# correction 4) -- so its default-VPC lookup needs its own pre-seeded context key.
 TRN2_REGION = "sa-east-1"
 TRN2_ENV = cdk.Environment(account=ACCOUNT, region=TRN2_REGION)
 TRN2_SUBNET_ID = "subnet-0489739583976c545"

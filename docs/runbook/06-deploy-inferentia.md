@@ -8,7 +8,7 @@ No quota wait: inf2.xlarge fits the existing 8 vCPU quota.
 
 ```bash
 cd ~/neuron-pipelines/cdk
-uv run cdk deploy NeuronPipelinesInferentia \
+npx -y aws-cdk@2 deploy NeuronPipelinesInferentia \
   -c inf2AmiId=ami-035c945d557065665              # vLLM 0.16 DLAMI; $0.76/hr STARTS HERE
 aws ssm start-session --region us-west-2 --target i-...
 # on box: pull code, hf_login, PROVISIONING verified-state block, then:
