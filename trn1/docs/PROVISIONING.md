@@ -1,5 +1,12 @@
 # trn1.2xlarge — provisioning
 
+> **This box no longer exists.** `i-0cb9e758143a745d5` was terminated on
+> 2026-08-26; its 500 GiB root volume — including the 526 MB Neuron compile
+> cache — is preserved in snapshot `snap-0c923f89d51e6e0b5` (313.4 GB).
+> Restore steps: [ops/preservation/](../../ops/preservation/2026-08-26-RECOVERY.md).
+> Everything below is the verified bring-up state, and is what a fresh deploy
+> should look like.
+
 Deployed by `cdk deploy NeuronPipelinesTrainium` (see [cdk/README.md](../../cdk/README.md)).
 This doc is the bring-up verification: what a healthy box looks like, and the
 failure modes already paid for once in a previous project so they never cost

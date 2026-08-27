@@ -219,3 +219,31 @@ never headline; they bound the serving numbers' interpretation.
   forward), and the code emits `mfu_pct_with_reference_pass` beside the
   comparable figure rather than silently choosing one. As everywhere else in
   this study, the convention omits sequence-dependent attention work.
+- **Phase 5 rule: accuracy is a validity gate, not a headline.** A throughput
+  number from a graph that computes the wrong answer is not a slow result, it
+  is not a result. Every Phase-5 accuracy lane is *paired*: the same inputs run
+  on Neuron and on the same box's float32 CPU, and the Neuron figure must reach
+  ≥99% of that same-box reference — MLPerf's closed-division convention. The
+  reference is deliberately the CPU run, never a published number, because a
+  published number carries a different preprocessing pipeline with it.
+- **Phase 5 limit: "bit-exact" means label-identical, not bit-identical
+  logits.** The zero-shot ImageNet lanes report 0 disagreements out of 10,000
+  images against the CPU reference. That is argmax agreement. Logits differ in
+  the low bits, as they must under bf16 accumulation; the claim is about
+  predictions.
+- **Phase 5 convention: speculative-decoding speedup is decode-only.**
+  `analysis/specdec_summary.py` subtracts prefill and divides by generated
+  tokens, so the k-ladder measures what speculation actually changes. Prefill
+  is a steady ~28% penalty at every k and is excluded, which makes the
+  decode-only figure larger than end-to-end — 3.354× versus 3.190× at k=16.
+  Both are reported; neither is quoted without its qualifier.
+- **Phase 5 convention: E[accepted] is derived, not counted.** Nothing in the
+  lane counts accepted draft tokens. E[accepted] is inferred from the fitted
+  per-call cost model, and separately cross-checked against a control ratio of
+  decode-graph invocation counts, `invocations(k=0) / invocations(k)`. The two
+  agree within 2.6%. A directly instrumented acceptance counter would be
+  better evidence and does not exist here.
+- **Phase 5 non-claim: one corpus is not generalization.** The Tulu-3 lane
+  reproduces the 68.3% MFU headline on a second SFT corpus (2,964.0 vs 2,952
+  tok/s, 0.4% apart). Two corpora agreeing is a replication, not a claim that
+  throughput is corpus-independent.

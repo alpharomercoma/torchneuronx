@@ -86,7 +86,8 @@ analysis/       make_report.py -> comparison.json -> every table in the reports
 trn1/ trn2/     per-box: PROVISIONING docs, 4-line run wrapper, raw results
 inf2/
 demo/           live TTFT streamer + headline tables against a warm endpoint
-docs/runbook/   00..13, in execution order -- every command with expected output
+docs/runbook/   00..13, in execution order -- every command with expected
+                output; start at docs/runbook/README.md
 docs/diagrams/  architecture PNGs (README embeds architecture-clean.png)
 tests/          local gate: fixtures, no AWS or Neuron hardware needed
 ops/            capacity hunting, preservation, teardown, frozen one-offs --
@@ -104,7 +105,7 @@ the analysis re-runs with no AWS account at all.
 ## Reproducing
 
 ```bash
-# 0. read docs/runbook/00-prerequisites.md (HF license, token, quotas)
+# 0. read docs/runbook/README.md, then 00-prerequisites.md (HF license, quotas)
 make test                            # local gate: harness + infra, no hardware
 (cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium)
 # ... then follow docs/runbook/04..07 lane by lane; each box runs:

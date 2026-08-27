@@ -1,5 +1,11 @@
 # 04 — deploy Base + Trainium, verify, smoke
 
+> The account id and bucket name below are this study's. On another account,
+> change them first — [Forking this to your own AWS
+> account](../../README.md#forking-this-to-your-own-aws-account) lists every
+> site, and `cdk/cdk.context.json` must be **deleted** before the first synth
+> or it will resolve to this account's VPC.
+
 ```bash
 cd ~/neuron-pipelines/cdk
 uv run cdk bootstrap aws://600627330911/us-west-2   # one-time

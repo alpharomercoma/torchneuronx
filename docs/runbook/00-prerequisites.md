@@ -17,15 +17,25 @@ aws ssm get-parameter --region us-west-2 --name /neuron-pipelines/hf-token \
   --query Parameter.Type --output text      # SecureString
 ```
 
+If you will also run the Trainium2 lane (runbook 12), replicate the same
+parameter into `sa-east-1` — SSM parameters are regional, and the trn2 box
+cannot read a us-west-2 SecureString:
+
+```bash
+aws ssm put-parameter --region sa-east-1 \
+  --name /neuron-pipelines/hf-token --type SecureString --value 'hf_...'
+```
+
 ## 2. Quotas
 
-Already filed — see [02-quotas.md](02-quotas.md). Verify status today.
+See [02-quotas.md](02-quotas.md) for what each family needs — and for why an
+approved quota still does not guarantee you can launch anything.
 
 ## 3. Local tooling
 
 ```bash
 uv --version          # >= 0.4
 node --version        # >= 18 (cdk CLI)
-aws sts get-caller-identity --query Account --output text   # 600627330911
+aws sts get-caller-identity --query Account --output text   # 600627330911 (ours)
 python3 -m pytest --version 2>/dev/null || uv tool install pytest
 ```

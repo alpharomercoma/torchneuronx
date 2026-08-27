@@ -9,4 +9,11 @@ tail -f inf2/results/serve/llama31_base_short.log
 ```
 
 Between lanes: `bash shared/bin/push_results.sh inf2` and cache push.
-End: stop the instance (never terminate — the warm cache is the demo).
+End: **stop** the instance — do not terminate it. The warm NEFF cache on EBS is
+what makes the demo boot in seconds instead of forty minutes, and terminating
+destroys it (`DeleteOnTermination` is true on every root volume here).
+
+> For the record: this box *was* terminated on 2026-08-26, after the study
+> finished and the cache had been snapshotted. See
+> [ops/preservation/](../../ops/preservation/2026-08-26-RECOVERY.md) for the
+> snapshot ids and the restore path.

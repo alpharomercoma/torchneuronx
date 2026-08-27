@@ -1,5 +1,16 @@
 # inf2.xlarge — provisioning
 
+> **This box no longer exists.** The inf2 that carried the study,
+> `i-0936ae7615727251e`, was terminated on 2026-08-26; its root volume,
+> holding the 616 MB warm NEFF cache, is preserved in snapshot
+> `snap-0a25db44c14e44eb0` (517.7 GB). Restore steps:
+> [ops/preservation/](../../ops/preservation/2026-08-26-RECOVERY.md).
+>
+> The "Verified state" capture below is from the **first** inf2,
+> `i-056c306408a85d422`, which was deliberately destroyed and redeployed as the
+> §13.7 cold-start experiment. The two are identically provisioned; the capture
+> is kept because it is the one that was taken verbatim at bring-up.
+
 Deployed by `cdk deploy NeuronPipelinesInferentia`. Same Neuron driver story
 as [trn1](../../trn1/docs/PROVISIONING.md) — the Gotchas table there applies
 here too. This doc adds only what is different on the inference box.

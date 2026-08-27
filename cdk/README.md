@@ -1,13 +1,21 @@
 # cdk — infrastructure (AWS CDK, Python)
 
-Three independently deployable CloudFormation stacks for account
-`600627330911` in `us-west-2`:
+Four independently deployable CloudFormation stacks across two regions, for
+account `600627330911`:
 
-| Stack | What it provisions |
-|---|---|
-| `NeuronPipelinesBase` | S3 artifacts bucket (RETAINed), EC2 instance role + profile, egress-only SG on the default VPC, $200/mo cost budget with email alerts |
-| `NeuronPipelinesTrainium` | one `trn1.2xlarge` on the Neuron PyTorch-2.9 DLAMI (AMI via SSM parameter, resolved at deploy) |
-| `NeuronPipelinesInferentia` | one `inf2.xlarge` on the Neuron PyTorch Inference vLLM DLAMI (AMI via lookup, cached in `cdk.context.json`) |
+| Stack | Region | What it provisions |
+|---|---|---|
+| `NeuronPipelinesBase` | us-west-2 | S3 artifacts bucket (RETAINed), EC2 instance role + profile, egress-only SG on the default VPC, $200/mo cost budget with email alerts |
+| `NeuronPipelinesTrainium` | us-west-2 | one `trn1.2xlarge` on the Neuron PyTorch-2.9 DLAMI (AMI via SSM parameter, resolved at deploy) |
+| `NeuronPipelinesInferentia` | us-west-2 | one `inf2.xlarge` on the Neuron PyTorch Inference vLLM DLAMI (AMI via lookup, cached in `cdk.context.json`) |
+| `NeuronPipelinesTrainium2` | sa-east-1 | one `trn2.3xlarge`, scale-to-zero ASG. Separate region because that is the only region offering the small Trainium2 SKU, and a separate stack because CloudFormation cannot reference the Base stack's VPC/SG/role across regions. It still writes to the us-west-2 bucket. |
+
+> **Deployment state, 2026-08-27.** `NeuronPipelinesTrainium`,
+> `NeuronPipelinesInferentia` and `Ec2AutoshutdownStack` were **deleted** on
+> 2026-08-26 with their instances; `NeuronPipelinesBase` and
+> `NeuronPipelinesTrainium2` remain. Redeploying the two lane stacks recreates
+> working boxes and restarts billing. See
+> [ops/preservation/](../ops/preservation/2026-08-26-RECOVERY.md).
 
 Access is SSM Session Manager only: no SSH keys, zero ingress rules, IMDSv2
 required.
@@ -33,21 +41,31 @@ First-run side effects, so nothing surprises you:
 > file **MUST be committed** so later synths (and CI) are deterministic and
 > credential-free. The inf2 AMI stays pinned there until you
 > `npx aws-cdk@2 context --reset <key>`.
+>
+> The flip side, and it bites silently: the cached VPC, subnet and AMI ids
+> belong to account `600627330911`. Synthesising against a different account
+> with this file in place **succeeds** and targets the wrong network. Delete
+> `cdk.context.json` first and let it re-resolve. The README's
+> ["Forking this to your own AWS account"](../README.md#forking-this-to-your-own-aws-account)
+> section lists every other account-pinned value.
 
 ## Files
 
 | File | What it does |
 |---|---|
-| `app.py` | entrypoint: wires the three stacks, pins account/region |
+| `app.py` | entrypoint: wires the four stacks across two regions, pins account/region |
 | `cdk.json` | `app` command (`uv run python app.py`), context defaults (`az`, `subnetId`, `volumeGb`, `budgetUsd`, `alertEmail`, `trn1InstanceType`, `inf2InstanceType`), feature flags |
 | `stacks/base_stack.py` | bucket, scoped IAM role (no `Resource:"*"`), egress-only SG, CfnBudget |
 | `stacks/trainium_stack.py` | trn1 instance; AMI from `/aws/service/neuron/dlami/pytorch-2.9/ubuntu-24.04/latest/image_id`; launch template carries IMDSv2 + 500 GiB gp3 (3000 IOPS / 250 MiB/s) root |
+| `stacks/trainium2_stack.py` | trn2 box in sa-east-1; same DLAMI SSM parameter (no AMI pin needed on v3); scale-to-zero ASG; cross-region IAM scoped to the us-west-2 bucket ARN and the sa-east-1 hf-token ARN |
 | `stacks/inferentia_stack.py` | inf2 instance; AMI lookup `Deep Learning AMI Neuron PyTorch Inference vLLM*Ubuntu 24.04*`, escape hatch `-c inf2AmiId=ami-...`; same posture |
 | `user_data/common.sh` | `/opt/np` tree, `/etc/profile.d/neuron-pipelines.sh` env, uv install, done-marker |
 | `user_data/trn1.sh` | `np-scratch.service`: instance-store NVMe → `/scratch` + 64 GiB swap, re-asserted every boot |
 | `user_data/inf2.sh` | placeholder (inf2 has no instance store) |
+| `user_data/trn2.sh` | trn2 equivalent of `trn1.sh`: NVMe `/scratch`, no swapfile (128 GiB host RAM), `NEURON_LOGICAL_NC_CONFIG=2`, `NP_CACHE_PREFIX=neuron-cache-v3` |
+| `user_data/trn2_autorun.sh`, `trn2_hunt.sh` | Capacity-Block and capacity-hunt boot paths: start the driver unattended, then self-terminate at the window's end |
 | `tests/` | `aws_cdk.assertions.Template` tests, no AWS calls |
-| `cdk.context.json` | cached lookup results (default VPC, inf2 AMI) — committed |
+| `cdk.context.json` | cached lookup results (default VPC, subnets, inf2 AMI) — committed. **Account-specific: delete it before synthesising against a different account** (see below) |
 | `uv.lock` | pinned Python deps — committed |
 
 ## Commands
@@ -55,8 +73,8 @@ First-run side effects, so nothing surprises you:
 ```bash
 cd cdk
 uv sync                                          # 18 packages into .venv (~247 MB)
-uv run pytest                                    # 20 passed
-npx --yes aws-cdk@2 synth --all --quiet          # 3 stacks -> cdk.out/, caches lookups into cdk.context.json
+uv run pytest                                    # 55 passed
+npx --yes aws-cdk@2 synth --all --quiet          # 4 stacks -> cdk.out/, caches lookups into cdk.context.json
 
 # one-time per account/region (already done if CDKToolkit stack exists):
 npx --yes aws-cdk@2 bootstrap aws://600627330911/us-west-2   # creates CDKToolkit stack
@@ -76,6 +94,7 @@ aws ec2 start-instances --region us-west-2 --instance-ids <InstanceId>   # same 
 # tear down (reverse order; base last):
 npx --yes aws-cdk@2 destroy NeuronPipelinesInferentia         # terminates the inf2 box
 npx --yes aws-cdk@2 destroy NeuronPipelinesTrainium           # terminates the trn1 box
+npx --yes aws-cdk@2 destroy NeuronPipelinesTrainium2          # sa-east-1; set DesiredCapacity 0 first
 npx --yes aws-cdk@2 destroy NeuronPipelinesBase               # bucket is RETAINed (artifacts survive)
 ```
 
@@ -92,7 +111,7 @@ npx --yes aws-cdk@2 destroy NeuronPipelinesBase               # bucket is RETAIN
 > client tooling (fat conda stacks, local model conversion, big notebooks) off
 > this box — compile on the trn1 or locally, ship artifacts via the bucket.
 > `inf2.2xlarge`/`inf2.8xlarge` are one-flag upgrades via
-> `-c inf2InstanceType=...` once the pending quota increase lands.
+> `-c inf2InstanceType=...` given Inf quota for 32 vCPU.
 
 > **Gotcha:** trn1 instance store is **wiped on every stop/start**.
 > `np-scratch.service` re-formats/re-mounts `/scratch` and re-creates the
