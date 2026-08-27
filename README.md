@@ -15,7 +15,7 @@ Companion repo: [MI300X-vs-H200](https://github.com/alpharomercoma/MI300X-vs-H20
 — same harness lineage, same metrics schema, so numbers are directly
 comparable across repos.
 
-![Architecture: four CloudFormation stacks across two regions, three Neuron instances, SSM-only access, one S3 artifacts bucket](architecture-clean.png)
+![Architecture: four CloudFormation stacks across two regions, three Neuron instances, SSM-only access, one S3 artifacts bucket](docs/diagrams/architecture-clean.png)
 
 The study as built: four CDK stacks across two regions, three Neuron instances
 reached only through SSM Session Manager, and a single versioned us-west-2
@@ -74,22 +74,35 @@ quality, fine-tune serve, Qwen3 attempt.
 
 ## Repository layout
 
+Everything at the top level is part of reproducing the study. Everything that
+was only needed to *operate* it on one AWS account lives under `ops/`.
+
 ```
-cdk/          AWS CDK app (Python): BaseStack, TrainiumStack, InferentiaStack
-shared/       the harness -- synced byte-identical to both boxes
-trn1/ inf2/   per-box: PROVISIONING docs, 4-line run wrapper, raw results
-analysis/     make_report.py -> comparison.json -> every table in REPORT.md
-demo/         live TTFT streamer + headline tables against a warm endpoint
-docs/runbook/ 00..10, in execution order -- every command with expected output
-tests/        local gate: fixtures, no AWS or Neuron hardware needed
+cdk/            AWS CDK app (Python): Base, Trainium, Trainium2, Inferentia stacks
+shared/         the harness -- synced byte-identical to all three boxes
+extras/         the extension lanes: accuracy, quantization, spec-decode, RAG, MoE
+academic/       MNIST + CIFAR-10 on one NeuronCore (mlx-models parity)
+analysis/       make_report.py -> comparison.json -> every table in the reports
+trn1/ trn2/     per-box: PROVISIONING docs, 4-line run wrapper, raw results
+inf2/
+demo/           live TTFT streamer + headline tables against a warm endpoint
+docs/runbook/   00..13, in execution order -- every command with expected output
+docs/diagrams/  the architecture diagram, as measured
+tests/          local gate: fixtures, no AWS or Neuron hardware needed
+ops/            capacity hunting, preservation, teardown, frozen one-offs --
+                the account-side record; not needed to reproduce anything
 ```
+
+Results are committed, not regenerated: every number in the reports traces to a
+json + telemetry.csv + log triplet under `trn1/results/`, `trn2/results/` or
+`inf2/results/`. The three instances were terminated on 2026-08-26, so
+`make report` reproduces every table with no AWS account at all.
 
 ## Reproducing
 
 ```bash
 # 0. read docs/runbook/00-prerequisites.md (HF license, token, quotas)
-python3 -m pytest tests/ -q          # local gate, no hardware
-cd cdk && uv run pytest -q && cd ..  # infra assertions
+make test                            # local gate: harness + infra, no hardware
 cd cdk && uv run cdk deploy NeuronPipelinesBase NeuronPipelinesTrainium
 # ... then follow docs/runbook/04..07 lane by lane; each box runs:
 #   <box>/scripts/run_all.sh          # resumable; FORCE=1 to redo a lane
@@ -134,7 +147,7 @@ traces across two schedules that demonstrably ran). The anomaly is recorded in
 terminated on 2026-08-26; the disks survive as EBS snapshots. Everything needed
 to rebuild them — snapshot IDs, AMI pins, user-data, KMS keys, CloudFormation
 templates — is in
-[docs/preservation/2026-08-26-RECOVERY.md](docs/preservation/2026-08-26-RECOVERY.md).
+[ops/preservation/2026-08-26-RECOVERY.md](ops/preservation/2026-08-26-RECOVERY.md).
 Results in this repo regenerate without any AWS access.
 
 **Phase 4 — the training stages either side of SFT** (§32):

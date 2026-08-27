@@ -87,12 +87,12 @@ A reservation **bills at the on-demand rate from the moment it is created**,
 whether or not an instance occupies it — always set a limited `--end-date` so a
 forgotten hold self-expires, and deploy immediately once one succeeds.
 
-`extras/trn2_capacity_watch.sh` automates exactly this. It runs unattended from
+`ops/capacity/trn2_capacity_watch.sh` automates exactly this. It runs unattended from
 the laptop, rotates all three AZs every 150 s, and on success deploys the stack
 into whichever AZ opened — then exits:
 
 ```bash
-nohup caffeinate -i bash extras/trn2_capacity_watch.sh \
+nohup caffeinate -i bash ops/capacity/trn2_capacity_watch.sh \
   >> ~/trn2_capacity_watch.log 2>&1 &
 disown          # macOS has no setsid; nohup + disown reparents to PID 1
 ```
@@ -154,7 +154,7 @@ npx aws-cdk@latest deploy NeuronPipelinesTrainium2 --require-approval never \
 
 ### Scheduled launch — keep the laptop off the critical path
 
-`extras/trn2_block_launch.sh` waits for `active` and then deploys, but it runs
+`ops/capacity/trn2_block_launch.sh` waits for `active` and then deploys, but it runs
 on a laptop, and that laptop must have its lid open and **unexpired** AWS
 credentials at the instant the block opens. `aws login` issues temporary
 credentials; ours expired mid-session more than once. A missed window costs the
