@@ -3,7 +3,7 @@
 #
 # Runs FROM THE LAPTOP (or anywhere with credentials), not on the box:
 #
-#   nohup caffeinate -i bash extras/trn2_preserve_state.sh \
+#   nohup caffeinate -i bash ops/capacity/trn2_preserve_state.sh \
 #     >> ~/trn2_preserve.log 2>&1 &
 #   disown
 #

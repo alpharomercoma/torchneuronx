@@ -11,18 +11,22 @@ import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 EXTRAS = ROOT / "extras"
-ATTIC = EXTRAS / "attic"
+# The attic lives under ops/ -- frozen evidence, deliberately outside the
+# maintained lane code so it cannot be picked up as a live dependency.
+ATTIC = ROOT / "ops" / "attic"
 
 
 def _active_drivers():
-    """Drivers that are maintained. The attic is frozen evidence, not code."""
-    return [p for p in EXTRAS.glob("*.sh") if ATTIC not in p.parents]
+    """Drivers that are maintained. The attic is frozen evidence, not code --
+    it lives under ops/, so nothing in extras/ needs filtering out any more."""
+    return list(EXTRAS.glob("*.sh"))
 
 
 def test_every_shell_driver_parses():
     """A driver that does not parse cannot fail honestly -- it fails confusingly."""
     bad = []
-    for p in list(EXTRAS.rglob("*.sh")) + list((ROOT / "shared").rglob("*.sh")):
+    for p in (list(EXTRAS.rglob("*.sh")) + list((ROOT / "shared").rglob("*.sh"))
+              + list((ROOT / "ops").rglob("*.sh"))):
         r = subprocess.run(["bash", "-n", str(p)], capture_output=True)
         if r.returncode != 0:
             bad.append((p.relative_to(ROOT), r.stderr.decode()[:120]))

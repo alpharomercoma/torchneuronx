@@ -2,7 +2,7 @@
 # Launch the Trainium2 box into a purchased EC2 Capacity Block the moment the
 # window opens, then start the Phase-3 suite on it -- without a human present.
 #
-#   nohup caffeinate -i bash extras/trn2_block_launch.sh \
+#   nohup caffeinate -i bash ops/capacity/trn2_block_launch.sh \
 #     >> ~/trn2_block_launch.log 2>&1 &
 #   disown
 #

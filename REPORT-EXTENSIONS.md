@@ -3070,7 +3070,7 @@ changes *nothing at all* about the loss trajectory is not a result. Either the
 LR the graph executes is not the LR the trainer logs, or the two arms are not
 as independent as their configs claim. The study cannot distinguish those from
 here: both boxes were terminated on 2026-08-26 and only EBS snapshots remain
-(`docs/preservation/2026-08-26-RECOVERY.md`).
+(`ops/preservation/2026-08-26-RECOVERY.md`).
 
 What is recorded, therefore, is the anomaly and not a schedule recommendation.
 The lane's throughput and MFU figures (4,379 tok/s, 6.67% whole-chip / 13.34%
