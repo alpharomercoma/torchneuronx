@@ -12,10 +12,16 @@ meta-experiment).
 
 | phase | sections | what it adds |
 |---|---|---|
-| 2 | §13-19 | parity models, Mistral, open-loop goodput, context cliffs, quantization, multi-tenancy, cold start, NKI, the RAG appliance |
-| 3 | §20-30 | Trainium2 in sa-east-1: one chip against one chip, identical lane list |
-| 4 | §31-34 | pretraining and post-training — ORPO lands, DPO is terminal, GRPO is architecturally blocked — plus the cost math and a decision framework |
+| 2 | §13-14 | parity models, Mistral, open-loop goodput, context cliffs, quantization, multi-tenancy, cold start, NKI, the RAG appliance — and what Phase 2 got wrong |
+| 3 | §15-28 | Trainium2 in sa-east-1: one chip against one chip on an identical lane list, prefill/decode split, the quality gate, and serving the trn2 fine-tune |
+| 4 | §32 | pretraining and post-training — ORPO lands, DPO is terminal on the reference forward, GRPO is architecturally blocked |
 | 5 | §35-39 | accuracy as a validity gate, speculative decoding measured properly, a second SFT corpus, a comparison that failed its own control, and what the S3 teardown nearly cost |
+| cross-cutting | §29-31, §33-34 | what the study did *not* accomplish, what an adversarial reviewer broke, the biases it carries, the cost math against GPUs, and when Neuron silicon fits |
+
+> Two numbering irregularities, left as they are because renumbering would
+> break every citation already made against this document: §36.4 appears after
+> §38 (it was written later, as part of resolving §36's open failures), and the
+> phase groupings above are not contiguous.
 
 Boxes: the same trn1.2xlarge (`i-0cb9e758143a745d5`), a **fresh** inf2.xlarge
 (`i-0936ae7615727251e`) — the original inf2 was deliberately destroyed and

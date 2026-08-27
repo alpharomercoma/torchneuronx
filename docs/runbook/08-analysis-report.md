@@ -2,18 +2,25 @@
 
 ```bash
 cd ~/neuron-pipelines
-make pull-results-all                  # NOT `make pull-results` -- see below
+make pull-results                      # -> trn1/results/, trn2/results/, inf2/results/
+make pull-results-all                  # -> .s3-mirror/results/  (reconcile by hand)
 python3 analysis/make_report.py        # exit 0 = suite complete; INCOMPLETE lists gaps
 python3 demo/headline.py               # eyeball before writing prose
 ```
 
-> **Use `pull-results-all`.** `make pull-results` mirrors only
-> `results/{trn1,trn2,inf2}/`. The on-box drivers also wrote to per-lane and
-> per-hostname prefixes — `results/trn1-specdec/`,
-> `results/final-ip-172-31-20-190-specdec/` and thirteen more. **736 objects
-> lived only in those**, including the k=8 and k=16 arms of the
-> speculative-decoding ladder and the int8 perplexity receipts. The canonical
-> three prefixes are not complete; see REPORT-EXTENSIONS §39.
+> **Run both, and know what each one does.** `make pull-results` syncs the
+> three canonical prefixes straight into `<box>/results/`, which is the only
+> place `make_report.py` reads. `make pull-results-all` mirrors *every*
+> `results/` prefix into `.s3-mirror/results/` — it does **not** feed the
+> analyzer, and nothing downstream picks it up automatically.
+>
+> That second target exists because the canonical three are not complete. The
+> on-box drivers also wrote to per-lane and per-hostname prefixes —
+> `results/trn1-specdec/`, `results/final-ip-172-31-20-190-specdec/`,
+> `results/trn1-ppl/` and thirteen more. **736 objects lived only in those**,
+> including the k=8 and k=16 arms of the speculative-decoding ladder and the
+> int8 perplexity receipts. Diff `.s3-mirror/` against the box directories and
+> copy across what is missing, by hand. See REPORT-EXTENSIONS §39.
 
 The results are committed, so on a fresh clone `python3
 analysis/make_report.py` alone reproduces every table with no AWS account.

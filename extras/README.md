@@ -8,7 +8,9 @@ in runbooks [11](../docs/runbook/11-extensions.md),
 [13](../docs/runbook/13-phase4-posttraining.md).
 
 Results land as the usual json + telemetry.csv + log triplets under
-`<box>/results/extras/`.
+`<box>/results/extras/`, with two exceptions that have their own trees:
+`inf2/results/rag/` and `inf2/results/serve/` for anything that boots a
+server.
 
 ## Layout
 
@@ -23,6 +25,7 @@ Results land as the usual json + telemetry.csv + log triplets under
 | **RAG** | `rag/` | the whole agentic-RAG appliance on one inf2 — its own README |
 | **NKI** | `nki_softmax.py` | a hand-written kernel, simulate and device modes |
 | **trn2 window** | `tp_probe_trn2.sh`, `run_{frontier,maxutil,opportunistic}_trn2.sh`, `trn2_deadline_push.sh` | the Trainium2 lane. `trn2_deadline_push.sh` is invoked at boot by `cdk/user_data/trn2_autorun.sh` |
+| **serve one-offs** | `run_serve_trn2_finetune.sh`, `run_trn1_rerun.sh` | serving the trn2 fine-tune back on inf2 (§28), and the trn1 re-run that produced the symmetry pass (§26) |
 | **support** | `lib/common.sh`, `stage_data.sh`, `setup_inf2_overlay.sh`, `run_quality_gate.sh`, `run_dataloader_isolation.sh` | shared driver helpers and one-purpose utilities |
 
 `lib/common.sh` is the single source of driver helpers — `have()`, `step()`,

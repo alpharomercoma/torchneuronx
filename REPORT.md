@@ -176,9 +176,10 @@ The section numbering is continuous: this page is §1-12, and
 
 | phase | what it covers | sections |
 |---|---|---|
-| 2 | mlx-parity models, Mistral, open-loop goodput, context-cliff bisections, quantization, multi-tenancy, cold-start, NKI, the RAG appliance | §13-19 |
-| 3 | Trainium2 in sa-east-1; one chip against one chip on the identical lane list | §20-30 |
-| 4 | pretraining and post-training: ORPO lands, DPO is terminal on the reference forward, GRPO is architecturally blocked | §31-34 |
+| 2 | mlx-parity models, Mistral, open-loop goodput, context-cliff bisections, quantization, multi-tenancy, cold-start, NKI, the RAG appliance | §13-14 |
+| 3 | Trainium2 in sa-east-1; one chip against one chip on the identical lane list | §15-28 |
+| 4 | pretraining and post-training: ORPO lands, DPO is terminal on the reference forward, GRPO is architecturally blocked | §32 |
 | 5 | accuracy as a validity gate, Spec-Bench to 3.35×, the Tulu-3 replication, the midtrain anomaly, and the S3 near-miss | §35-39 |
+| cross-cutting | what the study did not accomplish, adversarial review, biases, cost math, and a decision framework | §29-31, §33-34 |
 
 Reproduction: [docs/runbook/](docs/runbook/README.md), in execution order.

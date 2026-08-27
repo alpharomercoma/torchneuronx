@@ -17,14 +17,14 @@ they are reference.
 | 00 | [prerequisites](00-prerequisites.md) | HF license + token into SSM, local tooling | no |
 | 01 | [security hardening](01-security-hardening.md) | retire root access keys, IAM user, MFA | no |
 | 02 | [quotas](02-quotas.md) | what each instance family needs, and why quota ≠ capacity | no |
-| 03 | [local self-test](03-local-selftest.md) | gate 1: 236 tests + synth, no AWS, no hardware | no |
+| 03 | [local self-test](03-local-selftest.md) | gate 1: 236 tests, then synth. The tests need no AWS at all; `cdk synth` makes read-only lookups on its first run and caches them | no |
 | 04 | [deploy Trainium](04-deploy-trainium.md) | Base + trn1 stacks, push harness, smoke lane | **yes** — $1.34/hr |
 | 05 | [training lanes](05-training-lanes.md) | trn1 lanes 3-6: precompile, two LoRA runs, merge | **yes** |
 | 06 | [deploy Inferentia](06-deploy-inferentia.md) | inf2 stack — the AMI pin is load-bearing | **yes** — $0.76/hr |
 | 07 | [inference lanes](07-inference-lanes.md) | inf2 serving sweeps, sustained, quality, fine-tune | **yes** |
-| 08 | [analysis and report](08-analysis-report.md) | pull results, regenerate comparison.json | no |
+| 08 | [analysis and report](08-analysis-report.md) | pull results, regenerate comparison.json | S3 requests only |
 | 09 | [warm demo](09-warm-demo.md) | the live demo path, rehearsed against a warm cache | **yes** |
-| 10 | [teardown](10-teardown.md) | stop, destroy, verify nothing is left billing | no |
+| 10 | [teardown](10-teardown.md) | snapshot, destroy, verify nothing is left billing | snapshots keep billing |
 | 11 | [Phase-2 extensions](11-extensions.md) | the extension lanes on both boxes | **yes** |
 | 12 | [Trainium2](12-trainium2.md) | sa-east-1, Capacity Blocks, LNC, the trn1↔trn2 comparison | **yes** |
 | 13 | [Phase-4 post-training](13-phase4-posttraining.md) | ORPO, DPO, GRPO — what worked and what is architecturally blocked | **yes** |

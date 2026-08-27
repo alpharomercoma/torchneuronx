@@ -22,10 +22,15 @@ here too. This doc adds only what is different on the inference box.
 - **Host is small on purpose**: 4 vCPU / 16 GiB RAM. Nothing heavyweight gets
   installed client-side; the bench client is stdlib-only
   (`shared/serve/fallback_client.py`). If host RAM ever becomes the binding
-  constraint, `-c inf2InstanceType=inf2.2xlarge` is a one-flag redeploy — but
-  that is a *decision to record*, not a silent upgrade.
-- **No instance store** on inf2.xlarge: no `/scratch`, no swapfile. The 8B
-  merge never runs here (16 GiB host); the merged model arrives via S3.
+  constraint, `-c inf2InstanceType=inf2.8xlarge` is a one-flag redeploy — there
+  is no `inf2.2xlarge`, the family jumps straight to 8xlarge (32 vCPU, and the
+  quota to match) — but that is a *decision to record*, not a silent upgrade.
+- **No instance store** on inf2.xlarge: no `/scratch`. Swap therefore lives on
+  the EBS root — `user_data/inf2.sh` creates a 48 GiB swapfile, which is what
+  the `Swap: 47Gi` line in the verified state below is. It exists because vLLM
+  stages ~15-16 GB of 8B weights host-side before they reach HBM and a 16 GiB
+  host gets OOM-killed mid-load. The 8B merge still never runs here; the merged
+  model arrives via S3.
 - **Compile cache is the demo**: cold boot of an 8B server config costs tens
   of minutes of neuronx-cc; warm boot from the EBS cache should be minutes.
   Both numbers are recorded in `serve/*/boot.json` — treat a surprise
